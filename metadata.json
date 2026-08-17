@@ -1,0 +1,6 @@
+{
+  "name": "Texas Sons Delivery Engine",
+  "description": "Internal boilerplate and site generation platform for Texas Sons Studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

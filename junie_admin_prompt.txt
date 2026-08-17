@@ -1,0 +1,20 @@
+Create a unified, basic HTML template for a Universal Admin Dashboard that can be used for Campaigns, Restaurants, and Salons. 
+Save it to 'public/templates/admin/universal-admin.html'.
+
+Requirements:
+1. Use Tailwind CSS via CDN for styling.
+2. The design should be clean, simple, and basic. Do NOT include any AI tools or advanced analytics.
+3. Layout: A classic left sidebar for navigation and a main content area.
+4. Sidebar Navigation Links:
+   - Dashboard (Basic Info, Site Settings)
+   - Events Management (Add/update events)
+   - Volunteers & RSVPs (View lists of people)
+   - Pricing & Services (For salons/restaurants)
+5. Main Content Area Structure:
+   - Create mock sections for each navigation item (you can stack them or show one as active).
+   - "Basic Info": Simple form to update Site Name, Phone, Email.
+   - "Events": A basic table showing upcoming events and an "Add Event" button.
+   - "Volunteers & RSVPs": A list of names, emails, and roles (Volunteer vs RSVP).
+   - "Pricing & Services": A table of services/menu items with prices. Include a prominent "Sync with Square" button for restaurants/salons that use Square integration.
+
+Focus on a clean, white-label design (neutral grays and a primary blue accent) that any business or campaign could use out of the box.

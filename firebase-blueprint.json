@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A client project representing a website build.",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string", "maxLength": 100 },
+        "clientName": { "type": "string", "maxLength": 100 },
+        "tier": { "type": "string", "enum": ["Spur (Static)", "Ranger (Flow)", "Maverick (Engine)"] },
+        "status": { "type": "string", "enum": ["Intake", "Scaffolding", "Theme Assembly", "QA & Staging", "Live"] },
+        "domain": { "type": "string", "maxLength": 200 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "updatedAt": { "type": "string", "maxLength": 30 }
+      },
+      "required": ["companyName", "clientName", "tier", "status", "ownerId", "updatedAt"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "An invoice generated for a client project.",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string", "maxLength": 128 },
+        "clientName": { "type": "string", "maxLength": 100 },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Draft", "Sent", "Paid"] },
+        "issueDate": { "type": "string", "maxLength": 30 },
+        "dueDate": { "type": "string", "maxLength": 30 },
+        "ownerId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["projectId", "clientName", "amount", "status", "issueDate", "dueDate", "ownerId"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Stores client projects."
+    },
+    "/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/Invoice" },
+      "description": "Stores invoices."
+    }
+  }
+}

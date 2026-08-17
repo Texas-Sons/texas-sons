@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{CANDIDATE_NAME}} - {{OFFICE_TITLE}}</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#92001c",
+                        "on-primary-fixed-variant": "#34466d",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#7687b2",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1b1b1e",
+                        "surface-dim": "#dbd9dd",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#ffdbc7",
+                        "background": "#fbf8fc",
+                        "on-tertiary-fixed-variant": "#673c1e",
+                        "primary-fixed-dim": "#b4c6f4",
+                        "secondary-container": "#e1253b",
+                        "inverse-on-surface": "#f2f0f4",
+                        "on-primary-fixed": "#041a3f",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#410007",
+                        "primary-container": "var(--campaign-primary)",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#d9e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c5c6cf",
+                        "tertiary-fixed-dim": "#f8b992",
+                        "inverse-surface": "#303033",
+                        "error-container": "#ffdad6",
+                        "surface": "#fbf8fc",
+                        "on-tertiary-container": "#b37c59",
+                        "neutral-white": "#FFFFFF",
+                        "heritage-gold": "var(--campaign-gold)",
+                        "primary": "var(--campaign-primary-dark)",
+                        "surface-container": "#efedf1",
+                        "inverse-primary": "#b4c6f4",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e5",
+                        "surface-container-low": "#f5f3f7",
+                        "on-tertiary-fixed": "#311300",
+                        "on-background": "#1b1b1e",
+                        "outline": "#75777f",
+                        "surface-container-high": "#e9e7eb",
+                        "on-surface-variant": "#44464e",
+                        "tertiary": "#150500",
+                        "legal-gray": "#4A4A4A",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#4c5e86",
+                        "tertiary-container": "#391700",
+                        "secondary": "var(--campaign-accent)",
+                        "surface-bright": "#fbf8fc",
+                        "surface-variant": "#e4e2e5",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "secondary-fixed": "#ffdad8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "stack-md": "16px",
+                        "section-gap": "80px",
+                        "container-max": "1200px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Montserrat"],
+                        "caption": ["Montserrat"],
+                        "body-lg": ["Montserrat"],
+                        "label-bold": ["Montserrat"],
+                        "headline-display": ["Libre Caslon Text"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-lg-mobile": ["Libre Caslon Text"],
+                        "headline-md": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-display": ["48px", { "lineHeight": "56px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --campaign-primary: #0a1f44;
+            --campaign-primary-dark: #00081e;
+            --campaign-accent: #d91e36;
+            --campaign-gold: #C5A059;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(0,8,30,0.95) 0%, rgba(187,0,39,0.85) 100%);
+        }
+        .patriotic-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased overflow-x-hidden w-full flex flex-col min-h-screen">
+<!-- Mobile Top Navigation -->
+<nav class="bg-primary dark:bg-primary docked full-width top-0 border-b border-heritage-gold shadow-md sticky z-50 flex justify-between items-center px-margin-mobile py-4 w-full">
+<a class="font-headline-md text-headline-md font-bold text-heritage-gold dark:text-heritage-gold tracking-tight" href="#">{{CANDIDATE_NAME}}</a>
+<button class="text-heritage-gold md:hidden" id="mobile-menu-btn">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</nav>
+<!-- Mobile Menu Overlay (Hidden by default, standard JS toggle would go here) -->
+<div class="hidden fixed inset-0 bg-primary z-40 flex flex-col pt-24 px-margin-mobile gap-stack-lg" id="mobile-menu">
+<!-- Links would go here, omitting for focused mobile view as requested, assuming JS handles toggle -->
+</div>
+<!-- Main Content -->
+<main class="flex-1 w-full">
+<!-- Hero Section -->
+<section class="relative w-full overflow-hidden bg-primary pb-section-gap">
+<div class="absolute inset-0 patriotic-pattern opacity-30"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-primary"></div>
+<div class="relative z-10 flex flex-col items-center pt-stack-lg px-margin-mobile text-center">
+<h1 class="font-headline-display text-headline-display text-on-primary mb-2 drop-shadow-md">
+                    VOTE <span class="text-heritage-gold inline-block align-middle"><span class="material-symbols-outlined text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">how_to_vote</span></span>
+</h1>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-primary mb-1 uppercase tracking-wider">
+                    {{CANDIDATE_FIRST}} <br/>
+<span class="text-heritage-gold text-[1.2em]">{{CANDIDATE_LAST}}</span>
+</h2>
+<div class="bg-heritage-gold text-primary font-label-bold text-label-bold px-4 py-2 rounded-full mb-stack-lg shadow-md inline-block uppercase tracking-widest mt-stack-md">
+                    {{OFFICE_TITLE}} {{OFFICE_TITLE}}
+                </div>
+<!-- Hero Image Container (Mobile focused) -->
+<div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-heritage-gold shadow-xl overflow-hidden mt-stack-md mx-auto z-20">
+<img alt="{{CANDIDATE_NAME}} Portrait" class="w-full h-full object-cover object-top" src="{{CANDIDATE_PHOTO}}"/>
+</div>
+<!-- Primary CTA -->
+<a class="mt-stack-lg bg-secondary hover:bg-secondary/90 text-on-secondary font-label-bold text-label-bold px-8 py-4 rounded shadow-[0_4px_14px_0_rgba(187,0,39,0.39)] transition-transform hover:-translate-y-1 w-full max-w-sm text-center uppercase" href="#get-involved">
+                    Donate to the Campaign
+                </a>
+</div>
+</section>
+<!-- Experience & Qualifications (Bento-style list for mobile) -->
+<section class="py-section-gap px-margin-mobile bg-surface w-full max-w-container-max mx-auto relative z-30 -mt-12 rounded-t-3xl">
+<div class="text-center mb-stack-lg">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-stack-sm">Proven Experience.</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Dedicated to Justice in Bexar County.</p>
+<div class="w-16 h-1 bg-heritage-gold mx-auto mt-stack-md"></div>
+</div>
+<div class="flex flex-col gap-stack-md w-full">
+<!-- Qualification Item -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Decades of Experience</p>
+<p class="font-body-md text-body-md text-on-surface">Over 25 years of criminal trial experience in Bexar County.</p>
+</div>
+</div>
+<!-- Qualification Item -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Balanced Perspective</p>
+<p class="font-body-md text-body-md text-on-surface">Litigated 1000's of cases as both a Prosecutor and Defense Attorney.</p>
+</div>
+</div>
+<!-- Qualification Item -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Results-Driven</p>
+<p class="font-body-md text-body-md text-on-surface">Decisive leadership determined to ensure that justice is both swift and fair.</p>
+</div>
+</div>
+<!-- Qualification Item -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Local Roots</p>
+<p class="font-body-md text-body-md text-on-surface">A lifelong Texan who proudly calls San Antonio home for over 30 years.</p>
+</div>
+</div>
+<!-- Qualification Item -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Community Safety</p>
+<p class="font-body-md text-body-md text-on-surface">Dedicated to keeping Bexar County safe while protecting and preserving the rights of its citizens.</p>
+</div>
+</div>
+<!-- Qualification Item (Wide/Complex) -->
+<div class="bg-neutral-white border border-outline-variant p-stack-md rounded shadow-sm flex items-start gap-stack-sm transition-shadow hover:shadow-md">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-bold text-label-bold text-primary uppercase mb-1">Comprehensive Expertise</p>
+<p class="font-body-md text-body-md text-on-surface">Experienced in both felony and misdemeanor level cases encompassing violent and serious offenses ranging from Intoxication Manslaughter and White-Collar crimes to DWI, Drug Offenses, Burglaries, Theft, Assaults, and Immigration matters.</p>
+</div>
+</div>
+</div>
+<!-- Secondary CTA -->
+<div class="mt-stack-lg flex justify-center">
+<a class="border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-bold text-label-bold px-8 py-3 rounded transition-colors uppercase w-full text-center" href="#">
+                    Read Full Experience
+                </a>
+</div>
+</section>
+<!-- Image Break / Quote Section -->
+<section class="relative w-full h-80 bg-primary-container flex items-center justify-center px-margin-mobile overflow-hidden">
+<!-- Placeholder for a subtle background pattern or image if needed, keeping it clean for now -->
+<div class="absolute inset-0 bg-[url('placeholder')] bg-cover bg-center opacity-20" data-alt="Abstract subtle texture in dark navy blue, reminiscent of legal documents or high-end corporate stationery, very dark, low contrast, professional mood."></div>
+<div class="relative z-10 text-center max-w-xl">
+<span class="material-symbols-outlined text-heritage-gold text-5xl mb-4 opacity-50">format_quote</span>
+<p class="font-headline-md text-headline-md text-on-primary-container italic mb-4">
+                     "Justice must be swift, fair, and resolute. Our community deserves nothing less."
+                 </p>
+<p class="font-label-bold text-label-bold text-heritage-gold uppercase">{{CANDIDATE_NAME}}</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-primary full-width bottom-0 border-t border-heritage-gold flat no shadows flex flex-col items-center gap-stack-md py-stack-lg px-margin-desktop w-full">
+<div class="font-headline-md text-headline-md text-heritage-gold text-center mb-stack-sm">
+            {{CANDIDATE_NAME}}
+        </div>
+<div class="flex flex-wrap justify-center gap-x-stack-lg gap-y-stack-sm mb-stack-md">
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-caption text-caption" href="#">Legal Disclosures</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-caption text-caption" href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-caption text-caption" href="#">Privacy Policy</a>
+</div>
+<div class="text-center w-full">
+<p class="font-caption text-caption text-on-primary opacity-70 max-w-md mx-auto">
+                © 2024 Pol. Adv. Paid for by the {{CANDIDATE_NAME}} campaign. Erica Gregory, Treas.
+            </p>
+</div>
+</footer>
+</body></html>

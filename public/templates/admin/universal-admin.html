@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-600');
+        el.classList.add('text-gray-600', 'hover:bg-gray-50', 'border-transparent');
+      });
+      
+      const activeBtn = document.getElementById('btn-' + tabId);
+      activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-50', 'border-transparent');
+      activeBtn.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-600');
+    }
+  </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 h-screen flex overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <div class="h-16 flex items-center px-6 border-b border-gray-200">
+      <h1 class="text-xl font-bold text-gray-900">Admin Panel</h1>
+    </div>
+    
+    <nav class="flex-1 overflow-y-auto py-4">
+      <ul class="space-y-1">
+        <li>
+          <button id="btn-tab-basic" onclick="showTab('tab-basic')" class="nav-btn w-full flex items-center px-6 py-3 text-left border-l-4 bg-blue-50 text-blue-600 border-blue-600">
+            <i class="fas fa-info-circle w-5 text-center mr-3"></i>
+            <span class="font-medium">Basic Info</span>
+          </button>
+        </li>
+        <li>
+          <button id="btn-tab-events" onclick="showTab('tab-events')" class="nav-btn w-full flex items-center px-6 py-3 text-left border-l-4 text-gray-600 hover:bg-gray-50 border-transparent transition-colors">
+            <i class="fas fa-calendar-alt w-5 text-center mr-3"></i>
+            <span class="font-medium">Events Management</span>
+          </button>
+        </li>
+        <li>
+          <button id="btn-tab-volunteers" onclick="showTab('tab-volunteers')" class="nav-btn w-full flex items-center px-6 py-3 text-left border-l-4 text-gray-600 hover:bg-gray-50 border-transparent transition-colors">
+            <i class="fas fa-users w-5 text-center mr-3"></i>
+            <span class="font-medium">Volunteers & RSVPs</span>
+          </button>
+        </li>
+        <li>
+          <button id="btn-tab-pricing" onclick="showTab('tab-pricing')" class="nav-btn w-full flex items-center px-6 py-3 text-left border-l-4 text-gray-600 hover:bg-gray-50 border-transparent transition-colors">
+            <i class="fas fa-tag w-5 text-center mr-3"></i>
+            <span class="font-medium">Pricing & Services</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+      <h2 class="text-lg font-medium text-gray-800">Dashboard Overview</h2>
+      <button class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </header>
+
+    <!-- Scrollable Content Area -->
+    <div class="flex-1 overflow-auto p-8">
+      
+      <!-- TAB: Basic Info -->
+      <div id="tab-basic" class="tab-content max-w-3xl">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Site Information</h3>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Business / Campaign Name</label>
+              <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="My Website">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+                <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="contact@example.com">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="(555) 123-4567">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Address / Location</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="2">123 Main St, Austin, TX 78701</textarea>
+            </div>
+            <div class="pt-4 border-t border-gray-100">
+              <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB: Events Management -->
+      <div id="tab-events" class="tab-content hidden max-w-4xl">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">Manage Events</h3>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+            <i class="fas fa-plus mr-2"></i> Add Event
+          </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Oct 24, 2026</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Community Townhall</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">City Center Plaza</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                  <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Nov 02, 2026</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fundraiser Dinner</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">The Grand Hotel</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                  <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Volunteers & RSVPs -->
+      <div id="tab-volunteers" class="tab-content hidden max-w-4xl">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">People Directory</h3>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-4 border-b border-gray-200 bg-gray-50 flex gap-4">
+            <select class="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500">
+              <option>All Types</option>
+              <option>Volunteers</option>
+              <option>RSVPs</option>
+            </select>
+            <input type="text" placeholder="Search names..." class="border border-gray-300 rounded-md px-3 py-1.5 text-sm flex-1 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Sarah Jenkins</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">sarah.j@example.com</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Volunteer</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Active</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Michael Chang</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">mikec@example.com</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">RSVP</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Attending</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Pricing & Services -->
+      <div id="tab-pricing" class="tab-content hidden max-w-4xl">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-lg font-semibold text-gray-900">Pricing & Menu Options</h3>
+          
+          <!-- Square Integration Button -->
+          <button class="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors flex items-center">
+            <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.463 4.463h15.074v15.074H4.463V4.463z m5.385 5.385v4.305h4.305V9.848H9.848z"/>
+            </svg>
+            Sync with Square
+          </button>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex">
+          <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+          <p class="text-sm text-blue-800">For Salons and Restaurants: Update your prices here to instantly reflect on your live website. If you use Square Point of Sale, click "Sync with Square" to pull your latest catalog automatically.</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item / Service</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Women's Haircut</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Styling</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$65.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Balayage & Tone</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Color</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$185.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="p-4 border-t border-gray-200 bg-gray-50">
+            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <i class="fas fa-plus mr-1"></i> Add New Item
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

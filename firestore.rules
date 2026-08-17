@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function isSignedIn() {
+      // In this environment, email_verified might not be forced depending on the provider.
+      // But adhering to the pillar: we will check request.auth != null.
+      // For AI Studio popup auth, email_verified is usually true for Google.
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidProject(data) {
+      let hasRequired = data.keys().hasAll(['companyName', 'clientName', 'tier', 'status', 'ownerId', 'updatedAt']);
+      let hasValidSize = data.keys().size() == 6 || (data.keys().size() == 7 && data.keys().hasAll(['domain']));
+      let domainValid = !('domain' in data) || (data.domain is string && data.domain.size() <= 200);
+      
+      return hasRequired && hasValidSize && domainValid &&
+             data.companyName is string && data.companyName.size() <= 100 &&
+             data.clientName is string && data.clientName.size() <= 100 &&
+             data.tier is string && data.tier in ['Spur (Static)', 'Ranger (Flow)', 'Maverick (Engine)'] &&
+             data.status is string && data.status in ['Intake', 'Scaffolding', 'Theme Assembly', 'QA & Staging', 'Live'] &&
+             data.ownerId is string && data.ownerId == request.auth.uid &&
+             data.updatedAt is string && data.updatedAt.size() <= 30;
+    }
+
+    match /projects/{projectId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(projectId) && isValidProject(incoming());
+      
+      allow update: if isSignedIn() && isValidProject(incoming()) &&
+                    incoming().ownerId == existing().ownerId &&
+                    (
+                      incoming().diff(existing()).affectedKeys().hasOnly(['companyName', 'clientName', 'tier', 'status', 'domain', 'updatedAt'])
+                    );
+      allow delete: if isSignedIn() && existing().ownerId == request.auth.uid;
+    }
+
+    function isValidInvoice(data) {
+      return data.keys().hasAll(['projectId', 'clientName', 'amount', 'status', 'issueDate', 'dueDate', 'ownerId']) &&
+             data.keys().size() == 7 &&
+             data.projectId is string && data.projectId.size() <= 128 &&
+             data.clientName is string && data.clientName.size() <= 100 &&
+             data.amount is number &&
+             data.status is string && data.status in ['Draft', 'Sent', 'Paid'] &&
+             data.issueDate is string && data.issueDate.size() <= 30 &&
+             data.dueDate is string && data.dueDate.size() <= 30 &&
+             data.ownerId is string && data.ownerId == request.auth.uid;
+    }
+
+    match /invoices/{invoiceId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(invoiceId) && isValidInvoice(incoming()) && 
+                    exists(/databases/$(database)/documents/projects/$(incoming().projectId)) &&
+                    get(/databases/$(database)/documents/projects/$(incoming().projectId)).data.ownerId == request.auth.uid;
+      
+      allow update: if isSignedIn() && isValidInvoice(incoming()) &&
+                    incoming().ownerId == existing().ownerId &&
+                    incoming().projectId == existing().projectId &&
+                    (
+                      incoming().diff(existing()).affectedKeys().hasOnly(['amount', 'status', 'issueDate', 'dueDate'])
+                    );
+      allow delete: if isSignedIn() && existing().ownerId == request.auth.uid;
+    }
+  }
+}

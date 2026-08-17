@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{CANDIDATE_NAME}} - {{OFFICE_TITLE}}</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed-variant": "#92001c",
+                      "on-primary-fixed-variant": "#34466d",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#7687b2",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1b1b1e",
+                      "surface-dim": "#dbd9dd",
+                      "on-secondary-container": "#fffbff",
+                      "tertiary-fixed": "#ffdbc7",
+                      "background": "#fbf8fc",
+                      "on-tertiary-fixed-variant": "#673c1e",
+                      "primary-fixed-dim": "#b4c6f4",
+                      "secondary-container": "#e1253b",
+                      "inverse-on-surface": "#f2f0f4",
+                      "on-primary-fixed": "#041a3f",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed": "#410007",
+                      "primary-container": "var(--campaign-primary)",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#d9e2ff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#c5c6cf",
+                      "tertiary-fixed-dim": "#f8b992",
+                      "inverse-surface": "#303033",
+                      "error-container": "#ffdad6",
+                      "surface": "#fbf8fc",
+                      "on-tertiary-container": "#b37c59",
+                      "neutral-white": "#FFFFFF",
+                      "heritage-gold": "var(--campaign-gold)",
+                      "primary": "var(--campaign-primary-dark)",
+                      "surface-container": "#efedf1",
+                      "inverse-primary": "#b4c6f4",
+                      "on-error": "#ffffff",
+                      "surface-container-highest": "#e4e2e5",
+                      "surface-container-low": "#f5f3f7",
+                      "on-tertiary-fixed": "#311300",
+                      "on-background": "#1b1b1e",
+                      "outline": "#75777f",
+                      "surface-container-high": "#e9e7eb",
+                      "on-surface-variant": "#44464e",
+                      "tertiary": "#150500",
+                      "legal-gray": "#4A4A4A",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#4c5e86",
+                      "tertiary-container": "#391700",
+                      "secondary": "var(--campaign-accent)",
+                      "surface-bright": "#fbf8fc",
+                      "surface-variant": "#e4e2e5",
+                      "secondary-fixed-dim": "#ffb3b1",
+                      "secondary-fixed": "#ffdad8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "20px",
+                      "stack-md": "16px",
+                      "section-gap": "80px",
+                      "container-max": "1200px",
+                      "stack-lg": "32px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "body-md": ["Montserrat", "sans-serif"],
+                      "caption": ["Montserrat", "sans-serif"],
+                      "body-lg": ["Montserrat", "sans-serif"],
+                      "label-bold": ["Montserrat", "sans-serif"],
+                      "headline-display": ["Libre Caslon Text", "serif"],
+                      "headline-lg": ["Libre Caslon Text", "serif"],
+                      "headline-lg-mobile": ["Libre Caslon Text", "serif"],
+                      "headline-md": ["Libre Caslon Text", "serif"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "caption": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-bold": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-display": ["48px", {"lineHeight": "56px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+
+    <style>
+        :root {
+            --campaign-primary: #0a1f44;
+            --campaign-primary-dark: #00081e;
+            --campaign-accent: #d91e36;
+            --campaign-gold: #C5A059;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill-1 {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300081e' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-primary text-on-primary font-label-bold uppercase w-full top-0 border-b border-heritage-gold shadow-md z-50 sticky">
+<div class="flex justify-between items-center px-margin-desktop py-4 w-full max-w-container-max mx-auto md:px-margin-desktop px-margin-mobile">
+<div class="font-headline-md text-heritage-gold font-bold flex items-center gap-2">
+<span class="material-symbols-outlined icon-fill-1 text-heritage-gold text-3xl" data-icon="gavel">gavel</span>
+<span>{{CANDIDATE_NAME}}</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Meet {{CANDIDATE_FIRST}}</a>
+<a class="text-heritage-gold border-b-2 border-heritage-gold pb-1 scale-95 active:scale-90 transition-transform" href="#">Experience</a>
+<a class="text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Platform</a>
+<a class="text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Get Involved</a>
+</nav>
+<a class="hidden md:inline-flex bg-secondary text-on-secondary font-label-bold px-6 py-3 rounded hover:bg-on-secondary-fixed-variant transition-colors shadow-sm hover:shadow-md transform hover:-translate-y-0.5 duration-200 uppercase tracking-wider" href="#">
+                Donate Now
+            </a>
+<button class="md:hidden text-heritage-gold">
+<span class="material-symbols-outlined text-3xl" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Page Header -->
+<section class="bg-primary text-on-primary py-16 relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center opacity-20" data-alt="A subtle, abstract background image featuring waving American flags in deep red, white, and blue hues. The image should be darkened and desaturated to serve as a moody, patriotic backdrop for a political campaign website header. The lighting is dramatic but soft, ensuring text placed over it remains legible. High-end, professional photography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4tkwaVZ1b1rCsMU8wd0wzNBT5TawZApCOfdUgf5_wGAHyOA48uG1nXAHQ2xqcSS9h2Bb8AIlqq6_Sf7ZUoZNHmhZh2VdSg3O49Fxz-nkdqOcEokmFMgGom7pwNRvpUl6XjSzZtQQw04N7Q1_ojxaZFYsAMpl1Kqec1uvsX_6yMAN4_UQ8p4mTvPH7eYb5IOOpaCBkFudsyIBvbldLs57kwSLLb8yNUAwS_89bPJKb8b06KeDjXuur')"></div>
+<div class="relative max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+<h1 class="font-headline-display text-headline-lg-mobile md:text-headline-display text-heritage-gold mb-4">Unmatched Legal Experience</h1>
+<p class="font-body-lg text-body-lg max-w-2xl mx-auto opacity-90">Over 25 years of criminal trial experience. Litigating thousands of cases to ensure justice is swift, fair, and decisive.</p>
+</div>
+</section>
+<!-- Experience Grid -->
+<section class="py-section-gap max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-16 items-start">
+<div class="md:col-span-5 relative">
+<div class="rounded-lg overflow-hidden border border-heritage-gold shadow-lg">
+<div class="bg-cover bg-center w-full aspect-[3/4]" data-alt="A professional portrait photograph of {{CANDIDATE_NAME}}, a judicial candidate. She is a woman with blonde hair, wearing dark framed glasses and a black professional outfit with a subtle pattern or brooch. She has a confident, warm smile and is looking directly at the camera. The background is a solid, deep navy blue (var(--campaign-primary-dark)) to match the campaign's color palette. The lighting is studio quality, highlighting her features softly but professionally." style="background-image: url('{{CANDIDATE_PHOTO}}')"></div>
+</div>
+<div class="absolute -bottom-6 -right-6 bg-secondary text-on-secondary p-4 rounded shadow-lg border border-neutral-white">
+<span class="block font-headline-md text-headline-md font-bold mb-1 text-center">25+</span>
+<span class="block font-label-bold text-label-bold text-center text-xs uppercase tracking-widest">Years Experience</span>
+</div>
+</div>
+<div class="md:col-span-7 flex flex-col gap-8 pt-8 md:pt-0">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-6 border-b border-surface-variant pb-2">The Expertise Our Courts Need</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                            With over two decades in the courtroom, {{CANDIDATE_NAME}} has seen the justice system from every angle. Her extensive career encompasses a wide array of complex cases, ensuring she is fully prepared to handle the diverse docket of {{OFFICE_TITLE}}.
+                        </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Prosecution Card -->
+<div class="bg-neutral-white p-6 rounded border border-surface-variant shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="balance">balance</span>
+<h3 class="font-headline-md text-headline-md text-primary">{{PLATFORM_TITLE_1}}</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+{{PLATFORM_DESC_1}}
+</p>
+</div>
+<!-- Defense Card -->
+<div class="bg-neutral-white p-6 rounded border border-surface-variant shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="shield">shield</span>
+<h3 class="font-headline-md text-headline-md text-primary">{{PLATFORM_TITLE_2}}</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+{{PLATFORM_DESC_2}}
+</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Case Types Bento Box -->
+<div class="mt-24">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary text-center mb-12">Comprehensive Case Experience</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Feature Box 1 -->
+<div class="bg-primary text-on-primary p-8 rounded-lg shadow-md col-span-1 md:col-span-2 relative overflow-hidden">
+<div class="relative z-10">
+<div class="w-12 h-12 bg-heritage-gold rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="warning">warning</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-heritage-gold mb-3">{{PLATFORM_TITLE_3}}</h4>
+<p class="font-body-md text-body-md opacity-90 mb-4 max-w-xl">
+{{PLATFORM_DESC_3}}
+</p>
+<ul class="space-y-2 mt-6">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm mt-1" data-icon="check_circle">check_circle</span>
+<span>Intoxication Manslaughter</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm mt-1" data-icon="check_circle">check_circle</span>
+<span>Aggravated Assaults</span>
+</li>
+</ul>
+</div>
+<span class="material-symbols-outlined absolute -bottom-10 -right-10 text-[180px] text-on-primary opacity-5" data-icon="gavel">gavel</span>
+</div>
+<!-- Feature Box 2 -->
+<div class="bg-surface-container-high p-8 rounded-lg border border-surface-variant shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 bg-secondary rounded flex items-center justify-center mb-4 text-on-secondary">
+<span class="material-symbols-outlined" data-icon="local_police">local_police</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-primary mb-3">{{PLATFORM_TITLE_4}}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-4">
+{{PLATFORM_DESC_4}}
+</p>
+</div>
+<div class="text-secondary font-label-bold uppercase text-xs tracking-wide">Felony &amp; Misdemeanor</div>
+</div>
+<!-- Feature Box 3 -->
+<div class="bg-neutral-white p-8 rounded-lg border border-surface-variant shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-heritage-gold text-2xl" data-icon="request_quote">request_quote</span>
+<h4 class="font-headline-md text-headline-md text-primary">{{PLATFORM_TITLE_5}}</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-4">
+{{PLATFORM_DESC_5}}
+</p>
+</div>
+<!-- Feature Box 4 -->
+<div class="bg-neutral-white p-8 rounded-lg border border-surface-variant shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="vpn_key">vpn_key</span>
+<h4 class="font-headline-md text-headline-md text-primary">{{PLATFORM_TITLE_6}}</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-4">
+{{PLATFORM_DESC_6}}
+</p>
+</div>
+<!-- Feature Box 5 -->
+<div class="bg-neutral-white p-8 rounded-lg border border-surface-variant shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="public">public</span>
+<h4 class="font-headline-md text-headline-md text-primary">{{PLATFORM_TITLE_7}}</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-4">
+{{PLATFORM_DESC_7}}
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Call to Action Section -->
+<section class="bg-surface-container-low py-16 border-y border-surface-variant">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="max-w-xl">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">Join the Campaign</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">
+                        Stay updated on campaign events, volunteer opportunities, and news. Scan the QR code or sign up below to get involved in electing a fair and decisive judge for {{OFFICE_TITLE}}.
+                    </p>
+<form class="flex flex-col sm:flex-row gap-4">
+<input class="flex-grow bg-neutral-white border border-outline px-4 py-3 rounded focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body-md" placeholder="Email Address" type="email"/>
+<button class="bg-primary text-on-primary font-label-bold px-8 py-3 rounded hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm uppercase tracking-wider whitespace-nowrap" type="button">
+                            Subscribe
+                        </button>
+</form>
+</div>
+<div class="flex flex-col items-center gap-4 bg-neutral-white p-6 rounded-xl shadow-md border border-surface-variant">
+<div class="w-48 h-48 bg-surface-container flex items-center justify-center rounded">
+<img alt="QR Code for campaign updates" class="w-full h-full object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4VXIFJmBgHsE7QMNcv80vZ-Mtl5LbikNxRggFlvPatwG3RjFesbxqJWb45GsZlIdk1zTMk_HIIYD5wWIJZK8nMIxLl_vmvmnjBwpVLm7xCYg-7k0crYohSPVkaid1bYAcH7CBcF4lGA0YvuKhcEzEHuIk7gmeiDSoxM8rWo3KQ66RnFr_i1a_DS2yE9HpDqBoautFHwa3pnCw4gramYPmqmyOiHraTG5-zka9cVJOtJCRJoPuYVSsFVLbIp8fJqgEpg"/>
+</div>
+<span class="font-label-bold text-label-bold text-primary uppercase tracking-wider text-xs">Scan to Connect</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-on-primary font-caption flex flex-col items-center gap-stack-md py-stack-lg px-margin-desktop w-full border-t border-heritage-gold mt-auto">
+<div class="font-headline-md text-headline-md text-heritage-gold mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined icon-fill-1 text-heritage-gold" data-icon="gavel">gavel</span>
+             {{CANDIDATE_NAME}}
+        </div>
+<div class="flex gap-6 mb-4">
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-bold uppercase tracking-wider text-xs" href="#">Legal Disclosures</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-bold uppercase tracking-wider text-xs" href="mailto:{{CONTACT_EMAIL}}">Contact Email</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors font-bold uppercase tracking-wider text-xs" href="#">Privacy Policy</a>
+</div>
+<p class="text-center opacity-60 text-xs max-w-2xl">
+            © 2024 Pol. Adv. Paid for by the {{CANDIDATE_NAME}} campaign. Erica Gregory, Treas.
+        </p>
+</footer>
+</body></html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{CANDIDATE_NAME}} - {{OFFICE_TITLE}}</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-secondary-container": "#fffbff",
+                            "secondary-fixed-dim": "#ffb3b1",
+                            "on-surface-variant": "#44464e",
+                            "tertiary": "#150500",
+                            "on-primary-fixed": "#041a3f",
+                            "surface-container-high": "#e9e7eb",
+                            "inverse-on-surface": "#f2f0f4",
+                            "legal-gray": "#4A4A4A",
+                            "secondary": "var(--campaign-accent)",
+                            "primary-fixed": "#d9e2ff",
+                            "on-secondary": "#ffffff",
+                            "surface-bright": "#fbf8fc",
+                            "surface-container": "#efedf1",
+                            "on-tertiary-fixed-variant": "#673c1e",
+                            "secondary-fixed": "#ffdad8",
+                            "tertiary-fixed-dim": "#f8b992",
+                            "inverse-primary": "#b4c6f4",
+                            "on-tertiary-container": "#b37c59",
+                            "outline-variant": "#c5c6cf",
+                            "primary": "var(--campaign-primary-dark)",
+                            "on-secondary-fixed-variant": "#92001c",
+                            "on-error-container": "#93000a",
+                            "on-tertiary-fixed": "#311300",
+                            "surface": "#fbf8fc",
+                            "tertiary-fixed": "#ffdbc7",
+                            "surface-container-highest": "#e4e2e5",
+                            "surface-container-lowest": "#ffffff",
+                            "on-secondary-fixed": "#410007",
+                            "error-container": "#ffdad6",
+                            "surface-variant": "#e4e2e5",
+                            "tertiary-container": "#391700",
+                            "primary-fixed-dim": "#b4c6f4",
+                            "surface-tint": "#4c5e86",
+                            "background": "#fbf8fc",
+                            "on-primary": "#ffffff",
+                            "outline": "#75777f",
+                            "on-tertiary": "#ffffff",
+                            "neutral-white": "#FFFFFF",
+                            "on-primary-container": "#7687b2",
+                            "error": "#ba1a1a",
+                            "primary-container": "var(--campaign-primary)",
+                            "heritage-gold": "var(--campaign-gold)",
+                            "surface-container-low": "#f5f3f7",
+                            "inverse-surface": "#303033",
+                            "on-error": "#ffffff",
+                            "surface-dim": "#dbd9dd",
+                            "secondary-container": "#e1253b",
+                            "on-background": "#1b1b1e",
+                            "on-primary-fixed-variant": "#34466d",
+                            "on-surface": "#1b1b1e"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "spacing": {
+                            "margin-desktop": "64px",
+                            "container-max": "1200px",
+                            "gutter": "24px",
+                            "section-gap": "80px",
+                            "stack-sm": "8px",
+                            "stack-lg": "32px",
+                            "stack-md": "16px",
+                            "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                            "caption": [
+                                    "Montserrat"
+                            ],
+                            "headline-lg-mobile": [
+                                    "Libre Caslon Text"
+                            ],
+                            "headline-display": [
+                                    "Libre Caslon Text"
+                            ],
+                            "body-md": [
+                                    "Montserrat"
+                            ],
+                            "headline-md": [
+                                    "Libre Caslon Text"
+                            ],
+                            "label-bold": [
+                                    "Montserrat"
+                            ],
+                            "body-lg": [
+                                    "Montserrat"
+                            ],
+                            "headline-lg": [
+                                    "Libre Caslon Text"
+                            ]
+                    },
+                    "fontSize": {
+                            "caption": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "16px",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "headline-lg-mobile": [
+                                    "28px",
+                                    {
+                                            "lineHeight": "36px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "headline-display": [
+                                    "48px",
+                                    {
+                                            "lineHeight": "56px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "body-md": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "headline-md": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "label-bold": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "letterSpacing": "0.05em",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "body-lg": [
+                                    "18px",
+                                    {
+                                            "lineHeight": "28px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "headline-lg": [
+                                    "32px",
+                                    {
+                                            "lineHeight": "40px",
+                                            "fontWeight": "700"
+                                    }
+                            ]
+                    }
+            },
+                },
+        }
+    </script>
+
+    <style>
+        :root {
+            --campaign-primary: #0a1f44;
+            --campaign-primary-dark: #00081e;
+            --campaign-accent: #d91e36;
+            --campaign-gold: #C5A059;
+        }
+
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-primary dark:bg-primary text-on-primary dark:text-on-primary docked full-width top-0 border-b border-heritage-gold shadow-md flex justify-between items-center px-margin-desktop py-4 w-full max-w-container-max mx-auto hidden md:flex z-50">
+<div class="font-headline-md text-headline-md font-bold text-heritage-gold dark:text-heritage-gold">
+            {{CANDIDATE_NAME}}
+        </div>
+<div class="flex gap-gutter items-center font-label-bold text-label-bold uppercase">
+<a class="text-on-primary dark:text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Meet {{CANDIDATE_FIRST}}</a>
+<a class="text-on-primary dark:text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Experience</a>
+<a class="text-on-primary dark:text-on-primary opacity-80 hover:opacity-100 hover:text-heritage-gold transition-colors duration-200" href="#">Platform</a>
+<a class="text-heritage-gold border-b-2 border-heritage-gold pb-1 hover:text-heritage-gold transition-colors duration-200" href="#">Get Involved</a>
+</div>
+<button class="bg-secondary text-on-secondary font-label-bold text-label-bold uppercase px-6 py-2 rounded scale-95 active:scale-90 transition-transform shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)]">
+            Donate Now
+        </button>
+</nav>
+<!-- Mobile Nav (Simplified for demonstration) -->
+<nav class="bg-primary text-on-primary w-full p-4 flex md:hidden justify-between items-center z-50 sticky top-0 border-b border-heritage-gold">
+<div class="font-headline-md text-headline-md font-bold text-heritage-gold">{{CANDIDATE_NAME}}</div>
+<button><span class="material-symbols-outlined">menu</span></button>
+</nav>
+<main class="flex-grow flex flex-col items-center w-full">
+<!-- Hero Section -->
+<section class="w-full bg-primary text-on-primary py-section-gap px-margin-mobile md:px-margin-desktop relative overflow-hidden flex flex-col items-center text-center">
+<div class="absolute inset-0 opacity-20 pointer-events-none" data-alt="Abstract geometric pattern of scales of justice and legal gavels in a very subtle, low-contrast navy blue design, providing a dignified and institutional background texture." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBOLPEeP00e5anymToxv3sMhc1iNGnhg8reRX6tjGreemW0qZfe_WjQeTnSUD93wjlWqKf2BEGx4jKVniJa5bZHeNYRV7xdV2PNroV89p8ESezCzSbZ9F1V02Q3OPhPag7XNj12D4HiDpaNp_e0NlIiyYVvwbvXo40w63ofnxm0z1rm41Fb9THCjGa1gRBh-axEmzHRj9k25rqy7BKEf8fh_AVXpBtw8Zy6aFZhTIMVQG1_sUH4ST0B')"></div>
+<div class="max-w-container-max z-10 space-y-stack-md">
+<h1 class="font-headline-display text-headline-lg-mobile md:text-headline-display text-heritage-gold mb-stack-sm">Campaign Events &amp; Appearances</h1>
+<p class="font-body-lg text-body-lg max-w-2xl mx-auto opacity-90">Join {{CANDIDATE_FIRST}} in the community. See where she'll be next and get involved in the movement for fair, experienced leadership.</p>
+</div>
+</section>
+<!-- Events Container -->
+<section class="w-full max-w-container-max px-margin-mobile md:px-margin-desktop py-section-gap grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Calendar View (Left/Top) -->
+<div class="lg:col-span-8 bg-surface-container-lowest border border-legal-gray/20 rounded shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-primary">October 2024</h2>
+<div class="flex gap-2">
+<button class="p-2 border border-legal-gray/30 rounded text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 border border-legal-gray/30 rounded text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-2 text-center mb-2 font-label-bold text-label-bold text-legal-gray uppercase">
+<div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Week 1 -->
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray opacity-50">29</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray opacity-50">30</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">1</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray relative group cursor-pointer hover:border-secondary transition-colors">
+                        2
+                        <div class="absolute bottom-1 left-1 right-1 bg-primary text-on-primary text-[10px] p-0.5 truncate rounded">Town Hall</div>
+</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">3</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">4</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">5</div>
+<!-- Week 2 -->
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">6</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">7</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">8</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">9</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">10</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray relative group cursor-pointer hover:border-secondary transition-colors">
+                        11
+                        <div class="absolute bottom-1 left-1 right-1 bg-secondary text-on-secondary text-[10px] p-0.5 truncate rounded">Mixer</div>
+</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">12</div>
+<!-- Week 3 -->
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">13</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">14</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray relative bg-primary-fixed/20 border-primary font-bold text-primary">15</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">16</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">17</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">18</div>
+<div class="aspect-square border border-surface-container-high p-1 text-right text-sm text-legal-gray">19</div>
+</div>
+</div>
+<!-- Event List (Right/Bottom) -->
+<div class="lg:col-span-4 flex flex-col gap-stack-lg">
+<h3 class="font-headline-md text-headline-md text-primary border-b border-legal-gray/20 pb-2">Upcoming Events</h3>
+<!-- Event Card 1 -->
+<div class="bg-surface-container-lowest border border-legal-gray/20 rounded shadow-sm p-5 hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary group-hover:w-2 transition-all"></div>
+<div class="mb-2">
+<span class="font-label-bold text-label-bold text-secondary uppercase tracking-wider text-xs">Oct 2, 2024</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-bold text-primary mb-1">Community Town Hall</h4>
+<div class="flex items-center gap-2 text-legal-gray font-body-md text-sm mb-1">
+<span class="material-symbols-outlined text-sm">schedule</span> 6:00 PM - 8:00 PM
+                    </div>
+<div class="flex items-center gap-2 text-legal-gray font-body-md text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span> San Antonio Public Library
+                    </div>
+<button class="w-full py-2 border border-primary text-primary font-label-bold text-label-bold uppercase rounded hover:bg-primary hover:text-on-primary transition-colors">
+                        RSVP
+                    </button>
+</div>
+<!-- Event Card 2 -->
+<div class="bg-surface-container-lowest border border-legal-gray/20 rounded shadow-sm p-5 hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-heritage-gold group-hover:w-2 transition-all"></div>
+<div class="mb-2">
+<span class="font-label-bold text-label-bold text-heritage-gold uppercase tracking-wider text-xs">Oct 11, 2024</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-bold text-primary mb-1">Legal Professionals Mixer</h4>
+<div class="flex items-center gap-2 text-legal-gray font-body-md text-sm mb-1">
+<span class="material-symbols-outlined text-sm">schedule</span> 5:30 PM - 7:30 PM
+                    </div>
+<div class="flex items-center gap-2 text-legal-gray font-body-md text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span> Downtown Bar Association
+                    </div>
+<button class="w-full py-2 border border-primary text-primary font-label-bold text-label-bold uppercase rounded hover:bg-primary hover:text-on-primary transition-colors">
+                        RSVP
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-primary text-on-primary dark:text-on-primary full-width bottom-0 border-t border-heritage-gold flex flex-col items-center gap-stack-md py-stack-lg px-margin-desktop w-full">
+<div class="font-headline-md text-headline-md text-heritage-gold">
+            {{CANDIDATE_NAME}}
+        </div>
+<div class="flex gap-gutter items-center font-caption text-caption">
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors" href="#">Legal Disclosures</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors" href="#">Contact Email</a>
+<a class="text-on-primary opacity-70 hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+</div>
+<div class="font-caption text-caption text-on-primary opacity-70 text-center mt-4">
+            © 2024 Pol. Adv. Paid for by the {{CANDIDATE_NAME}} campaign. Erica Gregory, Treas.
+        </div>
+</footer>
+</body></html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>L'ELITE PURE MINIMALIST - The Art of Hair</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-primary-fixed": "#1b1b1b",
+                    "inverse-surface": "#2f3131",
+                    "tertiary-container": "#1b1b1b",
+                    "surface-container": "#eeeeee",
+                    "on-tertiary-fixed": "#1b1b1b",
+                    "surface": "#f9f9f9",
+                    "surface-tint": "#5e5e5e",
+                    "outline-variant": "#cfc4c5",
+                    "clinical-grey": "#D1D1D1",
+                    "on-surface-variant": "#4c4546",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#c6c6c6",
+                    "on-surface": "#1a1c1c",
+                    "inverse-primary": "#c6c6c6",
+                    "surface-container-highest": "#e2e2e2",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#848484",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#000000",
+                    "secondary-fixed": "#e2e2e2",
+                    "on-primary-container": "#848484",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#e2e2e2",
+                    "divider-line": "#EAEAEA",
+                    "surface-container-high": "#e8e8e8",
+                    "primary-container": "#1b1b1b",
+                    "on-tertiary-fixed-variant": "#474747",
+                    "on-secondary-container": "#5f6161",
+                    "surface-dim": "#dadada",
+                    "surface-bright": "#f9f9f9",
+                    "inverse-on-surface": "#f0f1f1",
+                    "on-secondary-fixed-variant": "#454747",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#e2e2e2",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-primary-fixed-variant": "#474747",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-low": "#f3f3f4",
+                    "primary-fixed-dim": "#c6c6c6",
+                    "on-error": "#ffffff",
+                    "secondary": "#5d5f5f",
+                    "primary": "#000000",
+                    "on-background": "#1a1c1c",
+                    "secondary-container": "#dcdddd",
+                    "background": "#f9f9f9",
+                    "on-primary": "#ffffff",
+                    "outline": "#7e7576"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "80px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "section-gap": "120px",
+                    "margin-mobile": "24px",
+                    "element-gap": "32px"
+            },
+            "fontFamily": {
+                    "headline-xl": [
+                            "Montserrat"
+                    ],
+                    "label-caps": [
+                            "Montserrat"
+                    ],
+                    "headline-lg-mobile": [
+                            "Montserrat"
+                    ],
+                    "body-md": [
+                            "Montserrat"
+                    ],
+                    "headline-md": [
+                            "Montserrat"
+                    ],
+                    "headline-lg": [
+                            "Montserrat"
+                    ],
+                    "label-sm": [
+                            "Montserrat"
+                    ],
+                    "body-lg": [
+                            "Montserrat"
+                    ]
+            },
+            "fontSize": {
+                    "headline-xl": [
+                            "64px",
+                            {
+                                    "lineHeight": "72px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.2em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "15px",
+                            {
+                                    "lineHeight": "24px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-sm": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        
+        body {
+            background-color: #FFFFFF; /* Override to stark white for the main canvas */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-white text-on-surface antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-inverse-primary docked full-width top-0 border-b border-divider-line flat no shadows fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20">
+<button aria-label="Menu" class="text-primary dark:text-inverse-primary hover:opacity-70 transition-opacity duration-200 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="text-headline-md font-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">
+            L'ELITE
+        </div>
+<div class="w-6"></div> <!-- Spacer to center the brand name -->
+</header>
+<main class="flex-grow pt-20 flex flex-col">
+<!-- Hero Section -->
+<section class="w-full px-margin-mobile flex flex-col items-center justify-center py-section-gap min-h-[618px]">
+<!-- Framed Portrait -->
+<div class="border border-primary p-2 mb-element-gap">
+<img alt="High Fashion Haircut" class="w-[200px] h-[250px] object-cover" data-alt="A striking black and white portrait of a high-fashion architectural haircut. The lighting is harsh and clinical, casting sharp shadows. The model is positioned against a stark white studio background, emphasizing the precision and geometric lines of the hair style. The overall aesthetic is ultra-modern, minimalist, and deeply professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFoyJKBPKj7_pSU4uNjBo8c7irbk_WmvrjrgF2FbgF05vLvg8AjoD3pL2cdWiMuZG0Ik6wKBd2s9iZg6z4HbYcQj8onMieU6asnvccTqFsWj93wV41j-kUN-_aDnFxL8BaBo21mypaEBBftSuh8RZZu-1j88zFVjhUQ41pcnQOnE84M3_UHOGExzR8aobPmAa5boGcrARbRzLaCXDwoUmzAUA7veSGKXcYKxqI3JUltzfJXkZXlTQ1N2BvXfF4NDWa9BZz2qhunBIa"/>
+</div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary text-center mb-base">
+                The Art of Hair
+            </h1>
+<p class="text-body-md font-body-md text-secondary text-center max-w-[280px]">
+                Precision styling in a clinical environment.
+            </p>
+</section>
+<!-- Services Section -->
+<section class="w-full px-margin-mobile flex flex-col py-section-gap">
+<div class="w-full border-t border-primary mb-element-gap"></div>
+<ul class="flex flex-col">
+<li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
+<a class="flex justify-between items-center w-full group" href="#">
+<span class="text-label-caps font-label-caps text-primary tracking-widest">BALAYAGE</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</li>
+<li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
+<a class="flex justify-between items-center w-full group" href="#">
+<span class="text-label-caps font-label-caps text-primary tracking-widest">PRECISION CUTTING</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</li>
+<li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
+<a class="flex justify-between items-center w-full group" href="#">
+<span class="text-label-caps font-label-caps text-primary tracking-widest">EXTENSIONS</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</li>
+<li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
+<a class="flex justify-between items-center w-full group" href="#">
+<span class="text-label-caps font-label-caps text-primary tracking-widest">COLOR CORRECTION</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</li>
+</ul>
+</section>
+<!-- Testimonials Section -->
+<section class="w-full bg-surface py-section-gap px-margin-mobile flex flex-col items-center justify-center border-y border-divider-line">
+<div class="max-w-[320px] text-center">
+<p class="text-body-lg font-body-lg text-primary italic mb-base">
+                    "A completely transformative experience. The level of detail and understanding of facial geometry is unparalleled."
+                </p>
+<span class="text-label-sm font-label-sm text-secondary tracking-widest">— E. V.</span>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface dark:bg-surface text-primary dark:text-inverse-primary full-width border-t border-divider-line flat no shadows w-full py-base px-margin-mobile md:px-margin-desktop mt-section-gap flex flex-col md:flex-row justify-between items-center gap-base">
+<div class="flex flex-col items-center md:items-start gap-4 w-full">
+<div class="text-label-caps font-label-caps font-bold text-primary mb-4 md:mb-0">
+                L'ELITE
+            </div>
+<nav class="flex flex-wrap justify-center md:justify-start gap-gutter w-full mb-8 md:mb-0">
+<a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Services</a>
+<a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Artists</a>
+<a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Booking</a>
+<a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Legal</a>
+</nav>
+<div class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim mt-4 w-full text-center md:text-left">
+                © 2024 L'ELITE PURE MINIMALIST. ALL RIGHTS RESERVED.
+            </div>
+</div>
+</footer>
+</body></html>
