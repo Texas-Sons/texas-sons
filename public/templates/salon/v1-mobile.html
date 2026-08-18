@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Midnight Luxe | Salon</title>
+<title>{{SITE_TITLE}}</title>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -20,51 +20,51 @@
         theme: {
           extend: {
             "colors": {
-                    "on-surface": "#1a1c1c",
-                    "surface-container": "#eeeeee",
+                    "on-surface": "var(--brand-on-surface)",
+                    "surface-container": "var(--brand-surface-container)",
                     "on-primary-fixed-variant": "#3a4953",
                     "secondary-fixed": "#ffe088",
                     "inverse-surface": "#2f3131",
                     "tertiary-fixed": "#e4e4cc",
-                    "surface-container-high": "#e8e8e8",
-                    "on-secondary": "#ffffff",
-                    "outline-variant": "#c3c7cb",
-                    "on-primary-container": "#a2b2be",
+                    "surface-container-high": "var(--brand-surface-container-high)",
+                    "on-secondary": "var(--brand-on-secondary)",
+                    "outline-variant": "var(--brand-outline-variant)",
+                    "on-primary-container": "var(--brand-on-primary-container)",
                     "tertiary-fixed-dim": "#c8c8b0",
                     "primary-fixed-dim": "#b9c9d5",
                     "surface-tint": "#51606b",
                     "on-secondary-fixed-variant": "#574500",
                     "on-secondary-container": "#745c00",
-                    "on-background": "#1a1c1c",
-                    "on-primary": "#ffffff",
-                    "on-surface-variant": "#43474b",
+                    "on-background": "var(--brand-on-background)",
+                    "on-primary": "var(--brand-on-primary)",
+                    "on-surface-variant": "var(--brand-on-surface-variant)",
                     "on-tertiary-fixed": "#1b1d0e",
                     "on-tertiary-fixed-variant": "#474836",
                     "inverse-primary": "#b9c9d5",
-                    "primary": "#202f38",
+                    "primary": "var(--brand-primary)",
                     "inverse-on-surface": "#f0f1f1",
                     "on-tertiary-container": "#b0b19a",
                     "on-secondary-fixed": "#241a00",
                     "surface-dim": "#dadada",
                     "surface-container-lowest": "#ffffff",
-                    "secondary-container": "#fed65b",
+                    "secondary-container": "var(--brand-secondary-container)",
                     "on-error": "#ffffff",
                     "surface-variant": "#e2e2e2",
                     "error-container": "#ffdad6",
                     "tertiary": "#2c2e1e",
-                    "secondary": "#735c00",
+                    "secondary": "var(--brand-secondary)",
                     "tertiary-container": "#434432",
-                    "primary-container": "#36454f",
+                    "primary-container": "var(--brand-primary-container)",
                     "primary-fixed": "#d5e5f1",
                     "on-primary-fixed": "#0e1d26",
                     "on-tertiary": "#ffffff",
                     "secondary-fixed-dim": "#e9c349",
-                    "error": "#ba1a1a",
-                    "background": "#f9f9f9",
-                    "surface-container-low": "#f3f3f4",
-                    "surface-container-highest": "#e2e2e2",
-                    "outline": "#73777b",
-                    "surface": "#f9f9f9",
+                    "error": "var(--brand-error)",
+                    "background": "var(--brand-background)",
+                    "surface-container-low": "var(--brand-surface-container-low)",
+                    "surface-container-highest": "var(--brand-surface-container-highest)",
+                    "outline": "var(--brand-outline)",
+                    "surface": "var(--brand-surface)",
                     "on-error-container": "#93000a",
                     "surface-bright": "#f9f9f9"
             },
@@ -179,6 +179,27 @@
       }
     </script>
 <style>
+        :root {
+            --brand-primary: #202f38;
+            --brand-primary-container: #36454f;
+            --brand-on-primary: #ffffff;
+            --brand-on-primary-container: #a2b2be;
+            --brand-secondary: #735c00;
+            --brand-secondary-container: #fed65b;
+            --brand-on-secondary: #ffffff;
+            --brand-surface: #f9f9f9;
+            --brand-surface-container: #eeeeee;
+            --brand-surface-container-low: #f3f3f4;
+            --brand-surface-container-high: #e8e8e8;
+            --brand-surface-container-highest: #e2e2e2;
+            --brand-on-surface: #1a1c1c;
+            --brand-on-surface-variant: #43474b;
+            --brand-background: #f9f9f9;
+            --brand-on-background: #1a1c1c;
+            --brand-outline: #73777b;
+            --brand-outline-variant: #c3c7cb;
+            --brand-error: #ba1a1a;
+        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -198,7 +219,7 @@
 <button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-primary dark:text-on-primary hover:text-secondary-fixed transition-colors scale-95 duration-200">
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
-<h1 class="font-headline-sm text-headline-sm-mobile font-headline-md tracking-widest text-secondary dark:text-secondary-fixed">MIDNIGHT LUXE</h1>
+<h1 class="font-headline-sm text-headline-sm-mobile font-headline-md tracking-widest text-secondary dark:text-secondary-fixed">{{SITE_NAME}}</h1>
 <button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-primary dark:text-on-primary hover:text-secondary-fixed transition-colors scale-95 duration-200">
 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
 </button>
@@ -208,7 +229,7 @@
 <!-- Hero Section -->
 <section class="relative w-full h-[530px] flex items-end pb-xxl justify-center overflow-hidden">
 <!-- Background Image -->
-<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A cinematic, high-fashion portrait of a woman with stunning, perfectly styled balayage hair. The lighting is moody and dramatic, with deep charcoal shadows and warm champagne gold highlights reflecting off the glossy hair strands. The overall aesthetic is extremely expensive luxury salon style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBkDlcO1MaXnnIec5VXPlHuE9r7WwrigR9A88rrcgt-BqR29OTT99tCdFO5rUxI8L0JX0iuXKj4unuWC1yhxEuZ1xURuLEDBflh1pJqS8UmKzjJ4Z9mbB3BXwtqx5sYJfBnl8axpaVR9fj8ZuJuQvraiV4RL6fiGcjzoq9aTEjkPU8DdO-4tnv-RxAhdZih23Z1Jst6Uc0qayx-g98Sm-K1ir2wQepAZ3LgHQmpeFjHacCaghtvcj-xf6Z6VgB200DYn81HnEAbptWR')">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A cinematic, high-fashion portrait of a woman with stunning, perfectly styled balayage hair. The lighting is moody and dramatic, with deep charcoal shadows and warm champagne gold highlights reflecting off the glossy hair strands. The overall aesthetic is extremely expensive luxury salon style." style="background-image: url('{{HERO_IMAGE}}')">
 <!-- Gradient Overlay for legibility and mood -->
 <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent"></div>
 </div>
@@ -228,18 +249,18 @@
 <div class="flex flex-col gap-lg">
 <!-- Service Item 1 -->
 <div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
-<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Signature Balayage</span>
-<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $250</span>
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">{{SERVICE_1_NAME}}</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">{{SERVICE_1_PRICE}}</span>
 </div>
 <!-- Service Item 2 -->
 <div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
-<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Color Correction</span>
-<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $300</span>
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">{{SERVICE_2_NAME}}</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">{{SERVICE_2_PRICE}}</span>
 </div>
 <!-- Service Item 3 -->
 <div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
-<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Gloss &amp; Tone</span>
-<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $85</span>
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">{{SERVICE_3_NAME}}</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">{{SERVICE_3_PRICE}}</span>
 </div>
 </div>
 </section>
@@ -250,15 +271,15 @@
 <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-secondary/5 rounded-full blur-3xl"></div>
 <span class="material-symbols-outlined text-secondary-fixed-dim/40 mb-md" data-icon="format_quote" style="font-size: 48px;">format_quote</span>
 <p class="font-headline-sm text-headline-sm-mobile text-on-primary-container italic max-w-sm">
-                "The most transformative color experience I've ever had. Absolute perfection in every detail."
+                {{TESTIMONIAL_1_QUOTE}}
             </p>
 </section>
 <!-- Footer -->
 <footer class="bg-primary py-xxl flex flex-col items-center gap-lg border-t border-surface-tint/20">
-<h3 class="font-headline-sm text-secondary tracking-widest text-center">MIDNIGHT LUXE</h3>
+<h3 class="font-headline-sm text-secondary tracking-widest text-center">{{SITE_NAME}}</h3>
 <div class="flex flex-col items-center gap-xs text-on-primary-container font-label-caps text-label-caps opacity-70">
-<p>123 LUXURY BLVD</p>
-<p>SAN ANTONIO, TX 78205</p>
+<p>{{BUSINESS_ADDRESS_LINE_1}}</p>
+<p>{{BUSINESS_ADDRESS_LINE_2}}</p>
 </div>
 <a class="h-touch-target-min w-touch-target-min flex items-center justify-center text-secondary hover:text-secondary-fixed transition-colors mt-sm" href="#">
 <span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>

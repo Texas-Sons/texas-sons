@@ -3,7 +3,7 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Opalescent Color Studio - Midnight Luxe</title>
+<title>{{SITE_TITLE}}</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
@@ -13,11 +13,11 @@
             theme: {
                 extend: {
                     colors: {
-                        charcoal: "#1A1A1A",
-                        gold: "#D4AF37",
-                        "gold-hover": "#E5C158",
-                        "warm-white": "#FDFBF7",
-                        "muted-white": "#D1CEC7",
+                        charcoal: "var(--brand-primary)",
+                        gold: "var(--brand-accent)",
+                        "gold-hover": "var(--brand-accent-hover)",
+                        "warm-white": "var(--brand-surface)",
+                        "muted-white": "var(--brand-on-surface-variant)",
                     },
                     fontFamily: {
                         sans: ["Montserrat", "sans-serif"],
@@ -31,6 +31,13 @@
         }
     </script>
 <style>
+        :root {
+            --brand-primary: #1A1A1A;
+            --brand-accent: #D4AF37;
+            --brand-accent-hover: #E5C158;
+            --brand-surface: #FDFBF7;
+            --brand-on-surface-variant: #D1CEC7;
+        }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -47,7 +54,7 @@
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
 <div class="text-xs font-bold tracking-widest text-gold uppercase">
-            Opalescent
+            {{SITE_NAME}}
         </div>
 <button aria-label="Book" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-warm-white hover:text-gold transition-colors">
 <span class="material-symbols-outlined" data-icon="spa">spa</span>
@@ -56,7 +63,7 @@
 <!-- Navigation Drawer -->
 <div class="fixed inset-y-0 left-0 z-[60] h-full w-4/5 max-w-sm bg-charcoal shadow-2xl border-r border-white/10 flex flex-col p-8 space-y-8 transform -translate-x-full transition-transform duration-500 ease-in-out" id="nav-drawer">
 <div class="flex justify-between items-center mb-8">
-<h2 class="text-2xl font-serif text-gold">Opalescent</h2>
+<h2 class="text-2xl font-serif text-gold">{{SITE_NAME}}</h2>
 <button class="min-h-[44px] min-w-[44px] text-muted-white hover:text-gold transition-colors flex items-center justify-center" id="close-drawer">
 <span class="material-symbols-outlined">close</span>
 </button>
@@ -85,15 +92,15 @@
 <!-- Hero Section -->
 <section class="relative w-full h-screen flex items-center justify-center pt-20">
 <div class="absolute inset-0 z-0">
-<img alt="Luxury dark salon interior" class="w-full h-full object-cover object-center" data-alt="A dark, moody, and extremely expensive-looking luxury salon interior. Deep charcoal walls, dramatic ambient lighting, sleek black styling chairs, and subtle champagne gold architectural accents. The atmosphere is intimate, high-end, and exclusive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNg2zmZyeT38mpRjFXxBUKgU6ecQJDmk9NOYzo2nlF0m5j2BlMN2CY3MmLkUb64PSZ7widRseBOEknhPYfMq-bX4Mfy9zWIQwr1WFIWSR7gY8omUSTj3SFJe6Gjllis859jSpmJT53lrlNKBtLmKV-7eSYQ1239G0UfHJa0nyw02sX5WbFrDoA6tlQYXeJYYOeVgPyjBkQwFNdE6mv_1dyTHSth7hWMITg2wHBTglnEhLi0kBW45yvC4rhtOywQoejbQUtrSV74VVA"/>
+<img alt="Luxury dark salon interior" class="w-full h-full object-cover object-center" data-alt="A dark, moody, and extremely expensive-looking luxury salon interior. Deep charcoal walls, dramatic ambient lighting, sleek black styling chairs, and subtle champagne gold architectural accents. The atmosphere is intimate, high-end, and exclusive." src="{{HERO_IMAGE}}"/>
 <div class="absolute inset-0 bg-charcoal/60 backdrop-blur-[1px]"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent"></div>
 </div>
 <div class="relative z-10 flex flex-col items-center justify-center text-center px-6 w-full max-w-4xl mx-auto space-y-12">
 <div class="space-y-6">
-<p class="text-xs md:text-sm font-sans tracking-[0.3em] text-gold uppercase">The Art of Color</p>
+<p class="text-xs md:text-sm font-sans tracking-[0.3em] text-gold uppercase">{{HERO_TAGLINE}}</p>
 <h1 class="text-5xl md:text-7xl lg:text-8xl font-serif text-warm-white leading-tight drop-shadow-2xl">
-                        Elevate Your<br/><i class="text-muted-white">Canvas</i>
+                        {{HERO_HEADLINE_1}}<br/><i class="text-muted-white">{{HERO_HEADLINE_ACCENT}}</i>
 </h1>
 </div>
 <button class="border border-gold text-gold hover:bg-gold hover:text-charcoal font-sans text-sm tracking-[0.2em] uppercase h-14 px-10 rounded-none flex items-center justify-center transition-all duration-300 min-h-[48px]">
@@ -112,31 +119,31 @@
 <!-- Service Item -->
 <a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
 <div class="space-y-2">
-<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Signature Balayage</h3>
-<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">Seamless, hand-painted dimension tailored to your natural fall.</p>
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">{{SERVICE_1_NAME}}</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">{{SERVICE_1_DESC}}</p>
 </div>
 <div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
-                            FROM $350
+                            {{SERVICE_1_PRICE}}
                         </div>
 </a>
 <!-- Service Item -->
 <a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
 <div class="space-y-2">
-<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Color Correction</h3>
-<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">Transformative structural repair and tonal balancing.</p>
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">{{SERVICE_2_NAME}}</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">{{SERVICE_2_DESC}}</p>
 </div>
 <div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
-                            BY CONSULTATION
+                            {{SERVICE_2_PRICE}}
                         </div>
 </a>
 <!-- Service Item -->
 <a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
 <div class="space-y-2">
-<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Gloss &amp; Tone</h3>
-<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">High-shine refinement to restore vibrancy and depth.</p>
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">{{SERVICE_3_NAME}}</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">{{SERVICE_3_DESC}}</p>
 </div>
 <div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
-                            FROM $120
+                            {{SERVICE_3_PRICE}}
                         </div>
 </a>
 </div>
@@ -148,11 +155,11 @@
 <div class="max-w-4xl mx-auto text-center relative z-10">
 <span class="text-gold text-6xl md:text-8xl font-serif opacity-50 block mb-6">"</span>
 <p class="text-3xl md:text-5xl lg:text-6xl font-serif italic text-warm-white leading-relaxed mb-12">
-                    A truly curated experience. The studio is calm, and the colorists are absolute artists with formulation.
+                    {{TESTIMONIAL_1_QUOTE}}
                 </p>
 <div class="flex items-center justify-center space-x-4">
 <div class="w-12 h-[1px] bg-gold"></div>
-<span class="text-xs font-sans tracking-[0.2em] text-muted-white uppercase">Sarah M.</span>
+<span class="text-xs font-sans tracking-[0.2em] text-muted-white uppercase">{{TESTIMONIAL_1_AUTHOR}}</span>
 <div class="w-12 h-[1px] bg-gold"></div>
 </div>
 </div>
@@ -180,7 +187,7 @@
 <!-- Footer -->
 <footer class="w-full bg-charcoal border-t border-white/10 flex flex-col items-center py-24 px-6 space-y-12 text-center">
 <div class="text-sm font-sans font-semibold tracking-[0.3em] text-gold uppercase">
-            Opalescent
+            {{SITE_NAME}}
         </div>
 <div class="flex flex-col md:flex-row md:space-x-16 space-y-6 md:space-y-0">
 <a class="text-sm font-sans tracking-widest text-muted-white hover:text-gold transition-colors uppercase min-h-[44px] flex items-center justify-center" href="#">Contact</a>
@@ -188,7 +195,7 @@
 <a class="text-sm font-sans tracking-widest text-muted-white hover:text-gold transition-colors uppercase min-h-[44px] flex items-center justify-center" href="#">Instagram</a>
 </div>
 <p class="text-xs font-sans tracking-widest text-muted-white/50 uppercase">
-            © 2024 Opalescent. All Rights Reserved.
+            © {{COPYRIGHT_YEAR}} {{SITE_NAME}}. All Rights Reserved.
         </p>
 </footer>
 <script>

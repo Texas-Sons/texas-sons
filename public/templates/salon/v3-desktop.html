@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Opalescent Color Studio</title>
+<title>{{SITE_TITLE}}</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,700&amp;display=swap" rel="stylesheet"/>
@@ -13,55 +13,55 @@
             theme: {
                 extend: {
                     "colors": {
-                        "pearl": "#fbfafd",
-                        "prismatic-pink": "#f3c8d1",
-                        "prismatic-blue": "#c9daf8",
-                        "prismatic-purple": "#e1d5e7",
+                        "pearl": "var(--brand-pearl)",
+                        "prismatic-pink": "var(--brand-prismatic-pink)",
+                        "prismatic-blue": "var(--brand-prismatic-blue)",
+                        "prismatic-purple": "var(--brand-prismatic-purple)",
                         "on-tertiary-fixed-variant": "#474836",
-                        "surface-container-highest": "#e2e2e2",
+                        "surface-container-highest": "var(--brand-surface-container-highest)",
                         "surface-variant": "#e2e2e2",
                         "on-secondary-container": "#745c00",
-                        "surface-container": "#eeeeee",
+                        "surface-container": "var(--brand-surface-container)",
                         "surface-container-lowest": "#ffffff",
                         "secondary-fixed-dim": "#e9c349",
-                        "background": "#fbfafd",
+                        "background": "var(--brand-background)",
                         "surface-bright": "#f9f9f9",
-                        "outline": "#73777b",
+                        "outline": "var(--brand-outline)",
                         "on-tertiary-fixed": "#1b1d0e",
                         "on-secondary-fixed": "#241a00",
-                        "surface-container-low": "#f3f3f4",
+                        "surface-container-low": "var(--brand-surface-container-low)",
                         "tertiary-fixed": "#e4e4cc",
                         "on-tertiary": "#ffffff",
                         "on-primary-fixed-variant": "#3a4953",
-                        "on-secondary": "#ffffff",
+                        "on-secondary": "var(--brand-on-secondary)",
                         "inverse-surface": "#2f3131",
-                        "outline-variant": "#c3c7cb",
+                        "outline-variant": "var(--brand-outline-variant)",
                         "surface-dim": "#dadada",
                         "inverse-on-surface": "#f0f1f1",
-                        "on-surface": "#1a1c1c",
-                        "secondary-container": "#fed65b",
+                        "on-surface": "var(--brand-on-surface)",
+                        "secondary-container": "var(--brand-secondary-container)",
                         "primary-fixed": "#d5e5f1",
                         "secondary-fixed": "#ffe088",
                         "primary-fixed-dim": "#b9c9d5",
-                        "surface-container-high": "#e8e8e8",
+                        "surface-container-high": "var(--brand-surface-container-high)",
                         "surface-tint": "#51606b",
-                        "on-background": "#1a1c1c",
-                        "primary": "#202f38",
+                        "on-background": "var(--brand-on-background)",
+                        "primary": "var(--brand-primary)",
                         "error-container": "#ffdad6",
-                        "on-surface-variant": "#43474b",
+                        "on-surface-variant": "var(--brand-on-surface-variant)",
                         "on-primary-fixed": "#0e1d26",
                         "tertiary-container": "#434432",
                         "on-error": "#ffffff",
                         "on-tertiary-container": "#b0b19a",
                         "inverse-primary": "#b9c9d5",
-                        "surface": "#fbfafd",
-                        "on-primary-container": "#a2b2be",
+                        "surface": "var(--brand-surface)",
+                        "on-primary-container": "var(--brand-on-primary-container)",
                         "on-error-container": "#93000a",
-                        "on-primary": "#ffffff",
-                        "primary-container": "#36454f",
-                        "error": "#ba1a1a",
+                        "on-primary": "var(--brand-on-primary)",
+                        "primary-container": "var(--brand-primary-container)",
+                        "error": "var(--brand-error)",
                         "tertiary-fixed-dim": "#c8c8b0",
-                        "secondary": "#735c00",
+                        "secondary": "var(--brand-secondary)",
                         "tertiary": "#2c2e1e",
                         "on-secondary-fixed-variant": "#574500"
                     },
@@ -111,6 +111,31 @@
         }
     </script>
 <style>
+        :root {
+            --brand-primary: #202f38;
+            --brand-primary-container: #36454f;
+            --brand-on-primary: #ffffff;
+            --brand-on-primary-container: #a2b2be;
+            --brand-secondary: #735c00;
+            --brand-secondary-container: #fed65b;
+            --brand-on-secondary: #ffffff;
+            --brand-surface: #fbfafd;
+            --brand-surface-container: #eeeeee;
+            --brand-surface-container-low: #f3f3f4;
+            --brand-surface-container-high: #e8e8e8;
+            --brand-surface-container-highest: #e2e2e2;
+            --brand-on-surface: #1a1c1c;
+            --brand-on-surface-variant: #43474b;
+            --brand-background: #fbfafd;
+            --brand-on-background: #1a1c1c;
+            --brand-outline: #73777b;
+            --brand-outline-variant: #c3c7cb;
+            --brand-error: #ba1a1a;
+            --brand-pearl: #fbfafd;
+            --brand-prismatic-pink: #f3c8d1;
+            --brand-prismatic-blue: #c9daf8;
+            --brand-prismatic-purple: #e1d5e7;
+        }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -134,7 +159,7 @@
             background: linear-gradient(135deg, rgba(243,200,209,0.3) 0%, rgba(201,218,248,0.3) 50%, rgba(225,213,231,0.3) 100%);
         }
         .text-gradient {
-            background: linear-gradient(to right, #ba1a1a, #36454f);
+            background: linear-gradient(to right, var(--brand-error), var(--brand-primary-container));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -147,7 +172,7 @@
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
 <div class="text-label-caps font-label-caps font-bold tracking-widest text-primary">
-            OPALESCENT
+            {{SITE_NAME}}
         </div>
 <button aria-label="Book" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-primary hover:opacity-70 transition-opacity">
 <span class="material-symbols-outlined" data-icon="spa">spa</span>
@@ -156,7 +181,7 @@
 <!-- Navigation Drawer (Hidden by default, structure for interactivity) -->
 <div class="fixed inset-y-0 left-0 z-[60] h-full w-4/5 max-w-sm rounded-r-none bg-surface-container-low shadow-2xl border-r border-outline-variant/20 flex flex-col p-gutter space-y-md transform -translate-x-full transition-transform duration-300 ease-in-out" id="nav-drawer">
 <div class="flex justify-between items-center mb-xl">
-<h2 class="text-headline-md-mobile font-headline-md text-primary">OPALESCENT</h2>
+<h2 class="text-headline-md-mobile font-headline-md text-primary">{{SITE_NAME}}</h2>
 <button class="min-h-[44px] min-w-[44px] text-on-surface-variant flex items-center justify-center" id="close-drawer">
 <span class="material-symbols-outlined">close</span>
 </button>
@@ -196,17 +221,17 @@
 <!-- Left Content -->
 <div class="relative z-10 w-full md:w-1/2 flex flex-col items-start justify-center px-gutter pt-24 pb-32 md:py-0 md:pl-24 space-y-6">
 <h1 class="text-display-lg-mobile md:text-display-xl font-display-lg text-primary leading-tight">
-                    Curated Color.
+                    {{HERO_HEADLINE_1}}
                     <br/>
-<span class="text-gradient italic font-normal">elevate your canvas.</span>
+<span class="text-gradient italic font-normal">{{HERO_HEADLINE_2}}</span>
 </h1>
 <p class="text-body-lg font-body-lg text-primary-container max-w-md italic lowercase">
-                    an energetic, trend-forward approach to dimensional hair artistry.
+                    {{HERO_TAGLINE}}
                 </p>
 </div>
 <!-- Right Image -->
 <div class="relative z-10 w-full md:w-1/2 h-[50vh] md:h-auto">
-<img alt="Stunning vibrant hair transformation" class="w-full h-full object-cover object-center" data-alt="A stunning high-fashion photograph of a woman with perfectly styled, dimensional balayage hair. The lighting is soft and natural, emphasizing the subtle gold and beige tones in her hair. She is set against a minimalist, bright, and airy salon background with neutral white and soft beige tones. The overall aesthetic is luxurious, professional, and elegant, reflecting a premium boutique salon experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApaFtzvKk8js9Rg_Sgtoz4foPuH5X2n4eMHWCYRNvnB-npQZrFJ-nZ-1hEz77PDl9okQ58nMWLTrka-OpxQFtKLZN8N1rXzdt-eMTLnwmSWpoH-x1dGE5BJSsaUK_90mN7gucawZrtahJe1ItINxNvx9ldUy-2JdkppSFnhioDl3TRxZA15WQXjmTvnWXGzdPYQc0j7YBJtJGTy_iJH3e3sX9q-JA073FrRBozNQ3P0PM_EZx5as83fWt4jNlgald4yYCo1Cm0eKcp"/>
+<img alt="Stunning vibrant hair transformation" class="w-full h-full object-cover object-center" data-alt="A stunning high-fashion photograph of a woman with perfectly styled, dimensional balayage hair. The lighting is soft and natural, emphasizing the subtle gold and beige tones in her hair. She is set against a minimalist, bright, and airy salon background with neutral white and soft beige tones. The overall aesthetic is luxurious, professional, and elegant, reflecting a premium boutique salon experience." src="{{HERO_IMAGE}}"/>
 <div class="absolute inset-0 bg-gradient-to-t from-prismatic-purple/40 to-transparent mix-blend-overlay"></div>
 </div>
 <!-- Overlapping Pill Button -->
@@ -220,8 +245,8 @@
 <!-- Services Section (Glassmorphism Cards) -->
 <section class="py-xxl px-gutter max-w-container-max mx-auto relative z-10 -mt-12 md:-mt-24">
 <div class="text-center mb-xl">
-<h2 class="text-display-lg-mobile md:text-display-lg font-display-lg text-primary">Artistry &amp; Technique</h2>
-<p class="text-body-lg font-body-lg italic lowercase text-on-surface-variant mt-2">our signature offerings</p>
+<h2 class="text-display-lg-mobile md:text-display-lg font-display-lg text-primary">{{SERVICES_TITLE}}</h2>
+<p class="text-body-lg font-body-lg italic lowercase text-on-surface-variant mt-2">{{SERVICES_SUBTITLE}}</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
 <!-- Service Card 1 -->
@@ -229,24 +254,24 @@
 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-prismatic-pink to-prismatic-purple flex items-center justify-center mb-6 shadow-md text-primary">
 <span class="material-symbols-outlined text-3xl" data-icon="brush">brush</span>
 </div>
-<h3 class="text-headline-sm font-headline-sm text-primary mb-3">Dimensional Balayage</h3>
-<p class="text-body-md font-body-md text-on-surface-variant">Seamless, lived-in color designed to grow out flawlessly over months.</p>
+<h3 class="text-headline-sm font-headline-sm text-primary mb-3">{{SERVICE_1_NAME}}</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">{{SERVICE_1_DESC}}</p>
 </div>
 <!-- Service Card 2 -->
 <div class="glass-panel p-8 rounded-4xl flex flex-col items-start hover:-translate-y-2 transition-transform duration-300 mt-0 md:mt-8">
 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-prismatic-blue to-prismatic-pink flex items-center justify-center mb-6 shadow-md text-primary">
 <span class="material-symbols-outlined text-3xl" data-icon="palette">palette</span>
 </div>
-<h3 class="text-headline-sm font-headline-sm text-primary mb-3">Vivid Formulations</h3>
-<p class="text-body-md font-body-md text-on-surface-variant">Custom, artistic color placements ranging from soft pastels to rich, bold hues.</p>
+<h3 class="text-headline-sm font-headline-sm text-primary mb-3">{{SERVICE_2_NAME}}</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">{{SERVICE_2_DESC}}</p>
 </div>
 <!-- Service Card 3 -->
 <div class="glass-panel p-8 rounded-4xl flex flex-col items-start hover:-translate-y-2 transition-transform duration-300 mt-0 md:mt-16">
 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-prismatic-purple to-prismatic-blue flex items-center justify-center mb-6 shadow-md text-primary">
 <span class="material-symbols-outlined text-3xl" data-icon="content_cut">content_cut</span>
 </div>
-<h3 class="text-headline-sm font-headline-sm text-primary mb-3">Sculptural Cutting</h3>
-<p class="text-body-md font-body-md text-on-surface-variant">Precision shaping to enhance your natural texture and complement your color.</p>
+<h3 class="text-headline-sm font-headline-sm text-primary mb-3">{{SERVICE_3_NAME}}</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">{{SERVICE_3_DESC}}</p>
 </div>
 </div>
 </section>
@@ -254,50 +279,50 @@
 <section class="py-xxl px-gutter bg-white relative clip-diagonal-reverse -mt-16 pt-32 pb-40">
 <div class="max-w-container-max mx-auto">
 <div class="text-left mb-xl md:pl-12">
-<h2 class="text-display-lg-mobile md:text-display-lg font-display-lg text-primary">Client Expressions</h2>
-<p class="text-body-lg font-body-lg italic lowercase text-on-surface-variant mt-2">what they say</p>
+<h2 class="text-display-lg-mobile md:text-display-lg font-display-lg text-primary">{{TESTIMONIALS_TITLE}}</h2>
+<p class="text-body-lg font-body-lg italic lowercase text-on-surface-variant mt-2">{{TESTIMONIALS_SUBTITLE}}</p>
 </div>
 <div class="flex overflow-x-auto hide-scrollbar space-x-md pb-lg snap-x snap-mandatory px-4 md:px-12 py-8">
 <!-- Bubble 1 -->
 <div class="snap-center shrink-0 w-[300px] md:w-[380px] bg-gradient-to-br from-prismatic-pink/20 to-transparent rounded-[3rem] rounded-bl-xl p-8 flex flex-col justify-between shadow-lg border border-white">
 <div>
 <p class="text-headline-sm font-headline-sm text-primary italic mb-6 leading-relaxed">
-                                "The balayage technique here is unmatched. It grew out seamlessly over six months, still looking flawless."
+                                "{{TESTIMONIAL_1_QUOTE}}"
                             </p>
 </div>
 <div class="flex items-center space-x-4">
 <div class="w-14 h-14 rounded-full bg-surface-container-highest overflow-hidden border-2 border-white shadow-sm">
-<img class="w-full h-full object-cover" data-alt="A small, elegant portrait of a woman with beautifully styled, long dimensional blonde hair." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8zGeYqchsQrYG-sCYo0h96vUZvCp2-YdDOmngYAVlIKTw8CqXb1XGdvSE4HHrlkncKP1S-hEvNaopipBkvuqHYE_CsfmqVGI03wOAusjvHhsL6uUNQErY4-_03joC4jkDEBeHdiXnzaIeYX4riw8wdlKlScUtCjACR3f2PUqUhRZx2IvXo73GUH_5PGBcpL522Jt3LUxB8q_0HQtTufdgGf3b2i3RXeTg4OwMgp9bmfsKrnyHY-DNvqsuIhquj4XImfiykTuxCVn1"/>
+<img class="w-full h-full object-cover" data-alt="A small, elegant portrait of a woman with beautifully styled, long dimensional blonde hair." src="{{TESTIMONIAL_1_IMAGE}}"/>
 </div>
-<span class="text-label-caps font-label-caps text-primary tracking-widest">ELENA R.</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{TESTIMONIAL_1_AUTHOR}}</span>
 </div>
 </div>
 <!-- Bubble 2 -->
 <div class="snap-center shrink-0 w-[300px] md:w-[380px] bg-gradient-to-br from-prismatic-blue/20 to-transparent rounded-[3rem] rounded-bl-xl p-8 flex flex-col justify-between shadow-lg border border-white mt-8">
 <div>
 <p class="text-headline-sm font-headline-sm text-primary italic mb-6 leading-relaxed">
-                                "A truly curated experience. The studio is calm, and the colorists are absolute artists with formulation."
+                                "{{TESTIMONIAL_2_QUOTE}}"
                             </p>
 </div>
 <div class="flex items-center space-x-4">
 <div class="w-14 h-14 rounded-full bg-surface-container-highest overflow-hidden border-2 border-white shadow-sm">
-<img class="w-full h-full object-cover" data-alt="A sophisticated headshot of a female client with a sleek, modern brunette bob cut." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwHgnZG4MM-swdIGSh-riCR4bBjA3XwVZpEHn73B1MGhAB0p-iHEuZBsDQ6nowqkqnDwd35kWdsRTfj9GV4V52EXBnyQrrYKg3XiTe726pr8wVmWvN9s00MoJh09IYB31VCC1YUCHBkXvZXn0phUWiY841Uo5Lr3OgBOfDExkvgeB5v3FvfnAvWCsW3uNe3-wkFE4YNVcevvCcRq46bftf11O-j5yUdsKNnj8MNvP8NJisI-bCxiADWBG_OPi2WC9o09swhxIvzf7M"/>
+<img class="w-full h-full object-cover" data-alt="A sophisticated headshot of a female client with a sleek, modern brunette bob cut." src="{{TESTIMONIAL_2_IMAGE}}"/>
 </div>
-<span class="text-label-caps font-label-caps text-primary tracking-widest">SARAH M.</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{TESTIMONIAL_2_AUTHOR}}</span>
 </div>
 </div>
 <!-- Bubble 3 -->
 <div class="snap-center shrink-0 w-[300px] md:w-[380px] bg-gradient-to-br from-prismatic-purple/20 to-transparent rounded-[3rem] rounded-bl-xl p-8 flex flex-col justify-between shadow-lg border border-white">
 <div>
 <p class="text-headline-sm font-headline-sm text-primary italic mb-6 leading-relaxed">
-                                "They understood exactly the subtle copper tone I wanted. The consultation was thorough and the result is stunning."
+                                "{{TESTIMONIAL_3_QUOTE}}"
                             </p>
 </div>
 <div class="flex items-center space-x-4">
 <div class="w-14 h-14 rounded-full bg-surface-container-highest overflow-hidden border-2 border-white shadow-sm">
-<img class="w-full h-full object-cover" data-alt="A vibrant, close-up portrait of a woman with vibrant, deeply dimensional copper red hair styled in soft waves." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbHZNI_yypkYYl8Wi3N5dXMkRE7yjy7-Gqbr9iYFt7mtDPVqndzY0pBNgoL92nh_Vjt-mzQDy2x2KJI8VWERTJH9uYWI_dvxn-ruxcP9Cl97Chxts7wwGlP7pVJbaiOWxvG5_mv_ns2shhIZ-SoPVpZeg6baRe29lfq5HO9_PDu0JOU9MaTL_qR4T6s0fjPa_B9zateF-GsiuSeWigkW0WRtPnVk0oFSfJUhO88mlUI2wqvVmf6v8ab3yI0IKzcQGtJ4nTN8cF94T0"/>
+<img class="w-full h-full object-cover" data-alt="A vibrant, close-up portrait of a woman with vibrant, deeply dimensional copper red hair styled in soft waves." src="{{TESTIMONIAL_3_IMAGE}}"/>
 </div>
-<span class="text-label-caps font-label-caps text-primary tracking-widest">JESSICA T.</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{TESTIMONIAL_3_AUTHOR}}</span>
 </div>
 </div>
 </div>
@@ -328,7 +353,7 @@
 <!-- Footer -->
 <footer class="w-full bg-gradient-to-br from-prismatic-purple/30 via-prismatic-blue/30 to-prismatic-pink/30 flex flex-col items-center py-20 px-gutter space-y-lg text-center -mt-10 relative z-0">
 <div class="text-display-lg-mobile font-display-lg text-primary tracking-widest opacity-80 mix-blend-multiply">
-            OPALESCENT
+            {{SITE_NAME}}
         </div>
 <div class="flex space-x-gutter flex-wrap justify-center gap-y-4">
 <a class="text-body-md font-body-md italic lowercase text-primary hover:text-black transition-colors min-h-[44px] flex items-center" href="#">call us</a>
@@ -336,7 +361,7 @@
 <a class="text-body-md font-body-md italic lowercase text-primary hover:text-black transition-colors min-h-[44px] flex items-center" href="#">instagram</a>
 </div>
 <p class="text-label-caps font-label-caps text-on-surface-variant opacity-60 mt-12">
-            © 2024 OPALESCENT COLOR STUDIO. ALL RIGHTS RESERVED.
+            © {{COPYRIGHT_YEAR}} {{SITE_NAME}}. ALL RIGHTS RESERVED.
         </p>
 </footer>
 <script>

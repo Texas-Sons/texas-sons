@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Prismatic Glow</title>
+<title>{{SITE_TITLE}}</title>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <!-- Google Fonts -->
@@ -14,6 +14,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
+        :root {
+            --brand-primary: #202f38;
+            --brand-primary-container: #36454f;
+            --brand-on-primary: #ffffff;
+            --brand-on-primary-container: #a2b2be;
+            --brand-secondary: #735c00;
+            --brand-secondary-container: #fed65b;
+            --brand-on-secondary: #ffffff;
+            --brand-surface: #f9f9f9;
+            --brand-surface-container: #eeeeee;
+            --brand-surface-container-low: #f3f3f4;
+            --brand-surface-container-high: #e8e8e8;
+            --brand-surface-container-highest: #e2e2e2;
+            --brand-on-surface: #1a1c1c;
+            --brand-on-surface-variant: #43474b;
+            --brand-background: #f9f9f9;
+            --brand-on-background: #1a1c1c;
+            --brand-outline: #73777b;
+            --brand-outline-variant: #c3c7cb;
+            --brand-error: #ba1a1a;
+        }
         .material-symbols-outlined {
           font-variation-settings:
           'FILL' 0,
@@ -40,50 +61,50 @@
                       "secondary-fixed": "#ffe088",
                       "on-secondary-fixed": "#241a00",
                       "inverse-surface": "#2f3131",
-                      "outline": "#73777b",
-                      "on-background": "#1a1c1c",
+                      "outline": "var(--brand-outline)",
+                      "on-background": "var(--brand-on-background)",
                       "error-container": "#ffdad6",
                       "tertiary-fixed-dim": "#c8c8b0",
-                      "on-surface": "#1a1c1c",
+                      "on-surface": "var(--brand-on-surface)",
                       "on-tertiary-container": "#b0b19a",
-                      "secondary-container": "#fed65b",
-                      "surface-container": "#eeeeee",
+                      "secondary-container": "var(--brand-secondary-container)",
+                      "surface-container": "var(--brand-surface-container)",
                       "on-tertiary-fixed-variant": "#474836",
                       "tertiary-container": "#434432",
                       "primary-fixed": "#d5e5f1",
                       "on-secondary-fixed-variant": "#574500",
                       "on-primary-fixed-variant": "#3a4953",
                       "on-error-container": "#93000a",
-                      "surface-container-highest": "#e2e2e2",
-                      "surface-container-high": "#e8e8e8",
-                      "on-primary-container": "#a2b2be",
+                      "surface-container-highest": "var(--brand-surface-container-highest)",
+                      "surface-container-high": "var(--brand-surface-container-high)",
+                      "on-primary-container": "var(--brand-on-primary-container)",
                       "primary-fixed-dim": "#b9c9d5",
-                      "primary": "#202f38",
+                      "primary": "var(--brand-primary)",
                       "surface-variant": "#e2e2e2",
                       "inverse-on-surface": "#f0f1f1",
-                      "on-secondary": "#ffffff",
+                      "on-secondary": "var(--brand-on-secondary)",
                       "secondary-fixed-dim": "#e9c349",
-                      "on-primary": "#ffffff",
+                      "on-primary": "var(--brand-on-primary)",
                       "on-error": "#ffffff",
-                      "background": "#f9f9f9",
+                      "background": "var(--brand-background)",
                       "tertiary": "#2c2e1e",
                       "surface-bright": "#f9f9f9",
                       "surface-dim": "#dadada",
                       "on-tertiary": "#ffffff",
-                      "outline-variant": "#c3c7cb",
+                      "outline-variant": "var(--brand-outline-variant)",
                       "on-tertiary-fixed": "#1b1d0e",
                       "on-secondary-container": "#745c00",
                       "on-primary-fixed": "#0e1d26",
                       "tertiary-fixed": "#e4e4cc",
-                      "secondary": "#735c00",
-                      "primary-container": "#36454f",
+                      "secondary": "var(--brand-secondary)",
+                      "primary-container": "var(--brand-primary-container)",
                       "inverse-primary": "#b9c9d5",
-                      "error": "#ba1a1a",
+                      "error": "var(--brand-error)",
                       "surface-container-lowest": "#ffffff",
-                      "surface": "#f9f9f9",
+                      "surface": "var(--brand-surface)",
                       "surface-tint": "#51606b",
-                      "surface-container-low": "#f3f3f4",
-                      "on-surface-variant": "#43474b"
+                      "surface-container-low": "var(--brand-surface-container-low)",
+                      "on-surface-variant": "var(--brand-on-surface-variant)"
               },
               "borderRadius": {
                       "DEFAULT": "0.125rem",
@@ -208,7 +229,7 @@
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
 </button>
 <h1 class="font-headline-md text-headline-md-mobile tracking-tighter text-primary dark:text-primary-fixed-dim">
-            Prismatic Glow
+            {{SITE_NAME}}
         </h1>
 <button aria-label="Cart" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:opacity-70 transition-opacity cursor-pointer active:scale-95">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
@@ -217,7 +238,7 @@
 <!-- NavigationDrawer (Mobile Menu) -->
 <div class="fixed inset-y-0 left-0 z-[60] flex flex-col p-6 h-full w-80 bg-surface dark:bg-surface-container-low shadow-xl transform -translate-x-full transition-all duration-300 ease-in-out" id="mobile-menu">
 <div class="flex justify-between items-center mb-xl">
-<h2 class="font-headline-md text-headline-md text-primary">Prismatic Glow</h2>
+<h2 class="font-headline-md text-headline-md text-primary">{{SITE_NAME}}</h2>
 <button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-surface-variant" onclick="toggleMenu()">
 <span class="material-symbols-outlined">close</span>
 </button>
@@ -251,13 +272,13 @@
 <!-- Hero Section -->
 <section class="relative w-full h-[618px] min-h-[500px] flex items-end pb-xl px-gutter">
 <div class="absolute inset-0 z-0">
-<div class="w-full h-full bg-cover bg-center" data-alt="A highly detailed, vibrant editorial fashion photograph of a female model with stunning, perfectly styled prismatic vividly colored hair, blending soft pastel pinks, baby blues, and lavender purples. The lighting is high-key soft studio lighting, creating a luxurious, glossy finish on the hair. The background is a minimalist, soft pearl-toned studio setting, emphasizing the artistic, energetic and trend-forward aesthetic. Shot on a 35mm lens, incredibly high resolution, photorealistic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCRCdn3BOUc7u_1x19fw6nmMfkLPZOZmSCuOnpNO_ivhtZohoDcgGd3HmahPZ3zfGzsJdEZbvlpxSnfoLi14ohZv7W2FJLpXAOqgyF4bO09X6oW-285RSUPjf-Jro_rF_of2h-30M9V3mUPQFT0MLLLuI4C3lqKtRvCBtpbpY5r0drcpTT3lu47uBfcuGe3umHGUZDPwA-1_IDQel8TrillrWVtwWSReOhStdcKdeDDqxYo5vHSjEaawQ1ayqvw4_9EK7o3bgJe9Awb')"></div>
+<div class="w-full h-full bg-cover bg-center" data-alt="A highly detailed, vibrant editorial fashion photograph of a female model with stunning, perfectly styled prismatic vividly colored hair, blending soft pastel pinks, baby blues, and lavender purples. The lighting is high-key soft studio lighting, creating a luxurious, glossy finish on the hair. The background is a minimalist, soft pearl-toned studio setting, emphasizing the artistic, energetic and trend-forward aesthetic. Shot on a 35mm lens, incredibly high resolution, photorealistic." style="background-image: url('{{HERO_IMAGE}}')"></div>
 <!-- Gradient overlay for text legibility -->
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
 </div>
 <div class="relative z-10 w-full flex flex-col items-center text-center gap-md">
-<p class="font-body-md text-body-md italic text-primary">curated precision &amp; color</p>
-<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">Artistry in Every Strand</h2>
+<p class="font-body-md text-body-md italic text-primary">{{HERO_TAGLINE}}</p>
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">{{HERO_HEADLINE}}</h2>
 <button class="mt-sm h-[48px] px-xl bg-primary text-on-primary font-label-caps text-label-caps rounded-full flex items-center justify-center hover:opacity-90 transition-opacity uppercase tracking-widest shadow-md">
                     Book Now
                 </button>
@@ -268,8 +289,8 @@
 <!-- Decorative Background Element to justify glassmorphism -->
 <div class="absolute top-0 left-1/4 w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/20 blur-3xl -z-10 rounded-full opacity-50"></div>
 <div class="flex flex-col gap-sm mb-xl text-center">
-<h3 class="font-headline-md text-headline-md-mobile text-primary">Signature Services</h3>
-<p class="font-body-md text-body-md italic text-on-surface-variant">elevate your aesthetic</p>
+<h3 class="font-headline-md text-headline-md-mobile text-primary">{{SERVICES_TITLE}}</h3>
+<p class="font-body-md text-body-md italic text-on-surface-variant">{{SERVICES_SUBTITLE}}</p>
 </div>
 <div class="flex flex-col gap-md">
 <!-- Service Card 1 -->
@@ -277,10 +298,10 @@
 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 <div class="relative z-10 flex justify-between items-start">
 <div>
-<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Balayage</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Seamless, sun-kissed dimension.</p>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">{{SERVICE_1_NAME}}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{SERVICE_1_DESC}}</p>
 </div>
-<span class="font-label-caps text-label-caps text-secondary pt-xs">From $200</span>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">{{SERVICE_1_PRICE}}</span>
 </div>
 </div>
 <!-- Service Card 2 -->
@@ -288,10 +309,10 @@
 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 <div class="relative z-10 flex justify-between items-start">
 <div>
-<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Vivid Color</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Custom prismatic transformations.</p>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">{{SERVICE_2_NAME}}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{SERVICE_2_DESC}}</p>
 </div>
-<span class="font-label-caps text-label-caps text-secondary pt-xs">From $250</span>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">{{SERVICE_2_PRICE}}</span>
 </div>
 </div>
 <!-- Service Card 3 -->
@@ -299,10 +320,10 @@
 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 <div class="relative z-10 flex justify-between items-start">
 <div>
-<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Sculptural Cutting</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Precision shapes tailored to you.</p>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">{{SERVICE_3_NAME}}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{SERVICE_3_DESC}}</p>
 </div>
-<span class="font-label-caps text-label-caps text-secondary pt-xs">From $120</span>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">{{SERVICE_3_PRICE}}</span>
 </div>
 </div>
 </div>
@@ -315,7 +336,7 @@
 <!-- Social Proof (Horizontal Scroll) -->
 <section class="w-full py-xl pl-gutter bg-surface-container-low">
 <div class="flex flex-col gap-sm mb-lg pr-gutter">
-<h3 class="font-headline-md text-headline-md-mobile text-primary">Client Stories</h3>
+<h3 class="font-headline-md text-headline-md-mobile text-primary">{{TESTIMONIALS_TITLE}}</h3>
 </div>
 <div class="flex overflow-x-auto gap-md hide-scrollbar pb-md pr-gutter snap-x">
 <!-- Testimonial 1 -->
@@ -327,8 +348,8 @@
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 </div>
-<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"The vivid color they achieved is absolute perfection. It's truly a minimalist luxury experience from the moment you walk in."</p>
-<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Sarah J.</span>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"{{TESTIMONIAL_1_QUOTE}}"</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— {{TESTIMONIAL_1_AUTHOR}}</span>
 </div>
 <!-- Testimonial 2 -->
 <div class="min-w-[280px] w-[80%] bg-surface border border-outline-variant/20 rounded-2xl p-lg flex flex-col gap-md snap-center shrink-0">
@@ -339,8 +360,8 @@
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 </div>
-<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"The balayage technique is unmatched. The studio space itself is incredibly calming and aesthetically inspiring."</p>
-<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Elena M.</span>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"{{TESTIMONIAL_2_QUOTE}}"</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— {{TESTIMONIAL_2_AUTHOR}}</span>
 </div>
 <!-- Testimonial 3 -->
 <div class="min-w-[280px] w-[80%] bg-surface border border-outline-variant/20 rounded-2xl p-lg flex flex-col gap-md snap-center shrink-0">
@@ -351,21 +372,21 @@
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
 </div>
-<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"A truly sculptural cut. It falls perfectly every day. The stylists are true artists."</p>
-<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Chloe T.</span>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"{{TESTIMONIAL_3_QUOTE}}"</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— {{TESTIMONIAL_3_AUTHOR}}</span>
 </div>
 </div>
 </section>
 </main>
 <!-- Footer -->
 <footer class="w-full mt-auto py-xl px-gutter flex flex-col items-center gap-sm text-center bg-gradient-to-br from-secondary-fixed via-primary-fixed to-secondary-container dark:from-primary-container dark:to-tertiary-container text-on-secondary-fixed dark:text-on-primary-container">
-<h2 class="font-headline-sm text-headline-sm text-on-secondary-fixed mb-md">Prismatic Glow</h2>
+<h2 class="font-headline-sm text-headline-sm text-on-secondary-fixed mb-md">{{SITE_NAME}}</h2>
 <div class="flex flex-wrap justify-center gap-md mb-md">
 <a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Privacy Policy</a>
 <a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Terms of Service</a>
 <a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Careers</a>
 </div>
-<p class="font-body-md text-body-md opacity-70 mt-auto">© 2024 Prismatic Glow Studio</p>
+<p class="font-body-md text-body-md opacity-70 mt-auto">© {{COPYRIGHT_YEAR}} {{SITE_NAME}}</p>
 </footer>
 <script>
         function toggleMenu() {

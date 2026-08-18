@@ -1,3 +1,6 @@
+> **Note:** This file documents the campaign family only. The master conventions live in
+> [`../TEMPLATE_SPEC.md`](../TEMPLATE_SPEC.md) and apply to all template families.
+
 You are templatizing a political campaign website built with Tailwind CSS. The goal is to replace all candidate-specific content with clearly marked placeholders so this HTML can be reused for any campaign.
 
 ## Files to Process
@@ -61,6 +64,12 @@ Replace specific addresses, phone numbers, emails with:
 
 ### 8. Page Titles
 Replace `<title>` content with `{{CANDIDATE_NAME}} - {{OFFICE_TITLE}}` pattern.
+
+### 9. Pronouns & Treasurer
+- Replace gendered subject pronouns ("She", "He", "They") with `{{CANDIDATE_PRONOUN}}`.
+- Replace gendered possessive pronouns ("Her", "His", "Their") with `{{CANDIDATE_POSSESSIVE}}`.
+- Replace the treasurer line ("Erica Gregory, Treas.") with `{{CAMPAIGN_TREASURER}}`.
+- Replace copyright years ("© 2024") with `© {{COPYRIGHT_YEAR}}`.
 
 ## Important Notes
 - Do NOT change the HTML structure, layout, or Tailwind classes

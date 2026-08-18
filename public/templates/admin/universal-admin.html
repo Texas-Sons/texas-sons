@@ -3,8 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Universal Admin Dashboard</title>
+  <title>{{SITE_TITLE}}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --admin-blue-50: #eff6ff;
+      --admin-blue-100: #dbeafe;
+      --admin-blue-200: #bfdbfe;
+      --admin-blue-300: #93c5fd;
+      --admin-blue-400: #60a5fa;
+      --admin-blue-500: #3b82f6;
+      --admin-blue-600: #2563eb;
+      --admin-blue-700: #1d4ed8;
+      --admin-blue-800: #1e40af;
+      --admin-blue-900: #1e3a8a;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blue: {
+              50: 'var(--admin-blue-50)',
+              100: 'var(--admin-blue-100)',
+              200: 'var(--admin-blue-200)',
+              300: 'var(--admin-blue-300)',
+              400: 'var(--admin-blue-400)',
+              500: 'var(--admin-blue-500)',
+              600: 'var(--admin-blue-600)',
+              700: 'var(--admin-blue-700)',
+              800: 'var(--admin-blue-800)',
+              900: 'var(--admin-blue-900)'
+            }
+          }
+        }
+      }
+    };
+  </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <script>
     function showTab(tabId) {
@@ -80,21 +116,21 @@
           <form class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Business / Campaign Name</label>
-              <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="My Website">
+              <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="{{SITE_NAME}}">
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-                <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="contact@example.com">
+                <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="{{CONTACT_EMAIL}}">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="(555) 123-4567">
+                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="{{CONTACT_PHONE}}">
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Address / Location</label>
-              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="2">123 Main St, Austin, TX 78701</textarea>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="2">{{BUSINESS_ADDRESS}}</textarea>
             </div>
             <div class="pt-4 border-t border-gray-100">
               <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Save Changes</button>
@@ -123,18 +159,18 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Oct 24, 2026</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Community Townhall</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">City Center Plaza</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{EVENT_1_DATE}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{EVENT_1_NAME}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{EVENT_1_LOCATION}}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
                   <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
                 </td>
               </tr>
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Nov 02, 2026</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fundraiser Dinner</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">The Grand Hotel</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{EVENT_2_DATE}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{EVENT_2_NAME}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{EVENT_2_LOCATION}}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
                   <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
@@ -168,16 +204,16 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Sarah Jenkins</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">sarah.j@example.com</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{VOLUNTEER_1_NAME}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{VOLUNTEER_1_EMAIL}}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Volunteer</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Active</td>
               </tr>
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Michael Chang</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">mikec@example.com</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{VOLUNTEER_2_NAME}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{VOLUNTEER_2_EMAIL}}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">RSVP</span>
                 </td>
@@ -219,17 +255,17 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Women's Haircut</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Styling</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$65.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{PRICE_ITEM_1}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{PRICE_CATEGORY_1}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{PRICE_AMOUNT_1}}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
                 </td>
               </tr>
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Balayage & Tone</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Color</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$185.00</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{PRICE_ITEM_2}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{PRICE_CATEGORY_2}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{PRICE_AMOUNT_2}}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
                 </td>

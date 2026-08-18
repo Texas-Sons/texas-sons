@@ -22,34 +22,14 @@ interface Template {
 
 const TEMPLATES: Template[] = [
   {
-    id: 'universal-admin',
-    title: 'Universal Admin Dashboard',
-    category: 'Admin / CMS',
-    features: [
-      { icon: Settings, label: 'Basic Info Updates' },
-      { icon: Calendar, label: 'Event Management' },
-      { icon: Users, label: 'Volunteers & RSVPs' },
-      { icon: Zap, label: 'Square Price Sync' },
-    ],
-    versions: [
-      {
-        id: 'v1',
-        name: 'Default',
-        style: 'Clean UI',
-        desktopHtml: '/templates/admin/universal-admin.html',
-        mobileHtml: '',
-        thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
-      }
-    ],
-  },
-  {
     id: 'salon',
-    title: 'Glow & Style Studio',
-    category: 'Salon / Spa',
+    title: 'Salon & Studio',
+    category: 'Beauty & Wellness',
     features: [
+      { icon: Scissors, label: '3 Design Variations' },
       { icon: Calendar, label: 'Booking Calendar Wire' },
       { icon: Users, label: 'Staff Roster Section' },
-      { icon: Scissors, label: '3 Design Variations' },
+      { icon: Zap, label: 'Square Price Sync Ready' },
     ],
     versions: [
       {
@@ -82,16 +62,17 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'restaurant',
-    title: 'Bistro & Bar Pro',
-    category: 'Restaurant',
+    title: 'Restaurant & Bar',
+    category: 'Food & Beverage',
     features: [
-      { icon: Zap, label: 'Swift KDS Menu Wire' },
-      { icon: ArrowRight, label: 'Order Online Ready' },
+      { icon: Users, label: 'Table Reservation Wire' },
+      { icon: Zap, label: 'Order Online Ready' },
+      { icon: ArrowRight, label: 'Square Menu Sync' },
     ],
     versions: [
       {
         id: 'v1',
-        name: 'Default',
+        name: 'Coming Soon',
         style: 'Classic',
         desktopHtml: '',
         mobileHtml: '',
@@ -101,7 +82,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'contractor',
-    title: 'Pro Contractor Blueprint',
+    title: 'Contractor & Trades',
     category: 'Home Services',
     features: [
       { icon: MapPin, label: 'Service Area Maps' },
@@ -110,7 +91,7 @@ const TEMPLATES: Template[] = [
     versions: [
       {
         id: 'v1',
-        name: 'Default',
+        name: 'Coming Soon',
         style: 'Classic',
         desktopHtml: '',
         mobileHtml: '',
@@ -142,7 +123,7 @@ const TEMPLATES: Template[] = [
         name: 'Modern Progressive',
         style: 'Blue & Teal',
         desktopHtml: '/templates/campaign/v2-modern-desktop.html',
-        mobileHtml: '',
+        mobileHtml: '/templates/campaign/home-mobile.html',
         thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLsKbwojcgNzRwq8cdMDYsWUDYHAHDQgkZ--bRY5lnja9qu6aRIfb0bgn8_Q9gPqkmvco7sbbUGEJQeCT0MF5kVal1MAE26ibeltlK4M1ny3pqnUwPqnqxEPUVtP6HUxto2__EAYf4qHuDWxCMIYE-uZspOFV-VVWapS5MQGL_1JWC1x_p640rQEh76ve1Kkc3KZ9njYvmM_lSSqwdQRVdrKfFKrb8Yma32WBBaGX1OPjF4GRoRllPXNvw',
       },
       {
@@ -150,7 +131,7 @@ const TEMPLATES: Template[] = [
         name: 'Warm Community',
         style: 'Green & Brown',
         desktopHtml: '/templates/campaign/v3-community-desktop.html',
-        mobileHtml: '',
+        mobileHtml: '/templates/campaign/home-mobile.html',
         thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLvvkNe8epTOt_NY6kFhpo9zE5GhiRi--nWWptBmOyhJXLKxcWhg3DICr0v_q_bUS9Gp0rJskaCqbzK_E9uETtY1fxkRUTttySlPE7rcofxUn33RTuu3oiutAy_0pPhzwu7zq1dqMC5thTGmxFVgdel4qelSpBK-c78KEnMg6lYgeUXr6qNm0Gy3iBb7MzmwZAmggXq7nsnVz47K5bTkVI3sc61qbblVh0_0fbWqDPXDhdYQRAHXY9z8cIg',
       },
     ],
@@ -248,7 +229,38 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
               <Code2 className="w-4 h-4" />
               <span className="text-xs font-medium">Code</span>
             </button>
-            <button className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 transition-colors">
+            <button 
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/provision', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      templateId: template.id,
+                      versionId: activeVersion.id,
+                      configOverrides: {} // Junie is handling default tokens for now
+                    })
+                  });
+
+                  if (!res.ok) throw new Error('Generation failed');
+
+                  // Trigger file download
+                  const blob = await res.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${template.id}-${activeVersion.id}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                } catch (error) {
+                  alert("Failed to compile template!");
+                  console.error(error);
+                }
+              }}
+              className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 transition-colors"
+            >
               <ArrowRight className="w-4 h-4" />
               <span className="text-xs font-medium">Use</span>
             </button>

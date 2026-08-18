@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>L'ELITE PURE MINIMALIST - The Art of Hair</title>
+<title>{{SITE_TITLE}}</title>
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -24,30 +24,30 @@
                     "on-primary-fixed": "#1b1b1b",
                     "inverse-surface": "#2f3131",
                     "tertiary-container": "#1b1b1b",
-                    "surface-container": "#eeeeee",
+                    "surface-container": "var(--brand-surface-container)",
                     "on-tertiary-fixed": "#1b1b1b",
-                    "surface": "#f9f9f9",
+                    "surface": "var(--brand-surface)",
                     "surface-tint": "#5e5e5e",
-                    "outline-variant": "#cfc4c5",
-                    "clinical-grey": "#D1D1D1",
-                    "on-surface-variant": "#4c4546",
-                    "error": "#ba1a1a",
+                    "outline-variant": "var(--brand-outline-variant)",
+                    "clinical-grey": "var(--brand-clinical-grey)",
+                    "on-surface-variant": "var(--brand-on-surface-variant)",
+                    "error": "var(--brand-error)",
                     "on-tertiary": "#ffffff",
                     "tertiary-fixed-dim": "#c6c6c6",
-                    "on-surface": "#1a1c1c",
+                    "on-surface": "var(--brand-on-surface)",
                     "inverse-primary": "#c6c6c6",
-                    "surface-container-highest": "#e2e2e2",
+                    "surface-container-highest": "var(--brand-surface-container-highest)",
                     "error-container": "#ffdad6",
                     "on-tertiary-container": "#848484",
                     "on-error-container": "#93000a",
                     "tertiary": "#000000",
                     "secondary-fixed": "#e2e2e2",
-                    "on-primary-container": "#848484",
-                    "on-secondary": "#ffffff",
+                    "on-primary-container": "var(--brand-on-primary-container)",
+                    "on-secondary": "var(--brand-on-secondary)",
                     "primary-fixed": "#e2e2e2",
-                    "divider-line": "#EAEAEA",
-                    "surface-container-high": "#e8e8e8",
-                    "primary-container": "#1b1b1b",
+                    "divider-line": "var(--brand-divider-line)",
+                    "surface-container-high": "var(--brand-surface-container-high)",
+                    "primary-container": "var(--brand-primary-container)",
                     "on-tertiary-fixed-variant": "#474747",
                     "on-secondary-container": "#5f6161",
                     "surface-dim": "#dadada",
@@ -59,16 +59,16 @@
                     "on-secondary-fixed": "#1a1c1c",
                     "on-primary-fixed-variant": "#474747",
                     "tertiary-fixed": "#e2e2e2",
-                    "surface-container-low": "#f3f3f4",
+                    "surface-container-low": "var(--brand-surface-container-low)",
                     "primary-fixed-dim": "#c6c6c6",
                     "on-error": "#ffffff",
-                    "secondary": "#5d5f5f",
-                    "primary": "#000000",
-                    "on-background": "#1a1c1c",
-                    "secondary-container": "#dcdddd",
-                    "background": "#f9f9f9",
-                    "on-primary": "#ffffff",
-                    "outline": "#7e7576"
+                    "secondary": "var(--brand-secondary)",
+                    "primary": "var(--brand-primary)",
+                    "on-background": "var(--brand-on-background)",
+                    "secondary-container": "var(--brand-secondary-container)",
+                    "background": "var(--brand-background)",
+                    "on-primary": "var(--brand-on-primary)",
+                    "outline": "var(--brand-outline)"
             },
             "borderRadius": {
                     "DEFAULT": "0.25rem",
@@ -181,6 +181,29 @@
       }
     </script>
 <style>
+        :root {
+            --brand-primary: #000000;
+            --brand-primary-container: #1b1b1b;
+            --brand-on-primary: #ffffff;
+            --brand-on-primary-container: #848484;
+            --brand-secondary: #5d5f5f;
+            --brand-secondary-container: #dcdddd;
+            --brand-on-secondary: #ffffff;
+            --brand-surface: #f9f9f9;
+            --brand-surface-container: #eeeeee;
+            --brand-surface-container-low: #f3f3f4;
+            --brand-surface-container-high: #e8e8e8;
+            --brand-surface-container-highest: #e2e2e2;
+            --brand-on-surface: #1a1c1c;
+            --brand-on-surface-variant: #4c4546;
+            --brand-background: #f9f9f9;
+            --brand-on-background: #1a1c1c;
+            --brand-outline: #7e7576;
+            --brand-outline-variant: #cfc4c5;
+            --brand-error: #ba1a1a;
+            --brand-clinical-grey: #D1D1D1;
+            --brand-divider-line: #EAEAEA;
+        }
         .material-symbols-outlined {
           font-variation-settings:
           'FILL' 0,
@@ -190,7 +213,7 @@
         }
         
         body {
-            background-color: #FFFFFF; /* Override to stark white for the main canvas */
+            background-color: var(--brand-surface); /* Override to stark white for the main canvas */
         }
     </style>
 <style>
@@ -206,7 +229,7 @@
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
 <div class="text-headline-md font-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">
-            L'ELITE
+            {{SITE_NAME}}
         </div>
 <div class="w-6"></div> <!-- Spacer to center the brand name -->
 </header>
@@ -215,13 +238,13 @@
 <section class="w-full px-margin-mobile flex flex-col items-center justify-center py-section-gap min-h-[618px]">
 <!-- Framed Portrait -->
 <div class="border border-primary p-2 mb-element-gap">
-<img alt="High Fashion Haircut" class="w-[200px] h-[250px] object-cover" data-alt="A striking black and white portrait of a high-fashion architectural haircut. The lighting is harsh and clinical, casting sharp shadows. The model is positioned against a stark white studio background, emphasizing the precision and geometric lines of the hair style. The overall aesthetic is ultra-modern, minimalist, and deeply professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFoyJKBPKj7_pSU4uNjBo8c7irbk_WmvrjrgF2FbgF05vLvg8AjoD3pL2cdWiMuZG0Ik6wKBd2s9iZg6z4HbYcQj8onMieU6asnvccTqFsWj93wV41j-kUN-_aDnFxL8BaBo21mypaEBBftSuh8RZZu-1j88zFVjhUQ41pcnQOnE84M3_UHOGExzR8aobPmAa5boGcrARbRzLaCXDwoUmzAUA7veSGKXcYKxqI3JUltzfJXkZXlTQ1N2BvXfF4NDWa9BZz2qhunBIa"/>
+<img alt="High Fashion Haircut" class="w-[200px] h-[250px] object-cover" data-alt="A striking black and white portrait of a high-fashion architectural haircut. The lighting is harsh and clinical, casting sharp shadows. The model is positioned against a stark white studio background, emphasizing the precision and geometric lines of the hair style. The overall aesthetic is ultra-modern, minimalist, and deeply professional." src="{{HERO_IMAGE}}"/>
 </div>
 <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary text-center mb-base">
-                The Art of Hair
+                {{HERO_HEADLINE}}
             </h1>
 <p class="text-body-md font-body-md text-secondary text-center max-w-[280px]">
-                Precision styling in a clinical environment.
+                {{HERO_TAGLINE}}
             </p>
 </section>
 <!-- Services Section -->
@@ -230,25 +253,25 @@
 <ul class="flex flex-col">
 <li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
 <a class="flex justify-between items-center w-full group" href="#">
-<span class="text-label-caps font-label-caps text-primary tracking-widest">BALAYAGE</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{SERVICE_1_NAME}}</span>
 <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
 </a>
 </li>
 <li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
 <a class="flex justify-between items-center w-full group" href="#">
-<span class="text-label-caps font-label-caps text-primary tracking-widest">PRECISION CUTTING</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{SERVICE_2_NAME}}</span>
 <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
 </a>
 </li>
 <li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
 <a class="flex justify-between items-center w-full group" href="#">
-<span class="text-label-caps font-label-caps text-primary tracking-widest">EXTENSIONS</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{SERVICE_3_NAME}}</span>
 <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
 </a>
 </li>
 <li class="border-b border-divider-line py-base hover:bg-surface transition-colors duration-200">
 <a class="flex justify-between items-center w-full group" href="#">
-<span class="text-label-caps font-label-caps text-primary tracking-widest">COLOR CORRECTION</span>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">{{SERVICE_4_NAME}}</span>
 <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform duration-200" data-icon="arrow_forward">arrow_forward</span>
 </a>
 </li>
@@ -258,9 +281,9 @@
 <section class="w-full bg-surface py-section-gap px-margin-mobile flex flex-col items-center justify-center border-y border-divider-line">
 <div class="max-w-[320px] text-center">
 <p class="text-body-lg font-body-lg text-primary italic mb-base">
-                    "A completely transformative experience. The level of detail and understanding of facial geometry is unparalleled."
+                    "{{TESTIMONIAL_1_QUOTE}}"
                 </p>
-<span class="text-label-sm font-label-sm text-secondary tracking-widest">— E. V.</span>
+<span class="text-label-sm font-label-sm text-secondary tracking-widest">— {{TESTIMONIAL_1_AUTHOR}}</span>
 </div>
 </section>
 </main>
@@ -268,7 +291,7 @@
 <footer class="bg-surface dark:bg-surface text-primary dark:text-inverse-primary full-width border-t border-divider-line flat no shadows w-full py-base px-margin-mobile md:px-margin-desktop mt-section-gap flex flex-col md:flex-row justify-between items-center gap-base">
 <div class="flex flex-col items-center md:items-start gap-4 w-full">
 <div class="text-label-caps font-label-caps font-bold text-primary mb-4 md:mb-0">
-                L'ELITE
+                {{SITE_NAME}}
             </div>
 <nav class="flex flex-wrap justify-center md:justify-start gap-gutter w-full mb-8 md:mb-0">
 <a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Services</a>
@@ -277,7 +300,7 @@
 <a class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Legal</a>
 </nav>
 <div class="text-label-sm font-label-sm text-secondary dark:text-secondary-fixed-dim mt-4 w-full text-center md:text-left">
-                © 2024 L'ELITE PURE MINIMALIST. ALL RIGHTS RESERVED.
+                © {{COPYRIGHT_YEAR}} {{SITE_NAME}}. ALL RIGHTS RESERVED.
             </div>
 </div>
 </footer>

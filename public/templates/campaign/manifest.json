@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "name": "Campaign Blueprint",
+  "id": "campaign",
+  "versions": {
+    "v1": { "desktop": "v1-classic-desktop.html", "mobile": "home-mobile.html" },
+    "v2": { "desktop": "v2-modern-desktop.html", "mobile": "home-mobile.html" },
+    "v3": { "desktop": "v3-community-desktop.html", "mobile": "home-mobile.html" }
+  },
+  "defaultConfig": {
+    "tokens": {
+      "CANDIDATE_NAME": "Jane Candidate",
+      "CANDIDATE_FIRST": "Jane",
+      "CANDIDATE_LAST": "Candidate",
+      "CANDIDATE_INITIALS": "JC",
+      "CANDIDATE_PRONOUN": "She",
+      "CANDIDATE_POSSESSIVE": "Her",
+      "OFFICE_TITLE": "For City Council",
+      "OFFICE_FULL": "For City Council, District 4",
+      "CONTACT_EMAIL": "contact@campaign.com",
+      "CONTACT_PHONE": "(555) 123-4567",
+      "CAMPAIGN_LOCATION": "Austin, TX",
+      "CAMPAIGN_TREASURER": "Campaign Treasurer",
+      "COPYRIGHT_YEAR": "2025",
+      "HERO_IMAGE": "https://images.unsplash.com/photo-1541872703-74c5e4436120?auto=format&fit=crop&q=80",
+      "CAMPAIGN_LOGO": "",
+      "PLATFORM_TITLE_1": "Public Safety", "PLATFORM_DESC_1": "Ensuring safe communities for all residents.",
+      "PLATFORM_TITLE_2": "Economic Growth", "PLATFORM_DESC_2": "Supporting local small businesses and job creation.",
+      "PLATFORM_TITLE_3": "Infrastructure", "PLATFORM_DESC_3": "Modernizing roads, parks, and public facilities.",
+      "ENDORSER_NAME_1": "Community Leader", "ENDORSER_TITLE_1": "Local Business Owner", "ENDORSER_QUOTE_1": "A proven leader who gets things done."
+    },
+    "seo": {
+      "title": "{{CANDIDATE_NAME}} {{OFFICE_TITLE}}",
+      "description": "Official campaign website for {{CANDIDATE_NAME}}, running {{OFFICE_TITLE}}."
+    },
+    "theme": {
+      "--campaign-primary": "#0a1f44",
+      "--campaign-primary-dark": "#00081e",
+      "--campaign-accent": "#d91e36",
+      "--campaign-gold": "#C5A059"
+    }
+  }
+}

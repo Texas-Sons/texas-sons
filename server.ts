@@ -3,6 +3,8 @@ dotenv.config({ path: '.env.local' });
 
 import express from "express";
 import path from "path";
+import fs from "fs/promises";
+import * as archiver from "archiver";
 import { createServer as createViteServer } from "vite";
 import { Octokit } from "@octokit/rest";
 import Stripe from "stripe";
@@ -44,23 +46,90 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
-  // Provisioning Route
+  // Provisioning & Template Generation Engine
   app.post("/api/provision", async (req, res) => {
     try {
-      const { companyName, tier } = req.body;
-      const github = getOctokit();
-      
-      // In a real app, this would clone a template repo
-      // For now, we just verify the GitHub token works
-      const { data: user } = await github.rest.users.getAuthenticated();
-      
-      res.json({ 
-        success: true, 
-        message: `Successfully authenticated with GitHub as ${user.login}. Scaffolded ${tier} for ${companyName}.` 
-      });
+      const { templateId, versionId, configOverrides } = req.body;
+      if (!templateId || !versionId) {
+        return res.status(400).json({ success: false, error: "templateId and versionId are required" });
+      }
+
+      // 1. Read the manifest
+      const manifestPath = path.join(process.cwd(), 'public', 'templates', templateId, 'manifest.json');
+      let manifestStr = '';
+      try {
+        manifestStr = await fs.readFile(manifestPath, 'utf8');
+      } catch (err) {
+        return res.status(404).json({ success: false, error: `Manifest not found for template ${templateId}` });
+      }
+      const manifest = JSON.parse(manifestStr);
+
+      // 2. Merge user overrides with default config
+      const finalConfig = {
+        tokens: { ...manifest.defaultConfig.tokens, ...(configOverrides?.tokens || {}) },
+        theme: { ...manifest.defaultConfig.theme, ...(configOverrides?.theme || {}) },
+        seo: { ...manifest.defaultConfig.seo, ...(configOverrides?.seo || {}) }
+      };
+
+      // 3. Setup zip archiver
+      res.attachment(`${templateId}-${versionId}.zip`);
+      const archive = (archiver as any).default('zip', { zlib: { level: 9 } });
+      archive.on('error', (err) => { throw err; });
+      archive.pipe(res);
+
+      // 4. Helper to process HTML files
+      const processHtml = async (sourceHtmlName: string, destHtmlName: string) => {
+        const filePath = path.join(process.cwd(), 'public', 'templates', templateId, sourceHtmlName);
+        let html = '';
+        try {
+          html = await fs.readFile(filePath, 'utf8');
+        } catch (e) {
+          return; // File might not exist (e.g. mobile version missing)
+        }
+
+        // Replace {{TOKENS}}
+        for (const [key, value] of Object.entries(finalConfig.tokens)) {
+          const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+          html = html.replace(regex, value as string);
+        }
+
+        // Inject SEO
+        const seoBlock = `\n  <!-- Generated Meta Tags -->\n  <title>${finalConfig.seo.title}</title>\n  <meta name="description" content="${finalConfig.seo.description}">\n`;
+        html = html.replace('</title>', `</title>${seoBlock}`);
+
+        archive.append(html, { name: destHtmlName });
+      };
+
+      // 5. Resolve actual filenames from manifest versions map
+      const versionFiles = manifest.versions?.[versionId];
+      const desktopFile = versionFiles?.desktop || `${versionId}-desktop.html`;
+      const mobileFile = versionFiles?.mobile || `${versionId}-mobile.html`;
+
+      await processHtml(desktopFile, 'index.html');
+      await processHtml(mobileFile, 'mobile.html');
+
+      // Include admin dashboard as an add-on if requested
+      const includeAdmin = req.body.includeAdmin !== false; // default true
+      if (includeAdmin && templateId !== 'universal-admin') {
+        const adminPath = path.join(process.cwd(), 'public', 'templates', 'admin', 'universal-admin.html');
+        try {
+          let adminHtml = await fs.readFile(adminPath, 'utf8');
+          // Inject shared site tokens into admin too
+          for (const [key, value] of Object.entries(finalConfig.tokens)) {
+            const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+            adminHtml = adminHtml.replace(regex, value as string);
+          }
+          archive.append(adminHtml, { name: 'admin/index.html' });
+        } catch (e) { /* silent ignore if admin file missing */ }
+      }
+
+      await archive.finalize();
+
     } catch (error: any) {
       console.error(error);
-      res.status(500).json({ success: false, error: error.message });
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, error: error.message });
+      }
     }
   });
 

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "name": "Salon Template",
+  "id": "salon",
+  "versions": {
+    "v1": { "desktop": "v1-desktop.html", "mobile": "v1-mobile.html" },
+    "v2": { "desktop": "v2-desktop.html", "mobile": "v2-mobile.html" },
+    "v3": { "desktop": "v3-desktop.html", "mobile": "v3-mobile.html" }
+  },
+  "defaultConfig": {
+    "tokens": {
+      "SITE_TITLE": "My Salon | Premium Hair & Beauty",
+      "SITE_NAME": "My Salon",
+      "HERO_IMAGE": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80",
+      "HERO_TAGLINE": "Where Style Meets Artistry",
+      "HERO_HEADLINE_1": "Elevate Your",
+      "HERO_HEADLINE_ACCENT": "Natural Beauty",
+      "CONTACT_EMAIL": "hello@mysalon.com",
+      "CONTACT_PHONE": "(555) 987-6543",
+      "BUSINESS_ADDRESS": "123 Style Ave, Suite 200, Austin, TX",
+      "COPYRIGHT_YEAR": "2025",
+      "SERVICE_1_NAME": "Precision Cut", "SERVICE_1_DESC": "A tailored cut designed to complement your unique features.", "SERVICE_1_PRICE": "From $85",
+      "SERVICE_2_NAME": "Color & Highlights", "SERVICE_2_DESC": "Expert color services using premium products.", "SERVICE_2_PRICE": "From $120",
+      "SERVICE_3_NAME": "Blowout & Style", "SERVICE_3_DESC": "A luxury blowout and finishing style.", "SERVICE_3_PRICE": "From $65",
+      "TESTIMONIAL_1_QUOTE": "Best salon experience I've ever had. Truly exceptional.", "TESTIMONIAL_1_AUTHOR": "Happy Client"
+    },
+    "seo": {
+      "title": "{{SITE_NAME}} | Premium Salon",
+      "description": "Experience luxury hair care and styling at {{SITE_NAME}} in {{BUSINESS_ADDRESS}}."
+    },
+    "theme": {
+      "--salon-primary": "#1a1a1a",
+      "--salon-accent": "#e5b5a4",
+      "--salon-bg": "#ffffff"
+    }
+  }
+}
