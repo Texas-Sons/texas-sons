@@ -30,7 +30,7 @@ export default function App() {
     const checkUser = async (currentUser: User | null) => {
       if (currentUser && currentUser.email) {
         const email = currentUser.email.toLowerCase();
-        if (email === 'contac.txsons@gmail.com' || email === 'morganmv145@gmail.com') {
+        if (email === 'contact.txsons@gmail.com' || email === 'morganmv145@gmail.com') {
           setUser(currentUser);
         } else {
           await supabase.auth.signOut();

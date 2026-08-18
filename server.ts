@@ -4,15 +4,229 @@ dotenv.config({ path: '.env.local' });
 import express from "express";
 import path from "path";
 import fs from "fs/promises";
-import * as archiver from "archiver";
+import JSZip from "jszip";
 import { createServer as createViteServer } from "vite";
 import { Octokit } from "@octokit/rest";
 import Stripe from "stripe";
+import { blake3 } from '@noble/hashes/blake3.js';
+import { bytesToHex } from '@noble/hashes/utils.js';
+
+const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
+
+interface SiteConfig {
+  tokens: Record<string, string>;
+  theme: Record<string, string>;
+  seo: { title: string; description: string };
+}
+
+// ---------------------------------------------------------------------------
+// Shared template engine
+// ---------------------------------------------------------------------------
+
+async function loadManifest(templateId: string): Promise<any> {
+  const manifestPath = path.join(TEMPLATES_ROOT, templateId, 'manifest.json');
+  return JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+}
+
+function extractTokens(html: string): string[] {
+  const set = new Set<string>();
+  const re = /\{\{([A-Z_0-9]+)\}\}/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) set.add(m[1]);
+  return [...set];
+}
+
+function processHtml(html: string, config: SiteConfig): string {
+  const tokens = config?.tokens || {};
+  for (const [key, value] of Object.entries(tokens)) {
+    html = html.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
+  }
+  if (config?.seo?.description) {
+    const seo = `\n  <!-- Texas Sons Generated -->\n  <meta name="description" content="${config.seo.description}">\n`;
+    html = html.replace('</title>', `</title>${seo}`);
+  }
+  return html;
+}
+
+async function renderSite(
+  templateId: string,
+  versionId: string,
+  config: SiteConfig,
+  options: { includeAdmin?: boolean } = {}
+): Promise<{ desktop: string; mobile: string | null; admin: string | null }> {
+  const includeAdmin = options.includeAdmin ?? true;
+  const manifest = await loadManifest(templateId);
+  const versionFiles = manifest.versions?.[versionId];
+  const templateDir = path.join(TEMPLATES_ROOT, templateId);
+  const desktopFile = path.join(templateDir, versionFiles?.desktop || `${versionId}-desktop.html`);
+  const mobileFile = path.join(templateDir, versionFiles?.mobile || `${versionId}-mobile.html`);
+
+  let desktop: string | null = null;
+  try {
+    desktop = processHtml(await fs.readFile(desktopFile, 'utf8'), config);
+  } catch {
+    desktop = null;
+  }
+  if (!desktop) throw new Error(`Desktop HTML not found: ${desktopFile}`);
+
+  let mobile: string | null = null;
+  try {
+    mobile = processHtml(await fs.readFile(mobileFile, 'utf8'), config);
+  } catch {
+    mobile = null;
+  }
+
+  let admin: string | null = null;
+  if (includeAdmin && templateId !== 'universal-admin') {
+    const adminFile = path.join(TEMPLATES_ROOT, 'admin', 'universal-admin.html');
+    try {
+      admin = processHtml(await fs.readFile(adminFile, 'utf8'), config);
+    } catch {
+      admin = null;
+    }
+  }
+
+  return { desktop, mobile, admin };
+}
+
+function parseJsonResponse(raw: string): any {
+  let text = (raw || '').trim();
+  text = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object found in AI response');
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+function sanitizeProjectName(name: string): string {
+  const slug = (name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 32);
+  return slug || 'texas-sons-site';
+}
+
+// ---------------------------------------------------------------------------
+// Cloudflare Pages helpers (Direct Upload: JWT -> assets -> manifest deploy)
+// ---------------------------------------------------------------------------
+
+function getCloudflareCredentials(): { accountId: string; apiToken: string } {
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+  if (!accountId || !apiToken) {
+    throw new Error("CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are required in .env.local");
+  }
+  return { accountId, apiToken };
+}
+
+async function cfFetch(url: string, init?: RequestInit): Promise<any> {
+  const res = await fetch(url, init);
+  const data = await res.json();
+  if (!data.success) {
+    throw new Error(`Cloudflare API error (${url}): ${JSON.stringify(data.errors || data)}`);
+  }
+  return data.result;
+}
+
+// Cloudflare Pages asset hash: blake3(base64(fileContent) + extension), hex, first 32 chars
+function pagesFileHash(content: string, fileName: string): string {
+  const base64 = Buffer.from(content).toString('base64');
+  const ext = path.extname(fileName).slice(1);
+  const hash = blake3(new TextEncoder().encode(base64 + ext));
+  return bytesToHex(hash).slice(0, 32);
+}
+
+async function findPagesProject(accountId: string, apiToken: string, name: string): Promise<any | null> {
+  try {
+    return await cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${name}`, {
+      headers: { Authorization: `Bearer ${apiToken}` },
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function createPagesProject(accountId: string, apiToken: string, name: string): Promise<any> {
+  return cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, production_branch: 'main' }),
+  });
+}
+
+async function getUploadJwt(accountId: string, apiToken: string, projectName: string): Promise<string> {
+  const result = await cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/upload-token`, {
+    headers: { Authorization: `Bearer ${apiToken}` },
+  });
+  return result.jwt;
+}
+
+async function uploadAssets(jwt: string, files: { hash: string; content: string }[]): Promise<void> {
+  const payload = files.map(f => ({
+    key: f.hash,
+    value: Buffer.from(f.content).toString('base64'),
+    metadata: { contentType: 'text/html' },
+    base64: true,
+  }));
+  await cfFetch(`https://api.cloudflare.com/client/v4/pages/assets/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+async function upsertHashes(jwt: string, hashes: string[]): Promise<void> {
+  await cfFetch(`https://api.cloudflare.com/client/v4/pages/assets/upsert-hashes`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hashes }),
+  });
+}
+
+async function createDeployment(
+  accountId: string,
+  apiToken: string,
+  projectName: string,
+  manifest: Record<string, string>
+): Promise<string> {
+  const form = new FormData();
+  form.append('manifest', JSON.stringify(manifest));
+  const result = await cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/deployments`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiToken}` },
+    body: form,
+  });
+  return result?.url || `https://${projectName}.pages.dev`;
+}
+
+async function uploadDeployment(
+  accountId: string,
+  apiToken: string,
+  projectName: string,
+  files: Record<string, string>
+): Promise<string> {
+  const jwt = await getUploadJwt(accountId, apiToken, projectName);
+
+  const entries = Object.entries(files).map(([filePath, content]) => ({
+    path: filePath,
+    content,
+    hash: pagesFileHash(content, filePath),
+  }));
+
+  await uploadAssets(jwt, entries);
+  await upsertHashes(jwt, entries.map(f => f.hash));
+
+  const manifest: Record<string, string> = {};
+  for (const f of entries) manifest[`/${f.path}`] = f.hash;
+
+  return createDeployment(accountId, apiToken, projectName, manifest);
+}
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
-  
+  const PORT = Number(process.env.PORT) || 3000;
+
   app.use(express.json());
 
   // Initialize Octokit (GitHub API) lazily
@@ -46,87 +260,230 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
-  // Provisioning & Template Generation Engine
-  app.post("/api/provision", async (req, res) => {
+  // Template catalog (data-driven: add template folders + manifest + catalog entry)
+  app.get("/api/templates", async (req, res) => {
     try {
-      const { templateId, versionId, configOverrides } = req.body;
+      const catalogPath = path.join(TEMPLATES_ROOT, 'catalog.json');
+      const catalog = JSON.parse(await fs.readFile(catalogPath, 'utf8'));
+
+      const templates = [];
+      for (const t of catalog.templates || []) {
+        const versions = [];
+        let defaultTokens: Record<string, string> = {};
+        try {
+          const manifest = await loadManifest(t.id);
+          defaultTokens = manifest.defaultConfig?.tokens || {};
+          for (const v of t.versions || []) {
+            const vf = manifest.versions?.[v.id];
+            versions.push({
+              ...v,
+              desktopHtml: vf?.desktop ? `/templates/${t.id}/${vf.desktop}` : '',
+              mobileHtml: vf?.mobile ? `/templates/${t.id}/${vf.mobile}` : '',
+            });
+          }
+        } catch {
+          versions.push(...(t.versions || []));
+        }
+        templates.push({
+          ...t,
+          versions: versions.length ? versions : t.versions,
+          defaultTokens,
+        });
+      }
+
+      res.json({ success: true, templates });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // AI content engine: fill the selected template's tokens from a business profile
+  app.post("/api/generate-config", async (req, res) => {
+    try {
+      const { templateId, versionId, business } = req.body;
       if (!templateId || !versionId) {
         return res.status(400).json({ success: false, error: "templateId and versionId are required" });
       }
 
-      // 1. Read the manifest
-      const manifestPath = path.join(process.cwd(), 'public', 'templates', templateId, 'manifest.json');
-      let manifestStr = '';
-      try {
-        manifestStr = await fs.readFile(manifestPath, 'utf8');
-      } catch (err) {
-        return res.status(404).json({ success: false, error: `Manifest not found for template ${templateId}` });
-      }
-      const manifest = JSON.parse(manifestStr);
-
-      // 2. Merge user overrides with default config
-      const finalConfig = {
-        tokens: { ...manifest.defaultConfig.tokens, ...(configOverrides?.tokens || {}) },
-        theme: { ...manifest.defaultConfig.theme, ...(configOverrides?.theme || {}) },
-        seo: { ...manifest.defaultConfig.seo, ...(configOverrides?.seo || {}) }
-      };
-
-      // 3. Setup zip archiver
-      res.attachment(`${templateId}-${versionId}.zip`);
-      const archive = (archiver as any).default('zip', { zlib: { level: 9 } });
-      archive.on('error', (err) => { throw err; });
-      archive.pipe(res);
-
-      // 4. Helper to process HTML files
-      const processHtml = async (sourceHtmlName: string, destHtmlName: string) => {
-        const filePath = path.join(process.cwd(), 'public', 'templates', templateId, sourceHtmlName);
-        let html = '';
-        try {
-          html = await fs.readFile(filePath, 'utf8');
-        } catch (e) {
-          return; // File might not exist (e.g. mobile version missing)
-        }
-
-        // Replace {{TOKENS}}
-        for (const [key, value] of Object.entries(finalConfig.tokens)) {
-          const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-          html = html.replace(regex, value as string);
-        }
-
-        // Inject SEO
-        const seoBlock = `\n  <!-- Generated Meta Tags -->\n  <title>${finalConfig.seo.title}</title>\n  <meta name="description" content="${finalConfig.seo.description}">\n`;
-        html = html.replace('</title>', `</title>${seoBlock}`);
-
-        archive.append(html, { name: destHtmlName });
-      };
-
-      // 5. Resolve actual filenames from manifest versions map
+      const manifest = await loadManifest(templateId);
       const versionFiles = manifest.versions?.[versionId];
-      const desktopFile = versionFiles?.desktop || `${versionId}-desktop.html`;
-      const mobileFile = versionFiles?.mobile || `${versionId}-mobile.html`;
+      const templateDir = path.join(TEMPLATES_ROOT, templateId);
 
-      await processHtml(desktopFile, 'index.html');
-      await processHtml(mobileFile, 'mobile.html');
+      let html = '';
+      try {
+        html += await fs.readFile(path.join(templateDir, versionFiles?.desktop || `${versionId}-desktop.html`), 'utf8');
+      } catch {}
+      try {
+        html += await fs.readFile(path.join(templateDir, versionFiles?.mobile || `${versionId}-mobile.html`), 'utf8');
+      } catch {}
 
-      // Include admin dashboard as an add-on if requested
-      const includeAdmin = req.body.includeAdmin !== false; // default true
-      if (includeAdmin && templateId !== 'universal-admin') {
-        const adminPath = path.join(process.cwd(), 'public', 'templates', 'admin', 'universal-admin.html');
-        try {
-          let adminHtml = await fs.readFile(adminPath, 'utf8');
-          // Inject shared site tokens into admin too
-          for (const [key, value] of Object.entries(finalConfig.tokens)) {
-            const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-            adminHtml = adminHtml.replace(regex, value as string);
-          }
-          archive.append(adminHtml, { name: 'admin/index.html' });
-        } catch (e) { /* silent ignore if admin file missing */ }
+      const tokensInHtml = extractTokens(html);
+      const defaults: Record<string, string> = manifest.defaultConfig?.tokens || {};
+      const allTokens = [...new Set([...Object.keys(defaults), ...tokensInHtml])];
+
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) throw new Error("GEMINI_API_KEY environment variable is required");
+
+      const { GoogleGenAI } = await import("@google/genai");
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      });
+
+      const tokenList = allTokens.map(t => `- ${t} => "${defaults[t] || ''}"`).join('\n');
+      const reviews = (business?.reviews || []).slice(0, 2)
+        .map((r: any) => `"${r.text}" — ${r.author} (${r.rating}★)`)
+        .join('\n');
+      const photos = (business?.photos || []).slice(0, 2).join('\n');
+
+      const prompt = `You are the content engine for "Texas Sons", a web agency that builds single-page marketing websites for local businesses using pre-made HTML templates. Your job is to fill every content placeholder (token) for a specific template with accurate, high-quality copy based on the business profile.
+
+BUSINESS PROFILE:
+- Name: ${business?.name || ''}
+- Address: ${business?.address || ''}
+- Type: ${business?.type || 'Local business'}
+- Phone: ${business?.phone || ''}
+- Hours: ${Array.isArray(business?.hours) ? business.hours.join(' | ') : (business?.hours || '')}
+- Reviews:
+${reviews || '- none available'}
+- Business photos (URLs, may be empty):
+${photos || '- none'}
+
+TEMPLATE: ${manifest.name || templateId} (${req.body.industry || 'general'})
+VERSION: ${versionId}
+
+Fill every token below. The current default value follows "=>". Use client-specific content wherever the token represents client content:
+- SITE_NAME / SITE_TITLE: use the business name (drop LLC/Inc suffixes if the name becomes too long).
+- CONTACT_EMAIL: use the business email if known, otherwise a plausible info@<businessslug>.com
+- CONTACT_PHONE: the business phone, otherwise keep default.
+- BUSINESS_ADDRESS: the business address (single line).
+- COPYRIGHT_YEAR: the current year (2026).
+- HERO_IMAGE / CAMPAIGN_LOGO / logo tokens: prefer a business photo URL from the profile if one fits; otherwise keep the default.
+- Service tokens: generate 3-5 realistic services this type of business offers, with plausible "From $XX" pricing for the industry.
+- Testimonial tokens: convert the top reviews into quote + author pairs (keep the quote under 140 chars). If no reviews, use the defaults.
+- Hero headline/tagline tokens: short, punchy, on-brand copy for the industry.
+- For campaign tokens (candidate name, office title, pronouns): use the business name as the candidate and neutral defaults if unknown.
+
+TOKENS:
+${tokenList}
+
+Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
+{
+  "tokens": { "SITE_TITLE": "...", "SITE_NAME": "..." },
+  "seo": { "title": "Page <title> for the site", "description": "A 1-2 sentence SEO meta description" }
+}`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash-lite",
+        contents: prompt,
+      });
+
+      let aiConfig: any = {};
+      try {
+        aiConfig = parseJsonResponse(response.text || '');
+      } catch (err) {
+        console.warn('Failed to parse AI config, falling back to defaults:', err);
       }
 
-      await archive.finalize();
+      const tokens: Record<string, string> = {};
+      for (const key of allTokens) {
+        const val = aiConfig?.tokens?.[key];
+        tokens[key] = typeof val === 'string' && val.trim() ? val : (defaults[key] || '');
+      }
 
+      const seo = {
+        title: aiConfig?.seo?.title || manifest.defaultConfig?.seo?.title?.replace(/\{\{[A-Z_0-9]+\}\}/g, (m: string) => tokens[m.slice(2, -2)] || '') || tokens.SITE_TITLE || tokens.SITE_NAME || '',
+        description: aiConfig?.seo?.description || manifest.defaultConfig?.seo?.description || '',
+      };
+      const theme = { ...(manifest.defaultConfig?.theme || {}), ...(aiConfig?.theme || {}) };
+
+      res.json({ success: true, config: { tokens, theme, seo } });
     } catch (error: any) {
-      console.error(error);
+      console.error('Generate config error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Live preview renderer (returns rendered HTML for iframe/blob preview)
+  app.post("/api/render-site", async (req, res) => {
+    try {
+      const { templateId, versionId, config } = req.body;
+      if (!templateId || !versionId || !config) {
+        return res.status(400).json({ success: false, error: "templateId, versionId, and config are required" });
+      }
+      const { desktop, mobile, admin } = await renderSite(templateId, versionId, config);
+      res.json({ success: true, desktopHtml: desktop, mobileHtml: mobile, adminHtml: admin });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Deploy rendered site to Cloudflare Pages (free hosting, direct upload)
+  app.post("/api/deploy", async (req, res) => {
+    try {
+      const { templateId, versionId, config, projectName } = req.body;
+      if (!templateId || !versionId || !config) {
+        return res.status(400).json({ success: false, error: "templateId, versionId, and config are required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const { desktop, mobile, admin } = await renderSite(templateId, versionId, config);
+
+      const slug = sanitizeProjectName(projectName || config?.tokens?.SITE_NAME || templateId);
+
+      let project = await findPagesProject(accountId, apiToken, slug);
+      if (!project) {
+        project = await createPagesProject(accountId, apiToken, slug);
+      }
+
+      const files: Record<string, string> = { 'index.html': desktop };
+      if (mobile) files['mobile.html'] = mobile;
+      if (admin) files['admin/index.html'] = admin;
+
+      const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
+
+      res.json({
+        success: true,
+        url: `https://${slug}.pages.dev`,
+        deploymentUrl,
+        projectName: slug,
+      });
+    } catch (error: any) {
+      console.error('Deploy error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Provisioning & Template Generation Engine (legacy ZIP download)
+  app.post("/api/provision", async (req, res) => {
+    try {
+      const { templateId, versionId, configOverrides, includeAdmin } = req.body;
+      if (!templateId || !versionId) {
+        return res.status(400).json({ success: false, error: "templateId and versionId are required" });
+      }
+
+      const manifest = await loadManifest(templateId);
+      const finalConfig: SiteConfig = {
+        tokens: { ...manifest.defaultConfig.tokens, ...(configOverrides?.tokens || {}) },
+        theme:  { ...manifest.defaultConfig.theme,  ...(configOverrides?.theme  || {}) },
+        seo:    { ...manifest.defaultConfig.seo,    ...(configOverrides?.seo    || {}) }
+      };
+
+      const { desktop, mobile, admin } = await renderSite(templateId, versionId, finalConfig, {
+        includeAdmin: includeAdmin !== false,
+      });
+
+      const zip = new JSZip();
+      zip.file('index.html', desktop);
+      if (mobile) zip.file('mobile.html', mobile);
+      if (admin) zip.folder('admin')!.file('index.html', admin);
+
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${templateId}-${versionId}.zip"`);
+      res.send(zipBuffer);
+    } catch (error: any) {
+      console.error('Provision error:', error);
       if (!res.headersSent) {
         res.status(500).json({ success: false, error: error.message });
       }
@@ -138,7 +495,7 @@ async function startServer() {
     try {
       const { amount, clientName } = req.body;
       const stripe = getStripe();
-      
+
       // 1. Create a customer in Stripe
       const customer = await stripe.customers.create({
         name: clientName,
@@ -147,7 +504,7 @@ async function startServer() {
       // 2. Create an invoice item (Stripe expects the amount in cents)
       await stripe.invoiceItems.create({
         customer: customer.id,
-        amount: Math.round(amount * 100), 
+        amount: Math.round(amount * 100),
         currency: 'usd',
         description: 'Web Design and Development Services',
       });
@@ -159,8 +516,8 @@ async function startServer() {
         days_until_due: 14,
       });
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: `Successfully generated invoice for ${clientName}.`,
         invoiceId: invoice.id,
         invoiceUrl: invoice.hosted_invoice_url
@@ -176,19 +533,19 @@ async function startServer() {
     try {
       const { businessName, businessAddress, typeOfBusiness } = req.body;
       const { GoogleGenAI } = await import("@google/genai");
-      
+
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         throw new Error("GEMINI_API_KEY environment variable is required");
       }
-      
-      const ai = new GoogleGenAI({ 
+
+      const ai = new GoogleGenAI({
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
       });
 
       const prompt = `Write a professional, concise web design and development proposal for a local business.
-      
+
 Business Details:
 - Name: ${businessName}
 - Address: ${businessAddress}

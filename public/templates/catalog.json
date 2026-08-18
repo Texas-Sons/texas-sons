@@ -1,0 +1,105 @@
+{
+  "templates": [
+    {
+      "id": "salon",
+      "title": "Salon & Studio",
+      "category": "Beauty & Wellness",
+      "industryTags": ["Hair Salons", "Nail Salons", "Barbershops", "Spas & Wellness"],
+      "features": [
+        { "icon": "Scissors", "label": "3 Design Variations" },
+        { "icon": "Calendar", "label": "Booking Calendar Wire" },
+        { "icon": "Users", "label": "Staff Roster Section" },
+        { "icon": "Zap", "label": "Square Price Sync Ready" }
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "name": "Midnight Luxe",
+          "style": "Dark & Gold",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLv4OCYlZbzoOpe7fxoaYHTEDRgW9VsjZDLDvz3AHR5U2pzrLLmTdAHjM1hH6wGo7PqdeMV78C9Q5Fm3nfhcqDla5U8gp_CGN-AJwYz3eLRu4irdlzuibfOLbbNjZlhL33swLAPexXTcSqwEuEikKuL4WvW_BwyRSnwiNS_7or2H0sq40kqhrdNkPVht3t2uKtxbZjoovMK_XKVPO0n6DqtdMlar_XCgf_6Jr84hYzDQBAMTIAhdvp3mzmKe"
+        },
+        {
+          "id": "v2",
+          "name": "Pure Minimalist",
+          "style": "Clean & Modern",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLuRYsvuZ_GD6uIKfMFvx9_ZcqQ3MIT6jZzNDDMaRDW_plAPFtbGbmSs1oW-zulAg78NofGqpVY_UB-OvGOwYmNndDvsn3dkMzR9K9rKiYGzfOe5lpo3VPMVDhDFWIHH4OgC6t-yM5eT36ntXGQ3937A8rSWs-zFxpy_HGdb_30EGHtuuH_yKIEoPO3IR0ZKkSLvnl1S1-vRYTAWB73UrRR7ErOrbN7lOhbSJ-_Pui11TdPsX_o6b8N8u7wZ"
+        },
+        {
+          "id": "v3",
+          "name": "Prismatic Glow",
+          "style": "Bold & Vibrant",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLthHlPM9u-aqvRUnNmVNX4b9fMxPg8E8aVusfNuVIsDNRBx9l1ZQWo10ZcVAtjgUkNv3-G9x4xtu9Hz3ZxQWjHgSPIPyC4JDLgGKLuipndG0dizhLwkdiaNgRDfB56gxZ8k0I4aZ4MtNHW84_ICdDqH-doz5AtWgsAte5cU_n1Y-AKpTRC5EAFrSV7Oiu6TVRDYWdugUYrJfCfRtXZudH_OestlaOv8EEQNrDj4aB4oZnIgG4NdZzYZGfP3"
+        }
+      ]
+    },
+    {
+      "id": "restaurant",
+      "title": "Restaurant & Bar",
+      "category": "Food & Beverage",
+      "industryTags": ["Restaurants", "Bakeries"],
+      "features": [
+        { "icon": "Users", "label": "Table Reservation Wire" },
+        { "icon": "Zap", "label": "Order Online Ready" },
+        { "icon": "ArrowRight", "label": "Square Menu Sync" }
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "name": "Coming Soon",
+          "style": "Classic",
+          "thumbnail": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800"
+        }
+      ]
+    },
+    {
+      "id": "contractor",
+      "title": "Contractor & Trades",
+      "category": "Home Services",
+      "industryTags": ["Roofing", "Landscaping", "Plumbing", "HVAC", "Electricians", "Home Remodeling", "Cleaning Services"],
+      "features": [
+        { "icon": "MapPin", "label": "Service Area Maps" },
+        { "icon": "Wrench", "label": "Estimate Request Flow" }
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "name": "Coming Soon",
+          "style": "Classic",
+          "thumbnail": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=800"
+        }
+      ]
+    },
+    {
+      "id": "campaign",
+      "title": "Campaign Blueprint",
+      "category": "Political Campaign",
+      "industryTags": ["Political Campaign"],
+      "features": [
+        { "icon": "Vote", "label": "Candidate Bio & Platform" },
+        { "icon": "Calendar", "label": "Events Calendar" },
+        { "icon": "Flag", "label": "3 Design Variations" },
+        { "icon": "Heart", "label": "Donation CTA Ready" }
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "name": "Classic Authority",
+          "style": "Navy & Gold",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLtQFvTTqImiOHA-TJ4Lggnn93KgC0pX72VAmSSzvQvtSNGwznfZTJw8Ngh3JvEj48075CWDLVG9EO7nu3TyvxI--GaUYXi2uaDdtyKq7K2JkVz7iuwutTf1wCBQxAHjmTgMtoY1Ya73XxbbiMXb_xwvNOu1F53FyXTSppg-TB0xkEk-H5dwBtLUM8o4Y4zIOsJOQIGD6M_ZTTssK2eXtblDNojkdYWzdQFB_6qA3UTetoUrZJM-y_uINS8"
+        },
+        {
+          "id": "v2",
+          "name": "Modern Progressive",
+          "style": "Blue & Teal",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLsKbwojcgNzRwq8cdMDYsWUDYHAHDQgkZ--bRY5lnja9qu6aRIfb0bgn8_Q9gPqkmvco7sbbUGEJQeCT0MF5kVal1MAE26ibeltlK4M1ny3pqnUwPqnqxEPUVtP6HUxto2__EAYf4qHuDWxCMIYE-uZspOFV-VVWapS5MQGL_1JWC1x_p640rQEh76ve1Kkc3KZ9njYvmM_lSSqwdQRVdrKfFKrb8Yma32WBBaGX1OPjF4GRoRllPXNvw"
+        },
+        {
+          "id": "v3",
+          "name": "Warm Community",
+          "style": "Green & Brown",
+          "thumbnail": "https://lh3.googleusercontent.com/aida/AP1WRLvvkNe8epTOt_NY6kFhpo9zE5GhiRi--nWWptBmOyhJXLKxcWhg3DICr0v_q_bUS9Gp0rJskaCqbzK_E9uETtY1fxkRUTttySlPE7rcofxUn33RTuu3oiutAy_0pPhzwu7zq1dqMC5thTGmxFVgdel4qelSpBK-c78KEnMg6lYgeUXr6qNm0Gy3iBb7MzmwZAmggXq7nsnVz47K5bTkVI3sc61qbblVh0_0fbWqDPXDhdYQRAHXY9z8cIg"
+        }
+      ]
+    }
+  ]
+}

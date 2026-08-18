@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
-import { Plus, Filter, Play, Code2, ArrowRight, Zap, Calendar, Users, MapPin, Wrench, Scissors, ChevronLeft, ChevronRight, Monitor, Smartphone, X, Vote, Flag, Heart, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Filter, Play, Code2, ArrowRight, Zap, Calendar, Users, MapPin, Wrench, Scissors, ChevronLeft, ChevronRight, Monitor, Smartphone, X, Vote, Flag, Heart, Settings, Loader2 } from 'lucide-react';
+
+const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  Scissors, Calendar, Users, Zap, MapPin, Wrench, ArrowRight, Vote, Flag, Heart,
+};
 
 interface TemplateVersion {
   id: string;
@@ -8,152 +12,67 @@ interface TemplateVersion {
   desktopHtml: string;
   mobileHtml: string;
   thumbnail: string;
-  stitchDesktopId?: string;
-  stitchMobileId?: string;
 }
 
 interface Template {
   id: string;
   title: string;
   category: string;
-  features: { icon: React.ComponentType<any>; label: string }[];
+  industryTags: string[];
+  features: { icon: string; label: string }[];
   versions: TemplateVersion[];
+  defaultTokens?: Record<string, string>;
 }
-
-const TEMPLATES: Template[] = [
-  {
-    id: 'salon',
-    title: 'Salon & Studio',
-    category: 'Beauty & Wellness',
-    features: [
-      { icon: Scissors, label: '3 Design Variations' },
-      { icon: Calendar, label: 'Booking Calendar Wire' },
-      { icon: Users, label: 'Staff Roster Section' },
-      { icon: Zap, label: 'Square Price Sync Ready' },
-    ],
-    versions: [
-      {
-        id: 'v1',
-        name: 'Midnight Luxe',
-        style: 'Dark & Gold',
-        desktopHtml: '/templates/salon/v1-desktop.html',
-        mobileHtml: '/templates/salon/v1-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLv4OCYlZbzoOpe7fxoaYHTEDRgW9VsjZDLDvz3AHR5U2pzrLLmTdAHjM1hH6wGo7PqdeMV78C9Q5Fm3nfhcqDla5U8gp_CGN-AJwYz3eLRu4irdlzuibfOLbbNjZlhL33swLAPexXTcSqwEuEikKuL4WvW_BwyRSnwiNS_7or2H0sq40kqhrdNkPVht3t2uKtxbZjoovMK_XKVPO0n6DqtdMlar_XCgf_6Jr84hYzDQBAMTIAhdvp3mzmKe',
-      },
-      {
-        id: 'v2',
-        name: 'Pure Minimalist',
-        style: 'Clean & Modern',
-        desktopHtml: '/templates/salon/v2-desktop.html',
-        mobileHtml: '/templates/salon/v2-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLuRYsvuZ_GD6uIKfMFvx9_ZcqQ3MIT6jZzNDDMaRDW_plAPFtbGbmSs1oW-zulAg78NofGqpVY_UB-OvGOwYmNndDvsn3dkMzR9K9rKiYGzfOe5lpo3VPMVDhDFWIHH4OgC6t-yM5eT36ntXGQ3937A8rSWs-zFxpy_HGdb_30EGHtuuH_yKIEoPO3IR0ZKkSLvnl1S1-vRYTAWB73UrRR7ErOrbN7lOhbSJ-_Pui11TdPsX_o6b8N8u7wZ',
-        stitchDesktopId: '5c6779ac1f1745f8856082ba359ffebe',
-        stitchMobileId: '987591a4228f4fc3a25f7bcb3f015d3a',
-      },
-      {
-        id: 'v3',
-        name: 'Prismatic Glow',
-        style: 'Bold & Vibrant',
-        desktopHtml: '/templates/salon/v3-desktop.html',
-        mobileHtml: '/templates/salon/v3-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLthHlPM9u-aqvRUnNmVNX4b9fMxPg8E8aVusfNuVIsDNRBx9l1ZQWo10ZcVAtjgUkNv3-G9x4xtu9Hz3ZxQWjHgSPIPyC4JDLgGKLuipndG0dizhLwkdiaNgRDfB56gxZ8k0I4aZ4MtNHW84_ICdDqH-doz5AtWgsAte5cU_n1Y-AKpTRC5EAFrSV7Oiu6TVRDYWdugUYrJfCfRtXZudH_OestlaOv8EEQNrDj4aB4oZnIgG4NdZzYZGfP3',
-      },
-    ],
-  },
-  {
-    id: 'restaurant',
-    title: 'Restaurant & Bar',
-    category: 'Food & Beverage',
-    features: [
-      { icon: Users, label: 'Table Reservation Wire' },
-      { icon: Zap, label: 'Order Online Ready' },
-      { icon: ArrowRight, label: 'Square Menu Sync' },
-    ],
-    versions: [
-      {
-        id: 'v1',
-        name: 'Coming Soon',
-        style: 'Classic',
-        desktopHtml: '',
-        mobileHtml: '',
-        thumbnail: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800',
-      },
-    ],
-  },
-  {
-    id: 'contractor',
-    title: 'Contractor & Trades',
-    category: 'Home Services',
-    features: [
-      { icon: MapPin, label: 'Service Area Maps' },
-      { icon: Wrench, label: 'Estimate Request Flow' },
-    ],
-    versions: [
-      {
-        id: 'v1',
-        name: 'Coming Soon',
-        style: 'Classic',
-        desktopHtml: '',
-        mobileHtml: '',
-        thumbnail: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=800',
-      },
-    ],
-  },
-  {
-    id: 'campaign',
-    title: 'Campaign Blueprint',
-    category: 'Political Campaign',
-    features: [
-      { icon: Vote, label: 'Candidate Bio & Platform' },
-      { icon: Calendar, label: 'Events Calendar' },
-      { icon: Flag, label: '3 Design Variations' },
-      { icon: Heart, label: 'Donation CTA Ready' },
-    ],
-    versions: [
-      {
-        id: 'v1',
-        name: 'Classic Authority',
-        style: 'Navy & Gold',
-        desktopHtml: '/templates/campaign/v1-classic-desktop.html',
-        mobileHtml: '/templates/campaign/home-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLtQFvTTqImiOHA-TJ4Lggnn93KgC0pX72VAmSSzvQvtSNGwznfZTJw8Ngh3JvEj48075CWDLVG9EO7nu3TyvxI--GaUYXi2uaDdtyKq7K2JkVz7iuwutTf1wCBQxAHjmTgMtoY1Ya73XxbbiMXb_xwvNOu1F53FyXTSppg-TB0xkEk-H5dwBtLUM8o4Y4zIOsJOQIGD6M_ZTTssK2eXtblDNojkdYWzdQFB_6qA3UTetoUrZJM-y_uINS8',
-      },
-      {
-        id: 'v2',
-        name: 'Modern Progressive',
-        style: 'Blue & Teal',
-        desktopHtml: '/templates/campaign/v2-modern-desktop.html',
-        mobileHtml: '/templates/campaign/home-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLsKbwojcgNzRwq8cdMDYsWUDYHAHDQgkZ--bRY5lnja9qu6aRIfb0bgn8_Q9gPqkmvco7sbbUGEJQeCT0MF5kVal1MAE26ibeltlK4M1ny3pqnUwPqnqxEPUVtP6HUxto2__EAYf4qHuDWxCMIYE-uZspOFV-VVWapS5MQGL_1JWC1x_p640rQEh76ve1Kkc3KZ9njYvmM_lSSqwdQRVdrKfFKrb8Yma32WBBaGX1OPjF4GRoRllPXNvw',
-      },
-      {
-        id: 'v3',
-        name: 'Warm Community',
-        style: 'Green & Brown',
-        desktopHtml: '/templates/campaign/v3-community-desktop.html',
-        mobileHtml: '/templates/campaign/home-mobile.html',
-        thumbnail: 'https://lh3.googleusercontent.com/aida/AP1WRLvvkNe8epTOt_NY6kFhpo9zE5GhiRi--nWWptBmOyhJXLKxcWhg3DICr0v_q_bUS9Gp0rJskaCqbzK_E9uETtY1fxkRUTttySlPE7rcofxUn33RTuu3oiutAy_0pPhzwu7zq1dqMC5thTGmxFVgdel4qelSpBK-c78KEnMg6lYgeUXr6qNm0Gy3iBb7MzmwZAmggXq7nsnVz47K5bTkVI3sc61qbblVh0_0fbWqDPXDhdYQRAHXY9z8cIg',
-      },
-    ],
-  },
-];
 
 function TemplateCard({ template }: { template: Template; key?: React.Key }) {
   const [activeVersionIdx, setActiveVersionIdx] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
-  const activeVersion = template.versions[activeVersionIdx];
+  const [isBuilding, setIsBuilding] = useState(false);
+  const activeVersion = template.versions[activeVersionIdx] || template.versions[0];
   const hasMultipleVersions = template.versions.length > 1;
-  const hasMobile = !!activeVersion.mobileHtml;
-  const hasLivePreview = !!activeVersion.desktopHtml;
+  const hasMobile = !!activeVersion?.mobileHtml;
+  const hasLivePreview = !!activeVersion?.desktopHtml;
+
+  const handleUse = async () => {
+    try {
+      setIsBuilding(true);
+      const res = await fetch('/api/provision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateId: template.id,
+          versionId: activeVersion.id,
+          configOverrides: {}
+        })
+      });
+
+      if (!res.ok) throw new Error('Generation failed');
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${template.id}-${activeVersion.id}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Failed to compile template!");
+      console.error(error);
+    } finally {
+      setIsBuilding(false);
+    }
+  };
 
   return (
     <>
       <div className="bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden flex flex-col group transition-all hover:border-stone-700 hover:shadow-2xl hover:shadow-orange-900/10">
         {/* Card Thumbnail */}
         <div className="aspect-video relative overflow-hidden bg-stone-950 cursor-pointer" onClick={() => setPreviewOpen(true)}>
-          <img 
-            src={activeVersion.thumbnail} 
+          <img
+            src={activeVersion.thumbnail}
             alt={`${template.title} - ${activeVersion.name}`}
             className="w-full h-full object-cover object-top opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
           />
@@ -179,7 +98,7 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
         {/* Body */}
         <div className="p-6 flex-1 flex flex-col">
           <h3 className="text-xl font-bold text-white mb-1">{template.title}</h3>
-          
+
           {/* Version Switcher */}
           {hasMultipleVersions && (
             <div className="mb-4">
@@ -189,8 +108,8 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
                     key={v.id}
                     onClick={() => setActiveVersionIdx(idx)}
                     className={`flex-1 text-xs py-1.5 px-2 rounded-lg font-medium transition-all ${
-                      idx === activeVersionIdx 
-                        ? 'bg-orange-600 text-white shadow-lg shadow-orange-900/30' 
+                      idx === activeVersionIdx
+                        ? 'bg-orange-600 text-white shadow-lg shadow-orange-900/30'
                         : 'bg-stone-800 text-stone-400 hover:text-stone-200 hover:bg-stone-700'
                     }`}
                   >
@@ -203,10 +122,10 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
               </p>
             </div>
           )}
-          
+
           <div className="space-y-3 mb-6 flex-1">
-            {template.features.map((feature, idx) => {
-              const Icon = feature.icon;
+            {(template.features || []).map((feature, idx) => {
+              const Icon = ICON_MAP[feature.icon] || Settings;
               return (
                 <div key={idx} className="flex items-center gap-3 text-stone-300">
                   <Icon className="w-4 h-4 text-orange-500" />
@@ -218,7 +137,7 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
 
           {/* Actions */}
           <div className="grid grid-cols-3 gap-2 pt-4 border-t border-stone-800">
-            <button 
+            <button
               onClick={() => setPreviewOpen(true)}
               className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-lg hover:bg-stone-800 text-stone-400 hover:text-white transition-colors"
             >
@@ -229,39 +148,12 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
               <Code2 className="w-4 h-4" />
               <span className="text-xs font-medium">Code</span>
             </button>
-            <button 
-              onClick={async () => {
-                try {
-                  const res = await fetch('/api/provision', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      templateId: template.id,
-                      versionId: activeVersion.id,
-                      configOverrides: {} // Junie is handling default tokens for now
-                    })
-                  });
-
-                  if (!res.ok) throw new Error('Generation failed');
-
-                  // Trigger file download
-                  const blob = await res.blob();
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `${template.id}-${activeVersion.id}.zip`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                  window.URL.revokeObjectURL(url);
-                } catch (error) {
-                  alert("Failed to compile template!");
-                  console.error(error);
-                }
-              }}
-              className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 transition-colors"
+            <button
+              onClick={handleUse}
+              disabled={isBuilding}
+              className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 transition-colors disabled:opacity-50"
             >
-              <ArrowRight className="w-4 h-4" />
+              {isBuilding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
               <span className="text-xs font-medium">Use</span>
             </button>
           </div>
@@ -283,8 +175,8 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
                 <button
                   onClick={() => setPreviewDevice('desktop')}
                   className={`p-1.5 rounded-md transition-all ${
-                    previewDevice === 'desktop' 
-                      ? 'bg-stone-600 text-white' 
+                    previewDevice === 'desktop'
+                      ? 'bg-stone-600 text-white'
                       : 'text-stone-400 hover:text-stone-200'
                   }`}
                   title="Desktop view"
@@ -295,8 +187,8 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
                   onClick={() => setPreviewDevice('mobile')}
                   disabled={!hasMobile}
                   className={`p-1.5 rounded-md transition-all ${
-                    previewDevice === 'mobile' 
-                      ? 'bg-stone-600 text-white' 
+                    previewDevice === 'mobile'
+                      ? 'bg-stone-600 text-white'
                       : 'text-stone-400 hover:text-stone-200 disabled:opacity-30 disabled:cursor-not-allowed'
                   }`}
                   title={hasMobile ? 'Mobile view' : 'No mobile version available'}
@@ -320,8 +212,8 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
                       key={v.id}
                       onClick={() => setActiveVersionIdx(idx)}
                       className={`text-xs py-1.5 px-3 rounded-lg font-medium transition-all ${
-                        idx === activeVersionIdx 
-                          ? 'bg-orange-600 text-white' 
+                        idx === activeVersionIdx
+                          ? 'bg-orange-600 text-white'
                           : 'bg-stone-800 text-stone-400 hover:text-stone-200'
                       }`}
                     >
@@ -337,7 +229,7 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
                   </button>
                 </div>
               )}
-              <button 
+              <button
                 onClick={() => setPreviewOpen(false)}
                 className="p-2 rounded-lg bg-stone-800 text-stone-400 hover:text-white hover:bg-stone-700 transition-colors"
               >
@@ -345,7 +237,7 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
               </button>
             </div>
           </div>
-          
+
           {/* Modal Body — Live iframe preview */}
           <div className="flex-1 flex items-start justify-center overflow-hidden bg-stone-950">
             {hasLivePreview ? (
@@ -380,10 +272,14 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
           {/* Modal Footer */}
           <div className="px-6 py-3 border-t border-stone-800 bg-stone-950 flex justify-between items-center flex-shrink-0">
             <span className="text-xs text-stone-500">
-              Live HTML Preview · {previewDevice === 'mobile' ? 'Mobile' : 'Desktop'} · Stitch Project: Opalescent Color Studio
+              Live HTML Preview · {previewDevice === 'mobile' ? 'Mobile' : 'Desktop'}
             </span>
-            <button className="px-5 py-2 rounded-lg text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white transition-colors flex items-center gap-2">
-              <ArrowRight className="w-4 h-4" />
+            <button
+              onClick={handleUse}
+              disabled={isBuilding}
+              className="px-5 py-2 rounded-lg text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white transition-colors flex items-center gap-2 disabled:opacity-50"
+            >
+              {isBuilding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
               Use This Version
             </button>
           </div>
@@ -394,6 +290,27 @@ function TemplateCard({ template }: { template: Template; key?: React.Key }) {
 }
 
 export default function TemplatesView() {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/templates');
+        const data = await res.json();
+        if (data.success) setTemplates(data.templates);
+        else setError(data.error || 'Failed to load templates');
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || 'Failed to load templates');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -413,11 +330,26 @@ export default function TemplatesView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {TEMPLATES.map((template) => (
-          <TemplateCard key={template.id} template={template} />
-        ))}
-      </div>
+      {loading && (
+        <div className="flex items-center justify-center py-24 text-stone-500">
+          <Loader2 className="w-6 h-6 animate-spin text-orange-500 mr-3" />
+          Loading templates...
+        </div>
+      )}
+
+      {error && (
+        <div className="border border-red-900/50 bg-red-950/30 rounded-xl p-6 text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {templates.map((template) => (
+            <TemplateCard key={template.id} template={template} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
