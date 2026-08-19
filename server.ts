@@ -227,7 +227,8 @@ async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: '25mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
   // Initialize Octokit (GitHub API) lazily
   let octokitClient: Octokit | null = null;
@@ -567,6 +568,109 @@ Draft a short, persuasive email proposal recommending we build them a modern web
     } catch (error: any) {
       console.error("AI Proposal Error:", error);
       res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Multimodal AI Photo / Menu / Flyer Extraction Route
+  app.post("/api/extract-dossier", async (req, res) => {
+    try {
+      const { images, contextHint } = req.body;
+      
+      if (!images || !Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({ success: false, error: "At least one image is required" });
+      }
+
+      const { GoogleGenAI } = await import("@google/genai");
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("GEMINI_API_KEY environment variable is required");
+      }
+
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      });
+
+      const parts: any[] = [];
+
+      for (const img of images) {
+        if (!img.data) continue;
+        const cleanBase64 = img.data.includes('base64,') ? img.data.split('base64,')[1] : img.data;
+        parts.push({
+          inlineData: {
+            data: cleanBase64,
+            mimeType: img.mimeType || 'image/jpeg'
+          }
+        });
+      }
+
+      const extractionPrompt = `You are an expert digital agency architect for TX Sons Websites.
+Analyze the provided image(s) (which may be a restaurant menu, business card, campaign flyer, brochure, storefront photo, price list, or marketing screenshot) and extract a comprehensive, production-ready website business dossier in valid JSON format.
+
+${contextHint ? `User Context Hint: ${contextHint}` : ''}
+
+You MUST return ONLY a valid JSON object matching this exact schema:
+{
+  "businessName": "Exact business or candidate name",
+  "category": "One of: 'Campaign & Leadership', 'Food & Beverage', 'Beauty & Wellness', 'Home & Trade Services', 'Professional & Medical'",
+  "theme": "One of: 'campaign-navy', 'luxury', 'crimson-bold', 'dark', 'light'",
+  "tagline": "Punchy, authoritative, high-converting tagline/slogan for the hero section",
+  "description": "2-3 sentence narrative bio, story, or mission statement for the business based on the image",
+  "phone": "Phone number found on asset, or realistic Texas phone e.g. (512) 555-XXXX",
+  "email": "Email address found or reasonable domain email",
+  "address": "Physical location/address or city/state found on asset",
+  "hours": "Operating hours if found, or Mon - Sat: 9:00 AM - 6:00 PM",
+  "primaryColor": "Hex code representing the primary brand color (e.g. #00081e for navy, #1c1917 for dark, #0c0a09 for luxury)",
+  "accentColor": "Hex code representing the most prominent accent color detected in the image (e.g. #C5A059 for gold, #dc2626 for red, #d97706 for amber, #f97316 for orange, #3b82f6 for blue)",
+  "badges": [
+    "3-4 short accreditation/authority badges based on what is in the image (e.g. '20+ Years Experience', 'Locally Owned & Operated', '100% Certified', 'Post Oak Smoked')"
+  ],
+  "proofBadgeText": "Short review/authority badge text (e.g. '4.9 Stars · 300+ Verified Reviews' or 'Official 2026 Endorsements')",
+  "services": [
+    {
+      "title": "Service or Menu Item Name",
+      "description": "Description of ingredients, scope, or details",
+      "price": "Price if visible (e.g. '$24/plate', 'From $185', 'Free Estimate')",
+      "duration": "Duration or category (e.g. 'Entree', '3.5 hrs', 'Core Priority')",
+      "highlight": true
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "A quote, testimonial, endorsement, or review found on the asset, or an authentic review based on the branding",
+      "author": "Name of reviewer / endorser",
+      "role": "Title, publication, or local area",
+      "rating": 5
+    }
+  ]
+}
+
+Rules:
+1. Extract ALL visible distinct services or menu items (up to 8 items).
+2. If the image is a food menu, extract real food items with their actual prices and descriptions.
+3. If the image is a political flyer/mailer, extract candidate platform priorities, endorsements, and official campaign disclosures.
+4. If the image is a business card or contractor flyer, extract licenses, certifications, and service specialties.
+5. Choose the theme and accentColor that visually matches the colors used in the uploaded photo.`;
+
+      parts.push({ text: extractionPrompt });
+
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: parts
+      });
+
+      const rawText = response.text || "{}";
+      const cleanJsonText = rawText
+        .replace(/^```json/gm, '')
+        .replace(/^```/gm, '')
+        .trim();
+
+      const dossier = JSON.parse(cleanJsonText);
+
+      res.json({ success: true, dossier });
+    } catch (error: any) {
+      console.error("AI Dossier Extraction Error:", error);
+      res.status(500).json({ success: false, error: error.message || "Failed to parse image with Gemini" });
     }
   });
 

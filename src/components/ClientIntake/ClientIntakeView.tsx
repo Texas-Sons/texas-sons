@@ -26,9 +26,11 @@ import {
   Sparkle,
   Wrench,
   Stethoscope,
-  Briefcase
+  Briefcase,
+  Camera
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
+import PhotoScannerModal from '../PhotoScannerModal';
 
 interface ClientIntakeViewProps {
   onLaunchStudio: (client: ClientIntake) => void;
@@ -213,6 +215,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: Cl
 
   // Modals
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientIntake | null>(null);
   const [shareModalClient, setShareModalClient] = useState<ClientIntake | null>(null);
   const [copiedType, setCopiedType] = useState<string | null>(null);
@@ -344,6 +347,17 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: Cl
     }
   };
 
+  const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string) => {
+    setEditingClient(null);
+    setForm(prev => ({
+      ...prev,
+      ...dossier,
+      heroImage: primaryImageUrl || dossier.heroImage || prev.heroImage
+    }));
+    setIsScannerOpen(false);
+    setIsNewModalOpen(true);
+  };
+
   const handleDeleteClient = (id: string) => {
     if (confirm('Are you sure you want to remove this client intake dossier?')) {
       setClients(prev => prev.filter(c => c.id !== id));
@@ -417,6 +431,14 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: Cl
           </div>
 
           <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsScannerOpen(true)}
+              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/50 hover:bg-stone-800 text-stone-200 hover:text-white font-semibold text-xs sm:text-sm shadow-md transition-all active:scale-95"
+            >
+              <Camera className="w-4 h-4 text-orange-400" />
+              <span>Scan Photo / Menu</span>
+            </button>
+
             <button
               onClick={() => handleOpenNewModal()}
               className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-orange-900/30 transition-all active:scale-95"
@@ -703,6 +725,27 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: Cl
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto space-y-6 text-xs">
               
+              {/* AI Photo Scanner Banner */}
+              <div className="p-3.5 rounded-xl bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 border border-orange-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400 flex-shrink-0">
+                    <Camera className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white block">Have a photo of a menu, flyer, or business card?</span>
+                    <span className="text-[11px] text-stone-400">Let Gemini Vision parse all fields, offerings, and colors instantly.</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsScannerOpen(true)}
+                  className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md flex-shrink-0"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Scan Photo</span>
+                </button>
+              </div>
+
               {/* Section 1: Business Identity */}
               <div className="space-y-3">
                 <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider border-b border-stone-800 pb-1.5">
@@ -1068,6 +1111,15 @@ TX Sons Delivery Engine`}
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 3: AI Multimodal Photo Scanner                                      */}
+      {/* ========================================================================= */}
+      <PhotoScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onApplyDossier={handleApplyFromScanner}
+      />
 
     </div>
   );

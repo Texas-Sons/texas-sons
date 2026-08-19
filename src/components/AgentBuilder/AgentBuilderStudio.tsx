@@ -38,7 +38,8 @@ import {
   Palette,
   ShieldAlert,
   Settings2,
-  LayoutDashboard
+  LayoutDashboard,
+  Camera
 } from 'lucide-react';
 import { 
   NavbarBlock, 
@@ -52,6 +53,8 @@ import {
   ServiceItem, 
   TestimonialItem 
 } from '../../templates/blocks';
+import PhotoScannerModal from '../PhotoScannerModal';
+import { ClientIntake } from '../../types';
 
 interface AgentState {
   step: 'idle' | 'scouting' | 'architecting' | 'building' | 'ready';
@@ -242,6 +245,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
   // Blueprint Dropdown State
   const [isBlueprintDropdownOpen, setIsBlueprintDropdownOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   // Custom Intake Modal State
   const [intakeModalOpen, setIntakeModalOpen] = useState(false);
@@ -345,6 +349,45 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       tokensUsed: 350
     });
     setIsBlueprintDropdownOpen(false);
+  };
+
+  const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string) => {
+    const newSnapshot: ProjectSnapshot = {
+      id: `prj-${Date.now()}`,
+      prompt: `Scanned from photo: ${dossier.businessName || 'Business Asset'}`,
+      timestamp: new Date().toLocaleTimeString(),
+      profile: {
+        ...project.profile,
+        name: dossier.businessName || project.profile.name,
+        tagline: dossier.tagline || project.profile.tagline,
+        description: dossier.description || project.profile.description,
+        phone: dossier.phone || project.profile.phone,
+        email: dossier.email || project.profile.email,
+        address: dossier.address || project.profile.address,
+        hours: dossier.hours || project.profile.hours,
+        heroImage: primaryImageUrl || dossier.heroImage || project.profile.heroImage,
+        category: dossier.category || project.profile.category,
+        theme: (dossier.theme as any) || project.theme,
+        primaryColor: dossier.primaryColor || project.profile.primaryColor,
+        accentColor: dossier.accentColor || project.profile.accentColor
+      },
+      services: (dossier.services && dossier.services.length > 0) ? dossier.services : project.services,
+      testimonials: (dossier.testimonials && dossier.testimonials.length > 0) ? dossier.testimonials : project.testimonials,
+      theme: (dossier.theme as any) || project.theme,
+      heroVariant: 'split',
+      badges: dossier.badges && dossier.badges.length > 0 ? dossier.badges : project.badges,
+      proofBadgeText: dossier.proofBadgeText || project.proofBadgeText
+    };
+
+    setProject(newSnapshot);
+    setHistory(prev => [newSnapshot, ...prev]);
+    setIsScannerOpen(false);
+    setActiveTab('preview');
+    setAgentState({
+      step: 'ready',
+      message: `Photo Scanned: Loaded ${newSnapshot.profile.name} with ${newSnapshot.services.length} items`,
+      tokensUsed: 360
+    });
   };
 
   const handleSaveCustomBlueprint = (e: React.FormEvent) => {
@@ -617,6 +660,15 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          <button
+            onClick={() => setIsScannerOpen(true)}
+            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all"
+            title="Scan photo of a menu, flyer, or business card"
+          >
+            <Camera className="w-3.5 h-3.5 text-orange-400" />
+            <span className="hidden md:inline">Scan Photo</span>
+          </button>
+
           <button
             onClick={() => setInspectorActive(!inspectorActive)}
             className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all ${
@@ -1413,6 +1465,13 @@ export default function ClientSite() {
           </div>
         </div>
       )}
+
+      {/* AI Multimodal Photo Scanner Modal */}
+      <PhotoScannerModal 
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onApplyDossier={handleApplyFromScanner}
+      />
 
     </div>
   );
