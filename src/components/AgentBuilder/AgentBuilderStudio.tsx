@@ -563,7 +563,21 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   };
 
   const handleExportZip = () => {
-    alert("Project files compiled and ready for 1-click Cloudflare Pages deployment!");
+    // Export the project snapshot as a JSON file
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(project, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `${project.profile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_blueprint.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    
+    // Notify the user
+    setAgentState({
+      step: 'ready',
+      message: 'Blueprint JSON downloaded! Automated Cloudflare deployment coming in v2.0.',
+      tokensUsed: agentState.tokensUsed
+    });
   };
 
   // Centralized campaign detection — uses category field for reliability with custom blueprints
