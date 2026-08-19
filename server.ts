@@ -210,6 +210,43 @@ async function getGemini() {
   return geminiClient;
 }
 
+async function generateGeminiWithRetry(options: { model: string; contents: any }, maxRetries = 3): Promise<any> {
+  const ai = await getGemini();
+  let lastError: any = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await ai.models.generateContent(options);
+    } catch (err: any) {
+      lastError = err;
+      const errMsg = err?.message || String(err);
+      const isRateLimit = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || err?.status === "RESOURCE_EXHAUSTED";
+
+      if (isRateLimit && attempt < maxRetries) {
+        let delayMs = attempt * 6000;
+        try {
+          const match = errMsg.match(/retry in ([0-9.]+)s/i) || errMsg.match(/retryDelay":"([0-9.]+)s"/i);
+          if (match && match[1]) {
+            delayMs = Math.ceil(parseFloat(match[1]) * 1000) + 1000;
+          }
+        } catch {}
+
+        console.log(`[Gemini Rate Limit 429] Waiting ${delayMs}ms before retry ${attempt + 1}/${maxRetries}...`);
+        await new Promise(res => setTimeout(res, delayMs));
+        continue;
+      }
+
+      if (isRateLimit) {
+        throw new Error("Google AI Free Tier rate limit reached (250k tokens/min). Please wait ~10 seconds before trying again, or add billing to your Google AI Studio key.");
+      }
+
+      throw err;
+    }
+  }
+
+  throw lastError;
+}
+
 // Lazy-initialized Supabase client for lead capture
 let supabaseClient: SupabaseClient | null = null;
 function getSupabase(): SupabaseClient {
@@ -504,7 +541,7 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
   "seo": { "title": "Page <title> for the site", "description": "A 1-2 sentence SEO meta description" }
 }`;
 
-      const response = await ai.models.generateContent({
+      const response = await generateGeminiWithRetry({
         model: "gemini-3.6-flash",
         contents: prompt,
       });
@@ -718,7 +755,7 @@ We are Texas Sons, a premium digital agency. We offer three tiers:
 
 Draft a short, persuasive email proposal recommending we build them a modern website to capture more local traffic and elevate their brand. Keep it professional, not overly salesy, and highlight that we noticed they do not currently have a website listed on Google. Make it around 3-4 paragraphs.`;
 
-      const response = await ai.models.generateContent({
+      const response = await generateGeminiWithRetry({
         model: "gemini-3.6-flash",
         contents: prompt,
       });
@@ -804,7 +841,7 @@ Rules:
 
       parts.push({ text: extractionPrompt });
 
-      const response = await ai.models.generateContent({
+      const response = await generateGeminiWithRetry({
         model: "gemini-3.6-flash",
         contents: parts
       });
@@ -860,8 +897,7 @@ ${JSON.stringify(currentSnapshot, null, 2)}
 User Instruction:
 ${prompt}`;
 
-      const ai = await getGemini();
-      const response = await ai.models.generateContent({
+      const response = await generateGeminiWithRetry({
         model: "gemini-3.6-flash",
         contents: systemInstruction
       });
