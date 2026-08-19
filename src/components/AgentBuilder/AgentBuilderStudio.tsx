@@ -78,6 +78,7 @@ export interface ProjectSnapshot {
   badges?: string[];
   proofBadgeText?: string;
   seo?: { title: string; description: string };
+  uploadedImages?: string[];
 }
 
 interface PresetBlueprint {
@@ -286,6 +287,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
   // Blueprint Dropdown State
   const [isBlueprintDropdownOpen, setIsBlueprintDropdownOpen] = useState(false);
+  const [dropdownSearch, setDropdownSearch] = useState('');
+  const [previewMode, setPreviewMode] = useState<'site' | 'admin' | 'code'>('site');
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   // Custom Intake Modal State
@@ -412,7 +415,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     setIsBlueprintDropdownOpen(false);
   };
 
-  const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string) => {
+  const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string, allImages?: string[]) => {
     const newSnapshot: ProjectSnapshot = {
       id: `prj-${Date.now()}`,
       prompt: `Scanned from photo: ${dossier.businessName || 'Business Asset'}`,
@@ -441,7 +444,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       seo: {
         title: `${dossier.businessName || project.profile.name} — ${dossier.tagline || project.profile.tagline || 'Local Business'}`,
         description: dossier.description || project.profile.description || '',
-      }
+      },
+      uploadedImages: allImages || project.uploadedImages || []
     };
 
     setProject(newSnapshot);
@@ -755,6 +759,28 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
               </span>
             </div>
           </div>
+        </div>
+
+        {/* View Modes */}
+        <div className="flex items-center bg-stone-800/80 rounded-lg p-1 border border-stone-700/50 hidden md:flex">
+          <button
+            onClick={() => setActiveTab('preview')}
+            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+              activeTab === 'preview' ? 'bg-orange-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>Live Website</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+              activeTab === 'admin' ? 'bg-orange-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Client Admin Portal</span>
+          </button>
         </div>
 
         {/* Viewport Device Controls */}
@@ -1612,6 +1638,7 @@ export default function ClientSite() {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onApplyDossier={handleApplyFromScanner}
+        existingImages={project.uploadedImages}
       />
 
     </div>

@@ -23,7 +23,8 @@ import { ClientIntake } from '../types';
 interface PhotoScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApplyDossier: (dossier: Partial<ClientIntake>, primaryImageUrl?: string) => void;
+  onApplyDossier: (dossier: Partial<ClientIntake>, primaryImageUrl?: string, allImages?: string[]) => void;
+  existingImages?: string[];
 }
 
 interface UploadedFilePreview {
@@ -34,7 +35,7 @@ interface UploadedFilePreview {
   size: string;
 }
 
-export default function PhotoScannerModal({ isOpen, onClose, onApplyDossier }: PhotoScannerModalProps) {
+export default function PhotoScannerModal({ isOpen, onClose, onApplyDossier, existingImages = [] }: PhotoScannerModalProps) {
   const [files, setFiles] = useState<UploadedFilePreview[]>([]);
   const [contextHint, setContextHint] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -44,6 +45,26 @@ export default function PhotoScannerModal({ isOpen, onClose, onApplyDossier }: P
   const [selectedHeroIndex, setSelectedHeroIndex] = useState<number>(0);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (existingImages && existingImages.length > 0) {
+        setFiles(existingImages.map((dataUrl, idx) => ({
+          id: `existing-${idx}`,
+          name: `Project Image ${idx + 1}`,
+          dataUrl,
+          mimeType: 'image/jpeg',
+          size: 'Saved'
+        })));
+      } else {
+        setFiles([]);
+      }
+      setContextHint('');
+      setScanError(null);
+      setExtractedDossier(null);
+      setSelectedHeroIndex(0);
+    }
+  }, [isOpen, existingImages]);
 
   if (!isOpen) return null;
 
@@ -162,7 +183,8 @@ function compressImage(file: File, maxDim = 1200, quality = 0.8): Promise<string
   const handleApply = () => {
     if (!extractedDossier) return;
     const heroImage = files[selectedHeroIndex]?.dataUrl;
-    onApplyDossier(extractedDossier, heroImage);
+    const allImages = files.map(f => f.dataUrl);
+    onApplyDossier(extractedDossier, heroImage, allImages);
     onClose();
   };
 
