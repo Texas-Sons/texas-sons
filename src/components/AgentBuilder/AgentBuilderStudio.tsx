@@ -562,22 +562,43 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     });
   };
 
-  const handleExportZip = () => {
-    // Export the project snapshot as a JSON file
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(project, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${project.profile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_blueprint.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    
-    // Notify the user
+  const handleDeploySite = async () => {
     setAgentState({
-      step: 'ready',
-      message: 'Blueprint JSON downloaded! Automated Cloudflare deployment coming in v2.0.',
+      step: 'building',
+      message: 'Compiling React blocks and pushing to Cloudflare Pages...',
       tokensUsed: agentState.tokensUsed
     });
+
+    try {
+      const res = await fetch('/api/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectName: project.profile.name,
+          currentSnapshot: project
+        })
+      });
+      const data = await res.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Deployment failed');
+      }
+
+      setAgentState({
+        step: 'ready',
+        message: `Deployed successfully! Live at: ${data.url}`,
+        tokensUsed: agentState.tokensUsed
+      });
+      
+      // Optionally open in new tab
+      window.open(data.url, '_blank');
+    } catch (e: any) {
+      setAgentState({
+        step: 'ready',
+        message: `Deployment error: ${e.message}. Did you set Cloudflare credentials?`,
+        tokensUsed: agentState.tokensUsed
+      });
+    }
   };
 
   // Centralized campaign detection — uses category field for reliability with custom blueprints
@@ -695,7 +716,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </button>
 
           <button
-            onClick={handleExportZip}
+            onClick={handleDeploySite}
             className="px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1.5 shadow-md shadow-orange-600/30 transition-all hover:scale-105"
           >
             <UploadCloud className="w-3.5 h-3.5" />

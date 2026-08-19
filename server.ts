@@ -419,27 +419,50 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
     }
   });
 
-  // Deploy rendered site to Cloudflare Pages (free hosting, direct upload)
+  // Deploy compiled React client to Cloudflare Pages
   app.post("/api/deploy", async (req, res) => {
     try {
-      const { templateId, versionId, config, projectName } = req.body;
-      if (!templateId || !versionId || !config) {
-        return res.status(400).json({ success: false, error: "templateId, versionId, and config are required" });
+      const { projectName, currentSnapshot } = req.body;
+      if (!currentSnapshot) {
+        return res.status(400).json({ success: false, error: "currentSnapshot is required" });
       }
 
       const { accountId, apiToken } = getCloudflareCredentials();
-      const { desktop, mobile, admin } = await renderSite(templateId, versionId, config);
-
-      const slug = sanitizeProjectName(projectName || config?.tokens?.SITE_NAME || templateId);
+      const slug = sanitizeProjectName(projectName || currentSnapshot.profile.name);
 
       let project = await findPagesProject(accountId, apiToken, slug);
       if (!project) {
         project = await createPagesProject(accountId, apiToken, slug);
       }
 
-      const files: Record<string, string> = { 'index.html': desktop };
-      if (mobile) files['mobile.html'] = mobile;
-      if (admin) files['admin/index.html'] = admin;
+      // Read client.html template
+      const clientHtmlPath = path.join(process.cwd(), 'dist', 'client.html');
+      let clientHtml = '';
+      try {
+        clientHtml = await fs.readFile(clientHtmlPath, 'utf8');
+      } catch (err) {
+        throw new Error("client.html not found. Did you run 'npm run build'?");
+      }
+
+      // Inject the blueprint
+      const injection = `<script>window.__TXSONS_BLUEPRINT__ = ${JSON.stringify(currentSnapshot)};</script></head>`;
+      const finalHtml = clientHtml.replace('</head>', injection);
+
+      const files: Record<string, string> = {
+        'index.html': finalHtml,
+      };
+
+      // Gather assets
+      const assetsDir = path.join(process.cwd(), 'dist', 'assets');
+      try {
+        const assetFiles = await fs.readdir(assetsDir);
+        for (const file of assetFiles) {
+          const content = await fs.readFile(path.join(assetsDir, file), 'utf8');
+          files[`assets/${file}`] = content;
+        }
+      } catch (e) {
+        console.log("No assets directory found or error reading assets:", e);
+      }
 
       const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
 
