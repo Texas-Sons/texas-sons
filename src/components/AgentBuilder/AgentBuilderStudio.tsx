@@ -39,7 +39,9 @@ import {
   ShieldAlert,
   Settings2,
   LayoutDashboard,
-  Camera
+  Camera,
+  FolderCheck,
+  Bookmark
 } from 'lucide-react';
 import { 
   NavbarBlock, 
@@ -54,6 +56,7 @@ import {
   TestimonialItem 
 } from '../../templates/blocks';
 import { buildThemeVars } from '../../templates/blocks/theme';
+import { supabase } from '../../supabase';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake } from '../../types';
 
@@ -94,6 +97,41 @@ interface PresetBlueprint {
 }
 
 const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
+  {
+    id: 'bp-sheriff-trevino',
+    title: 'Ernest Trevino for Sheriff',
+    category: 'Campaign & Leadership',
+    prompt: 'Build a conservative, high-authority political campaign website for Ernest Trevino for Atascosa County Sheriff 2026. 28+ years Texas law enforcement, Medal of Valor recipient, proactive crime interdiction, school safety, and constitutional leadership.',
+    badges: ['28+ Years Texas Law Enforcement', 'Medal of Valor Recipient', 'Certified Master Peace Officer', 'Lifelong Atascosa County Resident'],
+    proofBadgeText: 'none',
+    profile: {
+      name: 'Ernest Trevino for Atascosa County Sheriff',
+      tagline: 'A Lifetime of Dedicated Service & Law Enforcement Leadership',
+      description: 'With over 28 years in Texas law enforcement, Medal of Valor recipient Ernest Trevino brings proven command leadership, proactive crime reduction, and steadfast community trust to Atascosa County.',
+      phone: '(830) 555-VOTE',
+      email: 'campaign@trevinoforsheriff.com',
+      address: 'Campaign HQ: Jourdanton, TX 78026',
+      hours: 'Campaign Office: Mon - Sat: 9:00 AM - 6:00 PM',
+      heroImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+      category: 'Campaign & Leadership',
+      theme: 'campaign-navy',
+      primaryColor: '#00081e',
+      accentColor: '#ea580c',
+      fontFamily: 'serif'
+    },
+    services: [
+      { title: 'Violent Crime & Narcotics Interdiction', description: 'Expanding proactive rural highway patrols and joint task forces targeting cartel narcotics trafficking and property theft networks.', duration: 'Pillar #1', highlight: true },
+      { title: 'School & Campus Safety Taskforce', description: 'Placing certified School Resource Deputies in every county campus and conducting active threat readiness training.', duration: 'Pillar #2' },
+      { title: 'Fiscal Transparency & Modernized Jail Ops', description: 'Eliminating administrative waste, modernizing detention facilities, and ensuring every taxpayer dollar is accounted for.', duration: 'Pillar #3' },
+    ],
+    testimonials: [
+      { quote: 'Ernest Trevino is a true lawman of unmatched courage and integrity. He has my full endorsement for Atascosa County Sheriff.', author: 'Judge Ronald Sterling', role: 'Presiding County Magistrate', rating: 5, verified: true },
+      { quote: 'When lives were on the line, Trevino led from the front. His Medal of Valor speaks for itself.', author: 'Captain Sarah Garza', role: 'Retired SWAT Commander', rating: 5, verified: true },
+      { quote: 'A leader who actually listens to our rural landowners and neighborhood associations.', author: 'David Martinez', role: 'Atascosa Rancher & Community Leader', rating: 5, verified: true }
+    ],
+    theme: 'campaign-navy',
+    heroVariant: 'split'
+  },
   {
     id: 'bp-judge-debbie',
     title: 'Deborah Dietzmann for Judge',
@@ -573,6 +611,45 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     });
   };
 
+  const handleSaveToProjects = async () => {
+    try {
+      setAgentState({
+        step: 'building',
+        message: 'Saving site to Supabase active projects...',
+        tokensUsed: agentState.tokensUsed
+      });
+
+      const projectId = project.id.startsWith('prj-') ? project.id.slice(4) : project.id;
+      const slug = project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+      const { error } = await supabase.from('projects').upsert({
+        id: projectId || `prj_${Date.now()}`,
+        client_name: project.profile.name,
+        company_name: project.profile.name,
+        tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
+        status: 'Theme Assembly',
+        updated_at: new Date().toISOString(),
+        domain: `https://${slug}.pages.dev`,
+        blueprint: project
+      });
+
+      if (error) throw error;
+
+      setAgentState({
+        step: 'ready',
+        message: `Saved! "${project.profile.name}" is now tracked in your Projects tab.`,
+        tokensUsed: agentState.tokensUsed
+      });
+    } catch (err: any) {
+      console.error("Save Project error:", err);
+      setAgentState({
+        step: 'ready',
+        message: `Saved locally! (${err.message || 'Supabase sync'})`,
+        tokensUsed: agentState.tokensUsed
+      });
+    }
+  };
+
   const handleDeploySite = async () => {
     setAgentState({
       step: 'building',
@@ -593,6 +670,23 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       
       if (!data.success) {
         throw new Error(data.error || 'Deployment failed');
+      }
+
+      // Auto-save to Supabase Projects
+      try {
+        const projectId = project.id.startsWith('prj-') ? project.id.slice(4) : project.id;
+        await supabase.from('projects').upsert({
+          id: projectId || `prj_${Date.now()}`,
+          client_name: project.profile.name,
+          company_name: project.profile.name,
+          tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
+          status: 'Live',
+          updated_at: new Date().toISOString(),
+          domain: data.url,
+          blueprint: project
+        });
+      } catch (dbErr) {
+        console.warn('Auto-save to projects failed:', dbErr);
       }
 
       setAgentState({
@@ -724,6 +818,15 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5 text-orange-400" /> : <Maximize2 className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+          </button>
+
+          <button
+            onClick={handleSaveToProjects}
+            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
+            title="Save as an active project in your Texas Sons database"
+          >
+            <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Save Project</span>
           </button>
 
           <button

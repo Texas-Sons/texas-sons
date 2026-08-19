@@ -106,7 +106,8 @@ export default function App() {
         status: d.status,
         updatedAt: d.updated_at,
         domain: d.domain,
-        ownerId: d.owner_id
+        ownerId: d.owner_id,
+        blueprint: d.blueprint
       })));
       
       setInvoices(iData.map((d: any) => ({
@@ -232,6 +233,34 @@ export default function App() {
     setCurrentView('agent-builder');
   };
 
+  const handleEditProject = (project: Project) => {
+    if (project.blueprint) {
+      setSelectedClientSnapshot(project.blueprint);
+    } else {
+      setSelectedClientSnapshot({
+        id: `prj-${project.id}`,
+        prompt: `Loaded Project: ${project.companyName}`,
+        timestamp: new Date().toLocaleTimeString(),
+        profile: {
+          name: project.companyName,
+          tagline: `Official Platform for ${project.companyName}`,
+          description: 'Texas enterprise platform.',
+          phone: '(512) 555-0100',
+          email: 'contact@example.com',
+          category: 'Campaign & Leadership',
+          theme: 'campaign-navy',
+          primaryColor: '#00081e',
+          accentColor: '#C5A059'
+        },
+        services: [],
+        testimonials: [],
+        theme: 'campaign-navy',
+        heroVariant: 'split'
+      });
+    }
+    setCurrentView('agent-builder');
+  };
+
   const handleInvoiceFromClient = (client: ClientIntake) => {
     setIntakePrefill(prev => ({
       ...prev,
@@ -309,6 +338,7 @@ export default function App() {
                     setIntakePrefill({});
                     setCurrentView('clients');
                   }} 
+                  onEditProject={handleEditProject}
                 />
               )}
 

@@ -10,6 +10,7 @@ export interface Project {
   updatedAt: string;
   domain?: string;
   ownerId: string;
+  blueprint?: any;
 }
 
 export interface Invoice {

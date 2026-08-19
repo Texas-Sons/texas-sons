@@ -1,13 +1,14 @@
 import React from 'react';
-import { Plus, MoreHorizontal, ExternalLink } from 'lucide-react';
+import { Plus, MoreHorizontal, ExternalLink, Wand2 } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 
 interface ProjectListProps {
   projects: Project[];
   onNewProject: () => void;
+  onEditProject?: (project: Project) => void;
 }
 
-export default function ProjectList({ projects, onNewProject }: ProjectListProps) {
+export default function ProjectList({ projects, onNewProject, onEditProject }: ProjectListProps) {
   
   const getStatusColor = (status: Status) => {
     switch (status) {
@@ -78,15 +79,28 @@ export default function ProjectList({ projects, onNewProject }: ProjectListProps
                     {new Date(project.updatedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end space-x-3">
-                      {project.domain && (
-                        <button className="text-stone-400 hover:text-stone-600 transition-colors" title="View Site">
-                          <ExternalLink className="w-4 h-4" />
+                    <div className="flex items-center justify-end space-x-2">
+                      {onEditProject && (
+                        <button
+                          onClick={() => onEditProject(project)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-orange-600/10 hover:bg-orange-600 text-orange-600 hover:text-white rounded-lg transition-all border border-orange-500/20 hover:border-orange-600 shadow-sm"
+                          title="Open and update site in AI Builder Studio"
+                        >
+                          <Wand2 className="w-3.5 h-3.5" />
+                          <span>Edit in Studio</span>
                         </button>
                       )}
-                      <button className="text-stone-400 hover:text-stone-600 transition-colors" title="More Options">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
+                      {project.domain && (
+                        <a 
+                          href={project.domain} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors" 
+                          title="View Live Site"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
                     </div>
                   </td>
                 </tr>
