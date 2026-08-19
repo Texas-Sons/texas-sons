@@ -41,11 +41,11 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
           <div 
             className="flex items-center gap-3 cursor-default"
             onDoubleClick={onLogin}
-            title="Texas Sons Websites"
+            title="TX Sons Websites"
           >
             <TexasSonsLogo className="w-12 h-12" />
             <div className="flex items-baseline">
-              <span className="text-white font-texas text-3xl font-normal tracking-wide">Texas Sons</span>
+              <span className="text-white font-texas text-3xl font-normal tracking-wide">TX Sons</span>
               <span className="ml-2 text-orange-500 font-sans text-sm font-bold tracking-widest uppercase">- WEBSITES</span>
             </div>
           </div>
@@ -117,11 +117,11 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
           <div className="flex items-center gap-2">
             <TexasSonsLogo className="w-6 h-6" />
             <div className="flex items-baseline">
-              <span className="font-texas font-normal text-stone-300 text-lg tracking-wide">Texas Sons</span>
+              <span className="font-texas font-normal text-stone-300 text-lg tracking-wide">TX Sons</span>
               <span className="ml-1.5 text-orange-500 font-sans text-xs font-bold tracking-widest uppercase">- WEBSITES</span>
             </div>
           </div>
-          <p>© {new Date().getFullYear()} Texas Sons Websites. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} TX Sons Websites. All rights reserved.</p>
         </div>
       </footer>
     </div>

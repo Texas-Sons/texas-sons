@@ -7,7 +7,7 @@ export default function TexasSonsLogo({ className = "w-10 h-10" }: { className?:
     return (
       <img 
         src="/logo.png" 
-        alt="Texas Sons Logo" 
+        alt="TX Sons Logo" 
         className={`object-contain ${className}`}
         onError={() => setImgError(true)}
       />

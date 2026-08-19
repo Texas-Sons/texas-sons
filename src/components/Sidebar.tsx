@@ -69,7 +69,7 @@ export default function Sidebar({
             {isExpanded && (
               <div className="flex flex-col min-w-0 ml-2.5 animate-in fade-in duration-200">
                 <div className="flex items-baseline">
-                  <span className="text-white font-texas font-normal text-lg tracking-wide truncate">Texas Sons</span>
+                  <span className="text-white font-texas font-normal text-lg tracking-wide truncate">TX Sons</span>
                   <span className="text-orange-500 font-sans text-[9px] ml-1.5 font-bold uppercase tracking-widest flex-shrink-0">- WEBSITES</span>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function Sidebar({
             </div>
             {isExpanded && (
               <div className="min-w-0 flex-1 animate-in fade-in duration-150">
-                <p className="text-xs font-semibold text-white truncate">Texas Sons Studio</p>
+                <p className="text-xs font-semibold text-white truncate">TX Sons Studio</p>
                 <p className="text-[10px] text-stone-500 truncate">Admin Console</p>
               </div>
             )}

@@ -186,7 +186,7 @@ export default function App() {
   };
 
   if (loadingAuth) {
-    return <div className="flex h-screen items-center justify-center bg-stone-950 text-stone-500">Loading Texas Sons Websites...</div>;
+    return <div className="flex h-screen items-center justify-center bg-stone-950 text-stone-500">Loading TX Sons Websites...</div>;
   }
 
   if (!user) {
@@ -258,7 +258,7 @@ export default function App() {
               {/* Placeholder for other views */}
               {['clients', 'settings'].includes(currentView) && (
                 <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-stone-200 rounded-2xl bg-white text-stone-500">
-                  <p className="text-sm font-medium">This module is part of the Texas Sons Websites Internal System.</p>
+                  <p className="text-sm font-medium">This module is part of the TX Sons Websites Internal System.</p>
                   <p className="text-xs mt-1">Connect API endpoints to enable this view.</p>
                 </div>
               )}
