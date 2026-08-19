@@ -235,7 +235,11 @@ export default function App() {
 
   const handleEditProject = (project: Project) => {
     if (project.blueprint) {
-      setSelectedClientSnapshot(project.blueprint);
+      // Override the blueprint ID with the actual DB project ID to prevent creating duplicates on save
+      setSelectedClientSnapshot({
+        ...project.blueprint,
+        id: `prj-${project.id}`
+      });
     } else {
       setSelectedClientSnapshot({
         id: `prj-${project.id}`,
@@ -259,6 +263,18 @@ export default function App() {
       });
     }
     setCurrentView('agent-builder');
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    try {
+      const { error } = await supabase.from('projects').delete().eq('id', projectId);
+      if (error) throw error;
+      setProjects(projects.filter(p => p.id !== projectId));
+    } catch (err) {
+      console.error('Failed to delete project:', err);
+      alert('Failed to delete project. Check console for details.');
+    }
   };
 
   const handleInvoiceFromClient = (client: ClientIntake) => {
@@ -339,6 +355,7 @@ export default function App() {
                     setCurrentView('clients');
                   }} 
                   onEditProject={handleEditProject}
+                  onDeleteProject={handleDeleteProject}
                 />
               )}
 

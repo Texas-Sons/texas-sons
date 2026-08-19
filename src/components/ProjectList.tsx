@@ -1,14 +1,15 @@
 import React from 'react';
-import { Plus, MoreHorizontal, ExternalLink, Wand2 } from 'lucide-react';
+import { Plus, MoreHorizontal, ExternalLink, Wand2, Trash2 } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 
 interface ProjectListProps {
   projects: Project[];
   onNewProject: () => void;
   onEditProject?: (project: Project) => void;
+  onDeleteProject?: (id: string) => void;
 }
 
-export default function ProjectList({ projects, onNewProject, onEditProject }: ProjectListProps) {
+export default function ProjectList({ projects, onNewProject, onEditProject, onDeleteProject }: ProjectListProps) {
   
   const getStatusColor = (status: Status) => {
     switch (status) {
@@ -88,6 +89,15 @@ export default function ProjectList({ projects, onNewProject, onEditProject }: P
                         >
                           <Wand2 className="w-3.5 h-3.5" />
                           <span>Edit in Studio</span>
+                        </button>
+                      )}
+                      {onDeleteProject && (
+                        <button
+                          onClick={() => onDeleteProject(project.id)}
+                          className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Project"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       )}
                       {project.domain && (

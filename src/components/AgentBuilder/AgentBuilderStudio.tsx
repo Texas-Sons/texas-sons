@@ -624,11 +624,17 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
         tokensUsed: agentState.tokensUsed
       });
 
-      const projectId = project.id.startsWith('prj-') ? project.id.slice(4) : project.id;
+      let projectId = project.id;
+      if (projectId.startsWith('prj-')) {
+        projectId = projectId.slice(4);
+      } else if (projectId.startsWith('bp-')) {
+        projectId = `prj_${Date.now()}`;
+      }
+
       const slug = project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
       const { error } = await supabase.from('projects').upsert({
-        id: projectId || `prj_${Date.now()}`,
+        id: projectId,
         client_name: project.profile.name,
         company_name: project.profile.name,
         tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
@@ -679,9 +685,15 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
       // Auto-save to Supabase Projects
       try {
-        const projectId = project.id.startsWith('prj-') ? project.id.slice(4) : project.id;
+        let projectId = project.id;
+        if (projectId.startsWith('prj-')) {
+          projectId = projectId.slice(4);
+        } else if (projectId.startsWith('bp-')) {
+          projectId = `prj_${Date.now()}`;
+        }
+        
         await supabase.from('projects').upsert({
-          id: projectId || `prj_${Date.now()}`,
+          id: projectId,
           client_name: project.profile.name,
           company_name: project.profile.name,
           tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
