@@ -42,7 +42,7 @@ export function CampaignHeroBlock({
         <img 
           src={heroImage} 
           alt={headline}
-          className="w-full h-full object-cover object-top mask-image-gradient-l"
+          className="w-full h-full object-cover object-center mask-image-gradient-l"
           style={{ WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)' }}
         />
         {/* Color Grading Overlay */}

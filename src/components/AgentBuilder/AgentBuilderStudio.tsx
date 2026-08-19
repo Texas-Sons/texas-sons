@@ -114,7 +114,7 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       email: 'campaign@trevinoforsheriff.com',
       address: 'Campaign HQ: Jourdanton, TX 78026',
       hours: 'Campaign Office: Mon - Sat: 9:00 AM - 6:00 PM',
-      heroImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+      heroImage: '/images/candidates/trevino.jpg',
       category: 'Campaign & Leadership',
       theme: 'campaign-navy',
       primaryColor: '#00081e',
