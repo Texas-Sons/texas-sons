@@ -46,6 +46,7 @@ import {
 import { 
   NavbarBlock, 
   HeroBlock, 
+  CampaignHeroBlock,
   ServicesBlock, 
   TestimonialsBlock, 
   BookingBlock, 
@@ -104,7 +105,7 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
     category: 'Campaign & Leadership',
     prompt: 'Build a conservative, high-authority political campaign website for Ernest Trevino for Atascosa County Sheriff 2026. 28+ years Texas law enforcement, Medal of Valor recipient, proactive crime interdiction, school safety, and constitutional leadership.',
     badges: ['28+ Years Texas Law Enforcement', 'Medal of Valor Recipient', 'Certified Master Peace Officer', 'Lifelong Atascosa County Resident'],
-    proofBadgeText: 'none',
+    proofBadgeText: 'Official 2026 Endorsements · Law Enforcement Verified',
     profile: {
       name: 'Ernest Trevino for Atascosa County Sheriff',
       tagline: 'A Lifetime of Dedicated Service & Law Enforcement Leadership',
@@ -117,7 +118,7 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       category: 'Campaign & Leadership',
       theme: 'campaign-navy',
       primaryColor: '#00081e',
-      accentColor: '#ea580c',
+      accentColor: '#C5A059',
       fontFamily: 'serif'
     },
     services: [
@@ -1175,27 +1176,38 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                       inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
                     } ${selectedBlock === 'HeroBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
                   >
-                    <HeroBlock
-                      headline={project.profile.tagline || project.profile.name}
-                      subheadline={project.profile.description || ''}
-                      heroImage={project.profile.heroImage}
-                      variant={project.heroVariant}
-                      theme={project.theme as any}
-                      accentColor={project.profile.accentColor}
-                      badges={project.badges}
-                      proofBadgeText={project.proofBadgeText}
-                      ctaText={
-                        isCampaignSite ? 'Join The Campaign' : 
-                        project.profile.category === 'Food & Beverage' ? 'View Menu' : 
-                        project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
-                        'Book Free Estimate'
-                      }
-                      secondaryCtaText={
-                        isCampaignSite ? 'Read Our Platform' : 
-                        project.profile.category === 'Food & Beverage' ? 'Catering Options' : 
-                        'View Services'
-                      }
-                    />
+                    {isCampaignSite ? (
+                      <CampaignHeroBlock
+                        headline={project.profile.tagline || project.profile.name}
+                        subheadline={project.profile.description || ''}
+                        heroImage={project.profile.heroImage}
+                        accentColor={project.profile.accentColor}
+                        badges={project.badges}
+                        proofBadgeText={project.proofBadgeText}
+                        ctaText="Join The Campaign"
+                        secondaryCtaText="Read Our Platform"
+                      />
+                    ) : (
+                      <HeroBlock
+                        headline={project.profile.tagline || project.profile.name}
+                        subheadline={project.profile.description || ''}
+                        heroImage={project.profile.heroImage}
+                        variant={project.heroVariant}
+                        theme={project.theme as any}
+                        accentColor={project.profile.accentColor}
+                        badges={project.badges}
+                        proofBadgeText={project.proofBadgeText}
+                        ctaText={
+                          project.profile.category === 'Food & Beverage' ? 'View Menu' : 
+                          project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
+                          'Book Free Estimate'
+                        }
+                        secondaryCtaText={
+                          project.profile.category === 'Food & Beverage' ? 'Catering Options' : 
+                          'View Services'
+                        }
+                      />
+                    )}
                   </div>
 
                   {/* Services / Platform Block */}
@@ -1305,6 +1317,7 @@ import React from 'react';
 import { 
   NavbarBlock, 
   HeroBlock, 
+  CampaignHeroBlock,
   ServicesBlock, 
   TestimonialsBlock, 
   BookingBlock, 
@@ -1317,18 +1330,46 @@ export default function ClientSite() {
   const testimonials = ${JSON.stringify(project.testimonials, null, 2)};
 
   return (
-    <div className="min-h-screen ${getThemeBackgroundClass()}">
-      <NavbarBlock businessName={profile.name} phone={profile.phone} theme="${project.theme}" />
-      <HeroBlock 
-        headline={profile.tagline} 
-        subheadline={profile.description} 
-        heroImage={profile.heroImage} 
-        variant="${project.heroVariant}"
+    <div className="w-full min-h-screen bg-[color:var(--ts-bg)] text-[color:var(--ts-text)] font-sans">
+      <NavbarBlock 
+        businessName={profile.name} 
+        phone={profile.phone} 
         theme="${project.theme}" 
       />
-      <ServicesBlock services={services} theme="${project.theme}" />
-      <TestimonialsBlock testimonials={testimonials} theme="${project.theme}" />
-      <BookingBlock phone={profile.phone} services={services} theme="${project.theme}" />
+      ${isCampaignSite ? `
+      <CampaignHeroBlock 
+        headline={profile.tagline || profile.name} 
+        subheadline={profile.description} 
+        heroImage={profile.heroImage} 
+        accentColor={profile.accentColor}
+        badges={${JSON.stringify(project.badges)}}
+        proofBadgeText="${project.proofBadgeText || ''}"
+      />` : `
+      <HeroBlock 
+        headline={profile.tagline || profile.name} 
+        subheadline={profile.description} 
+        heroImage={profile.heroImage} 
+        variant="${project.heroVariant}" 
+        theme="${project.theme}" 
+      />`}
+      <ServicesBlock 
+        services={services} 
+        theme="${project.theme}" 
+        title="${isCampaignSite ? 'Campaign Platform & Priorities' : 'Our Services'}"
+        subtitle="${isCampaignSite ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}"
+      />
+      <TestimonialsBlock 
+        testimonials={testimonials} 
+        theme="${project.theme}" 
+        title="${isCampaignSite ? 'Endorsements & Community Support' : 'What Our Clients Say'}"
+        subtitle="${isCampaignSite ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}"
+      />
+      <BookingBlock 
+        phone={profile.phone} 
+        services={services} 
+        theme="${project.theme}"
+        title="${isCampaignSite ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}"
+      />
       <FooterBlock business={profile} theme="${project.theme}" />
     </div>
   );

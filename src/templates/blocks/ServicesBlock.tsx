@@ -13,15 +13,18 @@ interface ServicesBlockProps {
 }
 
 export function ServicesBlock({
-  title = 'Our Services & Pricing',
-  subtitle = 'Transparent, upfront pricing with premium quality craftsmanship.',
+  title = 'Our Services',
+  subtitle = 'Professional, reliable, and tailored to your needs.',
   services,
   theme = 'dark',
   accentColor,
   ctaText = 'Book Service',
   ctaHref = '#contact'
 }: ServicesBlockProps) {
-  const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('priorit');
+  const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('issues');
+  
+  const displayTitle = isCampaign && title === 'Our Services' ? 'Campaign Platform & Priorities' : title;
+  const displaySubtitle = isCampaign && subtitle === 'Professional, reliable, and tailored to your needs.' ? 'Our commitment to the community and our plan for the future.' : subtitle;
 
   return (
     <section id="services" className={`py-16 sm:py-24 relative bg-[color:var(--ts-surface)] text-[color:var(--ts-text)]`}>
@@ -34,10 +37,10 @@ export function ServicesBlock({
             <span>{isCampaign ? 'Core Judicial & Policy Platform' : 'Featured Solutions'}</span>
           </div>
           <h2 className={`text-2xl sm:text-4xl font-extrabold tracking-tight mb-3 ${isCampaign ? 'font-serif' : ''}`}>
-            {title}
+            {displayTitle}
           </h2>
           <p className={`text-sm sm:text-base text-[color:var(--ts-muted)]`}>
-            {subtitle}
+            {displaySubtitle}
           </p>
         </div>
 
