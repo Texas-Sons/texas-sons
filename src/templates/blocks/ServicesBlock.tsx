@@ -18,13 +18,14 @@ export function ServicesBlock({
   services,
   theme = 'dark',
   accentColor,
-  ctaText = 'Book Service',
+  ctaText,
   ctaHref = '#contact'
 }: ServicesBlockProps) {
   const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('issues');
   
   const displayTitle = isCampaign && title === 'Our Services' ? 'Campaign Platform & Priorities' : title;
   const displaySubtitle = isCampaign && subtitle === 'Professional, reliable, and tailored to your needs.' ? 'Our commitment to the community and our plan for the future.' : subtitle;
+  const finalCtaText = ctaText || (isCampaign ? 'Read Policy' : 'Book Service');
 
   return (
     <section id="services" className={`py-16 sm:py-24 relative bg-[color:var(--ts-surface)] text-[color:var(--ts-text)]`}>
@@ -82,7 +83,7 @@ export function ServicesBlock({
                   href={ctaHref}
                   className={`inline-flex items-center text-xs sm:text-sm font-semibold group-hover:translate-x-1 transition-transform whitespace-nowrap text-[color:var(--ts-accent)]`}
                 >
-                  <span>{ctaText}</span>
+                  <span>{finalCtaText}</span>
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </a>
               </div>

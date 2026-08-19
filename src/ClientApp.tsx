@@ -4,6 +4,7 @@ import "./index.css";
 
 import { NavbarBlock } from "./templates/blocks/NavbarBlock";
 import { HeroBlock } from "./templates/blocks/HeroBlock";
+import { CampaignHeroBlock } from "./templates/blocks/CampaignHeroBlock";
 import { ServicesBlock } from "./templates/blocks/ServicesBlock";
 import { TestimonialsBlock } from "./templates/blocks/TestimonialsBlock";
 import { BookingBlock } from "./templates/blocks/BookingBlock";
@@ -109,26 +110,52 @@ export function ClientApp() {
             accentColor={project.profile.accentColor}
             ctaText={isCampaign ? "Join The Campaign" : "Book Free Estimate"}
           />
-          <HeroBlock
-            theme={project.theme}
-            variant={project.heroVariant}
-            headline={project.profile.tagline || project.profile.name}
-            subheadline={project.profile.description || ""}
-            heroImage={project.profile.heroImage}
-            badges={project.badges}
-            accentColor={project.profile.accentColor}
-            proofBadgeText={project.proofBadgeText}
-          />
+          {isCampaign ? (
+            <CampaignHeroBlock
+              headline={project.profile.tagline || project.profile.name}
+              subheadline={project.profile.description || ""}
+              heroImage={project.profile.heroImage}
+              accentColor={project.profile.accentColor}
+              badges={project.badges}
+              proofBadgeText={project.proofBadgeText}
+              ctaText="Join The Campaign"
+              secondaryCtaText="Read Our Platform"
+            />
+          ) : (
+            <HeroBlock
+              theme={project.theme}
+              variant={project.heroVariant}
+              headline={project.profile.tagline || project.profile.name}
+              subheadline={project.profile.description || ""}
+              heroImage={project.profile.heroImage}
+              badges={project.badges}
+              accentColor={project.profile.accentColor}
+              proofBadgeText={project.proofBadgeText}
+              ctaText={
+                project.profile.category === 'Food & Beverage' ? 'View Menu' : 
+                project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
+                'Book Free Estimate'
+              }
+              secondaryCtaText={
+                project.profile.category === 'Food & Beverage' ? 'Catering Options' : 
+                'View Services'
+              }
+            />
+          )}
           <ServicesBlock
             theme={project.theme}
             services={project.services}
             accentColor={project.profile.accentColor}
+            title={isCampaign ? 'Campaign Platform & Priorities' : 'Our Services'}
+            subtitle={isCampaign ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}
           />
           {project.testimonials.length > 0 && (
             <TestimonialsBlock
               theme={project.theme}
               testimonials={project.testimonials}
               accentColor={project.profile.accentColor}
+              title={isCampaign ? 'Endorsements & Community Support' : 'What Our Clients Say'}
+              subtitle={isCampaign ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}
             />
           )}
           <BookingBlock
@@ -139,6 +166,8 @@ export function ClientApp() {
             hours={project.profile.hours}
             services={project.services}
             accentColor={project.profile.accentColor}
+            title={isCampaign ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}
+            subtitle={isCampaign ? 'Join our grassroots movement today.' : 'Get in touch with us.'}
             onSubmit={handleLeadSubmit}
           />
           <FooterBlock
