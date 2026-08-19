@@ -3,7 +3,6 @@ import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import DashboardOverview from './components/DashboardOverview';
 import ProjectList from './components/ProjectList';
-import ProvisionSiteModal from './components/ProvisionSiteModal';
 import BillingView from './components/BillingView';
 import GenerateInvoiceModal from './components/GenerateInvoiceModal';
 import LandingPage from './components/LandingPage';
@@ -35,8 +34,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
   const [projects, setProjects] = useState<Project[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [isProvisioning, setIsProvisioning] = useState(false);
-  const [provisioningData, setProvisioningData] = useState<{companyName?: string}>({});
+  const [intakePrefill, setIntakePrefill] = useState<Partial<ClientIntake>>({});
   const [selectedClientSnapshot, setSelectedClientSnapshot] = useState<ProjectSnapshot | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -133,32 +131,6 @@ export default function App() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-  };
-
-  const handleProvisionSite = async (newProjectData: Omit<Project, 'id' | 'status' | 'updatedAt' | 'ownerId'>) => {
-    if (!user) return;
-    const projectId = `prj-${Date.now()}`;
-    
-    try {
-      const { error } = await supabase.from('projects').insert({
-        id: projectId,
-        client_name: newProjectData.clientName,
-        company_name: newProjectData.companyName,
-        tier: newProjectData.tier,
-        status: 'Scaffolding',
-        domain: newProjectData.domain || null,
-        owner_id: user.id,
-        updated_at: new Date().toISOString()
-      });
-      
-      if (error) throw error;
-      
-      await fetchData(); // Refresh local state
-      setIsProvisioning(false);
-      setCurrentView('projects');
-    } catch (error) {
-      handleSupabaseError(error);
-    }
   };
 
   const handleGenerateInvoice = async (newInvoiceData: Omit<Invoice, 'id' | 'ownerId'>) => {
@@ -284,6 +256,7 @@ export default function App() {
             <ClientIntakeView 
               onLaunchStudio={handleLaunchStudioFromClient}
               onInvoiceClient={handleInvoiceFromClient}
+              intakePrefill={intakePrefill}
             />
           </main>
         ) : currentView === 'settings' ? (
@@ -301,8 +274,8 @@ export default function App() {
                 <ProjectList 
                   projects={projects} 
                   onNewProject={() => {
-                    setProvisioningData({});
-                    setIsProvisioning(true);
+                    setIntakePrefill({});
+                    setCurrentView('clients');
                   }} 
                 />
               )}
@@ -310,8 +283,13 @@ export default function App() {
               {currentView === 'prospects' && (
                 <ProspectsView 
                   onConvert={(prospect) => {
-                    setProvisioningData({ companyName: prospect.displayName || '' });
-                    setIsProvisioning(true);
+                    setIntakePrefill({ 
+                      businessName: prospect.displayName || prospect.name || '',
+                      email: prospect.email || '',
+                      phone: prospect.phone || '',
+                      clientContact: prospect.name || ''
+                    });
+                    setCurrentView('clients');
                   }}
                 />
               )}
@@ -326,15 +304,6 @@ export default function App() {
           </main>
         )}
       </div>
-
-      {/* Provisioning Modal Portal */}
-      {isProvisioning && (
-        <ProvisionSiteModal 
-          initialData={provisioningData}
-          onClose={() => setIsProvisioning(false)} 
-          onProvision={handleProvisionSite} 
-        />
-      )}
 
       {/* Generating Invoice Modal Portal */}
       {isGeneratingInvoice && (

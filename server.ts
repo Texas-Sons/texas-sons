@@ -674,6 +674,41 @@ Rules:
     }
   });
 
+  app.post("/api/studio-chat", async (req, res) => {
+    try {
+      const { prompt, currentSnapshot } = req.body;
+      if (!prompt || !currentSnapshot) {
+        return res.status(400).json({ success: false, error: "Missing prompt or currentSnapshot" });
+      }
+
+      const systemInstruction = `You are an expert React UI Architect and AI Agent working on the Texas Sons Builder platform.
+Your job is to apply the user's requested modifications to the provided JSON state snapshot of their website.
+You must return the COMPLETE updated JSON object, preserving all fields that should not change, and modifying only the fields relevant to the user's request.
+
+Valid 'theme' values are: 'dark', 'light', 'luxury', 'campaign-navy', 'crimson-bold', 'emerald-gold', 'custom'
+Valid 'heroVariant' values are: 'split', 'centered', 'bento'
+
+Return ONLY the raw updated JSON object. Do not include markdown codeblocks (\`\`\`json) or any conversational text.
+
+Current Snapshot:
+${JSON.stringify(currentSnapshot, null, 2)}
+
+User Request:
+${prompt}`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: systemInstruction
+      });
+
+      const updatedSnapshot = parseJsonResponse(response.text());
+      res.json({ success: true, snapshot: updatedSnapshot });
+    } catch (error: any) {
+      console.error("Studio Chat Error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

@@ -499,36 +499,26 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     });
 
     try {
-      const res = await fetch('/api/generate-config', {
+      const res = await fetch('/api/studio-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          templateId: 'campaign',
-          versionId: 'v1',
-          business: {
-            name: textToRun.slice(0, 30),
-            type: textToRun,
-          }
+          prompt: textToRun,
+          currentSnapshot: project
         })
       });
 
       const data = await res.json();
-      const tokens = data?.config?.tokens || {};
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update blueprint');
+      }
 
       const updatedSnapshot: ProjectSnapshot = {
+        ...data.snapshot,
         id: `prj-${Date.now()}`,
         prompt: textToRun,
         timestamp: new Date().toLocaleTimeString(),
-        profile: {
-          ...project.profile,
-          name: tokens.SITE_NAME || tokens.SITE_TITLE || textToRun.slice(0, 24) || project.profile.name,
-          tagline: tokens.HERO_HEADLINE || tokens.SITE_TAGLINE || project.profile.tagline,
-          description: tokens.ABOUT_TEXT || data?.config?.seo?.description || project.profile.description,
-        },
-        services: project.services,
-        testimonials: project.testimonials,
-        theme: project.theme,
-        heroVariant: project.heroVariant === 'split' ? 'bento' : 'split'
       };
 
       setProject(updatedSnapshot);

@@ -35,6 +35,7 @@ import PhotoScannerModal from '../PhotoScannerModal';
 interface ClientIntakeViewProps {
   onLaunchStudio: (client: ClientIntake) => void;
   onInvoiceClient: (client: ClientIntake) => void;
+  intakePrefill?: Partial<ClientIntake>;
 }
 
 const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
@@ -199,7 +200,7 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: ClientIntakeViewProps) {
+export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill }: ClientIntakeViewProps) {
   const [clients, setClients] = useState<ClientIntake[]>(() => {
     try {
       const saved = localStorage.getItem('txsons_client_intakes');
@@ -246,6 +247,13 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient }: Cl
       { quote: 'Exceptional service and unmatched attention to detail.', author: 'Verified Client', role: 'Austin, TX', rating: 5, verified: true }
     ]
   });
+
+  useEffect(() => {
+    if (intakePrefill && Object.keys(intakePrefill).length > 0) {
+      setForm(prev => ({ ...prev, ...intakePrefill }));
+      setIsNewModalOpen(true);
+    }
+  }, [intakePrefill]);
 
   useEffect(() => {
     try {
