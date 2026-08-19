@@ -108,15 +108,27 @@ function compressImage(file: File, maxDim = 1200, quality = 0.8): Promise<string
     const filesArray = Array.from(fileList);
 
     for (const file of filesArray) {
-      if (!file.type.startsWith('image/')) continue;
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') continue;
       try {
-        const compressedDataUrl = await compressImage(file);
-        const approxSizeBytes = Math.round((compressedDataUrl.length * 3) / 4);
+        let dataUrl = '';
+        let mimeType = file.type;
+        if (file.type === 'application/pdf') {
+          dataUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(file);
+          });
+        } else {
+          dataUrl = await compressImage(file);
+          mimeType = 'image/jpeg';
+        }
+        
+        const approxSizeBytes = Math.round((dataUrl.length * 3) / 4);
         newFiles.push({
           id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: file.name,
-          dataUrl: compressedDataUrl,
-          mimeType: 'image/jpeg',
+          dataUrl: dataUrl,
+          mimeType: mimeType,
           size: `${(approxSizeBytes / 1024).toFixed(1)} KB`
         });
       } catch (err) {
@@ -243,7 +255,7 @@ function compressImage(file: File, maxDim = 1200, quality = 0.8): Promise<string
                   ref={fileInputRef}
                   onChange={(e) => e.target.files && handleProcessFiles(e.target.files)}
                   multiple
-                  accept="image/png, image/jpeg, image/webp"
+                  accept="image/png, image/jpeg, image/webp, application/pdf"
                   className="hidden"
                 />
 

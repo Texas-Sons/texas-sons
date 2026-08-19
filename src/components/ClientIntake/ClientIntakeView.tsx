@@ -733,14 +733,14 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto space-y-6 text-xs">
               
-              {/* AI Photo Scanner Banner */}
+              {/* Data Vault Ingestion Banner */}
               <div className="p-3.5 rounded-xl bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 border border-orange-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400 flex-shrink-0">
                     <Camera className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-white block">Have a photo of a menu, flyer, or business card?</span>
+                    <span className="text-xs font-bold text-white block">Have a photo, flyer, resume, or business card?</span>
                     <span className="text-[11px] text-stone-400">Let Gemini Vision parse all fields, offerings, and colors instantly.</span>
                   </div>
                 </div>

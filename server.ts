@@ -804,7 +804,7 @@ Draft a short, persuasive email proposal recommending we build them a modern web
       }
 
       const extractionPrompt = `You are an expert digital agency architect for TX Sons Websites.
-Analyze the provided image(s) (which may be a restaurant menu, business card, campaign flyer, brochure, storefront photo, price list, or marketing screenshot) and extract a comprehensive, production-ready website business dossier in valid JSON format.
+Analyze the provided asset(s) (which may be a PDF resume, restaurant menu, business card, campaign flyer, brochure, storefront photo, or marketing screenshot) and extract a comprehensive, production-ready website business dossier in valid JSON format.
 
 ${contextHint ? `User Context Hint: ${contextHint}` : ''}
 
