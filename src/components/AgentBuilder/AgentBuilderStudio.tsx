@@ -59,7 +59,7 @@ interface AgentState {
   tokensUsed: number;
 }
 
-interface ProjectSnapshot {
+export interface ProjectSnapshot {
   id: string;
   prompt: string;
   timestamp: string;
@@ -227,7 +227,11 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
   }
 ];
 
-export default function AgentBuilderStudio() {
+export interface AgentBuilderStudioProps {
+  initialSnapshot?: ProjectSnapshot | null;
+}
+
+export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStudioProps = {}) {
   const [prompt, setPrompt] = useState('');
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState<'preview' | 'admin' | 'code' | 'blueprint'>('preview');
@@ -305,6 +309,20 @@ export default function AgentBuilderStudio() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Sync initialSnapshot when launched from Client Intake Vault
+  useEffect(() => {
+    if (initialSnapshot) {
+      setProject(initialSnapshot);
+      setHistory(prev => [initialSnapshot, ...prev]);
+      setActiveTab('preview');
+      setAgentState({
+        step: 'ready',
+        message: `Intake Loaded: ${initialSnapshot.profile.name} (${initialSnapshot.theme})`,
+        tokensUsed: 340
+      });
+    }
+  }, [initialSnapshot]);
 
   const handleApplyPreset = (preset: PresetBlueprint) => {
     const newSnapshot: ProjectSnapshot = {

@@ -8,8 +8,9 @@ import BillingView from './components/BillingView';
 import GenerateInvoiceModal from './components/GenerateInvoiceModal';
 import LandingPage from './components/LandingPage';
 import ProspectsView from './components/ProspectsView';
-import AgentBuilderStudio from './components/AgentBuilder/AgentBuilderStudio';
-import { Project, Invoice, ViewState } from './types';
+import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/AgentBuilderStudio';
+import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
+import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { User } from '@supabase/supabase-js';
 
@@ -22,6 +23,7 @@ export default function App() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [provisioningData, setProvisioningData] = useState<{companyName?: string}>({});
+  const [selectedClientSnapshot, setSelectedClientSnapshot] = useState<ProjectSnapshot | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -185,6 +187,46 @@ export default function App() {
     }
   };
 
+  const handleLaunchStudioFromClient = (client: ClientIntake) => {
+    const snapshot: ProjectSnapshot = {
+      id: `prj-${Date.now()}`,
+      prompt: `Generated from Client Intake: ${client.businessName}`,
+      timestamp: new Date().toLocaleTimeString(),
+      profile: {
+        name: client.businessName,
+        tagline: client.tagline || 'Courtroom Integrity. Dedicated Leadership.',
+        description: client.description || 'Dedicated Texas business delivering premier quality and service.',
+        phone: client.phone || '(512) 555-TXSONS',
+        email: client.email || 'contact@txsons.com',
+        address: client.address || 'Austin, TX',
+        hours: 'Mon - Fri: 8:00 AM - 6:00 PM',
+        heroImage: client.heroImage || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+        category: client.category,
+        theme: client.theme,
+        primaryColor: client.primaryColor || '#00081e',
+        accentColor: client.accentColor || '#C5A059'
+      },
+      services: (client.services && client.services.length > 0) ? client.services : [
+        { title: 'Core Platform Solution', description: 'Comprehensive execution tailored for your community and goals.', highlight: true }
+      ],
+      testimonials: (client.testimonials && client.testimonials.length > 0) ? client.testimonials : [
+        { quote: 'Exceptional leadership and unmatched attention to detail.', author: 'Verified Partner', role: 'Austin, TX', rating: 5, verified: true }
+      ],
+      theme: client.theme,
+      heroVariant: 'split',
+      badges: client.badges && client.badges.length > 0 ? client.badges : ['25+ Years Experience', 'Satisfaction Guaranteed', 'Locally Owned'],
+      proofBadgeText: client.proofBadgeText || 'Top Rated · 100% Guaranteed'
+    };
+
+    setSelectedClientSnapshot(snapshot);
+    setCurrentView('agent-builder');
+  };
+
+  const handleInvoiceFromClient = (client: ClientIntake) => {
+    setProvisioningData({ companyName: client.businessName });
+    setIsGeneratingInvoice(true);
+  };
+
   if (loadingAuth) {
     return <div className="flex h-screen items-center justify-center bg-stone-950 text-stone-500">Loading TX Sons Websites...</div>;
   }
@@ -220,7 +262,14 @@ export default function App() {
         {/* Main Canvas Area */}
         {currentView === 'agent-builder' ? (
           <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-            <AgentBuilderStudio />
+            <AgentBuilderStudio initialSnapshot={selectedClientSnapshot} />
+          </main>
+        ) : currentView === 'clients' ? (
+          <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            <ClientIntakeView 
+              onLaunchStudio={handleLaunchStudioFromClient}
+              onInvoiceClient={handleInvoiceFromClient}
+            />
           </main>
         ) : (
           <main className="flex-1 overflow-y-auto p-8">
@@ -256,7 +305,7 @@ export default function App() {
               )}
 
               {/* Placeholder for other views */}
-              {['clients', 'settings'].includes(currentView) && (
+              {currentView === 'settings' && (
                 <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-stone-200 rounded-2xl bg-white text-stone-500">
                   <p className="text-sm font-medium">This module is part of the TX Sons Websites Internal System.</p>
                   <p className="text-xs mt-1">Connect API endpoints to enable this view.</p>
