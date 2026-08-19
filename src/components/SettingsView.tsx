@@ -33,7 +33,7 @@ import {
 
 interface StudioSettingsData {
   // AI Settings
-  aiModel: 'gemini-2.5-flash' | 'gemini-2.5-pro';
+  aiModel: 'gemini-3.6-flash' | 'gemini-2.5-pro';
   aiTemperature: number;
   maxDailyRequests: number;
   tokenOptimization: boolean;
@@ -62,7 +62,7 @@ interface StudioSettingsData {
 }
 
 const DEFAULT_SETTINGS: StudioSettingsData = {
-  aiModel: 'gemini-2.5-flash',
+  aiModel: 'gemini-3.6-flash',
   aiTemperature: 0.7,
   maxDailyRequests: 1500,
   tokenOptimization: true,
@@ -366,7 +366,7 @@ export default function SettingsView() {
                     onChange={(e) => setSettings(prev => ({ ...prev, aiModel: e.target.value as any }))}
                     className="w-full px-3 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
                   >
-                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended — Fastest, Free 1,500 RPD)</option>
+                    <option value="gemini-3.6-flash">Gemini 3.6 Flash (Recommended — Fastest, Free 1,500 RPD)</option>
                     <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Complex Reasoning & Synthesis)</option>
                   </select>
                   <p className="text-[11px] text-stone-500 mt-1">
