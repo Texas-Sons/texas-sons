@@ -47,34 +47,65 @@ export default function PhotoScannerModal({ isOpen, onClose, onApplyDossier }: P
 
   if (!isOpen) return null;
 
-  const handleProcessFiles = (fileList: FileList | File[]) => {
+function compressImage(file: File, maxDim = 1200, quality = 0.8): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } else {
+          resolve(e.target?.result as string);
+        }
+      };
+      img.onerror = () => resolve(e.target?.result as string);
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+  const handleProcessFiles = async (fileList: FileList | File[]) => {
     setScanError(null);
     const newFiles: UploadedFilePreview[] = [];
     const filesArray = Array.from(fileList);
 
-    let processedCount = 0;
-
-    filesArray.forEach((file) => {
-      if (!file.type.startsWith('image/')) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
+    for (const file of filesArray) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const compressedDataUrl = await compressImage(file);
+        const approxSizeBytes = Math.round((compressedDataUrl.length * 3) / 4);
         newFiles.push({
           id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: file.name,
-          dataUrl,
-          mimeType: file.type || 'image/jpeg',
-          size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+          dataUrl: compressedDataUrl,
+          mimeType: 'image/jpeg',
+          size: `${(approxSizeBytes / 1024).toFixed(1)} KB`
         });
+      } catch (err) {
+        console.error("Failed to compress image:", err);
+      }
+    }
 
-        processedCount++;
-        if (processedCount === filesArray.length) {
-          setFiles(prev => [...prev, ...newFiles]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    if (newFiles.length > 0) {
+      setFiles(prev => [...prev, ...newFiles]);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {

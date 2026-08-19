@@ -868,6 +868,18 @@ Rules:
         return res.status(400).json({ success: false, error: "Missing prompt or currentSnapshot" });
       }
 
+      // Strip any large base64 image data from the prompt snapshot to keep token usage minimal (<2k tokens)
+      const originalHeroImage = currentSnapshot.profile?.heroImage;
+      const originalLogoUrl = currentSnapshot.profile?.logoUrl;
+      const sanitizedSnapshot = JSON.parse(JSON.stringify(currentSnapshot));
+
+      if (typeof sanitizedSnapshot.profile?.heroImage === 'string' && sanitizedSnapshot.profile.heroImage.length > 500) {
+        sanitizedSnapshot.profile.heroImage = '[PRESERVED_CLIENT_HERO_IMAGE]';
+      }
+      if (typeof sanitizedSnapshot.profile?.logoUrl === 'string' && sanitizedSnapshot.profile.logoUrl.length > 500) {
+        sanitizedSnapshot.profile.logoUrl = '[PRESERVED_CLIENT_LOGO]';
+      }
+
       const systemInstruction = `You are an expert React UI Architect and AI Agent working on the Texas Sons Builder platform.
 Your job is to intelligently apply the user's requested modifications to the provided JSON state snapshot of their website.
 You must return the COMPLETE updated JSON object matching the exact schema of the snapshot, modifying ONLY the relevant fields and preserving everything else.
@@ -892,7 +904,7 @@ FIELD MAPPING RULES:
 Return ONLY a valid JSON object. Do not include markdown ticks (\`\`\`json) or any explanation.
 
 Current Snapshot:
-${JSON.stringify(currentSnapshot, null, 2)}
+${JSON.stringify(sanitizedSnapshot, null, 2)}
 
 User Instruction:
 ${prompt}`;
@@ -904,6 +916,17 @@ ${prompt}`;
 
       const rawText = response.text || "{}";
       const updatedSnapshot = parseJsonResponse(rawText);
+
+      // Restore preserved image assets
+      if (originalHeroImage && (!updatedSnapshot.profile?.heroImage || updatedSnapshot.profile.heroImage === '[PRESERVED_CLIENT_HERO_IMAGE]')) {
+        if (!updatedSnapshot.profile) updatedSnapshot.profile = {};
+        updatedSnapshot.profile.heroImage = originalHeroImage;
+      }
+      if (originalLogoUrl && (!updatedSnapshot.profile?.logoUrl || updatedSnapshot.profile.logoUrl === '[PRESERVED_CLIENT_LOGO]')) {
+        if (!updatedSnapshot.profile) updatedSnapshot.profile = {};
+        updatedSnapshot.profile.logoUrl = originalLogoUrl;
+      }
+
       res.json({ success: true, snapshot: updatedSnapshot });
     } catch (error: any) {
       console.error("Studio Chat Error:", error);
