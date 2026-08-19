@@ -31,10 +31,29 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   
-  const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [currentView, setCurrentView] = useState<ViewState>(() => {
+    return (localStorage.getItem('txsons_current_view') as ViewState) || 'dashboard';
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('txsons_current_view', currentView);
+  }, [currentView]);
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [intakePrefill, setIntakePrefill] = useState<Partial<ClientIntake>>({});
+  
+  const [intakePrefill, setIntakePrefill] = useState<Partial<ClientIntake>>(() => {
+    try {
+      const saved = localStorage.getItem('txsons_intake_prefill');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('txsons_intake_prefill', JSON.stringify(intakePrefill));
+  }, [intakePrefill]);
+
   const [selectedClientSnapshot, setSelectedClientSnapshot] = useState<ProjectSnapshot | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -234,7 +253,10 @@ export default function App() {
       {/* Sidebar Navigation */}
       <Sidebar 
         currentView={currentView} 
-        onNavigate={setCurrentView} 
+        onNavigate={(view) => {
+          setSelectedClientSnapshot(null);
+          setCurrentView(view);
+        }} 
       />
 
       {/* Main Content Area */}

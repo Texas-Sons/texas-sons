@@ -278,20 +278,40 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   });
 
   // Active Project Data
-  const [project, setProject] = useState<ProjectSnapshot>(() => ({
-    id: 'prj-initial',
-    prompt: 'Initial Template',
-    timestamp: new Date().toLocaleTimeString(),
-    profile: DEFAULT_BLUEPRINTS[0].profile,
-    services: DEFAULT_BLUEPRINTS[0].services,
-    testimonials: DEFAULT_BLUEPRINTS[0].testimonials,
-    theme: DEFAULT_BLUEPRINTS[0].theme,
-    heroVariant: DEFAULT_BLUEPRINTS[0].heroVariant,
-    badges: DEFAULT_BLUEPRINTS[0].badges,
-    proofBadgeText: DEFAULT_BLUEPRINTS[0].proofBadgeText
-  }));
+  const [project, setProject] = useState<ProjectSnapshot>(() => {
+    try {
+      const saved = localStorage.getItem('txsons_studio_project');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      id: 'prj-initial',
+      prompt: 'Initial Template',
+      timestamp: new Date().toLocaleTimeString(),
+      profile: DEFAULT_BLUEPRINTS[0].profile,
+      services: DEFAULT_BLUEPRINTS[0].services,
+      testimonials: DEFAULT_BLUEPRINTS[0].testimonials,
+      theme: DEFAULT_BLUEPRINTS[0].theme,
+      heroVariant: DEFAULT_BLUEPRINTS[0].heroVariant,
+      badges: DEFAULT_BLUEPRINTS[0].badges,
+      proofBadgeText: DEFAULT_BLUEPRINTS[0].proofBadgeText
+    };
+  });
 
-  const [history, setHistory] = useState<ProjectSnapshot[]>([project]);
+  const [history, setHistory] = useState<ProjectSnapshot[]>(() => {
+    try {
+      const saved = localStorage.getItem('txsons_studio_history');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [project]; // Note: references the initialized project above
+  });
+
+  useEffect(() => {
+    localStorage.setItem('txsons_studio_project', JSON.stringify(project));
+  }, [project]);
+
+  useEffect(() => {
+    localStorage.setItem('txsons_studio_history', JSON.stringify(history));
+  }, [history]);
   const [agentState, setAgentState] = useState<AgentState>({
     step: 'ready',
     message: 'Swarm Ready: Debbie Dietzmann Presidential Theme Loaded',
