@@ -221,7 +221,11 @@ export default function App() {
       theme: client.theme,
       heroVariant: 'split',
       badges: client.badges && client.badges.length > 0 ? client.badges : ['25+ Years Experience', 'Satisfaction Guaranteed', 'Locally Owned'],
-      proofBadgeText: client.proofBadgeText || 'Top Rated · 100% Guaranteed'
+      proofBadgeText: client.proofBadgeText || 'Top Rated · 100% Guaranteed',
+      seo: {
+        title: `${client.businessName} — ${client.tagline || 'Local Business'}`,
+        description: client.description || `Contact ${client.businessName} in ${client.address || 'Texas'} for professional services. ${client.phone || ''}`,
+      }
     };
 
     setSelectedClientSnapshot(snapshot);
@@ -229,7 +233,13 @@ export default function App() {
   };
 
   const handleInvoiceFromClient = (client: ClientIntake) => {
-    setProvisioningData({ companyName: client.businessName });
+    setIntakePrefill(prev => ({
+      ...prev,
+      businessName: client.businessName,
+      clientContact: client.clientContact,
+      email: client.email,
+      phone: client.phone,
+    }));
     setIsGeneratingInvoice(true);
   };
 

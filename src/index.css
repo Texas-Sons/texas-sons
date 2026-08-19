@@ -15,3 +15,19 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
+/* Client sites: per-client design tokens applied by the block theme system */
+[data-ts-site] {
+  font-family: var(--ts-font-body, var(--font-sans));
+  background-color: var(--ts-bg, #0c0a09);
+  color: var(--ts-text, #fafaf9);
+}
+
+[data-ts-site] h1,
+[data-ts-site] h2,
+[data-ts-site] h3,
+[data-ts-site] h4,
+[data-ts-site] h5,
+[data-ts-site] h6 {
+  font-family: var(--ts-font-heading, var(--font-display)) !important;
+}
+

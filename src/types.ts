@@ -32,6 +32,7 @@ export interface ClientIntake {
   email: string;
   phone: string;
   address?: string;
+  hours?: string;
   domain?: string;
   category: 'Campaign & Leadership' | 'Food & Beverage' | 'Beauty & Wellness' | 'Home & Trade Services' | 'Professional & Medical';
   tier: Tier;

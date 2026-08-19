@@ -53,6 +53,7 @@ import {
   ServiceItem, 
   TestimonialItem 
 } from '../../templates/blocks';
+import { buildThemeVars } from '../../templates/blocks/theme';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake } from '../../types';
 
@@ -73,6 +74,7 @@ export interface ProjectSnapshot {
   heroVariant: 'split' | 'bento' | 'centered';
   badges?: string[];
   proofBadgeText?: string;
+  seo?: { title: string; description: string };
 }
 
 interface PresetBlueprint {
@@ -88,6 +90,7 @@ interface PresetBlueprint {
   badges?: string[];
   proofBadgeText?: string;
   isCustom?: boolean;
+  seo?: { title: string; description: string };
 }
 
 const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
@@ -396,7 +399,11 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       theme: (dossier.theme as any) || project.theme,
       heroVariant: 'split',
       badges: dossier.badges && dossier.badges.length > 0 ? dossier.badges : project.badges,
-      proofBadgeText: dossier.proofBadgeText || project.proofBadgeText
+      proofBadgeText: dossier.proofBadgeText || project.proofBadgeText,
+      seo: {
+        title: `${dossier.businessName || project.profile.name} — ${dossier.tagline || project.profile.tagline || 'Local Business'}`,
+        description: dossier.description || project.profile.description || '',
+      }
     };
 
     setProject(newSnapshot);
@@ -548,27 +555,11 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
         message: 'Build successful! Components updated with zero errors.',
         tokensUsed: 640
       });
-    } catch (err) {
-      const updatedSnapshot: ProjectSnapshot = {
-        id: `prj-${Date.now()}`,
-        prompt: textToRun,
-        timestamp: new Date().toLocaleTimeString(),
-        profile: {
-          ...project.profile,
-          name: textToRun.length > 24 ? textToRun.slice(0, 24) + '...' : textToRun,
-          tagline: `Official Platform & Services for ${textToRun}`
-        },
-        services: project.services,
-        testimonials: project.testimonials,
-        theme: project.theme,
-        heroVariant: 'bento'
-      };
-      setProject(updatedSnapshot);
-      setHistory(prev => [...prev, updatedSnapshot]);
+    } catch (err: any) {
       setAgentState({
         step: 'ready',
-        message: 'Updated site configuration using local token engine.',
-        tokensUsed: 480
+        message: `Agent update error: ${err.message || 'Failed to modify blueprint'}`,
+        tokensUsed: agentState.tokensUsed
       });
     }
   };
@@ -1005,6 +996,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             {/* TAB 1: Live Public Website Preview */}
             {activeTab === 'preview' && (
               <div 
+                data-ts-site=""
+                style={buildThemeVars({ theme: project.theme, ...project.profile }) as React.CSSProperties}
                 className={`transition-all duration-300 rounded-2xl shadow-2xl border border-stone-800 overflow-hidden flex flex-col ${getThemeBackgroundClass()} ${
                   device === 'desktop' ? 'w-full max-w-full' : device === 'tablet' ? 'w-[768px]' : 'w-[375px]'
                 }`}

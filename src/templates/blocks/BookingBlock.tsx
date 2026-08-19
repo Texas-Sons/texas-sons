@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Send, CheckCircle, ShieldCheck, Vote, Award, MapPin } from 'lucide-react';
+import { Send, CheckCircle, ShieldCheck, Vote, MapPin, Mail, Phone, AlertCircle } from 'lucide-react';
 import { ServiceItem } from './types';
 
 interface BookingBlockProps {
@@ -7,9 +7,12 @@ interface BookingBlockProps {
   subtitle?: string;
   services?: ServiceItem[];
   phone?: string;
+  email?: string;
+  address?: string;
+  hours?: string | string[];
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: any) => void | Promise<void>;
 }
 
 export function BookingBlock({
@@ -17,19 +20,23 @@ export function BookingBlock({
   subtitle,
   services = [],
   phone,
+  email,
+  address,
+  hours,
   theme = 'dark',
   accentColor,
   onSubmit
 }: BookingBlockProps) {
   const [submitted, setSubmitted] = useState(false);
-  const isDark = theme !== 'light';
-  
-  const isCampaign = theme === 'campaign-navy' || 
-    accentColor === '#C5A059' || 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const isCampaign = theme === 'campaign-navy' ||
+    accentColor === '#C5A059' ||
     (title && (title.toLowerCase().includes('volunteer') || title.toLowerCase().includes('yard') || title.toLowerCase().includes('campaign')));
 
-  const defaultTitle = isCampaign 
-    ? 'Join the Campaign & Request Yard Signs' 
+  const defaultTitle = isCampaign
+    ? 'Join the Campaign & Request Yard Signs'
     : 'Request a Free Estimate & Consultation';
 
   const defaultSubtitle = isCampaign
@@ -45,16 +52,18 @@ export function BookingBlock({
     address: ''
   });
 
-  const customAccentBg = accentColor 
-    ? { backgroundColor: accentColor, color: (accentColor === '#C5A059' || accentColor === '#fbbf24') ? '#0c0a09' : '#ffffff' } 
-    : isCampaign
-      ? { backgroundColor: '#C5A059', color: '#00081e' }
-      : undefined;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) onSubmit(formData);
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      if (onSubmit) await onSubmit(formData);
+      setSubmitted(true);
+    } catch (err: any) {
+      setSubmitError('Something went wrong while submitting. Please try again or call us directly.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const campaignOptions = [
@@ -66,60 +75,78 @@ export function BookingBlock({
     'Official Endorsement / Coalition Member'
   ];
 
+  const inputClass = "w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[color:var(--ts-accent)] transition-all bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-text)] placeholder:text-[color:var(--ts-muted)]";
+
   return (
-    <section id="contact" className={`py-16 sm:py-24 relative ${
-      theme === 'campaign-navy' ? 'bg-[#00081e] text-white' : isDark ? 'bg-stone-900/50 text-white' : 'bg-stone-100 text-stone-900'
-    }`}>
+    <section id="contact" className={`py-16 sm:py-24 relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)]`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-14">
           {isCampaign && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30 mb-3.5">
-              <Vote className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[color:var(--ts-accent-soft)] text-[color:var(--ts-accent)] border border-[color:var(--ts-accent-border)] mb-3.5">
+              <Vote className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Grassroots Action Center</span>
             </div>
           )}
           <h2 className={`text-2xl sm:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 ${isCampaign ? 'font-serif' : ''}`}>
             {title || defaultTitle}
           </h2>
-          <p className={`text-sm sm:text-base max-w-2xl mx-auto leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>
+          <p className={`text-sm sm:text-base max-w-2xl mx-auto leading-relaxed text-[color:var(--ts-muted)]`}>
             {subtitle || defaultSubtitle}
           </p>
         </div>
 
+        {/* Contact Info Strip */}
+        {(phone || email || address) && (
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-8 text-xs sm:text-sm text-[color:var(--ts-muted)]">
+            {phone && (
+              <a href={`tel:${phone}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <Phone className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                <span>{phone}</span>
+              </a>
+            )}
+            {email && (
+              <a href={`mailto:${email}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <Mail className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                <span>{email}</span>
+              </a>
+            )}
+            {address && (
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                <span>{address}</span>
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Form Container */}
-        <div className={`rounded-2xl sm:rounded-3xl p-6 sm:p-10 border shadow-2xl ${
-          isCampaign 
-            ? 'bg-[#020d29] border-[#C5A059]/30 shadow-[#C5A059]/5' 
-            : isDark 
-              ? 'bg-stone-950 border-stone-800' 
-              : 'bg-white border-stone-200'
-        }`}>
+        <div className="rounded-2xl sm:rounded-3xl p-6 sm:p-10 border shadow-2xl bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {submitted ? (
             <div className="text-center py-12 space-y-4 animate-in zoom-in-95 duration-300">
               <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
-                <CheckCircle className="w-8 h-8" />
+                <CheckCircle className="w-8 h-8" aria-hidden="true" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Thank You for Standing With Us!</h3>
-              <p className="text-stone-400 max-w-md mx-auto text-sm">
-                {isCampaign 
-                  ? 'Your volunteer/yard sign request has been recorded. Our field team will be in touch shortly.' 
+              <h3 className="text-2xl font-bold text-[color:var(--ts-text)]">Thank You for Standing With Us!</h3>
+              <p className="text-[color:var(--ts-muted)] max-w-md mx-auto text-sm">
+                {isCampaign
+                  ? 'Your volunteer/yard sign request has been recorded. Our field team will be in touch shortly.'
                   : 'Your request has been received. One of our specialists will reach out via phone or email shortly.'}
               </p>
               {phone && (
-                <p className="text-xs text-stone-500 pt-4">
-                  Questions? Contact campaign headquarters at <span className="text-[#C5A059] font-semibold">{phone}</span>.
+                <p className="text-xs text-[color:var(--ts-muted)] pt-4">
+                  Questions? Contact us at <span className="text-[color:var(--ts-accent)] font-semibold">{phone}</span>.
                 </p>
               )}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-              
-              {/* Row 1: Name & Phone (Auto-fit min 240px for mobile frame safety) */}
+
+              {/* Row 1: Name & Phone */}
               <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 sm:gap-6">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[color:var(--ts-muted)] mb-2">
                     Full Name *
                   </label>
                   <input
@@ -128,14 +155,12 @@ export function BookingBlock({
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Jane Doe"
-                    className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDark ? 'bg-stone-900/80 border-stone-800 text-white placeholder-stone-600' : 'bg-stone-50 border-stone-300 text-stone-900'
-                    }`}
+                    className={inputClass}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[color:var(--ts-muted)] mb-2">
                     Phone Number *
                   </label>
                   <input
@@ -144,9 +169,7 @@ export function BookingBlock({
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="(555) 000-0000"
-                    className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDark ? 'bg-stone-900/80 border-stone-800 text-white placeholder-stone-600' : 'bg-stone-50 border-stone-300 text-stone-900'
-                    }`}
+                    className={inputClass}
                   />
                 </div>
               </div>
@@ -154,7 +177,7 @@ export function BookingBlock({
               {/* Row 2: Email & Participation Dropdown */}
               <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 sm:gap-6">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[color:var(--ts-muted)] mb-2">
                     Email Address
                   </label>
                   <input
@@ -162,22 +185,18 @@ export function BookingBlock({
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="jane@example.com"
-                    className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDark ? 'bg-stone-900/80 border-stone-800 text-white placeholder-stone-600' : 'bg-stone-50 border-stone-300 text-stone-900'
-                    }`}
+                    className={inputClass}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[color:var(--ts-muted)] mb-2">
                     {isCampaign ? 'How Would You Like to Participate? *' : 'Select Service *'}
                   </label>
                   <select
                     value={formData.service}
                     onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDark ? 'bg-stone-900/80 border-stone-800 text-white' : 'bg-stone-50 border-stone-300 text-stone-900'
-                    }`}
+                    className={inputClass}
                   >
                     {isCampaign ? (
                       campaignOptions.map((opt, idx) => (
@@ -200,7 +219,7 @@ export function BookingBlock({
 
               {/* Row 3: Address / Notes */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[color:var(--ts-muted)] mb-2">
                   {isCampaign ? 'Physical Delivery Address (for Yard Signs) or Comments' : 'Project Notes & Preferred Timeline'}
                 </label>
                 <textarea
@@ -208,38 +227,41 @@ export function BookingBlock({
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder={
-                    isCampaign 
+                    isCampaign
                       ? 'Enter your street address, city, & zip code for yard sign placement, or notes on your volunteer availability...'
                       : 'Tell us a little bit about what you need done...'
                   }
-                  className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                    isDark ? 'bg-stone-900/80 border-stone-800 text-white placeholder-stone-600' : 'bg-stone-50 border-stone-300 text-stone-900'
-                  }`}
+                  className={inputClass}
                 />
               </div>
+
+              {submitError && (
+                <div className="flex items-start gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                  <span>{submitError}</span>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button
                 type="submit"
-                style={customAccentBg}
-                className={`w-full py-4 rounded-xl font-bold text-sm sm:text-base shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] ${
-                  !customAccentBg ? 'bg-orange-600 hover:bg-orange-500 text-white shadow-orange-600/30' : 'hover:opacity-95'
-                }`}
+                disabled={submitting}
+                className={`w-full py-4 rounded-xl font-bold text-sm sm:text-base shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
               >
-                <Send className="w-4 h-4" />
-                <span>{isCampaign ? 'Join Grassroots Campaign Team' : 'Submit Request'}</span>
+                <Send className="w-4 h-4" aria-hidden="true" />
+                <span>{submitting ? 'Submitting...' : (isCampaign ? 'Join Grassroots Campaign Team' : 'Submit Request')}</span>
               </button>
 
               {/* Compliance & Trust Badge */}
-              <div className="flex items-center justify-center gap-2 text-xs text-stone-500 pt-1 text-center">
+              <div className="flex items-center justify-center gap-2 text-xs text-[color:var(--ts-muted)] pt-1 text-center">
                 {isCampaign ? (
                   <>
-                    <Vote className="w-3.5 h-3.5 text-[#C5A059] flex-shrink-0" />
+                    <Vote className="w-3.5 h-3.5 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
                     <span>Official Volunteer & Yard Sign Roster · Texas Election Code Compliant</span>
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" aria-hidden="true" />
                     <span>Zero spam guarantee. Your details are safe with us.</span>
                   </>
                 )}
@@ -252,4 +274,3 @@ export function BookingBlock({
     </section>
   );
 }
-

@@ -8,6 +8,7 @@ import JSZip from "jszip";
 import { createServer as createViteServer } from "vite";
 import { Octokit } from "@octokit/rest";
 import Stripe from "stripe";
+import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 
@@ -107,6 +108,80 @@ function sanitizeProjectName(name: string): string {
   return slug || 'texas-sons-site';
 }
 
+function escapeHtml(s: string): string {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildLocalBusinessLd(snapshot: any, siteUrl: string): any {
+  const profile = snapshot?.profile || {};
+  const services = (snapshot?.services || [])
+    .filter((s: any) => s?.title || s?.description)
+    .slice(0, 12);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: profile.name,
+    url: `${siteUrl}/`,
+    description: profile.description || profile.tagline || undefined,
+    telephone: profile.phone || undefined,
+    email: profile.email || undefined,
+    image: profile.heroImage || undefined,
+    address: profile.address
+      ? { '@type': 'PostalAddress', streetAddress: profile.address }
+      : undefined,
+    hasOfferCatalog: services.length
+      ? {
+          '@type': 'OfferCatalog',
+          name: 'Services',
+          itemListElement: services.map((s: any) => ({
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: s.title || s.description,
+              description: s.description || undefined,
+            },
+          })),
+        }
+      : undefined,
+  };
+}
+
+function buildSeoTags(snapshot: any, siteUrl: string): string {
+  const profile = snapshot?.profile || {};
+  const seo = snapshot?.seo || {};
+  const name = profile.name || 'Local Business';
+  const tagline = profile.tagline || '';
+  const description = profile.description || '';
+  const title = seo.title || (tagline ? `${name} — ${tagline}` : name);
+  const metaDescription =
+    seo.description ||
+    description ||
+    `${name} · ${profile.category || 'Local Business'} · ${profile.phone || 'Call for details'}`;
+  const ld = JSON.stringify(buildLocalBusinessLd(snapshot, siteUrl)).replace(/</g, '\\u003c');
+
+  return [
+    profile.heroImage ? `<link rel="preload" as="image" href="${escapeHtml(profile.heroImage)}" fetchpriority="high">` : '',
+    `<title>${escapeHtml(title)}</title>`,
+    `<meta name="description" content="${escapeHtml(metaDescription)}">`,
+    `<meta name="robots" content="index, follow">`,
+    `<meta name="generator" content="Texas Sons Websites">`,
+    `<meta property="og:title" content="${escapeHtml(title)}">`,
+    `<meta property="og:description" content="${escapeHtml(metaDescription)}">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:url" content="${escapeHtml(siteUrl)}/">`,
+    profile.heroImage ? `<meta property="og:image" content="${escapeHtml(profile.heroImage)}">` : '',
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<link rel="canonical" href="${escapeHtml(siteUrl)}/">`,
+    `<link rel="icon" type="image/png" href="/favicon.png">`,
+    `<script type="application/ld+json">${ld}</script>`,
+  ].filter(Boolean).join('\n    ');
+}
+
 // ---------------------------------------------------------------------------
 // Cloudflare Pages helpers (Direct Upload: JWT -> assets -> manifest deploy)
 // ---------------------------------------------------------------------------
@@ -120,6 +195,35 @@ function getCloudflareCredentials(): { accountId: string; apiToken: string } {
   return { accountId, apiToken };
 }
 
+// Lazy-initialized Gemini AI client (shared across all AI endpoints)
+let geminiClient: any = null;
+async function getGemini() {
+  if (!geminiClient) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI_API_KEY environment variable is required");
+    const { GoogleGenAI } = await import("@google/genai");
+    geminiClient = new GoogleGenAI({
+      apiKey,
+      httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+    });
+  }
+  return geminiClient;
+}
+
+// Lazy-initialized Supabase client for lead capture
+let supabaseClient: SupabaseClient | null = null;
+function getSupabase(): SupabaseClient {
+  if (!supabaseClient) {
+    const url = process.env.VITE_SUPABASE_URL;
+    const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+    if (!url || !anonKey) {
+      throw new Error("VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required in .env.local");
+    }
+    supabaseClient = createSupabaseClient(url, anonKey);
+  }
+  return supabaseClient;
+}
+
 async function cfFetch(url: string, init?: RequestInit): Promise<any> {
   const res = await fetch(url, init);
   const data = await res.json();
@@ -130,11 +234,54 @@ async function cfFetch(url: string, init?: RequestInit): Promise<any> {
 }
 
 // Cloudflare Pages asset hash: blake3(base64(fileContent) + extension), hex, first 32 chars
-function pagesFileHash(content: string, fileName: string): string {
-  const base64 = Buffer.from(content).toString('base64');
+function pagesFileHash(data: string | Buffer, fileName: string): string {
+  const buf = typeof data === 'string' ? Buffer.from(data) : data;
+  const base64 = buf.toString('base64');
   const ext = path.extname(fileName).slice(1);
   const hash = blake3(new TextEncoder().encode(base64 + ext));
   return bytesToHex(hash).slice(0, 32);
+}
+
+function contentTypeFor(fileName: string): string {
+  const ext = path.extname(fileName).slice(1).toLowerCase();
+  const map: Record<string, string> = {
+    html: 'text/html; charset=utf-8',
+    css: 'text/css; charset=utf-8',
+    js: 'application/javascript; charset=utf-8',
+    mjs: 'application/javascript; charset=utf-8',
+    json: 'application/json',
+    txt: 'text/plain; charset=utf-8',
+    xml: 'application/xml',
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    gif: 'image/gif',
+    webp: 'image/webp',
+    svg: 'image/svg+xml',
+    ico: 'image/x-icon',
+  };
+  return map[ext] || 'application/octet-stream';
+}
+
+interface UploadEntry {
+  path?: string;
+  hash: string;
+  data: string | Buffer;
+  contentType: string;
+}
+
+async function uploadAssets(jwt: string, files: UploadEntry[]): Promise<void> {
+  const payload = files.map(f => ({
+    key: f.hash,
+    value: typeof f.data === 'string' ? Buffer.from(f.data).toString('base64') : f.data.toString('base64'),
+    metadata: { contentType: f.contentType },
+    base64: true,
+  }));
+  await cfFetch(`https://api.cloudflare.com/client/v4/pages/assets/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }
 
 async function findPagesProject(accountId: string, apiToken: string, name: string): Promise<any | null> {
@@ -160,20 +307,6 @@ async function getUploadJwt(accountId: string, apiToken: string, projectName: st
     headers: { Authorization: `Bearer ${apiToken}` },
   });
   return result.jwt;
-}
-
-async function uploadAssets(jwt: string, files: { hash: string; content: string }[]): Promise<void> {
-  const payload = files.map(f => ({
-    key: f.hash,
-    value: Buffer.from(f.content).toString('base64'),
-    metadata: { contentType: 'text/html' },
-    base64: true,
-  }));
-  await cfFetch(`https://api.cloudflare.com/client/v4/pages/assets/upload`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
 }
 
 async function upsertHashes(jwt: string, hashes: string[]): Promise<void> {
@@ -204,14 +337,15 @@ async function uploadDeployment(
   accountId: string,
   apiToken: string,
   projectName: string,
-  files: Record<string, string>
+  files: Record<string, string | Buffer>
 ): Promise<string> {
   const jwt = await getUploadJwt(accountId, apiToken, projectName);
 
-  const entries = Object.entries(files).map(([filePath, content]) => ({
+  const entries: UploadEntry[] = Object.entries(files).map(([filePath, data]) => ({
     path: filePath,
-    content,
-    hash: pagesFileHash(content, filePath),
+    data,
+    contentType: contentTypeFor(filePath),
+    hash: pagesFileHash(data, filePath),
   }));
 
   await uploadAssets(jwt, entries);
@@ -325,11 +459,7 @@ async function startServer() {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) throw new Error("GEMINI_API_KEY environment variable is required");
 
-      const { GoogleGenAI } = await import("@google/genai");
-      const ai = new GoogleGenAI({
-        apiKey,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-      });
+      const ai = await getGemini();
 
       const tokenList = allTokens.map(t => `- ${t} => "${defaults[t] || ''}"`).join('\n');
       const reviews = (business?.reviews || []).slice(0, 2)
@@ -444,20 +574,36 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
         throw new Error("client.html not found. Did you run 'npm run build'?");
       }
 
-      // Inject the blueprint
-      const injection = `<script>window.__TXSONS_BLUEPRINT__ = ${JSON.stringify(currentSnapshot)};</script></head>`;
+      const siteUrl = `https://${slug}.pages.dev`;
+
+      // Remove the boilerplate title (replaced by per-client SEO tags)
+      clientHtml = clientHtml.replace(/<title>[\s\S]*?<\/title>/i, '');
+
+      // Inject per-client SEO + the blueprint snapshot
+      const blueprintJson = JSON.stringify(currentSnapshot).replace(/</g, '\\u003c');
+      const injection = `${buildSeoTags(currentSnapshot, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};</script></head>`;
       const finalHtml = clientHtml.replace('</head>', injection);
 
-      const files: Record<string, string> = {
+      const files: Record<string, string | Buffer> = {
         'index.html': finalHtml,
+        'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`,
+        'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n`,
       };
 
-      // Gather assets
+      // Favicon (public/logo.png)
+      try {
+        const logo = await fs.readFile(path.join(process.cwd(), 'public', 'logo.png'));
+        files['favicon.png'] = logo;
+      } catch {
+        // favicon is optional; the SEO link tag simply 404s until one is added
+      }
+
+      // Gather compiled assets (JS/CSS chunks)
       const assetsDir = path.join(process.cwd(), 'dist', 'assets');
       try {
         const assetFiles = await fs.readdir(assetsDir);
         for (const file of assetFiles) {
-          const content = await fs.readFile(path.join(assetsDir, file), 'utf8');
+          const content = await fs.readFile(path.join(assetsDir, file));
           files[`assets/${file}`] = content;
         }
       } catch (e) {
@@ -468,7 +614,7 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
 
       res.json({
         success: true,
-        url: `https://${slug}.pages.dev`,
+        url: siteUrl,
         deploymentUrl,
         projectName: slug,
       });
@@ -556,17 +702,7 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
   app.post("/api/proposal", async (req, res) => {
     try {
       const { businessName, businessAddress, typeOfBusiness } = req.body;
-      const { GoogleGenAI } = await import("@google/genai");
-
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("GEMINI_API_KEY environment variable is required");
-      }
-
-      const ai = new GoogleGenAI({
-        apiKey,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-      });
+      const ai = await getGemini();
 
       const prompt = `Write a professional, concise web design and development proposal for a local business.
 
@@ -603,16 +739,7 @@ Draft a short, persuasive email proposal recommending we build them a modern web
         return res.status(400).json({ success: false, error: "At least one image is required" });
       }
 
-      const { GoogleGenAI } = await import("@google/genai");
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("GEMINI_API_KEY environment variable is required");
-      }
-
-      const ai = new GoogleGenAI({
-        apiKey,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-      });
+      const ai = await getGemini();
 
       const parts: any[] = [];
 
@@ -705,29 +832,75 @@ Rules:
       }
 
       const systemInstruction = `You are an expert React UI Architect and AI Agent working on the Texas Sons Builder platform.
-Your job is to apply the user's requested modifications to the provided JSON state snapshot of their website.
-You must return the COMPLETE updated JSON object, preserving all fields that should not change, and modifying only the fields relevant to the user's request.
+Your job is to intelligently apply the user's requested modifications to the provided JSON state snapshot of their website.
+You must return the COMPLETE updated JSON object matching the exact schema of the snapshot, modifying ONLY the relevant fields and preserving everything else.
 
-Valid 'theme' values are: 'dark', 'light', 'luxury', 'campaign-navy', 'crimson-bold', 'emerald-gold', 'custom'
-Valid 'heroVariant' values are: 'split', 'centered', 'bento'
+FIELD MAPPING RULES:
+1. Colors & Branding:
+   - If user asks to change colors (e.g. "darker orange", "blue accent", "gold", "forest green"), update 'profile.accentColor' (e.g. #ea580c or #f97316 for orange, #2563eb for blue, #C5A059 for gold, #16a34a for green).
+   - If user asks for dark background or theme change, update 'theme' and 'profile.theme'. Valid values: 'campaign-navy', 'crimson-bold', 'emerald-gold', 'luxury', 'dark', 'light', 'custom'.
+2. Star Ratings & Badges:
+   - If user asks to "remove star rating" or "remove ratings at top" or "hide reviews", set 'proofBadgeText' to "none".
+   - If user asks to change or update badges, modify 'badges' array or 'proofBadgeText'.
+3. Layout & Structure:
+   - If user asks to change hero layout, update 'heroVariant'. Valid values: 'split', 'centered', 'bento'.
+4. Content & Copy:
+   - Headline / Tagline -> 'profile.tagline'
+   - Bio / Story / Description -> 'profile.description'
+   - Candidate / Business Name -> 'profile.name'
+   - Contact info -> 'profile.phone', 'profile.email', 'profile.address', 'profile.hours'
+   - Services / Pillars / Menu -> update 'services' array
+   - Testimonials / Endorsements -> update 'testimonials' array
 
-Return ONLY the raw updated JSON object. Do not include markdown codeblocks (\`\`\`json) or any conversational text.
+Return ONLY a valid JSON object. Do not include markdown ticks (\`\`\`json) or any explanation.
 
 Current Snapshot:
 ${JSON.stringify(currentSnapshot, null, 2)}
 
-User Request:
+User Instruction:
 ${prompt}`;
 
+      const ai = await getGemini();
       const response = await ai.models.generateContent({
         model: "gemini-3.6-flash",
         contents: systemInstruction
       });
 
-      const updatedSnapshot = parseJsonResponse(response.text());
+      const rawText = response.text || "{}";
+      const updatedSnapshot = parseJsonResponse(rawText);
       res.json({ success: true, snapshot: updatedSnapshot });
     } catch (error: any) {
       console.error("Studio Chat Error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Public lead capture from deployed client sites
+  app.post("/api/lead", async (req, res) => {
+    try {
+      const { businessName, siteSlug, name, phone, email, service, notes, address } = req.body || {};
+      if (!name || !phone) {
+        return res.status(400).json({ success: false, error: "name and phone are required" });
+      }
+
+      const supabase = getSupabase();
+      const { data, error } = await supabase.from('leads').insert({
+        business_name: businessName || '',
+        site_slug: siteSlug || '',
+        name,
+        phone,
+        email: email || '',
+        service: service || '',
+        notes: notes || '',
+        address: address || '',
+        created_at: new Date().toISOString(),
+      }).select('id').single();
+
+      if (error) throw error;
+
+      res.json({ success: true, leadId: data?.id });
+    } catch (error: any) {
+      console.error("Lead capture error:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
