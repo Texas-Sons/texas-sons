@@ -15,7 +15,7 @@ export default function TexasSonsLogo({ className = "w-10 h-10" }: { className?:
   }
 
   return (
-    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <svg viewBox="0 14 100 66" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <g strokeLinecap="square" strokeLinejoin="miter">
         {/* HORN - UPPER (ORANGE) */}
         {/* Left */}

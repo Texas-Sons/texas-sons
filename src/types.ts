@@ -23,4 +23,4 @@ export interface Invoice {
   ownerId: string;
 }
 
-export type ViewState = 'dashboard' | 'projects' | 'clients' | 'templates' | 'agent-builder' | 'billing' | 'settings' | 'prospects';
+export type ViewState = 'dashboard' | 'projects' | 'clients' | 'agent-builder' | 'billing' | 'settings' | 'prospects';

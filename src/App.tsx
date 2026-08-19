@@ -8,7 +8,7 @@ import BillingView from './components/BillingView';
 import GenerateInvoiceModal from './components/GenerateInvoiceModal';
 import LandingPage from './components/LandingPage';
 import ProspectsView from './components/ProspectsView';
-import TemplatesView from './components/TemplatesView';
+import AgentBuilderStudio from './components/AgentBuilder/AgentBuilderStudio';
 import { Project, Invoice, ViewState } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { User } from '@supabase/supabase-js';
@@ -203,73 +203,68 @@ export default function App() {
     <div className="flex h-screen overflow-hidden bg-stone-50">
       
       {/* Sidebar Navigation */}
-      <Sidebar currentView={currentView} onNavigate={setCurrentView} />
+      <Sidebar 
+        currentView={currentView} 
+        onNavigate={setCurrentView} 
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header */}
-        <TopBar currentView={currentView} onLogout={handleLogout} />
+        <TopBar 
+          currentView={currentView} 
+          onLogout={handleLogout} 
+        />
 
-        {/* Scrollable Main Canvas */}
-        <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto">
-            {currentView === 'dashboard' && (
-              <DashboardOverview projects={projects} />
-            )}
-            
-            {currentView === 'projects' && (
-              <ProjectList 
-                projects={projects} 
-                onNewProject={() => {
-                  setProvisioningData({});
-                  setIsProvisioning(true);
-                }} 
-              />
-            )}
+        {/* Main Canvas Area */}
+        {currentView === 'agent-builder' ? (
+          <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            <AgentBuilderStudio />
+          </main>
+        ) : (
+          <main className="flex-1 overflow-y-auto p-8">
+            <div className="max-w-6xl mx-auto">
+              {currentView === 'dashboard' && (
+                <DashboardOverview projects={projects} />
+              )}
+              
+              {currentView === 'projects' && (
+                <ProjectList 
+                  projects={projects} 
+                  onNewProject={() => {
+                    setProvisioningData({});
+                    setIsProvisioning(true);
+                  }} 
+                />
+              )}
 
-            {currentView === 'prospects' && (
-              <ProspectsView 
-                onConvert={(prospect) => {
-                  setProvisioningData({ companyName: prospect.displayName || '' });
-                  setIsProvisioning(true);
-                }}
-              />
-            )}
+              {currentView === 'prospects' && (
+                <ProspectsView 
+                  onConvert={(prospect) => {
+                    setProvisioningData({ companyName: prospect.displayName || '' });
+                    setIsProvisioning(true);
+                  }}
+                />
+              )}
 
-            {currentView === 'billing' && (
-              <BillingView 
-                invoices={invoices}
-                onNewInvoice={() => setIsGeneratingInvoice(true)}
-              />
-            )}
+              {currentView === 'billing' && (
+                <BillingView 
+                  invoices={invoices}
+                  onNewInvoice={() => setIsGeneratingInvoice(true)}
+                />
+              )}
 
-            {currentView === 'templates' && <TemplatesView />}
-
-            {currentView === 'agent-builder' && (
-              <div className="flex flex-col items-center justify-center h-96 border-2 border-dashed border-orange-200 rounded-2xl bg-orange-50/30 text-stone-600 p-8">
-                <div className="w-16 h-16 bg-white border border-orange-200 rounded-2xl shadow-sm flex items-center justify-center mb-4">
-                  <span className="text-3xl">✨</span>
+              {/* Placeholder for other views */}
+              {['clients', 'settings'].includes(currentView) && (
+                <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-stone-200 rounded-2xl bg-white text-stone-500">
+                  <p className="text-sm font-medium">This module is part of the Texas Sons Websites Internal System.</p>
+                  <p className="text-xs mt-1">Connect API endpoints to enable this view.</p>
                 </div>
-                <h2 className="text-xl font-bold text-stone-900 mb-2">AI Builder Studio (Coming Soon)</h2>
-                <p className="text-center text-sm max-w-md text-stone-500">
-                  This workspace will be powered by the Antigravity Agent via the Gemini Interactions API. You will be able to enter a prompt and watch the AI iteratively write, test, and render full Next.js project codebases in a live Sandpack environment.
-                </p>
-                <button className="mt-6 px-4 py-2 bg-stone-900 text-white rounded-lg text-sm font-medium hover:bg-stone-800 transition-colors">
-                  Prepare Antigravity Endpoint
-                </button>
-              </div>
-            )}
-
-            {/* Placeholder for other views */}
-            {['clients', 'settings'].includes(currentView) && (
-              <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-stone-200 rounded-2xl bg-white text-stone-500">
-                <p className="text-sm font-medium">This module is part of the Texas Sons Websites Internal System.</p>
-                <p className="text-xs mt-1">Connect API endpoints to enable this view.</p>
-              </div>
-            )}
-          </div>
-        </main>
+              )}
+            </div>
+          </main>
+        )}
       </div>
 
       {/* Provisioning Modal Portal */}
