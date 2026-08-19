@@ -635,17 +635,29 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
         // favicon is optional; the SEO link tag simply 404s until one is added
       }
 
-      // Gather compiled assets (JS/CSS chunks)
-      const assetsDir = path.join(process.cwd(), 'dist', 'assets');
-      try {
-        const assetFiles = await fs.readdir(assetsDir);
-        for (const file of assetFiles) {
-          const content = await fs.readFile(path.join(assetsDir, file));
-          files[`assets/${file}`] = content;
+      // Gather all compiled assets and public files copied to dist
+      async function gatherFiles(dir: string, baseRoute: string = '') {
+        try {
+          const entries = await fs.readdir(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            const routePath = baseRoute ? `${baseRoute}/${entry.name}` : entry.name;
+            
+            if (entry.isDirectory()) {
+              await gatherFiles(fullPath, routePath);
+            } else {
+              // skip client.html / index.html / server.cjs as they are handled manually or not needed
+              if (routePath === 'client.html' || routePath === 'index.html' || routePath === 'server.cjs' || routePath.endsWith('.map')) continue;
+              const content = await fs.readFile(fullPath);
+              files[routePath] = content;
+            }
+          }
+        } catch (e) {
+          console.log(`Error reading directory ${dir}:`, e);
         }
-      } catch (e) {
-        console.log("No assets directory found or error reading assets:", e);
       }
+      
+      await gatherFiles(path.join(process.cwd(), 'dist'));
 
       const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
 
