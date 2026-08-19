@@ -10,9 +10,23 @@ import LandingPage from './components/LandingPage';
 import ProspectsView from './components/ProspectsView';
 import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/AgentBuilderStudio';
 import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
+import SettingsView from './components/SettingsView';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { User } from '@supabase/supabase-js';
+
+const getAuthorizedEmails = (): string[] => {
+  try {
+    const saved = localStorage.getItem('txsons_studio_settings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.authorizedEmails && Array.isArray(parsed.authorizedEmails)) {
+        return parsed.authorizedEmails.map((e: string) => e.toLowerCase());
+      }
+    }
+  } catch {}
+  return ['contact.txsons@gmail.com', 'morganmv145@gmail.com'];
+};
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -32,7 +46,8 @@ export default function App() {
     const checkUser = async (currentUser: User | null) => {
       if (currentUser && currentUser.email) {
         const email = currentUser.email.toLowerCase();
-        if (email === 'contact.txsons@gmail.com' || email === 'morganmv145@gmail.com') {
+        const authorized = getAuthorizedEmails();
+        if (authorized.includes(email)) {
           setUser(currentUser);
         } else {
           await supabase.auth.signOut();
@@ -271,6 +286,10 @@ export default function App() {
               onInvoiceClient={handleInvoiceFromClient}
             />
           </main>
+        ) : currentView === 'settings' ? (
+          <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            <SettingsView />
+          </main>
         ) : (
           <main className="flex-1 overflow-y-auto p-8">
             <div className="max-w-6xl mx-auto">
@@ -302,14 +321,6 @@ export default function App() {
                   invoices={invoices}
                   onNewInvoice={() => setIsGeneratingInvoice(true)}
                 />
-              )}
-
-              {/* Placeholder for other views */}
-              {currentView === 'settings' && (
-                <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-stone-200 rounded-2xl bg-white text-stone-500">
-                  <p className="text-sm font-medium">This module is part of the TX Sons Websites Internal System.</p>
-                  <p className="text-xs mt-1">Connect API endpoints to enable this view.</p>
-                </div>
               )}
             </div>
           </main>
