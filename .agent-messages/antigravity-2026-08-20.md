@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:17 UTC — Adding Studio Browser Icon (Favicon) picker and custom URL/SVG uploader to AgentBuilderStudio intake form and quick branding inspector, allowing users to configure favicons directly in the UI.
+antigravity 2026-08-20 05:20 UTC — Added interactive Browser Tab Icon (Favicon) picker and custom URL/SVG uploader to Studio canvas toolbar and custom intake modal.
