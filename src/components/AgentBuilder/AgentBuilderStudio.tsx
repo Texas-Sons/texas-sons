@@ -41,6 +41,10 @@ import {
   LayoutDashboard,
   Camera,
   FolderCheck,
+  Cpu,
+  DollarSign,
+  ShieldCheck,
+  Terminal,
   Bookmark
 } from 'lucide-react';
 import { 

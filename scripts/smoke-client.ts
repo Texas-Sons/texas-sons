@@ -69,8 +69,26 @@ const blueprints = [
   },
 ];
 
-(globalThis as any).document = { getElementById: () => null };
-(globalThis as any).window = { __TXSONS_BLUEPRINT__: null };
+const noop = () => {};
+(globalThis as any).document = {
+  getElementById: () => null,
+  querySelector: () => null,
+  createElement: () => ({ setAttribute: noop }),
+  addEventListener: noop,
+  removeEventListener: noop,
+  head: { appendChild: noop },
+};
+(globalThis as any).window = {
+  __TXSONS_BLUEPRINT__: null,
+  location: { search: '', hash: '' },
+  addEventListener: noop,
+  removeEventListener: noop,
+};
+(globalThis as any).ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 const mod: any = await vite.ssrLoadModule('/src/ClientApp.tsx');
 if (typeof mod.ClientApp !== 'function') {
