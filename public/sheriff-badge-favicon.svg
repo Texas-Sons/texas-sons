@@ -1,40 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <defs>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#DFBA73" />
-      <stop offset="50%" stop-color="#C5A059" />
-      <stop offset="100%" stop-color="#9A7B38" />
-    </linearGradient>
-    <radialGradient id="navyGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#0a1f44" />
-      <stop offset="100%" stop-color="#00081e" />
-    </radialGradient>
-  </defs>
-
-  <!-- Background rounded rect -->
-  <rect width="128" height="128" rx="28" fill="url(#navyGlow)" />
+  <!-- Gold Rounded Squircle (Matches Navbar Header Brand Icon) -->
+  <rect width="128" height="128" rx="36" fill="#C5A059" />
   
-  <!-- Outer Gold Shield Outline -->
-  <path d="M64 16 L104 28 C104 72 64 110 64 110 C64 110 24 72 24 28 Z" 
-        fill="none" 
-        stroke="url(#goldGrad)" 
-        stroke-width="5" 
-        stroke-linejoin="round" />
-
-  <!-- Inner Shield Fill -->
-  <path d="M64 22 L98 32 C98 68 64 102 64 102 C64 102 30 68 30 32 Z" 
-        fill="#00081e" 
-        stroke="url(#goldGrad)" 
-        stroke-width="1.5" 
-        opacity="0.9" />
-
-  <!-- Center Star Circle -->
-  <circle cx="64" cy="58" r="28" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="3 2" opacity="0.6" />
-
-  <!-- 5-Point Texas Sheriff Star -->
-  <polygon points="64,36 71,51 88,51 74,62 79,78 64,68 49,78 54,62 40,51 57,51" 
-           fill="url(#goldGrad)" />
-           
-  <!-- Small Center Star Pivot Core -->
-  <circle cx="64" cy="58" r="3.5" fill="#00081e" stroke="url(#goldGrad)" stroke-width="1.5" />
+  <!-- Centered Dark Shield Silhouette (Exact 1:1 Match) -->
+  <path d="M64 102 C64 102 96 86 96 62 L96 36 L64 24 L32 36 L32 62 C32 86 64 102 64 102 Z" fill="#00081e" />
 </svg>

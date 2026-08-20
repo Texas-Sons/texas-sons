@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:20 UTC — Added interactive Browser Tab Icon (Favicon) picker and custom URL/SVG uploader to Studio canvas toolbar and custom intake modal.
+antigravity 2026-08-20 05:22 UTC — Updating browser favicon to exact gold squircle with dark shield logo icon from site header.

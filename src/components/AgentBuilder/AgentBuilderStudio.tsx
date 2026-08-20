@@ -337,6 +337,16 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   const [previewMode, setPreviewMode] = useState<'site' | 'admin' | 'code'>('site');
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
+  // Preset Favicons for Studio Selection
+  const PRESET_FAVICONS = [
+    { id: 'shield', label: 'Gold Shield (Site Icon)', icon: '🛡️', url: '/sheriff-badge-favicon.svg', category: 'Campaign & Sheriff' },
+    { id: 'justice', label: 'Scales of Justice', icon: '⚖️', url: '/justice-scales-favicon.svg', category: 'Judicial & Legal' },
+    { id: 'smokehouse', label: 'Smokehouse Flame', icon: '🥩', url: '/smokehouse-flame-favicon.svg', category: 'BBQ & Dining' },
+    { id: 'classic', label: 'Texas Sons Gold', icon: '🏢', url: '/favicon.png', category: 'Classic Business' },
+  ];
+
+  const [isFaviconMenuOpen, setIsFaviconMenuOpen] = useState(false);
+
   // Custom Intake Modal State
   const [intakeModalOpen, setIntakeModalOpen] = useState(false);
   const [customBlueprints, setCustomBlueprints] = useState<PresetBlueprint[]>(() => {
@@ -359,6 +369,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     email: '',
     address: '',
     heroImage: '',
+    faviconUrl: '/sheriff-badge-favicon.svg',
     theme: 'campaign-navy' as PresetBlueprint['theme'],
     primaryColor: '#00081e',
     accentColor: '#C5A059',
@@ -1257,11 +1268,78 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-stone-500">Theme Scheme:</span>
-              <span className="capitalize text-stone-300 font-semibold px-2 py-0.5 rounded-md bg-stone-800 border border-stone-700">
-                {project.theme}
-              </span>
+            <div className="flex items-center gap-3">
+              {/* Browser Tab Favicon Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsFaviconMenuOpen(!isFaviconMenuOpen)}
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-[11px] transition-all hover:border-orange-500/60 shadow-sm"
+                  title="Change Browser Tab Icon"
+                >
+                  <img
+                    src={project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
+                    className="w-3.5 h-3.5 object-contain rounded"
+                    alt="Icon"
+                  />
+                  <span className="font-semibold hidden sm:inline">Tab Icon</span>
+                  <ChevronDown className="w-3 h-3 text-stone-500" />
+                </button>
+
+                {isFaviconMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 w-64 p-2.5 bg-stone-900 border border-stone-700 rounded-xl shadow-2xl z-50 animate-in fade-in-50 zoom-in-95">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-stone-400 px-1 py-0.5 flex items-center justify-between border-b border-stone-800 mb-1.5">
+                      <span>Browser Tab Icon</span>
+                      <button onClick={() => setIsFaviconMenuOpen(false)} className="text-stone-500 hover:text-white">✕</button>
+                    </div>
+                    <div className="space-y-1">
+                      {PRESET_FAVICONS.map((fav) => (
+                        <button
+                          key={fav.id}
+                          onClick={() => {
+                            setProject(prev => ({
+                              ...prev,
+                              profile: { ...prev.profile, faviconUrl: fav.url }
+                            }));
+                            setIsFaviconMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                            (project.profile.faviconUrl === fav.url || (!project.profile.faviconUrl && isCampaignSite && fav.url === '/sheriff-badge-favicon.svg'))
+                              ? 'bg-orange-600/20 text-orange-400 font-bold border border-orange-500/40'
+                              : 'text-stone-300 hover:bg-stone-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <img src={fav.url} className="w-4 h-4 object-contain rounded" />
+                            <span>{fav.label}</span>
+                          </div>
+                          <span className="text-[10px] text-stone-500 font-normal">{fav.category}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-2 pt-2 border-t border-stone-800">
+                      <label className="block text-[10px] font-semibold text-stone-400 mb-1">Custom Icon URL / SVG</label>
+                      <input
+                        type="url"
+                        placeholder="https://.../icon.svg or /favicon.png"
+                        value={project.profile.faviconUrl || ''}
+                        onChange={(e) => setProject(prev => ({
+                          ...prev,
+                          profile: { ...prev.profile, faviconUrl: e.target.value }
+                        }))}
+                        className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[11px] text-white font-mono focus:outline-none focus:border-orange-500"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-stone-500 hidden md:inline">Theme:</span>
+                <span className="capitalize text-stone-300 font-semibold px-2 py-0.5 rounded-md bg-stone-800 border border-stone-700 text-[11px]">
+                  {project.theme}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -1284,8 +1362,13 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                   </div>
-                  <div className="px-4 py-0.5 rounded-md bg-stone-950 border border-stone-800 text-[11px] text-stone-400 font-mono truncate max-w-[280px] sm:max-w-md">
-                    https://{project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev
+                  <div className="px-3 py-0.5 rounded-md bg-stone-950 border border-stone-800 text-[11px] text-stone-400 font-mono truncate max-w-[280px] sm:max-w-md flex items-center gap-2">
+                    <img
+                      src={project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
+                      className="w-3.5 h-3.5 object-contain rounded flex-shrink-0"
+                      alt="Favicon"
+                    />
+                    <span className="truncate">https://{project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev</span>
                   </div>
                   <div className="w-10" />
                 </div>
