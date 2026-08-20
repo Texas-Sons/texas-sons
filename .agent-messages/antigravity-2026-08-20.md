@@ -1,1 +1,1 @@
-antigravity 2026-08-20 11:02 UTC — Updating AI Proposal Generator with dedicated pitch templates for offering website demos and scheduling quick review meetings.
+antigravity 2026-08-20 11:03 UTC — Updated proposal generator with instant tone switching and tailored client pitch templates for demo walk-through meetings.
