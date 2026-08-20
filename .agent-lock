@@ -1,0 +1,7 @@
+# Agent coordination lock
+# An agent writes its name here before editing, and clears the file when done.
+# Any other agent MUST check this file before starting work:
+#   - empty  -> safe to start; write your name, then begin.
+#   - your name -> you already hold the lock; proceed.
+#   - someone else's name -> STOP. Do not edit. Ask the user to coordinate a handoff.
+# See AGENTS.md for the full protocol.

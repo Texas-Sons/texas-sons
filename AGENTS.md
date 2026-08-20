@@ -1,0 +1,41 @@
+# AGENTS.md — Texas Sons Builder
+
+Project instructions for ALL AI agents working in this repository (opencode, Google Antigravity, etc.).
+
+## Coordination protocol (read this first)
+
+Multiple agents may work here. Follow these rules so we never clobber each other.
+
+1. **Lock before editing.** Read `.agent-lock`:
+   - empty → write your agent name, then start.
+   - your name → you hold the lock; proceed.
+   - someone else's name → STOP. Do not edit. Ask the user for a handoff.
+   Clear the file when you finish.
+2. **Post on the board.** When starting and finishing a task, leave a note in `.agent-messages/` (see `.agent-messages/README.md`).
+3. **Pull before you edit, push after.** Always `git pull` at the start of a session so you're working on the latest `main`.
+4. **Verify before you ship.** Run `npm run verify` (lint → test → build) before committing. Never commit or push a red build. CI enforces this on GitHub.
+5. **Never rewrite another agent's committed work** without the user's explicit approval.
+6. **Small conventional commits** pushed to `main` (`fix:`, `feat:`, `chore:`, `style:`, `docs:`).
+
+## Ownership lanes
+
+- **opencode**: client-site block system (`src/templates/blocks/`), deploy pipeline (`server.ts`, deploy scripts), verification infra (`npm run verify`, CI), SEO/perf work.
+- **Antigravity**: AI Studio UI (`src/components/AgentBuilder/`), photo scanner, voting/campaign features, admin UX.
+- **Either**: anything the user explicitly assigns.
+
+Cross-lane edits are allowed but must be announced on the board first.
+
+## Project facts
+
+- Node/Express + Vite 6 + React 19 + Tailwind v4 + TypeScript (ESM). Admin entry `index.html`, deployed client-site entry `client.html`.
+- Scripts: `npm run dev` (tsx server.ts), `npm run build`, `npm run start` (prod, serves `dist/`), `npm run lint` (tsc --noEmit), `npm test` (SSR smoke test of ClientApp), `npm run verify` (lint+test+build).
+- `dist/` is gitignored but required by `npm start`; rebuild with `npm run build`.
+- Secrets live in `.env.local` (gitignored). Env vars: GEMINI_API_KEY, APP_URL, VITE_GOOGLE_MAPS_PLATFORM_KEY, STRIPE_SECRET_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, GITHUB_ACCESS_TOKEN.
+- Supabase `leads` table is required for `/api/lead` (client-site form submissions). SQL: id uuid pk, business_name, site_slug, name, phone, email, service, notes, address, created_at. RLS: anon insert + authenticated select.
+- Client sites render via `window.__TXSONS_BLUEPRINT__` injected by `/api/deploy`; design tokens are CSS vars `--ts-*` applied on the `data-ts-site` root by `ClientApp`.
+
+## Gotchas
+
+- The dev server WebSocket prints "Port 24678 is already in use" during tests — harmless.
+- If you change `server.ts`, the running dev server needs a restart.
+- `dist/` is stale until `npm run build`; the production server serves from `dist/`.
