@@ -107,10 +107,10 @@ export function TestimonialsBlock({
                   </h4>
                   {t.role && <p className="text-xs text-[color:var(--ts-accent)] font-medium mt-1">{t.role}</p>}
                 </div>
-                {t.verified && (
+                {!isCampaign && t.verified && (
                   <div className="flex items-center text-emerald-400/90 text-xs font-bold gap-1.5 uppercase tracking-wide bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
                     <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>{isCampaign ? 'Endorsed' : 'Verified'}</span>
+                    <span>Verified</span>
                   </div>
                 )}
               </div>

@@ -19,14 +19,17 @@ import {
   Scissors, 
   Utensils, 
   Wrench,
-  Check
+  Check,
+  X,
+  Download,
+  Filter
 } from 'lucide-react';
 import { BusinessProfile, ServiceItem, TestimonialItem, EventItem, VolunteerItem } from './types';
 
 interface IndustryAdminBlockProps {
   business: BusinessProfile;
   services: ServiceItem[];
-  testimonials: TestimonialItem[];
+  testimonials?: TestimonialItem[];
   events?: EventItem[];
   volunteers?: VolunteerItem[];
 }
@@ -36,14 +39,16 @@ export function IndustryAdminBlock({
   services,
   testimonials,
   events = [
-    { id: '1', name: 'Downtown Campaign Rally & Meet-and-Greet', date: 'Oct 24, 2026', time: '6:30 PM', location: 'City Center Plaza, Austin', rsvpCount: 142 },
-    { id: '2', name: 'Town Hall: Public Safety & County Budget', date: 'Nov 02, 2026', time: '7:00 PM', location: 'County Courthouse Annex', rsvpCount: 88 }
+    { id: '1', name: 'Jourdanton Community Town Hall & Meet-and-Greet', date: 'Oct 24, 2026', time: '6:30 PM', location: 'Atascosa County Courthouse Annex', rsvpCount: 142 },
+    { id: '2', name: 'Sheriff Campaign Rally & BBQ Fundraiser', date: 'Nov 02, 2026', time: '7:00 PM', location: 'Pleasanton Civic Center Plaza', rsvpCount: 215 },
+    { id: '3', name: 'Rural Landowners & Public Safety Forum', date: 'Nov 14, 2026', time: '5:30 PM', location: 'Poteet Community Hall', rsvpCount: 98 }
   ],
   volunteers = [
-    { id: '1', name: 'Marcus Sterling', email: 'marcus@example.com', phone: '(512) 555-9182', type: 'Volunteer', status: 'Active' },
-    { id: '2', name: 'Sarah Briggs', email: 'sarah.b@example.com', phone: '(512) 555-3341', type: 'Yard Sign', status: 'Active' },
-    { id: '3', name: 'David Garza', email: 'garza.d@example.com', phone: '(512) 555-8819', type: 'Donor', status: 'Active' },
-    { id: '4', name: 'Elena Vance', email: 'elena@example.com', phone: '(512) 555-0012', type: 'RSVP', status: 'Attending' }
+    { id: '1', name: 'Marcus Sterling', email: 'marcus@example.com', phone: '(830) 555-9182', type: 'Volunteer', status: 'Active' },
+    { id: '2', name: 'Sarah Briggs', email: 'sarah.b@example.com', phone: '(830) 555-3341', type: 'Yard Sign', status: 'Active' },
+    { id: '3', name: 'David Garza', email: 'garza.d@example.com', phone: '(830) 555-8819', type: 'Donor', status: 'Active' },
+    { id: '4', name: 'Elena Vance', email: 'elena@example.com', phone: '(830) 555-0012', type: 'RSVP', status: 'Attending' },
+    { id: '5', name: 'Robert Hernandez', email: 'r.hernandez@example.com', phone: '(830) 555-7744', type: 'Yard Sign', status: 'Active' }
   ]
 }: IndustryAdminBlockProps) {
   const isCampaign = business.name.toLowerCase().includes('campaign') || 
@@ -58,6 +63,14 @@ export function IndustryAdminBlock({
   const [localServices, setLocalServices] = useState<ServiceItem[]>(services);
   const [localEvents, setLocalEvents] = useState<EventItem[]>(events);
   const [localVolunteers, setLocalVolunteers] = useState<VolunteerItem[]>(volunteers);
+  const [volunteerFilter, setVolunteerFilter] = useState<'all' | 'Volunteer' | 'Yard Sign' | 'Donor'>('all');
+  
+  // Modals
+  const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({ name: '', date: '', time: '', location: '', rsvpCount: 0 });
+  const [isAddVolunteerOpen, setIsAddVolunteerOpen] = useState(false);
+  const [newVolunteer, setNewVolunteer] = useState({ name: '', email: '', phone: '', type: 'Volunteer' as any, status: 'Active' });
+
   const [isSyncingSquare, setIsSyncingSquare] = useState(false);
   const [savedNotice, setSavedNotice] = useState(false);
 
@@ -75,6 +88,45 @@ export function IndustryAdminBlock({
     setTimeout(() => setSavedNotice(false), 2500);
   };
 
+  const handleCreateEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEvent.name) return;
+    setLocalEvents([...localEvents, { ...newEvent, id: `evt-${Date.now()}` }]);
+    setNewEvent({ name: '', date: '', time: '', location: '', rsvpCount: 0 });
+    setIsAddEventOpen(false);
+    setSavedNotice(true);
+    setTimeout(() => setSavedNotice(false), 2500);
+  };
+
+  const handleCreateVolunteer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVolunteer.name) return;
+    setLocalVolunteers([...localVolunteers, { ...newVolunteer, id: `vol-${Date.now()}` }]);
+    setNewVolunteer({ name: '', email: '', phone: '', type: 'Volunteer', status: 'Active' });
+    setIsAddVolunteerOpen(false);
+    setSavedNotice(true);
+    setTimeout(() => setSavedNotice(false), 2500);
+  };
+
+  const filteredVolunteers = volunteerFilter === 'all' 
+    ? localVolunteers 
+    : localVolunteers.filter(v => v.type === volunteerFilter);
+
+  const exportVolunteersCsv = () => {
+    const rows = [
+      ['Name', 'Email', 'Phone', 'Type', 'Status'],
+      ...localVolunteers.map(v => [v.name, v.email, v.phone, v.type, v.status])
+    ];
+    const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${business.name}_volunteers.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="w-full bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden shadow-2xl text-stone-200">
       
@@ -88,7 +140,7 @@ export function IndustryAdminBlock({
             <div className="flex items-center space-x-2">
               <h3 className="text-base font-bold text-white">{business.name}</h3>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                {isCampaign ? 'Campaign Portal' : isSalon ? 'Salon Management' : isRestaurant ? 'Restaurant Console' : 'Business Portal'}
+                {isCampaign ? 'Campaign Operations' : isSalon ? 'Salon Management' : isRestaurant ? 'Restaurant Console' : 'Business Portal'}
               </span>
             </div>
             <p className="text-xs text-stone-400">Client Admin Control Center · Live Site Sync</p>
@@ -259,19 +311,90 @@ export function IndustryAdminBlock({
         {activeTab === 'events' && (
           <div className="space-y-4 max-w-4xl">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-white">Upcoming Campaign Appearances & Rallies</h4>
+              <div>
+                <h4 className="text-sm font-bold text-white">Upcoming Campaign Appearances & Rallies</h4>
+                <p className="text-xs text-stone-400">Schedule meet & greets, fundraisers, and community forums</p>
+              </div>
               <button 
-                onClick={() => {
-                  const name = prompt("Enter Event Title:");
-                  if (name) {
-                    setLocalEvents([...localEvents, { id: `${Date.now()}`, name, date: 'Nov 12, 2026', time: '6:00 PM', location: 'Austin, TX', rsvpCount: 0 }]);
-                  }
-                }}
-                className="px-3 py-1.5 rounded-xl bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center gap-1.5 hover:bg-orange-600/30"
+                onClick={() => setIsAddEventOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-orange-600/30 transition-all hover:scale-105"
               >
-                <Plus className="w-3.5 h-3.5" /> Add Event
+                <Plus className="w-3.5 h-3.5" /> Add Campaign Event
               </button>
             </div>
+
+            {/* Add Event Inline Modal / Card */}
+            {isAddEventOpen && (
+              <form onSubmit={handleCreateEvent} className="p-4 rounded-xl bg-stone-950 border border-orange-500/40 space-y-3 animate-in fade-in">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">New Event Details</span>
+                  <button type="button" onClick={() => setIsAddEventOpen(false)} className="text-stone-400 hover:text-white">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Event Title</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Jourdanton Community BBQ Rally"
+                      value={newEvent.name}
+                      onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Location / Venue</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Pleasanton Civic Center"
+                      value={newEvent.location}
+                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Date</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Oct 28, 2026"
+                      value={newEvent.date}
+                      onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Time</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 6:30 PM"
+                      value={newEvent.time}
+                      onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddEventOpen(false)}
+                    className="px-3 py-1.5 rounded-lg bg-stone-800 text-stone-300 text-xs font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 rounded-lg bg-orange-600 text-white text-xs font-bold shadow-md hover:bg-orange-500"
+                  >
+                    Save Event
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div className="border border-stone-800 rounded-xl overflow-hidden bg-stone-950">
               <table className="w-full text-left text-xs divide-y divide-stone-800">
@@ -314,10 +437,117 @@ export function IndustryAdminBlock({
         {/* TAB: Volunteers & Yard Signs */}
         {activeTab === 'people' && (
           <div className="space-y-4 max-w-4xl">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-white">Grassroots Supporters & Volunteer Roster</h4>
-              <span className="text-xs text-stone-400 font-mono">Total Roster: {localVolunteers.length}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h4 className="text-sm font-bold text-white">Grassroots Supporters & Volunteer Roster</h4>
+                <p className="text-xs text-stone-400">Manage sign deliveries, block walkers, and campaign contributors</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <select
+                  value={volunteerFilter}
+                  onChange={(e) => setVolunteerFilter(e.target.value as any)}
+                  className="px-2.5 py-1.5 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-300 focus:outline-none focus:border-orange-500"
+                >
+                  <option value="all">All Types ({localVolunteers.length})</option>
+                  <option value="Volunteer">Volunteers</option>
+                  <option value="Yard Sign">Yard Signs</option>
+                  <option value="Donor">Donors</option>
+                </select>
+
+                <button
+                  onClick={exportVolunteersCsv}
+                  className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+                  title="Export Roster to CSV"
+                >
+                  <Download className="w-3.5 h-3.5 text-orange-400" />
+                  <span className="hidden sm:inline">Export CSV</span>
+                </button>
+
+                <button 
+                  onClick={() => setIsAddVolunteerOpen(true)}
+                  className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-orange-600/30 transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Person
+                </button>
+              </div>
             </div>
+
+            {/* Add Volunteer Inline Form */}
+            {isAddVolunteerOpen && (
+              <form onSubmit={handleCreateVolunteer} className="p-4 rounded-xl bg-stone-950 border border-orange-500/40 space-y-3 animate-in fade-in">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">Add Supporter / Volunteer</span>
+                  <button type="button" onClick={() => setIsAddVolunteerOpen(false)} className="text-stone-400 hover:text-white">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. John Doe"
+                      value={newVolunteer.name}
+                      onChange={(e) => setNewVolunteer({ ...newVolunteer, name: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Email</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. john@example.com"
+                      value={newVolunteer.email}
+                      onChange={(e) => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 mb-1">Phone</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. (830) 555-1234"
+                      value={newVolunteer.phone}
+                      onChange={(e) => setNewVolunteer({ ...newVolunteer, phone: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-[11px] text-stone-400">Request Type:</label>
+                    <select
+                      value={newVolunteer.type}
+                      onChange={(e) => setNewVolunteer({ ...newVolunteer, type: e.target.value as any })}
+                      className="px-2.5 py-1 rounded bg-stone-900 border border-stone-700 text-xs text-white"
+                    >
+                      <option value="Volunteer">Volunteer</option>
+                      <option value="Yard Sign">Yard Sign</option>
+                      <option value="Donor">Donor</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddVolunteerOpen(false)}
+                      className="px-3 py-1.5 rounded-lg bg-stone-800 text-stone-300 text-xs font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-1.5 rounded-lg bg-orange-600 text-white text-xs font-bold shadow-md hover:bg-orange-500"
+                    >
+                      Add Supporter
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
 
             <div className="border border-stone-800 rounded-xl overflow-hidden bg-stone-950">
               <table className="w-full text-left text-xs divide-y divide-stone-800">
@@ -330,7 +560,7 @@ export function IndustryAdminBlock({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-800/60">
-                  {localVolunteers.map((vol) => (
+                  {filteredVolunteers.map((vol) => (
                     <tr key={vol.id} className="hover:bg-stone-900/40 transition-colors">
                       <td className="px-4 py-3 font-bold text-white">{vol.name}</td>
                       <td className="px-4 py-3 text-stone-400">{vol.email} · {vol.phone}</td>
@@ -381,9 +611,9 @@ export function IndustryAdminBlock({
               <table className="w-full text-left text-xs divide-y divide-stone-800">
                 <thead className="bg-stone-900/60 text-stone-400 uppercase tracking-wider text-[10px]">
                   <tr>
-                    <th className="px-4 py-3">Item / Service Title</th>
-                    <th className="px-4 py-3">Description</th>
-                    <th className="px-4 py-3">Current Price</th>
+                    <th className="px-4 py-3">Service / Item Name</th>
+                    <th className="px-4 py-3">Scope & Details</th>
+                    <th className="px-4 py-3">Price / Rate</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -391,8 +621,8 @@ export function IndustryAdminBlock({
                   {localServices.map((svc, idx) => (
                     <tr key={idx} className="hover:bg-stone-900/40 transition-colors">
                       <td className="px-4 py-3 font-bold text-white">{svc.title}</td>
-                      <td className="px-4 py-3 text-stone-400 max-w-xs truncate">{svc.description}</td>
-                      <td className="px-4 py-3 font-bold text-orange-400">{svc.price || 'Free Estimate'}</td>
+                      <td className="px-4 py-3 text-stone-400 max-w-md truncate">{svc.description}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-orange-400">{svc.price || 'Free Consultation'}</td>
                       <td className="px-4 py-3 text-right">
                         <button 
                           onClick={() => setLocalServices(localServices.filter((_, i) => i !== idx))}
@@ -409,24 +639,52 @@ export function IndustryAdminBlock({
           </div>
         )}
 
-        {/* TAB: Bookings */}
+        {/* TAB: Bookings / Reservations */}
         {activeTab === 'bookings' && (
           <div className="space-y-4 max-w-4xl">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-white">Client Appointments & Requests</h4>
-              <span className="text-xs text-stone-400 font-mono">Queue Status: 3 Pending</span>
+              <h4 className="text-sm font-bold text-white">Live Client Booking Queue</h4>
+              <span className="text-xs text-stone-400 font-mono">2 Pending Requests</span>
             </div>
 
-            <div className="border border-stone-800 rounded-xl overflow-hidden bg-stone-950 p-6 text-center text-stone-500">
-              <Clock className="w-8 h-8 text-orange-500/40 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-stone-300">Live Client Booking System Active</p>
-              <p className="text-[11px] text-stone-500 mt-1">Form submissions from the live site instantly populate here and forward to the client's email.</p>
+            <div className="border border-stone-800 rounded-xl overflow-hidden bg-stone-950">
+              <table className="w-full text-left text-xs divide-y divide-stone-800">
+                <thead className="bg-stone-900/60 text-stone-400 uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="px-4 py-3">Client Name</th>
+                    <th className="px-4 py-3">Requested Service</th>
+                    <th className="px-4 py-3">Preferred Date / Time</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-800/60">
+                  <tr className="hover:bg-stone-900/40 transition-colors">
+                    <td className="px-4 py-3 font-bold text-white">Jennifer Lopez</td>
+                    <td className="px-4 py-3 text-stone-300">{localServices[0]?.title || 'Consultation'}</td>
+                    <td className="px-4 py-3 text-stone-400">Tomorrow at 2:00 PM</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        Pending Confirmation
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-stone-900/40 transition-colors">
+                    <td className="px-4 py-3 font-bold text-white">Robert Taylor</td>
+                    <td className="px-4 py-3 text-stone-300">{localServices[1]?.title || 'Standard Service'}</td>
+                    <td className="px-4 py-3 text-stone-400">Friday at 10:30 AM</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Confirmed
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         )}
 
       </div>
-
     </div>
   );
 }

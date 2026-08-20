@@ -1372,31 +1372,6 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
                   {/* Booking / Volunteer Block */}
                   <div
-                    onClick={() => inspectorActive && setSelectedBlock('BookingBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'BookingBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    <BookingBlock
-                      title={
-                        isCampaignSite ? 'Volunteer & Request Yard Signs' : 
-                        project.profile.category === 'Food & Beverage' ? 'Request Catering Quote' : 
-                        'Request a Free Consultation'
-                      }
-                      subtitle={
-                        isCampaignSite ? 'Sign up to join our grassroots movement, host an event, or request campaign yard signs.' : 
-                        project.profile.category === 'Food & Beverage' ? 'Planning an event? Let us handle the food so you can enjoy the party.' : 
-                        'Fill out the form below to get connected with our team.'
-                      }
-                      phone={project.profile.phone}
-                      services={project.services}
-                      theme={project.theme as any}
-                      accentColor={project.profile.accentColor}
-                    />
-                  </div>
-
-                  {/* Footer Block */}
-                  <div
                     onClick={() => inspectorActive && setSelectedBlock('FooterBlock')}
                     className={`relative transition-all ${
                       inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''

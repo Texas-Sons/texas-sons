@@ -54,10 +54,11 @@ export function VotingPageBlock({ accentColor = '#C5A059' }: VotingPageBlockProp
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { title: 'Early Voting Information', desc: 'Locations, dates, and times for early voting.', link: 'https://co.atascosa.tx.us/wp-content/uploads/2026/08/2026-LOCATION-AND-TIMES-ANNOUNCEMENTENGLISH_Page_1-scaled.jpg' },
-                  { title: 'Election Day Voting', desc: 'Everything you need to know for Election Day.', link: 'https://co.atascosa.tx.us/wp-content/uploads/2026/08/2026-LOCATION-AND-TIMES-ANNOUNCEMENTENGLISH_Page_2.jpg' },
-                  { title: 'Voter ID Requirements', desc: 'Accepted forms of identification for Texas voters.', link: 'http://www.sos.state.tx.us/elections/forms/id/poster-8.5x14-aw-voter.pdf' },
-                  { title: 'Texas Secretary of State', desc: 'Check your voter registration status and more.', link: 'https://www.sos.state.tx.us/' }
+                  { title: 'Official Elections Administration Portal', desc: 'Direct portal for Atascosa County election updates, notices, and voter services.', link: 'https://co.atascosa.tx.us/elections-administration/' },
+                  { title: 'Early Voting Locations & Times', desc: 'Official schedule, dates, and polling stations for early voting.', link: 'https://co.atascosa.tx.us/wp-content/uploads/2026/08/2026-LOCATION-AND-TIMES-ANNOUNCEMENTENGLISH_Page_1-scaled.jpg' },
+                  { title: 'Election Day Polling Stations', desc: 'Locations and schedule for Election Day voting across Atascosa County.', link: 'https://co.atascosa.tx.us/wp-content/uploads/2026/08/2026-LOCATION-AND-TIMES-ANNOUNCEMENTENGLISH_Page_2.jpg' },
+                  { title: 'Texas Voter ID Requirements', desc: 'Approved forms of photo ID required at Texas polling places.', link: 'http://www.sos.state.tx.us/elections/forms/id/poster-8.5x14-aw-voter.pdf' },
+                  { title: 'Texas Secretary of State Portal', desc: 'Verify your voter registration status and Texas ballot details.', link: 'https://www.sos.state.tx.us/' }
                 ].map((item, i) => (
                   <a 
                     key={i} 

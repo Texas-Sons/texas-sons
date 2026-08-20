@@ -1,1 +1,1 @@
-antigravity 2026-08-20 02:05 UTC — Redesigning AI Studio header bar per user mockup (grouped action pill, search, spend widget, device switcher, model card, deploy). Running npm run verify.
+antigravity 2026-08-20 02:26 UTC — Working on: 1) VotingPageBlock direct link, 2) High-impact VotingBannerBlock styling, 3) Remove green endorsed badge from testimonials, 4) Shorten contact subtitle to 'Join today.', 5) Enhance Campaign Admin Portal (Events & Volunteers like Debbie).

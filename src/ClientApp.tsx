@@ -175,7 +175,7 @@ export function ClientApp() {
             services={project.services}
             accentColor={project.profile.accentColor}
             title={isCampaign ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}
-            subtitle={isCampaign ? 'Join our grassroots movement today.' : 'Get in touch with us.'}
+            subtitle={isCampaign ? 'Join today.' : 'Get in touch with us.'}
             onSubmit={handleLeadSubmit}
           />
           <FooterBlock
