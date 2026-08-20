@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:22 UTC — Updating browser favicon to exact gold squircle with dark shield logo icon from site header.
+antigravity 2026-08-20 05:24 UTC — Replaced browser favicon with 1:1 exact vector replica of the gold squircle header logo with dark shield silhouette.
