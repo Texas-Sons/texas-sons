@@ -1,1 +1,1 @@
-antigravity 2026-08-20 02:47 UTC — Completed and pushed: 1) Custom SVG Medal of Valor icon, 2) Custom SVG Detective icon, 3) Custom SVG Leadership & Community icon, 4) Removed undercover wording in favor of Lead Criminal Investigator and SWAT entries. All tests and builds passing with exit code 0.
+antigravity 2026-08-20 03:04 UTC — Fixed AI Studio previewer: 1) Added VotingBannerBlock into the preview block stack, 2) Added live Page View switcher [Main Landing Page] vs [Official Voting Info Page], 3) Wired live hash and button navigation to VotingPageBlock in Studio canvas.
