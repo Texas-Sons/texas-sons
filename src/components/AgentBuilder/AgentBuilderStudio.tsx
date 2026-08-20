@@ -71,6 +71,7 @@ import { supabase } from '../../supabase';
 import { ModelSettingsModal } from './ModelSettingsModal';
 import { PlanHandoffModal } from './PlanHandoffModal';
 import { SiteAuditModal } from './SiteAuditModal';
+import { ProjectProposalModal } from '../ProjectProposalModal';
 import { 
   getStoredModel, 
   setStoredModel, 
@@ -336,6 +337,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   const [dropdownSearch, setDropdownSearch] = useState('');
   const [previewMode, setPreviewMode] = useState<'site' | 'admin' | 'code'>('site');
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
   // Preset Favicons for Studio Selection
   const PRESET_FAVICONS = [

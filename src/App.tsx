@@ -277,6 +277,24 @@ export default function App() {
     }
   };
 
+  const handleSaveProjectFromModal = async (updatedProject: Project) => {
+    try {
+      setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+      if (user) {
+        await supabase.from('projects').update({
+          company_name: updatedProject.companyName,
+          client_name: updatedProject.clientName,
+          status: updatedProject.status,
+          tier: updatedProject.tier,
+          domain: updatedProject.domain,
+          updated_at: new Date().toISOString()
+        }).eq('id', updatedProject.id);
+      }
+    } catch (err) {
+      console.warn('Error saving project to Supabase:', err);
+    }
+  };
+
   const handleInvoiceFromClient = (client: ClientIntake) => {
     setIntakePrefill(prev => ({
       ...prev,
@@ -356,6 +374,7 @@ export default function App() {
                   }} 
                   onEditProject={handleEditProject}
                   onDeleteProject={handleDeleteProject}
+                  onSaveProject={handleSaveProjectFromModal}
                 />
               )}
 

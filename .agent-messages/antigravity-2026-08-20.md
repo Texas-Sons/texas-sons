@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:24 UTC — Replaced browser favicon with 1:1 exact vector replica of the gold squircle header logo with dark shield silhouette.
+antigravity 2026-08-20 10:52 UTC — Creating ProjectProposalModal.tsx: interactive project details editor and AI Proposal Email Draft generator with tone selector, live site data synthesis, mailto launcher, and clipboard copy.

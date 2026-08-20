@@ -590,6 +590,103 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
     }
   });
 
+  // AI Proposal & Client Outreach Email Generator
+  app.post("/api/draft-proposal", async (req, res) => {
+    try {
+      const { projectName, siteUrl, recipientName, tone, customNotes, snapshot } = req.body;
+      const profile = snapshot?.profile || {};
+      const services = snapshot?.services || [];
+      const testimonials = snapshot?.testimonials || [];
+      const events = snapshot?.events || [];
+      const name = profile.name || projectName || 'Client Project';
+      const tagline = profile.tagline || '';
+      const phone = profile.phone || '';
+      const email = profile.email || '';
+      const address = profile.address || '';
+      const treasurer = profile.treasurerName || '';
+
+      const serviceList = services.map((s: any, idx: number) => `  ${idx + 1}. ${s.title}: ${s.description}`).join('\n');
+      const reviewList = testimonials.map((t: any) => `  - "${t.quote}" — ${t.author} (${t.role || 'Verified'})`).join('\n');
+      const eventList = events.map((e: any) => `  - ${e.name} (${e.date} at ${e.time}, ${e.location})`).join('\n');
+
+      let toneGuidance = 'Professional, authoritative executive proposal presenting a modern marketing website and brand platform.';
+      if (tone === 'campaign-presentation') {
+        toneGuidance = 'Authoritative, constitutional political campaign presentation written to a candidate, campaign manager, or steering committee. Emphasize voter turnout, community trust, Medal of Valor law enforcement credibility, grassroots mobilization, and official election disclosures.';
+      } else if (tone === 'agency-proposal') {
+        toneGuidance = 'Polished digital agency pitch proposing high-performance web development, mobile-first design, SEO leadership, and conversion optimization.';
+      } else if (tone === 'launch-handoff') {
+        toneGuidance = 'Executive delivery handoff confirming site readiness, DNS/custom domain instructions, live admin portal access for leads and RSVPs, and pre-launch review.';
+      } else if (tone === 'donor-outreach') {
+        toneGuidance = 'Inspiring grassroots community outreach sharing the official platform, inviting community leaders to review the site, request yard signs, attend upcoming town halls, and endorse the movement.';
+      }
+
+      const prompt = `You are an elite political strategist and executive digital communications director for Texas Sons Websites.
+Draft a high-impact, persuasive client presentation / proposal email for the following project:
+
+PROJECT CONTEXT:
+- Candidate / Business Name: ${name}
+- Tagline / Mission: ${tagline}
+- Contact HQ: ${phone} | ${email} | ${address}
+- Official Campaign Treasurer: ${treasurer || 'Joseph S. Boyle'}
+- Live Site URL: ${siteUrl || `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
+- Key Pillars / Services:
+${serviceList || '  1. Proactive Rural Public Safety & Crime Interdiction\n  2. Campus & School Security Taskforce\n  3. Fiscal Transparency & Taxpayer Accountability'}
+- Official Endorsements & Citations:
+${reviewList || '  - "Extraordinary courage under fire." — Retired SWAT Commander (SAPD Medal of Valor Recipient)'}
+- Scheduled Public Events:
+${eventList || '  - Jourdanton Community Town Hall (Oct 24, 2026)\n  - Sheriff Campaign BBQ Rally (Nov 02, 2026)'}
+
+EMAIL OBJECTIVE & TONE:
+${toneGuidance}
+
+ADDITIONAL USER INSTRUCTIONS:
+${customNotes || 'None provided'}
+
+RECIPIENT NAME:
+${recipientName || 'Campaign Leadership & Steering Committee'}
+
+REQUIREMENTS:
+1. Provide a sharp, high-open-rate Subject Line.
+2. Structure the email logically with clean paragraphs, bullet points for key features, the live website demonstration link, and clear next steps.
+3. Keep the tone refined, confident, and distinctly Texan without being cheesy.
+4. Output ONLY a valid JSON object in this exact format (no markdown code blocks, no intro text):
+{
+  "subject": "...",
+  "body": "..."
+}`;
+
+      try {
+        const response = await generateGeminiWithRetry({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+        });
+
+        let parsed: any = null;
+        try {
+          const raw = response.text || '';
+          const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
+          parsed = JSON.parse(cleaned);
+        } catch {
+          parsed = null;
+        }
+
+        if (parsed && parsed.subject && parsed.body) {
+          return res.json({ success: true, subject: parsed.subject, body: parsed.body });
+        }
+      } catch (aiErr) {
+        console.warn('Gemini proposal draft fallback:', aiErr);
+      }
+
+      // Fallback deterministic generator
+      const fallbackSubject = `${name} — Official Digital Platform & Campaign Proposal`;
+      const fallbackBody = `Dear ${recipientName || 'Campaign Team'},\n\nWe are pleased to present the official digital campaign platform and website built for ${name}.\n\nYou can review the live, fully interactive platform here:\n👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}\n\nKey Platform Features Included in this Build:\n• Core Policy Platform & Priorities:\n${services.map((s: any) => `  - ${s.title}: ${s.description}`).slice(0, 3).join('\n') || '  - Proactive Narcotics Interdiction & Border Security\n  - School Safety & Campus Resource Deputies\n  - Jail Modernization & Fiscal Transparency'}\n\n• Verified Career Credentials & Endorsements:\n${testimonials.map((t: any) => `  - ${t.author} (${t.role}): "${t.quote}"`).slice(0, 2).join('\n') || '  - SAPD Medal of Valor Citation & Master Peace Officer Certification'}\n\n• Public Engagement & Voter Outreach:\n  - Live Atascosa County Voter Information Center & Polling Guide\n  - Community Town Hall & BBQ Rally RSVP System\n  - Yard Sign & Volunteer Intake Form (instant database sync)\n  - Official Texas Election Code § 255.001 Legal Disclosure (Treasurer: ${treasurer || 'Joseph S. Boyle'})\n\nPlease review the live site and let us know your feedback or if you would like to proceed with connecting your official domain name.\n\nRespectfully,\nTexas Sons Digital Platform Team\nhttps://texassons.dev | (512) 555-TEXAS`;
+
+      res.json({ success: true, subject: fallbackSubject, body: fallbackBody });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // Deploy compiled React client to Cloudflare Pages
   app.post("/api/deploy", async (req, res) => {
     try {
