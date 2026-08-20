@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:07 UTC — 1) Fixed desktop header truncation: concise subtitle (VOTE ERNEST · ATASCOSA COUNTY SHERIFF) with whitespace-nowrap and flex-shrink-0, 2) Updated Campaign Treasurer to Joseph S. Boyle in FooterBlock and presets, 3) Enhanced PM Audit engine with Legal Campaign Treasurer Compliance check under Texas Election Code § 255.001.
+antigravity 2026-08-20 05:14 UTC — Creating custom gold Texas Sheriff Badge browser icon (favicon) for Ernest Trevino campaign website across static assets, dynamic ClientApp runtime, and server deploy pipeline.

@@ -53,6 +53,19 @@ export function ClientApp() {
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', description);
+
+    // Dynamic Favicon update
+    const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.profile.name.toLowerCase().includes('sheriff') || project.profile.name.toLowerCase().includes('judge');
+    let faviconLink: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+    if (!faviconLink) {
+      faviconLink = document.createElement('link');
+      faviconLink.rel = 'icon';
+      document.head.appendChild(faviconLink);
+    }
+    if (isCampaignSite) {
+      faviconLink.type = 'image/svg+xml';
+      faviconLink.href = '/sheriff-badge-favicon.svg';
+    }
   }, [project]);
 
   if (!project) {
