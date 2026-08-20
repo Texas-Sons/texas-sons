@@ -58,6 +58,18 @@ import {
 } from '../../templates/blocks';
 import { buildThemeVars } from '../../templates/blocks/theme';
 import { supabase } from '../../supabase';
+import { ModelSettingsModal } from './ModelSettingsModal';
+import { PlanHandoffModal } from './PlanHandoffModal';
+import { SiteAuditModal } from './SiteAuditModal';
+import { 
+  getStoredModel, 
+  setStoredModel, 
+  getSessionUsage, 
+  recordUsage, 
+  resetSessionUsage, 
+  SUPPORTED_MODELS, 
+  SessionUsageStats 
+} from './aiModelConfig';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake } from '../../types';
 
@@ -341,6 +353,23 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       proofBadgeText: DEFAULT_BLUEPRINTS[0].proofBadgeText
     };
   });
+
+    // Multi-Model & Cost Tracking State
+  const [selectedModel, setSelectedModel] = useState<string>(getStoredModel);
+  const [usageStats, setUsageStats] = useState<SessionUsageStats>(getSessionUsage);
+  const [isModelSettingsOpen, setIsModelSettingsOpen] = useState(false);
+  const [isHandoffOpen, setIsHandoffOpen] = useState(false);
+  const [isAuditOpen, setIsAuditOpen] = useState(false);
+
+  const handleSelectModel = (modelId: string) => {
+    setSelectedModel(modelId);
+    setStoredModel(modelId);
+  };
+
+  const handleResetUsage = () => {
+    const fresh = resetSessionUsage();
+    setUsageStats(fresh);
+  };
 
   const [history, setHistory] = useState<ProjectSnapshot[]>(() => {
     try {
@@ -1683,6 +1712,30 @@ export default function ClientSite() {
       )}
 
       {/* AI Multimodal Photo Scanner Modal */}
+      <ModelSettingsModal
+        isOpen={isModelSettingsOpen}
+        onClose={() => setIsModelSettingsOpen(false)}
+        selectedModel={selectedModel}
+        onSelectModel={handleSelectModel}
+        usageStats={usageStats}
+        onResetUsage={handleResetUsage}
+      />
+
+      <PlanHandoffModal
+        isOpen={isHandoffOpen}
+        onClose={() => setIsHandoffOpen(false)}
+        project={project}
+        selectedModel={selectedModel}
+      />
+
+      <SiteAuditModal
+        isOpen={isAuditOpen}
+        onClose={() => setIsAuditOpen(false)}
+        project={project}
+        selectedModel={selectedModel}
+        onOpenHandoff={() => setIsHandoffOpen(true)}
+      />
+
       <PhotoScannerModal 
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
