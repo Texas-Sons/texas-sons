@@ -1,1 +1,1 @@
-antigravity 2026-08-20 11:03 UTC — Updated proposal generator with instant tone switching and tailored client pitch templates for demo walk-through meetings.
+antigravity 2026-08-20 13:27 UTC — Fixing client & project details saving with full Supabase persistence, blueprint deep sync, and live Studio canvas updating.

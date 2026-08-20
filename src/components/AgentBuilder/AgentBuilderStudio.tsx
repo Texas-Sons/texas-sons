@@ -1932,6 +1932,13 @@ export default function ClientSite() {
         existingImages={project.uploadedImages}
       />
 
+      <ProjectProposalModal
+        isOpen={isProposalModalOpen}
+        onClose={() => setIsProposalModalOpen(false)}
+        snapshot={project}
+        onApplySnapshot={(updatedSnapshot) => setProject(updatedSnapshot)}
+      />
+
     </div>
   );
 }

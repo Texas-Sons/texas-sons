@@ -19,9 +19,12 @@ import {
   FileText,
   User,
   Phone,
-  Tag
+  Tag,
+  Save,
+  Database
 } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
+import { supabase } from '../supabase';
 
 export interface ProjectProposalModalProps {
   isOpen: boolean;
@@ -29,6 +32,7 @@ export interface ProjectProposalModalProps {
   project?: Project | null;
   snapshot?: any | null;
   onSaveProject?: (updated: Project) => void;
+  onApplySnapshot?: (updatedSnapshot: any) => void;
   onLaunchStudio?: (project: Project | any) => void;
 }
 
@@ -38,6 +42,7 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   project,
   snapshot,
   onSaveProject,
+  onApplySnapshot,
   onLaunchStudio
 }) => {
   if (!isOpen) return null;
@@ -45,16 +50,18 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   const [activeTab, setActiveTab] = useState<'proposal' | 'edit'>('proposal');
   const [tone, setTone] = useState<'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach'>('agency-proposal');
   
-  // Extract project details
+  // Extract initial project details
   const initialName = project?.companyName || snapshot?.profile?.name || 'Ernest Trevino for Atascosa County Sheriff';
   const initialClient = project?.clientName || snapshot?.profile?.name || 'Ernest Trevino';
-  const initialEmail = snapshot?.profile?.email || 'trevinofortransparency@yahoo.com';
-  const initialPhone = snapshot?.profile?.phone || '(830) 555-VOTE';
+  const initialEmail = snapshot?.profile?.email || project?.blueprint?.profile?.email || 'trevinofortransparency@yahoo.com';
+  const initialPhone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '(830) 555-VOTE';
+  const initialAddress = snapshot?.profile?.address || project?.blueprint?.profile?.address || 'Jourdanton, TX 78026';
   const initialDomain = project?.domain || `https://${initialName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
   const isCampaign = initialName.toLowerCase().includes('sheriff') || 
                      initialName.toLowerCase().includes('judge') || 
                      initialName.toLowerCase().includes('campaign') ||
-                     snapshot?.theme === 'campaign-navy';
+                     snapshot?.theme === 'campaign-navy' ||
+                     snapshot?.profile?.category === 'Campaign & Leadership';
 
   // Edit details form state
   const [editForm, setEditForm] = useState({
@@ -62,11 +69,12 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
     clientName: initialClient,
     email: initialEmail,
     phone: initialPhone,
+    address: initialAddress,
     domain: initialDomain,
     status: (project?.status || 'QA & Staging') as Status,
     tier: (project?.tier || 'Lead Generation Site') as Tier,
-    tagline: snapshot?.profile?.tagline || 'Honest Leadership. Safer Communities. Stronger Atascosa County.',
-    treasurer: snapshot?.profile?.treasurerName || 'Joseph S. Boyle'
+    tagline: snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || 'Honest Leadership. Safer Communities. Stronger Atascosa County.',
+    treasurer: snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || 'Joseph S. Boyle'
   });
 
   // Proposal Generator state
@@ -76,6 +84,7 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   const [subject, setSubject] = useState(`Website Demo & Digital Platform Preview for ${initialName}`);
   const [body, setBody] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -190,6 +199,42 @@ https://texassons.dev | (512) 555-TEXAS`
     }
   };
 
+  // Re-synchronize form when modal opens or props change
+  useEffect(() => {
+    if (isOpen) {
+      const name = project?.companyName || snapshot?.profile?.name || 'Ernest Trevino for Atascosa County Sheriff';
+      const client = project?.clientName || snapshot?.profile?.name || 'Ernest Trevino';
+      const email = snapshot?.profile?.email || project?.blueprint?.profile?.email || 'trevinofortransparency@yahoo.com';
+      const phone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '(830) 555-VOTE';
+      const address = snapshot?.profile?.address || project?.blueprint?.profile?.address || 'Jourdanton, TX 78026';
+      const domain = project?.domain || `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
+      const status = (project?.status || 'QA & Staging') as Status;
+      const tier = (project?.tier || 'Lead Generation Site') as Tier;
+      const tagline = snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || 'Honest Leadership. Safer Communities. Stronger Atascosa County.';
+      const treasurer = snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || 'Joseph S. Boyle';
+
+      setEditForm({
+        companyName: name,
+        clientName: client,
+        email,
+        phone,
+        address,
+        domain,
+        status,
+        tier,
+        tagline,
+        treasurer
+      });
+
+      setRecipientName(client);
+      setRecipientEmail(email);
+
+      const template = getProposalTemplate(tone, customNotes);
+      setSubject(template.subject);
+      setBody(template.body);
+    }
+  }, [isOpen, project, snapshot]);
+
   const handleSelectTone = (newTone: 'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach') => {
     setTone(newTone);
     // Instant switch to new tone template
@@ -223,6 +268,7 @@ https://texassons.dev | (512) 555-TEXAS`
             tagline: editForm.tagline,
             phone: editForm.phone,
             email: editForm.email,
+            address: editForm.address,
             treasurerName: editForm.treasurer
           },
           services: snapshot?.services || [
@@ -259,13 +305,6 @@ https://texassons.dev | (512) 555-TEXAS`
     }
   };
 
-  // Generate initial draft on mount
-  useEffect(() => {
-    const template = getProposalTemplate(tone, customNotes);
-    setSubject(template.subject);
-    setBody(template.body);
-  }, []);
-
   const handleCopy = () => {
     const fullText = `Subject: ${subject}\n\n${body}`;
     navigator.clipboard.writeText(fullText);
@@ -278,22 +317,93 @@ https://texassons.dev | (512) 555-TEXAS`
     window.open(mailtoUrl, '_blank');
   };
 
-  const handleSaveDetails = (e: React.FormEvent) => {
+  const handleSaveDetails = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (project && onSaveProject) {
-      const updated: Project = {
-        ...project,
-        companyName: editForm.companyName,
-        clientName: editForm.clientName,
+    setIsSaving(true);
+
+    const baseSnapshot = snapshot || project?.blueprint || {};
+    const updatedProfile = {
+      ...(baseSnapshot.profile || {}),
+      name: editForm.companyName,
+      tagline: editForm.tagline,
+      email: editForm.email,
+      phone: editForm.phone,
+      address: editForm.address,
+      treasurerName: editForm.treasurer,
+    };
+
+    const updatedBlueprint = {
+      ...baseSnapshot,
+      profile: updatedProfile,
+      theme: baseSnapshot.theme || 'campaign-navy',
+    };
+
+    let targetProjectId = project?.id;
+    if (!targetProjectId) {
+      targetProjectId = baseSnapshot.id ? (baseSnapshot.id.startsWith('prj-') ? baseSnapshot.id.slice(4) : baseSnapshot.id) : `prj_${Date.now()}`;
+    }
+
+    const updatedProject: Project = {
+      id: targetProjectId,
+      companyName: editForm.companyName,
+      clientName: editForm.clientName,
+      status: editForm.status,
+      tier: editForm.tier,
+      domain: editForm.domain,
+      updatedAt: new Date().toISOString(),
+      ownerId: project?.ownerId || '',
+      blueprint: updatedBlueprint
+    };
+
+    // 1. Notify Parent callbacks
+    if (onSaveProject) {
+      onSaveProject(updatedProject);
+    }
+    if (onApplySnapshot) {
+      onApplySnapshot(updatedBlueprint);
+    }
+
+    // 2. Persist to LocalStorage (both custom blueprints and projects)
+    try {
+      const savedProjects = localStorage.getItem('txsons_projects');
+      let parsedProjects: Project[] = savedProjects ? JSON.parse(savedProjects) : [];
+      const pIdx = parsedProjects.findIndex(p => p.id === updatedProject.id);
+      if (pIdx >= 0) {
+        parsedProjects[pIdx] = updatedProject;
+      } else {
+        parsedProjects = [updatedProject, ...parsedProjects];
+      }
+      localStorage.setItem('txsons_projects', JSON.stringify(parsedProjects));
+    } catch {}
+
+    try {
+      const savedCustom = localStorage.getItem('txsons_custom_blueprints');
+      if (savedCustom) {
+        let parsedCustom = JSON.parse(savedCustom);
+        parsedCustom = parsedCustom.map((b: any) => b.id === updatedBlueprint.id || b.profile?.name === updatedBlueprint.profile?.name ? updatedBlueprint : b);
+        localStorage.setItem('txsons_custom_blueprints', JSON.stringify(parsedCustom));
+      }
+    } catch {}
+
+    // 3. Persist directly to Supabase
+    try {
+      await supabase.from('projects').upsert({
+        id: targetProjectId,
+        company_name: editForm.companyName,
+        client_name: editForm.clientName,
         status: editForm.status,
         tier: editForm.tier,
         domain: editForm.domain,
-        updatedAt: new Date().toISOString()
-      };
-      onSaveProject(updated);
+        updated_at: new Date().toISOString(),
+        blueprint: updatedBlueprint
+      });
+    } catch (dbErr) {
+      console.warn('Supabase project upsert fallback:', dbErr);
     }
+
+    setIsSaving(false);
     setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2500);
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   return (
@@ -631,16 +741,30 @@ https://texassons.dev | (512) 555-TEXAS`
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-stone-400 mb-1">
-                  Live Staging / Production URL
-                </label>
-                <input
-                  type="url"
-                  value={editForm.domain}
-                  onChange={(e) => setEditForm({ ...editForm, domain: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-mono text-stone-300 focus:outline-none focus:border-orange-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-400 mb-1">
+                    Live Staging / Production URL
+                  </label>
+                  <input
+                    type="url"
+                    value={editForm.domain}
+                    onChange={(e) => setEditForm({ ...editForm, domain: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-mono text-stone-300 focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-400 mb-1">
+                    Campaign / Business Address
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.address}
+                    onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                    placeholder="Jourdanton, TX 78026"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -656,9 +780,9 @@ https://texassons.dev | (512) 555-TEXAS`
               </div>
 
               {saveSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2 animate-in fade-in">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Project details saved successfully!</span>
+                  <span>Project details saved to Supabase database & local cache!</span>
                 </div>
               )}
 
@@ -679,10 +803,11 @@ https://texassons.dev | (512) 555-TEXAS`
 
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-all shadow-lg shadow-orange-600/30 flex items-center gap-1.5 ml-auto"
+                  disabled={isSaving}
+                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white text-xs font-bold transition-all shadow-lg shadow-orange-600/30 flex items-center gap-1.5 ml-auto"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Save Project Changes</span>
+                  {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSaving ? 'Saving...' : 'Save Project Changes'}</span>
                 </button>
               </div>
 

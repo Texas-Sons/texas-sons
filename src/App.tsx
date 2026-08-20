@@ -279,16 +279,38 @@ export default function App() {
 
   const handleSaveProjectFromModal = async (updatedProject: Project) => {
     try {
-      setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+      setProjects(prev => {
+        const exists = prev.some(p => p.id === updatedProject.id);
+        const next = exists ? prev.map(p => p.id === updatedProject.id ? updatedProject : p) : [updatedProject, ...prev];
+        try {
+          localStorage.setItem('txsons_projects', JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+
+      if (updatedProject.blueprint) {
+        try {
+          const savedCustom = localStorage.getItem('txsons_custom_blueprints');
+          if (savedCustom) {
+            let parsed = JSON.parse(savedCustom);
+            parsed = parsed.map((b: any) => b.id === updatedProject.blueprint.id || b.profile?.name === updatedProject.blueprint.profile?.name ? updatedProject.blueprint : b);
+            localStorage.setItem('txsons_custom_blueprints', JSON.stringify(parsed));
+          }
+        } catch {}
+      }
+
       if (user) {
-        await supabase.from('projects').update({
+        const { error } = await supabase.from('projects').upsert({
+          id: updatedProject.id,
           company_name: updatedProject.companyName,
           client_name: updatedProject.clientName,
           status: updatedProject.status,
           tier: updatedProject.tier,
           domain: updatedProject.domain,
-          updated_at: new Date().toISOString()
-        }).eq('id', updatedProject.id);
+          updated_at: new Date().toISOString(),
+          blueprint: updatedProject.blueprint
+        });
+        if (error) console.warn('Supabase upsert warning:', error);
       }
     } catch (err) {
       console.warn('Error saving project to Supabase:', err);

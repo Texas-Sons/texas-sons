@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
+import { supabase } from '../../supabase';
 
 interface ClientIntakeViewProps {
   onLaunchStudio: (client: ClientIntake) => void;
@@ -325,7 +326,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     setIsNewModalOpen(true);
   };
 
-  const handleSaveClient = (launchStudioAfter: boolean = false) => {
+  const handleSaveClient = async (launchStudioAfter: boolean = false) => {
     if (!form.businessName) return;
 
     let savedClient: ClientIntake;
@@ -336,7 +337,11 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         ...(form as ClientIntake),
         updatedAt: new Date().toISOString()
       };
-      setClients(prev => prev.map(c => c.id === editingClient.id ? savedClient : c));
+      setClients(prev => {
+        const next = prev.map(c => c.id === editingClient.id ? savedClient : c);
+        try { localStorage.setItem('txsons_client_intakes', JSON.stringify(next)); } catch {}
+        return next;
+      });
     } else {
       savedClient = {
         ...(form as ClientIntake),
@@ -345,8 +350,32 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      setClients(prev => [savedClient, ...prev]);
+      setClients(prev => {
+        const next = [savedClient, ...prev];
+        try { localStorage.setItem('txsons_client_intakes', JSON.stringify(next)); } catch {}
+        return next;
+      });
     }
+
+    try {
+      await supabase.from('client_intakes').upsert({
+        id: savedClient.id,
+        business_name: savedClient.businessName,
+        client_contact: savedClient.clientContact,
+        email: savedClient.email,
+        phone: savedClient.phone,
+        address: savedClient.address,
+        domain: savedClient.domain,
+        category: savedClient.category,
+        tier: savedClient.tier,
+        status: savedClient.status,
+        theme: savedClient.theme,
+        tagline: savedClient.tagline,
+        description: savedClient.description,
+        data: savedClient,
+        updated_at: new Date().toISOString()
+      });
+    } catch {}
 
     setIsNewModalOpen(false);
 
