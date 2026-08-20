@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, ArrowRight, Star } from 'lucide-react';
+import { Menu, X, Phone, ArrowRight, Shield } from 'lucide-react';
 import { NavItem } from './types';
 
 interface NavbarBlockProps {
@@ -44,7 +44,7 @@ export function NavbarBlock({
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] ${isCampaign ? 'font-serif' : ''}`}
             >
               {isCampaign ? (
-                <Star className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" strokeWidth={1.5} />
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" strokeWidth={1.5} />
               ) : (
                 businessName.charAt(0)
               )}
