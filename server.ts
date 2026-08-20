@@ -678,8 +678,78 @@ REQUIREMENTS:
       }
 
       // Fallback deterministic generator
-      const fallbackSubject = `${name} — Official Digital Platform & Campaign Proposal`;
-      const fallbackBody = `Dear ${recipientName || 'Campaign Team'},\n\nWe are pleased to present the official digital campaign platform and website built for ${name}.\n\nYou can review the live, fully interactive platform here:\n👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}\n\nKey Platform Features Included in this Build:\n• Core Policy Platform & Priorities:\n${services.map((s: any) => `  - ${s.title}: ${s.description}`).slice(0, 3).join('\n') || '  - Proactive Narcotics Interdiction & Border Security\n  - School Safety & Campus Resource Deputies\n  - Jail Modernization & Fiscal Transparency'}\n\n• Verified Career Credentials & Endorsements:\n${testimonials.map((t: any) => `  - ${t.author} (${t.role}): "${t.quote}"`).slice(0, 2).join('\n') || '  - SAPD Medal of Valor Citation & Master Peace Officer Certification'}\n\n• Public Engagement & Voter Outreach:\n  - Live Atascosa County Voter Information Center & Polling Guide\n  - Community Town Hall & BBQ Rally RSVP System\n  - Yard Sign & Volunteer Intake Form (instant database sync)\n  - Official Texas Election Code § 255.001 Legal Disclosure (Treasurer: ${treasurer || 'Joseph S. Boyle'})\n\nPlease review the live site and let us know your feedback or if you would like to proceed with connecting your official domain name.\n\nRespectfully,\nTexas Sons Digital Platform Team\nhttps://texassons.dev | (512) 555-TEXAS`;
+      let fallbackSubject = `${name} — Official Digital Platform & Presentation`;
+      let fallbackBody = '';
+      const firstName = (recipientName || 'there').split(' ')[0];
+
+      if (tone === 'agency-proposal') {
+        fallbackSubject = `Website Demo & Digital Platform Preview for ${name}`;
+        fallbackBody = `Hi ${firstName},
+
+I put together a live interactive website demo for ${name} to show you how a modern, high-performance web platform can support your outreach and showcase your record.
+
+You can preview the live working demo directly on your phone or computer:
+👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}
+
+Key features built into this demo:
+• Mobile-First Design & Speed: Optimized for voters and supporters on smartphones.
+• Core Platform & Priorities: Clear presentation of your 3 key platform pillars and background.
+• Interactive Community Tools: Built-in event schedule (town halls/rallies), voter info guide, and 1-click yard sign and volunteer intake forms.
+• Official Campaign Branding: High-authority gold & navy design tokens with official election legal disclosures.
+
+Would you be open to a quick 10-minute call or meeting this week so I can walk you through the demo and get your thoughts?
+
+Best regards,
+Morgan
+Texas Sons Web Development & Digital Strategy
+(512) 555-TEXAS | contact.txsons@gmail.com`;
+      } else if (tone === 'launch-handoff') {
+        fallbackSubject = `${name} — Website Launch & Domain Handoff Ready`;
+        fallbackBody = `Dear ${recipientName || 'Campaign Leadership'},
+
+Your official digital platform for ${name} has passed pre-flight quality assurance and is ready for final launch!
+
+Review the live staging site here:
+👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}
+
+Launch Checklist & Deliverables:
+✓ Mobile & Desktop Responsive Design verified
+✓ Voter Information Center & Polling Location route active (#voting)
+✓ Community Events & RSVP engine connected (#events)
+✓ Lead & Volunteer Database capture verified with instant admin portal access
+✓ Legal Campaign Disclaimer configured (Treasurer: ${treasurer || 'Joseph S. Boyle'})
+
+Next Steps:
+Please reply to confirm approval, and we will connect your official custom domain name.
+
+Respectfully,
+Texas Sons Digital Platform Team
+(512) 555-TEXAS | https://texassons.dev`;
+      } else if (tone === 'donor-outreach') {
+        fallbackSubject = `Join our movement — Official Campaign Platform for ${name}`;
+        fallbackBody = `Dear Community Leader,
+
+We are excited to share the official campaign platform for ${name} with trusted leaders across Atascosa County.
+
+Explore the official campaign website here:
+👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}
+
+With over 28 years of dedicated Texas law enforcement service, Master Peace Officer certification, and the SAPD Medal of Valor, Ernest Trevino is committed to proactive crime interdiction, school safety, and constitutional integrity.
+
+How You Can Support:
+• Request a Campaign Yard Sign directly on the site
+• RSVP for our upcoming Community Town Hall & BBQ Fundraiser
+• Sign up to join our grassroots volunteer coalition
+
+Thank you for your continued leadership and support.
+
+Respectfully,
+Ernest Trevino Campaign Team
+Campaign HQ: Jourdanton, TX | (830) 555-VOTE`;
+      } else {
+        fallbackSubject = `${name} — Official Digital Campaign Platform & Presentation`;
+        fallbackBody = `Dear ${recipientName || 'Campaign Leadership'},\n\nWe are pleased to present the official live digital campaign platform and website built for ${name}.\n\nYou can review the live, fully interactive platform here:\n👉 ${siteUrl || 'https://trevino-for-sheriff.pages.dev'}\n\nKey Highlights Included in This Build:\n• Core Policy Platform & Pillars:\n${services.map((s: any) => `  - ${s.title}: ${s.description}`).slice(0, 3).join('\n') || '  - Proactive Violent Crime & Cartel Narcotics Interdiction\n  - School & Campus Safety Taskforce\n  - Modernized Jail Operations & Taxpayer Fiscal Accountability'}\n\n• Verified Career Credentials & Endorsements:\n${testimonials.map((t: any) => `  - ${t.author} (${t.role}): "${t.quote}"`).slice(0, 2).join('\n') || '  - SAPD Medal of Valor Tactical Leadership Citation\n  - 28+ Years Texas Law Enforcement & Certified Master Peace Officer'}\n\n• Public Voter Engagement & Mobilization:\n  - Live Atascosa County Voter Information Center & Polling Guide\n  - Community Town Hall & BBQ Rally RSVP System\n  - Instant Yard Sign & Grassroots Volunteer Intake (Direct Database Sync)\n  - Official Legal Political Advertising Disclaimer (Treasurer: ${treasurer || 'Joseph S. Boyle'})\n\nPlease review the live site and let us know your feedback so we can connect your official domain.\n\nRespectfully,\nTexas Sons Digital Platform Team\nhttps://texassons.dev | (512) 555-TEXAS`;
+      }
 
       res.json({ success: true, subject: fallbackSubject, body: fallbackBody });
     } catch (error: any) {

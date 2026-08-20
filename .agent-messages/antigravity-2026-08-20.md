@@ -1,1 +1,1 @@
-antigravity 2026-08-20 10:55 UTC — Added interactive Project Details Editor & AI Email Proposal Generator (ProjectProposalModal.tsx) into ProjectList and AgentBuilderStudio with 4 executive proposal tones, live site links, mailto launcher, and clipboard copy.
+antigravity 2026-08-20 11:02 UTC — Updating AI Proposal Generator with dedicated pitch templates for offering website demos and scheduling quick review meetings.

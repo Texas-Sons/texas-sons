@@ -43,12 +43,12 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   if (!isOpen) return null;
 
   const [activeTab, setActiveTab] = useState<'proposal' | 'edit'>('proposal');
-  const [tone, setTone] = useState<'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach'>('campaign-presentation');
+  const [tone, setTone] = useState<'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach'>('agency-proposal');
   
   // Extract project details
   const initialName = project?.companyName || snapshot?.profile?.name || 'Ernest Trevino for Atascosa County Sheriff';
   const initialClient = project?.clientName || snapshot?.profile?.name || 'Ernest Trevino';
-  const initialEmail = snapshot?.profile?.email || 'campaign@trevinoforsheriff.com';
+  const initialEmail = snapshot?.profile?.email || 'trevinofortransparency@yahoo.com';
   const initialPhone = snapshot?.profile?.phone || '(830) 555-VOTE';
   const initialDomain = project?.domain || `https://${initialName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
   const isCampaign = initialName.toLowerCase().includes('sheriff') || 
@@ -70,29 +70,153 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   });
 
   // Proposal Generator state
-  const [recipientName, setRecipientName] = useState(initialClient || 'Campaign Leadership & Steering Committee');
+  const [recipientName, setRecipientName] = useState(initialClient || 'Ernest Trevino for Atascosa County Sheriff');
   const [recipientEmail, setRecipientEmail] = useState(initialEmail || '');
   const [customNotes, setCustomNotes] = useState('');
-  const [subject, setSubject] = useState(`${initialName} — Official Digital Platform & Website Review`);
+  const [subject, setSubject] = useState(`Website Demo & Digital Platform Preview for ${initialName}`);
   const [body, setBody] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Generate initial draft on open
-  useEffect(() => {
-    generateProposal();
-  }, [tone]);
+  // Template generator helper
+  const getProposalTemplate = (targetTone: string, targetNotes: string = '') => {
+    const firstName = (recipientName || 'there').split(' ')[0];
+    const siteLink = editForm.domain || 'https://trevino-for-sheriff.pages.dev';
 
-  const generateProposal = async () => {
+    if (targetTone === 'agency-proposal') {
+      return {
+        subject: `Website Demo & Digital Platform Preview for ${editForm.companyName}`,
+        body: `Hi ${firstName},
+
+I put together a live, interactive website demo for ${editForm.companyName} to show you how a modern, high-performance web platform can support your outreach and showcase your record.
+
+You can preview the live working demo directly on your phone or computer here:
+👉 ${siteLink}
+
+Key features built into this demo:
+• Mobile-First Design & Speed: Blazing fast load times optimized for smartphone users.
+• Core Platform & Priorities: Clear presentation of your 3 key platform pillars and background.
+• Interactive Community Tools: Built-in event schedule (town halls/rallies), voter info guide, and 1-click yard sign and volunteer intake forms.
+• Official Campaign Branding: High-authority gold & navy design tokens with official election legal disclosures (Treasurer: ${editForm.treasurer}).
+${targetNotes ? `\nSpecial Highlights Added:\n• ${targetNotes}\n` : ''}
+Would you be open to a quick 10-minute call or meeting this week so I can walk you through the demo and answer any questions?
+
+Best regards,
+Morgan
+Texas Sons Web Development & Digital Strategy
+(512) 555-TEXAS | contact.txsons@gmail.com`
+      };
+    } else if (targetTone === 'launch-handoff') {
+      return {
+        subject: `${editForm.companyName} — Website Launch & Domain Handoff Ready`,
+        body: `Dear ${recipientName || 'Campaign Leadership'},
+
+Your official digital platform for ${editForm.companyName} has passed pre-flight quality assurance and is ready for final launch!
+
+Review the live staging site here:
+👉 ${siteLink}
+
+Launch Checklist & Deliverables:
+✓ Mobile & Desktop Responsive Design verified
+✓ Voter Information Center & Polling Location route active (#voting)
+✓ Community Events & RSVP engine connected (#events)
+✓ Lead & Volunteer Database capture verified with instant admin portal access
+✓ Legal Campaign Disclaimer configured (Treasurer: ${editForm.treasurer})
+${targetNotes ? `\nAdditional Notes:\n• ${targetNotes}\n` : ''}
+Next Steps:
+Please reply to confirm approval, and we will connect your official custom domain name.
+
+Respectfully,
+Texas Sons Digital Platform Team
+(512) 555-TEXAS | https://texassons.dev`
+      };
+    } else if (targetTone === 'donor-outreach') {
+      return {
+        subject: `Join our movement — Official Campaign Platform for ${editForm.companyName}`,
+        body: `Dear Community Leader,
+
+We are excited to share the official campaign platform for ${editForm.companyName} with trusted leaders across Atascosa County.
+
+Explore the official campaign website here:
+👉 ${siteLink}
+
+With over 28 years of dedicated Texas law enforcement service, Master Peace Officer certification, and the SAPD Medal of Valor, Ernest Trevino is committed to proactive crime interdiction, school safety, and constitutional integrity.
+
+How You Can Support:
+• Request a Campaign Yard Sign directly on the site
+• RSVP for our upcoming Community Town Hall & BBQ Fundraiser
+• Sign up to join our grassroots volunteer coalition
+${targetNotes ? `\nCommunity Note:\n• ${targetNotes}\n` : ''}
+Thank you for your continued leadership and support.
+
+Respectfully,
+Ernest Trevino Campaign Team
+Campaign HQ: Jourdanton, TX | (830) 555-VOTE`
+      };
+    } else {
+      // Default: campaign-presentation
+      return {
+        subject: `${editForm.companyName} — Official Digital Campaign Platform & Presentation`,
+        body: `Dear ${recipientName || 'Campaign Leadership'},
+
+We are pleased to present the official live digital campaign platform and website built for ${editForm.companyName}.
+
+You can review the live, fully interactive platform here:
+👉 ${siteLink}
+
+Key Highlights Included in This Build:
+• Core Policy Platform & Pillars:
+  - Proactive Violent Crime & Cartel Narcotics Interdiction
+  - School & Campus Safety Taskforce
+  - Modernized Jail Operations & Taxpayer Fiscal Accountability
+
+• Verified Career Credentials & Endorsements:
+  - SAPD Medal of Valor Tactical Leadership Citation
+  - 28+ Years Texas Law Enforcement & Certified Master Peace Officer
+
+• Public Voter Engagement & Mobilization:
+  - Live Atascosa County Voter Information Center & Polling Guide
+  - Community Town Hall & BBQ Rally RSVP System
+  - Instant Yard Sign & Grassroots Volunteer Intake (Direct Database Sync)
+  - Official Legal Political Advertising Disclaimer (Treasurer: ${editForm.treasurer})
+${targetNotes ? `\nCustom Campaign Instructions:\n• ${targetNotes}\n` : ''}
+Please review the live site and let us know your feedback so we can connect your official domain.
+
+Respectfully,
+Texas Sons Digital Platform Team
+https://texassons.dev | (512) 555-TEXAS`
+      };
+    }
+  };
+
+  const handleSelectTone = (newTone: 'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach') => {
+    setTone(newTone);
+    // Instant switch to new tone template
+    const template = getProposalTemplate(newTone, customNotes);
+    setSubject(template.subject);
+    setBody(template.body);
+    // Also trigger AI refinement
+    generateProposal(newTone, customNotes);
+  };
+
+  const generateProposal = async (overrideTone?: string, overrideNotes?: string) => {
+    const targetTone = overrideTone || tone;
+    const targetNotes = overrideNotes !== undefined ? overrideNotes : customNotes;
+
+    // Apply template immediately so user gets instant zero-latency feedback
+    const template = getProposalTemplate(targetTone, targetNotes);
+    setSubject(template.subject);
+    setBody(template.body);
+
     setIsGenerating(true);
     try {
       const payload = {
         projectName: editForm.companyName,
         siteUrl: editForm.domain,
         recipientName: recipientName,
-        tone: tone,
-        customNotes: customNotes,
+        tone: targetTone,
+        customNotes: targetNotes,
         snapshot: snapshot || {
           profile: {
             name: editForm.companyName,
@@ -125,21 +249,22 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
 
       const data = await res.json();
       if (data.success && data.body) {
-        setSubject(data.subject || `${editForm.companyName} — Official Digital Campaign Platform`);
+        setSubject(data.subject || template.subject);
         setBody(data.body);
-      } else {
-        throw new Error(data.error || 'Failed to generate proposal');
       }
     } catch (err) {
-      console.warn('Using client-side fallback draft:', err);
-      const fallbackSubject = `${editForm.companyName} — Official Digital Platform & Presentation`;
-      const fallbackBody = `Dear ${recipientName || 'Campaign Leadership'},\n\nWe are pleased to present the official live digital campaign platform and website built for ${editForm.companyName}.\n\nYou can review the live, fully interactive platform here:\n👉 ${editForm.domain}\n\nKey Highlights Included in This Build:\n• Core Policy Platform & Pillars:\n  - Proactive Violent Crime & Cartel Narcotics Interdiction\n  - School & Campus Safety Taskforce\n  - Modernized Jail Operations & Taxpayer Fiscal Accountability\n\n• Verified Career Credentials & Endorsements:\n  - SAPD Medal of Valor Tactical Leadership Citation\n  - 28+ Years Texas Law Enforcement & Certified Master Peace Officer\n\n• Public Voter Engagement & Mobilization:\n  - Live Atascosa County Voter Information Center & Polling Guide\n  - Community Town Hall & BBQ Rally RSVP System\n  - Instant Yard Sign & Grassroots Volunteer Intake (Direct Database Sync)\n  - Official Legal Political Advertising Disclaimer (Treasurer: ${editForm.treasurer})\n\nPlease review the live site and let us know your feedback so we can connect your official domain.\n\nRespectfully,\nTexas Sons Digital Platform Team\nhttps://texassons.dev | (512) 555-TEXAS`;
-      setSubject(fallbackSubject);
-      setBody(fallbackBody);
+      console.warn('Using client-side synthesized proposal:', err);
     } finally {
       setIsGenerating(false);
     }
   };
+
+  // Generate initial draft on mount
+  useEffect(() => {
+    const template = getProposalTemplate(tone, customNotes);
+    setSubject(template.subject);
+    setBody(template.body);
+  }, []);
 
   const handleCopy = () => {
     const fullText = `Subject: ${subject}\n\n${body}`;
@@ -245,73 +370,73 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
               {/* Tone / Objective Selector */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">
-                  Proposal Objective & Tone
+                  Proposal Objective & Tone (Click to switch copy instantly)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   <button
                     type="button"
-                    onClick={() => setTone('campaign-presentation')}
+                    onClick={() => handleSelectTone('agency-proposal')}
+                    className={`p-2.5 rounded-xl border text-left transition-all ${
+                      tone === 'agency-proposal'
+                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
+                        : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
+                    }`}
+                  >
+                    <p className="text-xs font-bold flex items-center gap-1.5 text-orange-400">
+                      <span>💼 Client Pitch & Meeting</span>
+                    </p>
+                    <p className="text-[10px] text-stone-400 mt-1 leading-tight">
+                      Offers a quick 10-min meeting to review the live working demo.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTone('campaign-presentation')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'campaign-presentation'
-                        ? 'border-orange-500 bg-orange-600/20 text-white shadow-sm'
+                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
                     <p className="text-xs font-bold flex items-center gap-1.5">
                       <span>🏛️ Campaign Review</span>
                     </p>
-                    <p className="text-[10px] text-stone-500 mt-1 leading-tight">
+                    <p className="text-[10px] text-stone-400 mt-1 leading-tight">
                       Platform, voting guide, and Medal of Valor credentials.
                     </p>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setTone('agency-proposal')}
-                    className={`p-2.5 rounded-xl border text-left transition-all ${
-                      tone === 'agency-proposal'
-                        ? 'border-orange-500 bg-orange-600/20 text-white shadow-sm'
-                        : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
-                    }`}
-                  >
-                    <p className="text-xs font-bold flex items-center gap-1.5">
-                      <span>💼 Client Pitch</span>
-                    </p>
-                    <p className="text-[10px] text-stone-500 mt-1 leading-tight">
-                      Modern website deliverables, speed, and design value.
-                    </p>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setTone('launch-handoff')}
+                    onClick={() => handleSelectTone('launch-handoff')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'launch-handoff'
-                        ? 'border-orange-500 bg-orange-600/20 text-white shadow-sm'
+                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
                     <p className="text-xs font-bold flex items-center gap-1.5">
                       <span>🚀 Ready to Launch</span>
                     </p>
-                    <p className="text-[10px] text-stone-500 mt-1 leading-tight">
+                    <p className="text-[10px] text-stone-400 mt-1 leading-tight">
                       DNS custom domain connection and admin portal handoff.
                     </p>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setTone('donor-outreach')}
+                    onClick={() => handleSelectTone('donor-outreach')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'donor-outreach'
-                        ? 'border-orange-500 bg-orange-600/20 text-white shadow-sm'
+                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
                     <p className="text-xs font-bold flex items-center gap-1.5">
                       <span>🤝 Community Outreach</span>
                     </p>
-                    <p className="text-[10px] text-stone-500 mt-1 leading-tight">
+                    <p className="text-[10px] text-stone-400 mt-1 leading-tight">
                       Invite leaders to review site and request yard signs.
                     </p>
                   </button>
@@ -322,13 +447,13 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-stone-400 mb-1">
-                    Recipient Name / Organization
+                    Recipient Name / Candidate Name
                   </label>
                   <input
                     type="text"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    placeholder="e.g. Ernest Trevino Campaign HQ"
+                    placeholder="e.g. Ernest Trevino"
                     className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
@@ -340,7 +465,7 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
                     type="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    placeholder="e.g. campaign@trevinoforsheriff.com"
+                    placeholder="e.g. trevinofortransparency@yahoo.com"
                     className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
@@ -356,11 +481,11 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
                     type="text"
                     value={customNotes}
                     onChange={(e) => setCustomNotes(e.target.value)}
-                    placeholder="e.g. Highlight the upcoming Jourdanton Town Hall and mention Joseph S. Boyle as treasurer..."
+                    placeholder="e.g. Offer meeting on Tuesday or Thursday, mention the gold Sheriff badge favicon..."
                     className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500 pr-24"
                   />
                   <button
-                    onClick={generateProposal}
+                    onClick={() => generateProposal(tone, customNotes)}
                     disabled={isGenerating}
                     className="absolute right-1.5 top-1.5 px-3 py-1 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
                   >
