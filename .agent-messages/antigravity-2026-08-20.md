@@ -1,1 +1,1 @@
-antigravity 2026-08-20 04:35 UTC — Fixed mobile layout in CampaignHeroBlock using Stitch MCP Judicial Campaign design specifications. Portrait is now displayed in a dedicated, high-contrast, gold-framed card with zero text overlap across all mobile viewports.
+antigravity 2026-08-20 04:48 UTC — Adding EventsBlock for public campaign event displays (Town Halls, BBQ Rally, Public Safety Forum) and updating NavbarBlock with dedicated Candidate Name + VOTE ERNEST / ATASCOSA COUNTY SHERIFF subtitle branding.

@@ -60,9 +60,11 @@ import {
   IndustryAdminBlock,
   VotingBannerBlock,
   VotingPageBlock,
+  EventsBlock,
   BusinessProfile, 
   ServiceItem, 
-  TestimonialItem 
+  TestimonialItem,
+  EventItem 
 } from '../../templates/blocks';
 import { buildThemeVars } from '../../templates/blocks/theme';
 import { supabase } from '../../supabase';
@@ -94,6 +96,7 @@ export interface ProjectSnapshot {
   profile: BusinessProfile;
   services: ServiceItem[];
   testimonials: TestimonialItem[];
+  events?: EventItem[];
   theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
   heroVariant: 'split' | 'bento' | 'centered';
   badges?: string[];
@@ -110,6 +113,7 @@ interface PresetBlueprint {
   profile: BusinessProfile;
   services: ServiceItem[];
   testimonials: TestimonialItem[];
+  events?: EventItem[];
   theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
   heroVariant: 'split' | 'bento' | 'centered';
   badges?: string[];
@@ -126,6 +130,11 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
     prompt: 'Build a conservative, high-authority political campaign website for Ernest Trevino for Atascosa County Sheriff 2026. 28+ years Texas law enforcement, Medal of Valor recipient, proactive crime interdiction, school safety, and constitutional leadership.',
     badges: ['28+ Years Texas Law Enforcement', 'Medal of Valor Recipient', 'Certified Master Peace Officer', 'Lifelong Atascosa County Resident'],
     proofBadgeText: 'Official 2026 Endorsements · Law Enforcement Verified',
+    events: [
+      { id: '1', name: 'Jourdanton Community Town Hall & Meet-and-Greet', date: 'Oct 24, 2026', time: '6:30 PM', location: 'Atascosa County Courthouse Annex', rsvpCount: 142 },
+      { id: '2', name: 'Sheriff Campaign Rally & BBQ Fundraiser', date: 'Nov 02, 2026', time: '7:00 PM', location: 'Pleasanton Civic Center Plaza', rsvpCount: 215 },
+      { id: '3', name: 'Rural Landowners & Public Safety Forum', date: 'Nov 14, 2026', time: '5:30 PM', location: 'Poteet Community Hall', rsvpCount: 98 }
+    ],
     profile: {
       name: 'Ernest Trevino for Atascosa County Sheriff',
       tagline: 'A Lifetime of Dedicated Service & Law Enforcement Leadership',
@@ -1296,7 +1305,13 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                       theme={project.theme as any}
                       accentColor={project.profile.accentColor}
                       ctaText={isCampaignSite ? 'Volunteer / Donate' : project.profile.category === 'Food & Beverage' ? 'Order Catering' : project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 'Book Appointment'}
-                      navItems={isCampaignSite ? [{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }] : undefined}
+                      navItems={isCampaignSite ? [
+                        { label: "Platform", href: "#services" },
+                        { label: "Events", href: "#events" },
+                        { label: "Endorsements", href: "#reviews" },
+                        { label: "Voting Info", href: "#voting" },
+                        { label: "Volunteer", href: "#contact" }
+                      ] : undefined}
                     />
                   </div>
 

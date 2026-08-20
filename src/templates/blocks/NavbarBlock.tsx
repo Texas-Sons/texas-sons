@@ -31,6 +31,20 @@ export function NavbarBlock({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign');
 
+  // Split candidate name if formatted like "Ernest Trevino for Atascosa County Sheriff"
+  let primaryName = businessName;
+  let subBadgeText = '';
+
+  if (isCampaign) {
+    if (businessName.toLowerCase().includes(' for ')) {
+      const parts = businessName.split(/ for /i);
+      primaryName = parts[0].trim();
+      subBadgeText = `VOTE ${primaryName.toUpperCase()} · ${parts[1].trim().toUpperCase()}`;
+    } else {
+      subBadgeText = 'OFFICIAL 2026 CAMPAIGN';
+    }
+  }
+
   return (
     <header className={`sticky top-0 z-40 w-full backdrop-blur-md border-b transition-colors duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] text-[color:var(--ts-text)]`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
@@ -54,8 +68,14 @@ export function NavbarBlock({
             <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity truncate ${
               isCampaign ? 'font-serif text-[color:var(--ts-accent)]' : ''
             }`}>
-              {businessName}
+              {primaryName}
             </span>
+            {isCampaign && subBadgeText && (
+              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-stone-400 group-hover:text-stone-300 truncate">
+                <span className="hidden sm:inline">{subBadgeText}</span>
+                <span className="sm:hidden">{subBadgeText.includes('·') ? subBadgeText.split('·')[1].trim() : subBadgeText}</span>
+              </span>
+            )}
           </div>
         </a>
 

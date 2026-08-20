@@ -12,6 +12,7 @@ import { FooterBlock } from "./templates/blocks/FooterBlock";
 import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
+import { EventsBlock } from "./templates/blocks/EventsBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
 
@@ -115,7 +116,13 @@ export function ClientApp() {
             theme={project.theme}
             accentColor={project.profile.accentColor}
             ctaText={isCampaign ? "Join The Campaign" : "Book Free Estimate"}
-            navItems={isCampaign ? [{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }] : undefined}
+            navItems={isCampaign ? [
+              { label: "Platform", href: "#services" },
+              { label: "Events", href: "#events" },
+              { label: "Endorsements", href: "#reviews" },
+              { label: "Voting Info", href: "#voting" },
+              { label: "Volunteer", href: "#contact" }
+            ] : undefined}
           />
           {isCampaign ? (
             <CampaignHeroBlock
@@ -157,6 +164,13 @@ export function ClientApp() {
             title={isCampaign ? 'Campaign Platform & Priorities' : 'Our Services'}
             subtitle={isCampaign ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}
           />
+          {isCampaign && (
+            <EventsBlock
+              events={project.events}
+              theme={project.theme}
+              accentColor={project.profile.accentColor}
+            />
+          )}
           {project.testimonials.length > 0 && (
             <TestimonialsBlock
               theme={project.theme}
