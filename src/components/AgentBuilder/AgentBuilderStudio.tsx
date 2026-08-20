@@ -145,9 +145,9 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'Fiscal Transparency & Modernized Jail Ops', description: 'Eliminating administrative waste, modernizing detention facilities, and ensuring every taxpayer dollar is accounted for.', duration: 'Pillar #3' },
     ],
     testimonials: [
-      { quote: 'Ernest Trevino is a true lawman of unmatched courage and integrity. He has my full endorsement for Atascosa County Sheriff.', author: 'Judge Ronald Sterling', role: 'Presiding County Magistrate', rating: 5, verified: true },
-      { quote: 'When lives were on the line, Trevino led from the front. His Medal of Valor speaks for itself.', author: 'Captain Sarah Garza', role: 'Retired SWAT Commander', rating: 5, verified: true },
-      { quote: 'A leader who actually listens to our rural landowners and neighborhood associations.', author: 'David Martinez', role: 'Atascosa Rancher & Community Leader', rating: 5, verified: true }
+      { quote: 'When lives were on the line during an active hostage crisis, Trevino led tactical entry from the front with extraordinary courage. His SAPD Medal of Valor speaks for itself.', author: 'Captain Sarah Garza', role: 'Retired SWAT & Tactical Commander', rating: 5, verified: true },
+      { quote: 'Ernest served as one of the most relentless lead detectives in South Texas, spearheading major criminal investigations and dismantling dangerous cartel trafficking networks.', author: 'Lieutenant Hector Benavides', role: 'Former Chief of Criminal Investigations', rating: 5, verified: true },
+      { quote: 'Ernest Trevino is a true lawman of unshakeable constitutional integrity. He understands rural property owners, supports our deputies, and brings proven leadership to Atascosa County.', author: 'Judge Ronald Sterling', role: 'Presiding County Magistrate & Rancher', rating: 5, verified: true }
     ],
     theme: 'campaign-navy',
     heroVariant: 'split'

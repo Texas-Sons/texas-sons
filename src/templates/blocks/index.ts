@@ -7,3 +7,6 @@ export * from './TestimonialsBlock';
 export * from './BookingBlock';
 export * from './FooterBlock';
 export * from './IndustryAdminBlock';
+export * from './CampaignIcons';
+export * from './VotingBannerBlock';
+export * from './VotingPageBlock';

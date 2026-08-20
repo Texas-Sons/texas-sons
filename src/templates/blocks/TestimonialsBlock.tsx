@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, CheckCircle, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TestimonialItem } from './types';
+import { MedalOfValorIcon, DetectiveIcon, LeadershipIcon } from './CampaignIcons';
 
 interface TestimonialsBlockProps {
   title?: string;
@@ -90,11 +91,47 @@ export function TestimonialsBlock({
               </div>
 
               <div>
-                <div className="flex gap-1 mb-6" aria-label={`${t.rating || 5} star rating`}>
-                  {[...Array(t.rating || 5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current text-[color:var(--ts-accent)]" aria-hidden="true" />
-                  ))}
-                </div>
+                {isCampaign ? (
+                  <div className="flex items-center gap-3.5 mb-6">
+                    <div 
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg flex-shrink-0"
+                      style={{ 
+                        backgroundColor: 'rgba(197, 160, 89, 0.12)', 
+                        borderColor: 'rgba(197, 160, 89, 0.35)',
+                        color: accentColor || '#C5A059'
+                      }}
+                    >
+                      {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0 ? (
+                        <MedalOfValorIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                      ) : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1 ? (
+                        <DetectiveIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                      ) : (
+                        <LeadershipIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                      )}
+                    </div>
+                    <div>
+                      <span 
+                        className="text-[10px] font-extrabold uppercase tracking-widest block"
+                        style={{ color: accentColor || '#C5A059' }}
+                      >
+                        {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0
+                          ? '★ Medal of Valor Citation'
+                          : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1
+                          ? '★ Lead Criminal Investigator'
+                          : '★ Command Leadership & Trust'}
+                      </span>
+                      <span className="text-[11px] text-[color:var(--ts-muted)] font-semibold">
+                        Official Law Enforcement Endorsement
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 mb-6" aria-label={`${t.rating || 5} star rating`}>
+                    {[...Array(t.rating || 5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current text-[color:var(--ts-accent)]" aria-hidden="true" />
+                    ))}
+                  </div>
+                )}
                 <p className="text-sm sm:text-base leading-relaxed mb-8 text-[color:var(--ts-text)] font-medium">
                   "{t.quote}"
                 </p>
