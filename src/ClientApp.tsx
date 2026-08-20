@@ -107,7 +107,7 @@ export function ClientApp() {
             testimonials={project.testimonials}
           />
         </div>
-      ) : (
+      ) : viewMode === 'site' ? (
         <>
           <NavbarBlock
             businessName={project.profile.name}
