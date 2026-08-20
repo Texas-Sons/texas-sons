@@ -1,1 +1,1 @@
-antigravity 2026-08-20 04:07 UTC — Updating PM & Design QA Audit into dedicated Pre-Flight Fact & Gap Inspector (Fact-checking, Anchor Link Integrity, Conversion Gaps, Credential Verification, 1-Click Auto-Fixes).
+antigravity 2026-08-20 04:08 UTC — Upgraded PM Audit Engine into dedicated Pre-Flight Fact & Gap Inspector with 5 focus pillars: 1) Fact-Checking & Credentials, 2) Code & Link Integrity, 3) Design Hierarchy & CTAs, 4) Pillar & Endorsement Depth, 5) SEO & Public Discovery. All tests passing.
