@@ -1,1 +1,1 @@
-antigravity 2026-08-20 04:33 UTC — Redesigning CampaignHeroBlock mobile layout based on Stitch MCP Judicial Campaign Design System to eliminate text-over-portrait overlap and provide clean, unobstructed candidate portrait hierarchy.
+antigravity 2026-08-20 04:35 UTC — Fixed mobile layout in CampaignHeroBlock using Stitch MCP Judicial Campaign design specifications. Portrait is now displayed in a dedicated, high-contrast, gold-framed card with zero text overlap across all mobile viewports.
