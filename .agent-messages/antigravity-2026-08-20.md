@@ -1,1 +1,1 @@
-antigravity 2026-08-20 03:23 UTC — Upgraded PM & Design QA Audit Engine: 1) Added interactive [⚡ Re-Run Audit] trigger with multi-step live inference animation, 2) Added 1-Click [✨ Fix] buttons for individual issues, 3) Added 1-Click [⚡ Auto-Fix All] button that repairs all issues and elevates readiness score to 100/100, 4) Real-time token and spend tracking.
+antigravity 2026-08-20 04:07 UTC — Updating PM & Design QA Audit into dedicated Pre-Flight Fact & Gap Inspector (Fact-checking, Anchor Link Integrity, Conversion Gaps, Credential Verification, 1-Click Auto-Fixes).
