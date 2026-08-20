@@ -10,6 +10,8 @@ import { TestimonialsBlock } from "./templates/blocks/TestimonialsBlock";
 import { BookingBlock } from "./templates/blocks/BookingBlock";
 import { FooterBlock } from "./templates/blocks/FooterBlock";
 import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
+import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
+import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
 
@@ -21,13 +23,17 @@ declare global {
 
 export function ClientApp() {
   const project = window.__TXSONS_BLUEPRINT__;
-  const [viewMode, setViewMode] = React.useState<'site' | 'admin'>(() => {
-    return (window.location.search.includes('admin=true') || window.location.hash === '#admin') ? 'admin' : 'site';
+  const [viewMode, setViewMode] = React.useState<'site' | 'admin' | 'voting'>(() => {
+    if (window.location.search.includes('admin=true') || window.location.hash === '#admin') return 'admin';
+    if (window.location.hash === '#voting') return 'voting';
+    return 'site';
   });
 
   useEffect(() => {
     const handleHash = () => {
       if (window.location.hash === '#admin') setViewMode('admin');
+      else if (window.location.hash === '#voting') setViewMode('voting');
+      else setViewMode('site');
     };
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
@@ -109,6 +115,7 @@ export function ClientApp() {
             theme={project.theme}
             accentColor={project.profile.accentColor}
             ctaText={isCampaign ? "Join The Campaign" : "Book Free Estimate"}
+            navItems={isCampaign ? [{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }] : undefined}
           />
           {isCampaign ? (
             <CampaignHeroBlock
@@ -142,6 +149,7 @@ export function ClientApp() {
               }
             />
           )}
+          {isCampaign && <VotingBannerBlock accentColor={project.profile.accentColor} />}
           <ServicesBlock
             theme={project.theme}
             services={project.services}
@@ -189,7 +197,13 @@ export function ClientApp() {
             </button>
           </div>
         </>
-      )}
+      ) : viewMode === "voting" ? (
+        <>
+          <NavbarBlock businessName={project.profile.name} phone={project.profile.phone} theme={project.theme} accentColor={project.profile.accentColor} ctaText="Join The Campaign" navItems={[{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }]} />
+          <VotingPageBlock theme={project.theme} accentColor={project.profile.accentColor} />
+          <FooterBlock business={project.profile} theme={project.theme} />
+        </>
+      ) : null}
     </div>
   );
 }
