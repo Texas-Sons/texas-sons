@@ -60,7 +60,7 @@ export function NavbarBlock({
         </a>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center space-x-8">
+        <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           {navItems.map((item, idx) => (
             <a
               key={idx}
@@ -73,11 +73,11 @@ export function NavbarBlock({
         </nav>
 
         {/* Desktop CTA Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-4">
           {phone && (
             <a
               href={`tel:${phone}`}
-              className="flex items-center text-sm font-medium transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)]"
+              className="flex items-center text-sm font-medium whitespace-nowrap transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)]"
             >
               <Phone className="w-4 h-4 mr-2 text-[color:var(--ts-accent)]" />
               {phone}
@@ -85,7 +85,7 @@ export function NavbarBlock({
           )}
           <a
             href={ctaHref}
-            className={`inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
+            className={`inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
           >
             {ctaText}
             <ArrowRight className="w-4 h-4 ml-2" />
@@ -93,7 +93,7 @@ export function NavbarBlock({
         </div>
 
         {/* Mobile Hamburger Toggle */}
-        <div className="flex md:hidden items-center space-x-3 flex-shrink-0">
+        <div className="flex lg:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
           {phone && (
             <a
               href={`tel:${phone}`}
@@ -116,7 +116,7 @@ export function NavbarBlock({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <div className="lg:hidden border-b px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {navItems.map((item, idx) => (
             <a
               key={idx}
