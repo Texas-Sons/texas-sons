@@ -78,10 +78,10 @@ export function CampaignHeroBlock({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight font-serif leading-[1.05] mb-6 drop-shadow-2xl"
+              className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold tracking-tight font-serif leading-[1.05] mb-6 drop-shadow-2xl flex flex-wrap"
             >
               {headline.split(' ').map((word, i) => (
-                <span key={i} className={i === headline.split(' ').length - 1 ? "block mt-2" : "mr-3 inline-block"} style={i === headline.split(' ').length - 1 ? { color: accentColor } : {}}>
+                <span key={i} className={`mr-2 md:mr-3 ${i === headline.split(' ').length - 1 ? "block w-full mt-2" : "inline-block"}`} style={i === headline.split(' ').length - 1 ? { color: accentColor } : {}}>
                   {word}
                 </span>
               ))}

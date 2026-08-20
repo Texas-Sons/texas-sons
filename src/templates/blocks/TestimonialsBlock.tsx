@@ -73,7 +73,7 @@ export function TestimonialsBlock({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
         >
           {testimonials.map((t, idx) => (
             <motion.div
@@ -82,7 +82,7 @@ export function TestimonialsBlock({
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
               // Alternate vertical translation to create an interlocking masonry feel
               className={`rounded-3xl p-8 sm:p-10 border flex flex-col justify-between relative bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] shadow-2xl shadow-black/30 backdrop-blur-sm ${
-                idx % 3 === 1 ? 'lg:translate-y-12' : idx % 3 === 2 ? 'lg:-translate-y-6' : ''
+                idx % 3 === 1 ? 'xl:translate-y-12' : idx % 3 === 2 ? 'xl:-translate-y-6' : ''
               }`}
             >
               <div className="absolute top-0 right-8 -translate-y-1/2 bg-[color:var(--ts-bg)] px-2">

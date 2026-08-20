@@ -60,7 +60,7 @@ export function NavbarBlock({
         </a>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+        <nav className="hidden xl:flex items-center space-x-6 xl:space-x-8">
           {navItems.map((item, idx) => (
             <a
               key={idx}
@@ -93,7 +93,7 @@ export function NavbarBlock({
         </div>
 
         {/* Mobile Hamburger Toggle */}
-        <div className="flex lg:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
+        <div className="flex xl:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
           {phone && (
             <a
               href={`tel:${phone}`}
@@ -116,7 +116,7 @@ export function NavbarBlock({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <div className="xl:hidden border-b px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {navItems.map((item, idx) => (
             <a
               key={idx}
