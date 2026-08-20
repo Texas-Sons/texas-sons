@@ -1821,6 +1821,7 @@ export default function ClientSite() {
         project={project}
         selectedModel={selectedModel}
         onOpenHandoff={() => setIsHandoffOpen(true)}
+        onApplyFixes={(updated) => setProject(updated)}
       />
 
       <PhotoScannerModal 
