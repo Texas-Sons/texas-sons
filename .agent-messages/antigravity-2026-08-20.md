@@ -1,0 +1,1 @@
+antigravity 2026-08-20 02:05 UTC — Redesigning AI Studio header bar per user mockup (grouped action pill, search, spend widget, device switcher, model card, deploy). Running npm run verify.

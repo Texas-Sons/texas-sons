@@ -45,6 +45,8 @@ import {
   DollarSign,
   ShieldCheck,
   Terminal,
+  Search,
+  Bell,
   Bookmark
 } from 'lucide-react';
 import { 
@@ -782,177 +784,205 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     <div className={`w-full flex flex-col bg-stone-950 text-stone-100 ${
       isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : 'h-full flex-1 overflow-hidden'
     }`}>
-      
-      {/* Top Studio Action Bar */}
-      <div className="h-14 border-b border-stone-800 px-4 sm:px-6 flex items-center justify-between bg-stone-900/90 backdrop-blur-md flex-shrink-0 z-20">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setIsChatCollapsed(!isChatCollapsed)}
-            className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
-            title={isChatCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          >
-            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
-          </button>
-          
-          <div className="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-500 font-bold">
-            <Wand2 className="w-4 h-4" />
-          </div>
-          <div className="hidden sm:block">
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-sm text-white">AI Builder Studio</span>
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Antigravity Active
-              </span>
+      {/* Top Studio Action Bar (Redesigned per Modern Mockup) */}
+      <header className="h-16 border-b border-stone-800/80 px-4 sm:px-6 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-50 gap-4">
+        
+        {/* Left Section: Brand & Grouped Action Pill */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-2.5">
+            <button
+              onClick={() => setIsChatCollapsed(!isChatCollapsed)}
+              className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+              title={isChatCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
+            </button>
+            
+            <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
+              <Wand2 className="w-4 h-4" />
             </div>
+            <span className="font-bold text-sm text-white tracking-tight hidden sm:inline">AI Builder Studio</span>
+          </div>
+
+          {/* Grouped Action Pill */}
+          <div className="hidden lg:flex items-center gap-1 bg-stone-900/90 rounded-xl p-1 border border-stone-800 shadow-sm">
+            <button
+              onClick={handleSaveToProjects}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all"
+              title="Save Project to Database"
+            >
+              <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Save Project</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('preview')}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                activeTab === 'preview'
+                  ? 'bg-orange-600 text-white shadow-orange-600/30'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Live Preview</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
+                activeTab === 'admin'
+                  ? 'bg-orange-600 text-white shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Admin Portal</span>
+            </button>
+
+            <div className="w-px h-4 bg-stone-800 mx-1" />
+
+            <button
+              onClick={() => setInspectorActive(!inspectorActive)}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
+                inspectorActive 
+                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 ring-1 ring-blue-500/20' 
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+              title="Click to Inspect Components"
+            >
+              <MousePointer className="w-3.5 h-3.5" />
+              <span>Inspect</span>
+            </button>
+
+            <button
+              onClick={() => setIsScannerOpen(true)}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
+              title="Scan photo of flyer or menu"
+            >
+              <Camera className="w-3.5 h-3.5 text-orange-400" />
+              <span>Scan</span>
+            </button>
+
+            <button
+              onClick={() => setIsHandoffOpen(true)}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
+              title="Export Master Plan for Antigravity"
+            >
+              <Terminal className="w-3.5 h-3.5 text-orange-400" />
+              <span>Export</span>
+            </button>
+
+            <button
+              onClick={() => setIsAuditOpen(true)}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
+              title="Run Project Manager & Design QA Audit"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>PM Audit</span>
+            </button>
           </div>
         </div>
 
-        {/* View Modes */}
-        <div className="flex items-center bg-stone-800/80 rounded-lg p-1 border border-stone-700/50 hidden md:flex">
-          <button
-            onClick={() => setActiveTab('preview')}
-            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-              activeTab === 'preview' ? 'bg-orange-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Live Website</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-              activeTab === 'admin' ? 'bg-orange-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>Client Admin Portal</span>
-          </button>
+        {/* Center Search Input */}
+        <div className="hidden xl:flex flex-1 max-w-md mx-4">
+          <div className="relative w-full">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
+            <input
+              type="text"
+              placeholder="Search projects & clients..."
+              className="w-full bg-stone-900 border border-stone-800 rounded-full py-1.5 pl-9 pr-4 text-xs text-stone-200 placeholder:text-stone-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 transition-all"
+            />
+          </div>
         </div>
 
-        {/* Viewport Device Controls */}
-        <div className="flex items-center bg-stone-800/80 rounded-lg p-1 border border-stone-700/50">
-          <button
-            onClick={() => setDevice('desktop')}
-            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-              device === 'desktop' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Desktop</span>
-          </button>
-          <button
-            onClick={() => setDevice('tablet')}
-            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-              device === 'tablet' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <Tablet className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Tablet</span>
-          </button>
-          <button
-            onClick={() => setDevice('mobile')}
-            className={`px-3 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-              device === 'mobile' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Mobile</span>
-          </button>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          {/* Model Engine Selector */}
-          <button
-            onClick={() => setIsModelSettingsOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm group"
-            title="Select AI Engine & View Capabilities"
-          >
-            <Cpu className="w-3.5 h-3.5 text-orange-400 group-hover:rotate-12 transition-transform" />
-            <span className="hidden lg:inline">{SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini Flash'}</span>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 font-mono">
-              {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.costPerTaskEst || '$0.001'}
-            </span>
-          </button>
-
+        {/* Right Section: Spend, Devices, Model Card, Bell, Deploy */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          
           {/* Real-Time Spend Ticker */}
-          <button
+          <div
             onClick={() => setIsModelSettingsOpen(true)}
-            className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono bg-stone-950/80 border border-stone-800 text-stone-300 hover:border-stone-700 transition-colors"
+            className="hidden 2xl:flex items-center gap-1.5 bg-stone-900 px-3 py-1.5 rounded-lg border border-stone-800 font-mono text-orange-400 shadow-inner cursor-pointer hover:border-stone-700 transition-colors"
             title="Session spend & token usage"
           >
             <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-            <span>${usageStats.estimatedCostUsd.toFixed(4)}</span>
-          </button>
+            <span className="text-xs font-bold tracking-wider">${usageStats.estimatedCostUsd.toFixed(4)}</span>
+          </div>
 
-          {/* PM & Design QA Audit */}
-          <button
-            onClick={() => setIsAuditOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
-            title="Run Project Manager & Design QA Audit"
+          {/* Viewport Device Controls */}
+          <div className="hidden md:flex items-center bg-stone-900 rounded-lg p-1 border border-stone-800">
+            <button
+              onClick={() => setDevice('desktop')}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                device === 'desktop' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              }`}
+              title="Desktop"
+            >
+              <Monitor className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setDevice('tablet')}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                device === 'tablet' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              }`}
+              title="Tablet"
+            >
+              <Tablet className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setDevice('mobile')}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                device === 'mobile' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              }`}
+              title="Mobile"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Model Selector Card */}
+          <div
+            onClick={() => setIsModelSettingsOpen(true)}
+            className="hidden sm:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-lg px-3 py-1 border border-stone-800 cursor-pointer transition-colors"
+            title="Click to change AI Model"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden md:inline">PM Audit</span>
-          </button>
+            <Cpu className="w-4 h-4 text-orange-400" />
+            <div className="flex flex-col text-left">
+              <span className="text-[9px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
+              <span className="text-xs font-semibold text-white leading-tight">
+                {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini 2.5'}
+              </span>
+            </div>
+          </div>
 
-          {/* Export Master Plan for Antigravity */}
+          {/* Notification Bell */}
           <button
-            onClick={() => setIsHandoffOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
-            title="Export Master Plan for Antigravity Autonomous Code Execution"
+            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-full relative"
+            title="Notifications"
           >
-            <Terminal className="w-3.5 h-3.5 text-orange-400" />
-            <span className="hidden md:inline">Export Plan</span>
+            <Bell className="w-4 h-4" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500 border-2 border-stone-900" />
           </button>
 
-          <button
-            onClick={() => setIsScannerOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all"
-            title="Scan photo of a menu, flyer, or business card"
-          >
-            <Camera className="w-3.5 h-3.5 text-orange-400" />
-            <span className="hidden md:inline">Scan Photo</span>
-          </button>
-
-          <button
-            onClick={() => setInspectorActive(!inspectorActive)}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all ${
-              inspectorActive 
-                ? 'bg-blue-600/20 border-blue-500 text-blue-400 ring-2 ring-blue-500/30' 
-                : 'bg-stone-800 border-stone-700 text-stone-300 hover:text-white'
-            }`}
-          >
-            <MousePointer className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">{inspectorActive ? 'Inspector Active' : 'Click to Inspect'}</span>
-          </button>
-
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-          >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5 text-orange-400" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
-          </button>
-
-          <button
-            onClick={handleSaveToProjects}
-            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
-            title="Save as an active project in your Texas Sons database"
-          >
-            <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">Save Project</span>
-          </button>
-
+          {/* Deploy Button */}
           <button
             onClick={handleDeploySite}
-            className="px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1.5 shadow-md shadow-orange-600/30 transition-all hover:scale-105"
+            className="bg-orange-600 hover:bg-orange-500 text-white px-4 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 hover:scale-105"
           >
-            <UploadCloud className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Deploy</span>
+            <UploadCloud className="w-4 h-4" />
+            <span>Deploy</span>
           </button>
+
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-lg hidden sm:block"
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4 text-orange-400" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
+
         </div>
-      </div>
+      </header>
 
       {/* Main Studio Split Layout */}
       <div className="flex-1 flex overflow-hidden relative">
