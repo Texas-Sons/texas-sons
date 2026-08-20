@@ -1,1 +1,1 @@
-antigravity 2026-08-20 13:27 UTC — Fixing client & project details saving with full Supabase persistence, blueprint deep sync, and live Studio canvas updating.
+antigravity 2026-08-20 13:30 UTC — Implemented dual-layer persistence (Supabase database upsert + localStorage cache) across ClientIntakeView, ProjectProposalModal, and App.tsx with live canvas state synchronization.
