@@ -56,16 +56,15 @@ export function ClientApp() {
 
     // Dynamic Favicon update
     const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.profile.name.toLowerCase().includes('sheriff') || project.profile.name.toLowerCase().includes('judge');
+    const targetFavicon = project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png');
     let faviconLink: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
     if (!faviconLink) {
       faviconLink = document.createElement('link');
       faviconLink.rel = 'icon';
       document.head.appendChild(faviconLink);
     }
-    if (isCampaignSite) {
-      faviconLink.type = 'image/svg+xml';
-      faviconLink.href = '/sheriff-badge-favicon.svg';
-    }
+    faviconLink.type = targetFavicon.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+    faviconLink.href = targetFavicon;
   }, [project]);
 
   if (!project) {

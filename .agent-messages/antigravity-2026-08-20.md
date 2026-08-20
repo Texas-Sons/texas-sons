@@ -1,1 +1,1 @@
-antigravity 2026-08-20 05:16 UTC — Created high-DPI Gold Texas Sheriff Star Badge favicon (public/sheriff-badge-favicon.svg), integrated into ClientApp dynamic tab runtime and Cloudflare deploy pipeline.
+antigravity 2026-08-20 05:17 UTC — Adding Studio Browser Icon (Favicon) picker and custom URL/SVG uploader to AgentBuilderStudio intake form and quick branding inspector, allowing users to configure favicons directly in the UI.

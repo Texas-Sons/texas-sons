@@ -57,4 +57,5 @@ export interface BusinessProfile {
   fontFamily?: 'sans' | 'serif' | 'display';
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
   treasurerName?: string;
+  faviconUrl?: string;
 }

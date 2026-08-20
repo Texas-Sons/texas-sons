@@ -179,7 +179,9 @@ function buildSeoTags(snapshot: any, siteUrl: string): string {
     profile.heroImage ? `<meta property="og:image" content="${escapeHtml(profile.heroImage)}">` : '',
     `<meta name="twitter:card" content="summary_large_image">`,
     `<link rel="canonical" href="${escapeHtml(siteUrl)}/">`,
-    isCampaign ? `<link rel="icon" type="image/svg+xml" href="/sheriff-badge-favicon.svg">` : `<link rel="icon" type="image/png" href="/favicon.png">`,
+    profile.faviconUrl
+      ? `<link rel="icon" type="${profile.faviconUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/png'}" href="${escapeHtml(profile.faviconUrl)}">`
+      : (isCampaign ? `<link rel="icon" type="image/svg+xml" href="/sheriff-badge-favicon.svg">` : `<link rel="icon" type="image/png" href="/favicon.png">`),
     `<script type="application/ld+json">${ld}</script>`,
   ].filter(Boolean).join('\n    ');
 }
@@ -629,19 +631,12 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
         'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n`,
       };
 
-      // Favicon (public/logo.png & public/sheriff-badge-favicon.svg)
-      try {
-        const logo = await fs.readFile(path.join(process.cwd(), 'public', 'logo.png'));
-        files['favicon.png'] = logo;
-      } catch {
-        // favicon is optional
-      }
-
-      try {
-        const badgeSvg = await fs.readFile(path.join(process.cwd(), 'public', 'sheriff-badge-favicon.svg'));
-        files['sheriff-badge-favicon.svg'] = badgeSvg;
-      } catch {
-        // badge favicon is optional
+      // Favicon bundle
+      for (const iconFile of ['favicon.png', 'sheriff-badge-favicon.svg', 'justice-scales-favicon.svg', 'smokehouse-flame-favicon.svg']) {
+        try {
+          const iconBuffer = await fs.readFile(path.join(process.cwd(), 'public', iconFile));
+          files[iconFile] = iconBuffer;
+        } catch {}
       }
 
       // Gather all compiled assets and public files copied to dist
