@@ -1172,12 +1172,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                       phone={project.profile.phone}
                       theme={project.theme as any}
                       accentColor={project.profile.accentColor}
-                      ctaText={
-                        isCampaignSite ? 'Volunteer / Donate' : 
-                        project.profile.category === 'Food & Beverage' ? 'Order Catering' : 
-                        project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
-                        'Book Appointment'
-                      }
+                      ctaText={isCampaignSite ? 'Volunteer / Donate' : project.profile.category === 'Food & Beverage' ? 'Order Catering' : project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 'Book Appointment'}
+                      navItems={isCampaignSite ? [{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }] : undefined}
                     />
                   </div>
 
