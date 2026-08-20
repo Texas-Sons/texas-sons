@@ -58,6 +58,8 @@ import {
   BookingBlock, 
   FooterBlock, 
   IndustryAdminBlock,
+  VotingBannerBlock,
+  VotingPageBlock,
   BusinessProfile, 
   ServiceItem, 
   TestimonialItem 
@@ -301,6 +303,21 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   const [activeTab, setActiveTab] = useState<'preview' | 'admin' | 'code' | 'blueprint'>('preview');
   const [inspectorActive, setInspectorActive] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
+  const [previewSubPage, setPreviewSubPage] = useState<'main' | 'voting'>('main');
+
+  useEffect(() => {
+    const handleHash = () => {
+      if (window.location.hash === '#voting') {
+        setPreviewSubPage('voting');
+      } else if (window.location.hash === '#admin') {
+        setActiveTab('admin');
+      } else if (!window.location.hash || window.location.hash === '#') {
+        setPreviewSubPage('main');
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isChatCollapsed, setIsChatCollapsed] = useState(false);
 
@@ -1323,6 +1340,24 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                       />
                     )}
                   </div>
+
+                  {/* Voting Info Banner Block (Campaigns) */}
+                  {isCampaignSite && (
+                    <div
+                      onClick={() => {
+                        if (inspectorActive) setSelectedBlock('VotingBannerBlock');
+                        else {
+                          window.location.hash = 'voting';
+                          setPreviewSubPage('voting');
+                        }
+                      }}
+                      className={`relative transition-all cursor-pointer ${
+                        inspectorActive ? 'hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
+                      } ${selectedBlock === 'VotingBannerBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
+                    >
+                      <VotingBannerBlock accentColor={project.profile.accentColor} />
+                    </div>
+                  )}
 
                   {/* Services / Platform Block */}
                   <div
