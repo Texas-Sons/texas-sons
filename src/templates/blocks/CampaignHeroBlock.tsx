@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Star, CheckCircle, ChevronRight, Flag } from 'lucide-react';
+import { Shield, Star, CheckCircle, ChevronRight, Flag, Award } from 'lucide-react';
 
 interface CampaignHeroBlockProps {
   headline: string;
@@ -24,131 +24,181 @@ export function CampaignHeroBlock({
   secondaryCtaText = 'Read Our Platform'
 }: CampaignHeroBlockProps) {
   
+  // Extract candidate name or jurisdiction if present
+  const words = headline.split(' ');
+  const lastPhrase = words.length > 2 ? words.slice(-2).join(' ') : words[words.length - 1];
+  const firstPhrase = words.length > 2 ? words.slice(0, -2).join(' ') : words.slice(0, -1).join(' ');
+
   return (
-    <section className="relative bg-[#00081e] text-white overflow-hidden min-h-[90vh] flex items-center">
+    <section className="relative bg-[#00081e] text-white overflow-hidden py-12 sm:py-16 lg:py-24 flex items-center">
       
-      {/* Premium Background Textures */}
-      <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" 
-           style={{ backgroundImage: `radial-gradient(circle at 50% 50%, ${accentColor} 0%, transparent 60%)` }} />
-      <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#00081e] to-transparent z-10" />
+      {/* Premium Background Ambient Glow */}
+      <div 
+        className="absolute inset-0 opacity-25 mix-blend-screen pointer-events-none" 
+        style={{ 
+          backgroundImage: `radial-gradient(circle at 75% 30%, ${accentColor} 0%, transparent 60%), radial-gradient(circle at 10% 80%, #0a1f44 0%, transparent 70%)` 
+        }} 
+      />
 
-      {/* Hero Image */}
-      <motion.div 
-        initial={{ scale: 1.05, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="absolute inset-y-0 right-0 w-full lg:w-[55%] h-full z-0"
-      >
-        <img 
-          src={heroImage} 
-          alt={headline}
-          className="w-full h-full object-cover object-center mask-image-gradient-l"
-          style={{ WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)' }}
-        />
-        {/* Color Grading Overlay */}
-        <div className="absolute inset-0 bg-[#00081e]/40 mix-blend-color" />
-      </motion.div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full py-20 lg:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
+          {/* ================================================================= */}
+          {/* MOBILE ONLY: Top Official Tag & Headline (Shown before the photo) */}
+          {/* ================================================================= */}
+          <div className="block lg:hidden text-left space-y-3">
+            <div className="flex items-center gap-1.5">
+              {[...Array(3)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-current" style={{ color: accentColor }} />
+              ))}
+              <span className="ml-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
+                Official Campaign
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-serif leading-[1.12] drop-shadow-lg">
+              <span>{firstPhrase} </span>
+              <span className="block mt-1" style={{ color: accentColor }}>{lastPhrase}</span>
+            </h1>
+          </div>
+
+          {/* ================================================================= */}
+          {/* CANDIDATE PORTRAIT CARD (Clean, Uncovered & Responsive)            */}
+          {/* ================================================================= */}
           <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, staggerChildren: 0.15 }}
-            className="lg:col-span-8 flex flex-col items-start"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="lg:col-span-5 lg:order-2 w-full flex justify-center"
           >
-            {/* Top Stars / Seal */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center gap-2 mb-6"
-            >
+            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-none">
+              
+              {/* Outer Golden Aura Glow */}
+              <div 
+                className="absolute -inset-1.5 rounded-3xl opacity-40 blur-xl transition-all duration-700 pointer-events-none"
+                style={{ backgroundColor: accentColor }}
+              />
+
+              {/* Main Portrait Frame */}
+              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#C5A059]/40 bg-stone-950 shadow-2xl shadow-black/90">
+                <img 
+                  src={heroImage} 
+                  alt={headline}
+                  className="w-full h-[360px] sm:h-[460px] lg:h-[540px] object-cover object-top"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+
+                {/* Subtle Bottom Vignette for Visual Anchor */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#00081e] via-[#00081e]/20 to-transparent opacity-80" />
+
+                {/* Floating Candidate Badge in Frame */}
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 sm:bottom-4 sm:left-4 sm:right-4 p-3 rounded-xl backdrop-blur-md bg-stone-950/80 border border-[#C5A059]/30 shadow-xl flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div 
+                      className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shadow-md"
+                      style={{ backgroundColor: accentColor, color: '#00081e' }}
+                    >
+                      ★
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-white tracking-wide">
+                        Master Peace Officer
+                      </p>
+                      <p className="text-[10px] text-stone-300">
+                        SAPD Medal of Valor Recipient
+                      </p>
+                    </div>
+                  </div>
+                  <span 
+                    className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider"
+                    style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                  >
+                    2026
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ================================================================= */}
+          {/* TEXT COPY & BADGES COLUMN                                         */}
+          {/* ================================================================= */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="lg:col-span-7 lg:order-1 flex flex-col items-start"
+          >
+            {/* DESKTOP ONLY: Top Official Seal */}
+            <div className="hidden lg:flex items-center gap-2 mb-4">
               {[...Array(3)].map((_, i) => (
                 <Star key={i} className="w-5 h-5 fill-current" style={{ color: accentColor }} />
               ))}
               <span className="ml-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
                 Official Campaign
               </span>
-            </motion.div>
+            </div>
 
-            {/* Headline */}
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold tracking-tight font-serif leading-[1.05] mb-6 drop-shadow-2xl flex flex-wrap"
-            >
-              {headline.split(' ').map((word, i) => (
-                <span key={i} className={`mr-2 md:mr-3 ${i === headline.split(' ').length - 1 ? "block w-full mt-2" : "inline-block"}`} style={i === headline.split(' ').length - 1 ? { color: accentColor } : {}}>
-                  {word}
-                </span>
-              ))}
-            </motion.h1>
+            {/* DESKTOP ONLY: Large Serif Headline */}
+            <h1 className="hidden lg:block text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight font-serif leading-[1.08] mb-6 drop-shadow-2xl">
+              <span>{firstPhrase} </span>
+              <span className="block mt-2" style={{ color: accentColor }}>{lastPhrase}</span>
+            </h1>
 
-            {/* Subheadline */}
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-lg sm:text-xl text-stone-300 font-medium max-w-2xl leading-relaxed mb-10 border-l-4 pl-4"
+            {/* Narrative Subheadline (Clean, Uncovered & High-Contrast) */}
+            <p 
+              className="text-base sm:text-lg text-stone-200 font-normal leading-relaxed mb-6 sm:mb-8 border-l-4 pl-4 bg-white/[0.02] py-1 rounded-r-lg"
               style={{ borderColor: accentColor }}
             >
               {subheadline}
-            </motion.p>
+            </p>
 
-            {/* Badges Grid (Base44 staggered layout) */}
+            {/* Badges Grid (Staggered 2-column layout) */}
             {badges.length > 0 && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="grid grid-cols-2 gap-3 mb-12 w-full max-w-lg"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-8 sm:mb-10 w-full max-w-xl">
                 {badges.map((badge, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5 bg-white/5 backdrop-blur-sm border border-white/10 px-3 py-2 rounded-lg">
+                  <div 
+                    key={idx} 
+                    className="flex items-center gap-2.5 bg-stone-900/70 backdrop-blur-sm border border-stone-800/90 hover:border-[#C5A059]/40 px-3.5 py-2.5 rounded-xl transition-all shadow-sm"
+                  >
                     <Shield className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
-                    <span className="text-[11px] sm:text-xs font-bold tracking-wide uppercase text-stone-200">{badge}</span>
+                    <span className="text-xs font-bold tracking-wide uppercase text-stone-200">{badge}</span>
                   </div>
                 ))}
-              </motion.div>
+              </div>
             )}
 
             {/* CTA Buttons */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
-            >
-              <button 
-                className="px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 group"
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+              <a 
+                href="#contact"
+                className="px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-center"
                 style={{ backgroundColor: accentColor, color: '#00081e' }}
               >
                 <Flag className="w-4 h-4" />
-                {ctaText}
-              </button>
-              <button className="px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider border border-stone-600 hover:border-white hover:bg-white/5 transition-all flex items-center justify-center gap-2">
-                {secondaryCtaText}
-                <ChevronRight className="w-4 h-4 opacity-50" />
-              </button>
-            </motion.div>
+                <span>{ctaText}</span>
+              </a>
+              <a 
+                href="#services"
+                className="px-7 py-4 rounded-xl font-bold text-sm uppercase tracking-wider border border-stone-700 hover:border-white hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-stone-200 hover:text-white text-center"
+              >
+                <span>{secondaryCtaText}</span>
+                <ChevronRight className="w-4 h-4 opacity-60" />
+              </a>
+            </div>
 
             {/* Proof Badge */}
             {proofBadgeText && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="mt-8 flex items-center gap-2 text-xs font-medium text-stone-400"
-              >
+              <div className="mt-6 sm:mt-8 flex items-center gap-2 text-xs font-semibold text-stone-400">
                 <CheckCircle className="w-4 h-4" style={{ color: accentColor }} />
                 <span>{proofBadgeText}</span>
-              </motion.div>
+              </div>
             )}
 
           </motion.div>
+
         </div>
       </div>
     </section>

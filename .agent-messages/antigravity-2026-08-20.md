@@ -1,1 +1,1 @@
-antigravity 2026-08-20 04:08 UTC — Upgraded PM Audit Engine into dedicated Pre-Flight Fact & Gap Inspector with 5 focus pillars: 1) Fact-Checking & Credentials, 2) Code & Link Integrity, 3) Design Hierarchy & CTAs, 4) Pillar & Endorsement Depth, 5) SEO & Public Discovery. All tests passing.
+antigravity 2026-08-20 04:33 UTC — Redesigning CampaignHeroBlock mobile layout based on Stitch MCP Judicial Campaign Design System to eliminate text-over-portrait overlap and provide clean, unobstructed candidate portrait hierarchy.
