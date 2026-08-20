@@ -858,6 +858,49 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Model Engine Selector */}
+          <button
+            onClick={() => setIsModelSettingsOpen(true)}
+            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm group"
+            title="Select AI Engine & View Capabilities"
+          >
+            <Cpu className="w-3.5 h-3.5 text-orange-400 group-hover:rotate-12 transition-transform" />
+            <span className="hidden lg:inline">{SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini Flash'}</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 font-mono">
+              {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.costPerTaskEst || '$0.001'}
+            </span>
+          </button>
+
+          {/* Real-Time Spend Ticker */}
+          <button
+            onClick={() => setIsModelSettingsOpen(true)}
+            className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono bg-stone-950/80 border border-stone-800 text-stone-300 hover:border-stone-700 transition-colors"
+            title="Session spend & token usage"
+          >
+            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+            <span>${usageStats.estimatedCostUsd.toFixed(4)}</span>
+          </button>
+
+          {/* PM & Design QA Audit */}
+          <button
+            onClick={() => setIsAuditOpen(true)}
+            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
+            title="Run Project Manager & Design QA Audit"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden md:inline">PM Audit</span>
+          </button>
+
+          {/* Export Master Plan for Antigravity */}
+          <button
+            onClick={() => setIsHandoffOpen(true)}
+            className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all shadow-sm"
+            title="Export Master Plan for Antigravity Autonomous Code Execution"
+          >
+            <Terminal className="w-3.5 h-3.5 text-orange-400" />
+            <span className="hidden md:inline">Export Plan</span>
+          </button>
+
           <button
             onClick={() => setIsScannerOpen(true)}
             className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 flex items-center gap-1.5 transition-all"
