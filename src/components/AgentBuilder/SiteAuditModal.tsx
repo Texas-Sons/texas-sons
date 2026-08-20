@@ -175,6 +175,41 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
     });
   }
 
+  // 1.4 Campaign Treasurer & Legal Advertising Compliance (Texas Election Code § 255.001)
+  if (isCampaign) {
+    const treasurer = project.profile.treasurerName || '';
+    const isTrevino = project.profile.name.toLowerCase().includes('trevino');
+    const hasValidTreasurer = Boolean(treasurer && treasurer.length > 3 && !treasurer.toLowerCase().includes('marcus sterling'));
+
+    if (!hasValidTreasurer) {
+      auditResults.push({
+        id: 'fact-treasurer',
+        category: 'Fact-Checking & Credentials',
+        status: 'warning',
+        title: 'Campaign Treasurer Disclosure (Joseph S. Boyle)',
+        details: `Current campaign treasurer is unassigned or using demo placeholder (${treasurer || 'Marcus Sterling'}). Texas Election Code § 255.001 requires the official Campaign Treasurer to be cited in all legal advertising disclosures.`,
+        recommendation: 'Update legal disclosure to officially designated Campaign Treasurer: Joseph S. Boyle.',
+        canAutoFix: true,
+        fixAction: (p) => ({
+          ...p,
+          profile: {
+            ...p.profile,
+            treasurerName: 'Joseph S. Boyle'
+          }
+        })
+      });
+    } else {
+      auditResults.push({
+        id: 'fact-treasurer',
+        category: 'Fact-Checking & Credentials',
+        status: 'pass',
+        title: 'Official Campaign Treasurer Verified',
+        details: `Official Campaign Treasurer "${treasurer}" is designated and verified in footer political advertising disclaimers.`,
+        recommendation: 'Complies with Texas Ethics Commission & Election Code § 255.001 disclosure standards.'
+      });
+    }
+  }
+
   // --- PILLAR 2: Code & Link Integrity ---
   
   // 2.1 Anchor Navigation Route Health

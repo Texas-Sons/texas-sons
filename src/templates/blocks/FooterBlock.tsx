@@ -85,7 +85,7 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
                   Political advertising paid for by the <strong className="text-[color:var(--ts-text)]">{business.name} Campaign</strong>.
                 </p>
                 <p className="text-[10px] text-[color:var(--ts-muted)]">
-                  Treasurer: Marcus Sterling. Contributions are not tax-deductible for federal income tax purposes.
+                  Treasurer: <strong className="text-[color:var(--ts-text)]">{business.treasurerName || (business.name.toLowerCase().includes('trevino') ? 'Joseph S. Boyle' : 'Marcus Sterling')}</strong>. Contributions are not tax-deductible for federal income tax purposes.
                 </p>
                 <div className="pt-1 flex items-center gap-1.5 text-[10px] text-[color:var(--ts-accent)] font-bold">
                   <Vote className="w-3 h-3" aria-hidden="true" />

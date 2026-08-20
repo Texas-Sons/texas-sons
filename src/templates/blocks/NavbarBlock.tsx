@@ -39,7 +39,8 @@ export function NavbarBlock({
     if (businessName.toLowerCase().includes(' for ')) {
       const parts = businessName.split(/ for /i);
       primaryName = parts[0].trim();
-      subBadgeText = `VOTE ${primaryName.toUpperCase()} · ${parts[1].trim().toUpperCase()}`;
+      const firstName = primaryName.split(' ')[0] || primaryName;
+      subBadgeText = `VOTE ${firstName.toUpperCase()} · ${parts[1].trim().toUpperCase()}`;
     } else {
       subBadgeText = 'OFFICIAL 2026 CAMPAIGN';
     }
@@ -50,7 +51,7 @@ export function NavbarBlock({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
 
         {/* Brand Logo & Name */}
-        <a href="#" className="flex items-center space-x-3 group min-w-0">
+        <a href="#" className="flex items-center space-x-3 group flex-shrink-0">
           {logoUrl ? (
             <img src={logoUrl} alt={businessName} className="h-10 w-auto rounded-lg object-cover flex-shrink-0" />
           ) : (
@@ -64,14 +65,14 @@ export function NavbarBlock({
               )}
             </div>
           )}
-          <div className="flex flex-col min-w-0">
-            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity truncate ${
+          <div className="flex flex-col flex-shrink-0">
+            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity whitespace-nowrap ${
               isCampaign ? 'font-serif text-[color:var(--ts-accent)]' : ''
             }`}>
               {primaryName}
             </span>
             {isCampaign && subBadgeText && (
-              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-stone-400 group-hover:text-stone-300 truncate">
+              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-stone-400 group-hover:text-stone-300 whitespace-nowrap">
                 <span className="hidden sm:inline">{subBadgeText}</span>
                 <span className="sm:hidden">{subBadgeText.includes('·') ? subBadgeText.split('·')[1].trim() : subBadgeText}</span>
               </span>

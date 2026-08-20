@@ -148,7 +148,8 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       theme: 'campaign-navy',
       primaryColor: '#00081e',
       accentColor: '#C5A059',
-      fontFamily: 'serif'
+      fontFamily: 'serif',
+      treasurerName: 'Joseph S. Boyle'
     },
     services: [
       { title: 'Violent Crime & Narcotics Interdiction', description: 'Expanding proactive rural highway patrols and joint task forces targeting cartel narcotics trafficking and property theft networks.', duration: 'Pillar #1', highlight: true },

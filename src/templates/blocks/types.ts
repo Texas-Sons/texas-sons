@@ -56,4 +56,5 @@ export interface BusinessProfile {
   accentColor?: string;
   fontFamily?: 'sans' | 'serif' | 'display';
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  treasurerName?: string;
 }
