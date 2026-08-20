@@ -757,6 +757,201 @@ Campaign HQ: Jourdanton, TX | (830) 555-VOTE`;
     }
   });
 
+  // AI Client Contract & Legal Agreement Drafter
+  app.post("/api/draft-contract", async (req, res) => {
+    try {
+      const { clientName, companyName, contractType, totalAmount, depositAmount, timeline, deliverables, customClauses, snapshot } = req.body;
+      const profile = snapshot?.profile || {};
+      const name = companyName || profile.name || 'Client';
+      const contact = clientName || profile.name || 'Authorized Client Representative';
+      const treasurer = profile.treasurerName || 'Joseph S. Boyle';
+      const domain = `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
+      const isCampaign = contractType === 'campaign-platform' || name.toLowerCase().includes('sheriff') || name.toLowerCase().includes('judge') || name.toLowerCase().includes('campaign');
+
+      const total = Number(totalAmount) || (isCampaign ? 1495 : 995);
+      const deposit = Number(depositAmount) || Math.round(total * 0.5);
+      const remaining = total - deposit;
+      const deliverableList = Array.isArray(deliverables) && deliverables.length > 0
+        ? deliverables.map((d: string, i: number) => `  ${i + 1}. ${d}`).join('\n')
+        : (isCampaign 
+            ? '  1. Single-Page Responsive Campaign Web Platform (Mobile & Desktop)\n  2. Atascosa County Voter Information Center & Polling Location Guide (#voting)\n  3. Public Community Events & Town Hall / BBQ RSVP System (#events)\n  4. Grassroots Volunteer & Yard Sign Intake Form with real-time database sync\n  5. Texas Election Code § 255.001 Political Advertising Legal Compliance Integration\n  6. 1-Click Cloudflare Pages Global Edge CDN Hosting & SSL Certificate Configuration'
+            : '  1. Single-Page Responsive High-Conversion Business Website\n  2. Custom Service Matrix & Interactive Booking / Lead Intake Engine\n  3. Google Maps Platform & Local Business SEO Schema Markup\n  4. Mobile-Optimized Performance & Cloudflare Edge CDN Hosting\n  5. Domain Name Connection & Custom SSL Security Certificate');
+
+      const prompt = `You are a legal counsel and contract specialist for Texas Sons Web Development & Digital Strategy.
+Draft a professional, legally structured, comprehensive Independent Contractor Services Agreement governed by the laws of the State of Texas for the following project:
+
+CLIENT & PROJECT INFORMATION:
+- Agency: Texas Sons Web Development & Digital Strategy (Austin / South Texas)
+- Client Entity / Campaign: ${name}
+- Authorized Client Signer: ${contact}
+- Campaign Treasurer (if political): ${treasurer}
+- Project Type: ${isCampaign ? 'Official Political Campaign Digital Platform & Voter Mobilization Web App' : 'Commercial Marketing Website & Lead Generation Engine'}
+- Delivery Timeline: ${timeline || '3 to 5 business days upon receipt of initial deposit and client assets'}
+- Total Project Investment: $${total.toLocaleString()} USD
+- Initial Deposit Due Upon Signing: $${deposit.toLocaleString()} USD
+- Remaining Balance Due Upon Staging Approval: $${remaining.toLocaleString()} USD
+- Live Demonstration / Staging URL: ${domain}
+- Included Deliverables:
+${deliverableList}
+- Special Terms / Custom Scope:
+${customClauses || 'None specified'}
+
+CONTRACT STRUCTURE REQUIRED:
+1. TITLE: MASTER SERVICES AGREEMENT (${isCampaign ? 'POLITICAL CAMPAIGN DIGITAL PLATFORM' : 'WEB DEVELOPMENT & DEPLOYMENT'})
+2. SECTION 1: ENGAGEMENT & SCOPE OF WORK (List itemized deliverables)
+3. SECTION 2: TIMELINE, DELIVERY & MILESTONES
+4. SECTION 3: COMPENSATION & PAYMENT TERMS (50% deposit upon signature, 50% upon final staging delivery prior to custom domain cutover)
+5. SECTION 4: INTELLECTUAL PROPERTY & ASSET OWNERSHIP (Client retains ownership of all trademarks, photos, copy; Agency grants perpetual irrevocable license to deployed code)
+6. SECTION 5: STATUTORY & LEGAL COMPLIANCE ${isCampaign ? '(Explicit compliance with Texas Election Code § 255.001, political advertising disclosures, and Treasurer authorization)' : '(Warranties of non-infringement and standard commercial disclaimers)'}
+7. SECTION 6: CLIENT RESPONSIBILITIES & REVIEW WINDOW (3 business days for staging feedback)
+8. SECTION 7: WARRANTIES & LIMITATION OF LIABILITY
+9. SECTION 8: GOVERNING LAW & VENUE (State of Texas)
+10. SECTION 9: ENTIRE AGREEMENT & AMENDMENTS
+11. FORMAL SIGNATURE BLOCKS for both Client and Texas Sons Authorized Representative.
+
+Return ONLY a JSON object in this format (no markdown blocks, no intro text):
+{
+  "title": "Master Services Agreement — ${name}",
+  "contractText": "Full formatted text of the agreement..."
+}`;
+
+      try {
+        const response = await generateGeminiWithRetry({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+        });
+
+        let parsed: any = null;
+        try {
+          const raw = response.text || '';
+          const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
+          parsed = JSON.parse(cleaned);
+        } catch {
+          parsed = null;
+        }
+
+        if (parsed && parsed.contractText) {
+          return res.json({ success: true, title: parsed.title || `Services Agreement — ${name}`, contractText: parsed.contractText });
+        }
+      } catch (aiErr) {
+        console.warn('Gemini contract draft fallback:', aiErr);
+      }
+
+      // Deterministic Contract Generator
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const contractTitle = isCampaign 
+        ? `CAMPAIGN DIGITAL PLATFORM MASTER SERVICES AGREEMENT` 
+        : `WEB DEVELOPMENT & DIGITAL SERVICES AGREEMENT`;
+
+      const fallbackContract = `================================================================================
+${contractTitle}
+TEXAS SONS WEB DEVELOPMENT & DIGITAL STRATEGY
+================================================================================
+
+EFFECTIVE DATE: ${dateStr}
+
+PARTIES:
+This Master Services Agreement ("Agreement") is entered into by and between:
+1. AGENCY: Texas Sons Web Development & Digital Strategy ("Agency"), and
+2. CLIENT: ${name} ("Client"), represented by ${contact}.
+
+WHEREAS, Client desires to retain Agency to design, develop, test, and deploy a custom digital web platform, and Agency agrees to perform such services under the terms and conditions outlined herein.
+
+NOW, THEREFORE, the Parties agree as follows:
+
+--------------------------------------------------------------------------------
+SECTION 1: SCOPE OF SERVICES & DELIVERABLES
+--------------------------------------------------------------------------------
+Agency agrees to execute and deliver the following digital assets and services:
+${deliverableList}
+
+Staging & Demonstration URL: ${domain}
+
+--------------------------------------------------------------------------------
+SECTION 2: PROJECT TIMELINE & MILESTONES
+--------------------------------------------------------------------------------
+1. Kickoff & Asset Ingestion: Within 24 hours of initial deposit.
+2. Staging Deployment: Estimated within ${timeline || '3 to 5 business days'} following receipt of initial deposit and required branding assets.
+3. Client Review Window: Client shall have 3 business days to submit written revision requests.
+4. Final Launch & Domain Connection: Within 24 hours of final milestone approval.
+
+--------------------------------------------------------------------------------
+SECTION 3: COMPENSATION & PAYMENT TERMS
+--------------------------------------------------------------------------------
+1. Total Contract Investment: $${total.toLocaleString()} USD
+2. Initial Deposit (50%): $${deposit.toLocaleString()} USD (Due upon execution of this Agreement prior to development).
+3. Final Milestone Balance (50%): $${remaining.toLocaleString()} USD (Due upon staging approval prior to final custom domain deployment).
+4. Payment Methods: Stripe secure digital checkout, ACH bank transfer, or authorized campaign check.
+
+--------------------------------------------------------------------------------
+SECTION 4: INTELLECTUAL PROPERTY & OWNERSHIP
+--------------------------------------------------------------------------------
+1. Client Materials: Client retains full, exclusive ownership of all logos, photographs, campaign biographies, and trademarked materials provided to Agency.
+2. Deployed Deliverables: Upon full payment of the Total Contract Investment, Agency assigns to Client a perpetual, irrevocable, worldwide license to use, display, and maintain the deployed digital platform.
+3. Agency Tools: Agency retains ownership of its proprietary deployment toolchains, reusable component templates, and build engines.
+
+--------------------------------------------------------------------------------
+SECTION 5: LEGAL & REGULATORY COMPLIANCE
+--------------------------------------------------------------------------------
+${isCampaign 
+  ? `1. Political Advertising Disclosure: All campaign web pages shall prominently display official political advertising disclosures in accordance with Texas Election Code § 255.001.
+2. Campaign Treasurer Authorization: This Agreement and digital assets are authorized by Campaign Treasurer ${treasurer}.
+3. Compliance Responsibility: Client confirms all biographical claims, endorsements, and voter information conform with Texas Ethics Commission rules.`
+  : `1. Commercial Non-Infringement: Client warrants that all text, imagery, and trade names provided do not infringe on third-party intellectual property.
+2. Data Privacy: Client agrees to comply with standard state consumer privacy and commercial data regulations.`}
+
+--------------------------------------------------------------------------------
+SECTION 6: WARRANTIES & LIMITATION OF LIABILITY
+--------------------------------------------------------------------------------
+1. 30-Day Quality Warranty: Agency warrants that the digital platform shall perform in substantial compliance with modern web standards (Chrome, Safari, Firefox, iOS, Android) for 30 days following launch.
+2. Limitation of Liability: In no event shall Agency's aggregate liability under this Agreement exceed the Total Contract Investment paid by Client.
+
+--------------------------------------------------------------------------------
+SECTION 7: GOVERNING LAW & DISPUTE RESOLUTION
+--------------------------------------------------------------------------------
+This Agreement shall be construed and governed in accordance with the laws of the State of Texas. Any legal proceedings arising from this Agreement shall be resolved in the appropriate state courts of Texas.
+
+--------------------------------------------------------------------------------
+SECTION 8: SPECIAL CONDITIONS & CUSTOM SCOPE
+--------------------------------------------------------------------------------
+${customClauses || 'Standard execution per Texas Sons quality standards. Hosting and Cloudflare Edge SSL security included.'}
+
+================================================================================
+EXECUTION & SIGNATURES
+================================================================================
+IN WITNESS WHEREOF, the Parties hereto have executed this Agreement as of the Effective Date written above.
+
+CLIENT / CANDIDATE:
+
+Signature: _________________________________________  Date: ____________________
+
+Printed Name: ${contact}
+
+Title / Office: ${isCampaign ? 'Candidate / Campaign Steering Committee' : 'Authorized Business Representative'}
+
+Organization: ${name}
+
+
+TEXAS SONS AGENCY REPRESENTATIVE:
+
+Signature: _________________________________________  Date: ____________________
+
+Printed Name: Morgan / Authorized Agent
+
+Title: Principal Director, Texas Sons Web Development & Digital Strategy
+
+================================================================================`;
+
+      res.json({
+        success: true,
+        title: `${contractTitle} — ${name}`,
+        contractText: fallbackContract
+      });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // Deploy compiled React client to Cloudflare Pages
   app.post("/api/deploy", async (req, res) => {
     try {

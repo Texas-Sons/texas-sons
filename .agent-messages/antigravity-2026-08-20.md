@@ -1,1 +1,1 @@
-antigravity 2026-08-20 13:30 UTC — Implemented dual-layer persistence (Supabase database upsert + localStorage cache) across ClientIntakeView, ProjectProposalModal, and App.tsx with live canvas state synchronization.
+antigravity 2026-08-20 16:26 UTC — Building full Client Contract System: interactive contract drafter, PDF/Print formatting, AI scope customization, and signed contract file attachment with Supabase persistence.

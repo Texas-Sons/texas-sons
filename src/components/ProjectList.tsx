@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, MoreHorizontal, ExternalLink, Wand2, Trash2, Mail, Sparkles } from 'lucide-react';
+import { Plus, MoreHorizontal, ExternalLink, Wand2, Trash2, Mail, Sparkles, FileText, FileCheck } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 import { ProjectProposalModal } from './ProjectProposalModal';
 
@@ -37,7 +37,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-lg font-display font-semibold text-stone-900">Active Deployments</h2>
-          <p className="text-sm text-stone-500 mt-1">Manage client sites, candidate campaigns, and draft AI proposals.</p>
+          <p className="text-sm text-stone-500 mt-1">Manage client sites, candidate campaigns, AI proposals, and signed legal agreements.</p>
         </div>
         <button 
           onClick={onNewProject}
@@ -65,7 +65,15 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
                 <tr key={project.id} className="hover:bg-stone-50/50 transition-colors group cursor-pointer" onClick={() => setSelectedProjectForModal(project)}>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-stone-900 group-hover:text-orange-600 transition-colors">{project.companyName}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-stone-900 group-hover:text-orange-600 transition-colors">{project.companyName}</span>
+                        {project.contracts && project.contracts.length > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-2xs" title="Signed Agreement on File">
+                            <FileCheck className="w-3 h-3 text-emerald-600" />
+                            <span>Signed Agreement</span>
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-stone-500 mt-0.5">{project.clientName}</span>
                     </div>
                   </td>
@@ -87,10 +95,10 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
                       <button
                         onClick={() => setSelectedProjectForModal(project)}
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold bg-orange-500/10 hover:bg-orange-600 text-orange-600 hover:text-white rounded-lg transition-all border border-orange-500/30 hover:border-orange-600 shadow-sm"
-                        title="Draft AI Proposal Email and edit project details"
+                        title="Draft AI Proposal, generate contract, or upload signed agreement"
                       >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>AI Proposal</span>
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Proposal & Contract</span>
                       </button>
 
                       {onEditProject && (

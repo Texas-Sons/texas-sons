@@ -1,6 +1,31 @@
 export type Tier = 'Basic Website' | 'Lead Generation Site' | 'Full Custom Application' | string;
 export type Status = 'Intake' | 'Scaffolding' | 'Theme Assembly' | 'QA & Staging' | 'Live';
 
+export interface ProjectContract {
+  id: string;
+  projectId?: string;
+  clientName: string;
+  companyName: string;
+  contractType: 'campaign-platform' | 'website-build' | 'retainer-maintenance' | 'custom-scope';
+  title: string;
+  status: 'Draft' | 'Sent for Signature' | 'Signed & Active' | 'Completed';
+  totalAmount: number;
+  depositAmount: number;
+  remainingAmount: number;
+  paymentTerms: string;
+  deliverables: string[];
+  timeline: string;
+  customClauses?: string;
+  generatedText?: string;
+  signedFileUrl?: string; // Base64 data URL or storage link
+  signedFileName?: string;
+  signedFileSize?: string;
+  signedAt?: string;
+  signerName?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Project {
   id: string;
   clientName: string;
@@ -11,6 +36,7 @@ export interface Project {
   domain?: string;
   ownerId: string;
   blueprint?: any;
+  contracts?: ProjectContract[];
 }
 
 export interface Invoice {
@@ -63,6 +89,7 @@ export interface ClientIntake {
   }>;
   notes?: string;
   depositAmount?: number;
+  contracts?: ProjectContract[];
   createdAt: string;
   updatedAt: string;
 }
