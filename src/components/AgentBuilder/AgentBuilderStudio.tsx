@@ -1724,11 +1724,13 @@ export default function ClientSite() {
                         if (val === 'crimson-bold') { p = '#2b0c0d'; a = '#dc2626'; }
                         if (val === 'emerald-gold') { p = '#041a14'; a = '#fbbf24'; }
                         if (val === 'light') { p = '#ffffff'; a = '#2563eb'; }
+                        if (val === 'campaign-judicial') { p = '#0f172a'; a = '#991b1b'; }
                         setIntakeForm({ ...intakeForm, theme: val, primaryColor: p, accentColor: a });
                       }}
                       className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-700 text-white text-xs focus:outline-none"
                     >
                       <option value="campaign-navy">Presidential Navy & Heritage Gold (Debbie Style)</option>
+                      <option value="campaign-judicial">Judicial Light (Navy & Crimson)</option>
                       <option value="luxury">Luxury Onyx & Warm Gold</option>
                       <option value="crimson-bold">Texas Crimson & Smoked Charcoal</option>
                       <option value="emerald-gold">Deep Emerald & Warm Brass</option>

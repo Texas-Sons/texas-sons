@@ -164,7 +164,7 @@ function buildSeoTags(snapshot: any, siteUrl: string): string {
     `${name} · ${profile.category || 'Local Business'} · ${profile.phone || 'Call for details'}`;
   const ld = JSON.stringify(buildLocalBusinessLd(snapshot, siteUrl)).replace(/</g, '\\u003c');
 
-  const isCampaign = profile.category === 'Campaign & Leadership' || snapshot?.theme === 'campaign-navy' || (profile.name && (profile.name.toLowerCase().includes('sheriff') || profile.name.toLowerCase().includes('judge') || profile.name.toLowerCase().includes('trevino')));
+  const isCampaign = profile.category === 'Campaign & Leadership' || snapshot?.theme === 'campaign-navy' || snapshot?.theme === 'campaign-judicial' || (profile.name && (profile.name.toLowerCase().includes('sheriff') || profile.name.toLowerCase().includes('judge') || profile.name.toLowerCase().includes('trevino')));
 
   return [
     profile.heroImage ? `<link rel="preload" as="image" href="${escapeHtml(profile.heroImage)}" fetchpriority="high">` : '',
@@ -1283,7 +1283,7 @@ You must return the COMPLETE updated JSON object matching the exact schema of th
 FIELD MAPPING RULES:
 1. Colors & Branding:
    - If user asks to change colors (e.g. "darker orange", "blue accent", "gold", "forest green"), update 'profile.accentColor' (e.g. #ea580c or #f97316 for orange, #2563eb for blue, #C5A059 for gold, #16a34a for green).
-   - If user asks for dark background or theme change, update 'theme' and 'profile.theme'. Valid values: 'campaign-navy', 'crimson-bold', 'emerald-gold', 'luxury', 'dark', 'light', 'custom'.
+   - If user asks for dark background or theme change, update 'theme' and 'profile.theme'. Valid values: 'campaign-navy', 'campaign-judicial', 'crimson-bold', 'emerald-gold', 'luxury', 'dark', 'light', 'custom'.
 2. Star Ratings & Badges:
    - If user asks to "remove star rating" or "remove ratings at top" or "hide reviews", set 'proofBadgeText' to "none".
    - If user asks to change or update badges, modify 'badges' array or 'proofBadgeText'.
