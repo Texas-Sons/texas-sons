@@ -546,7 +546,7 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
 }`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
       });
 
@@ -1134,7 +1134,7 @@ We are Texas Sons, a premium digital agency. We offer three tiers:
 Draft a short, persuasive email proposal recommending we build them a modern website to capture more local traffic and elevate their brand. Keep it professional, not overly salesy, and highlight that we noticed they do not currently have a website listed on Google. Make it around 3-4 paragraphs.`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
       });
 
@@ -1220,7 +1220,7 @@ Rules:
       parts.push({ text: extractionPrompt });
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: parts
       });
 
@@ -1288,7 +1288,7 @@ User Instruction:
 ${prompt}`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: systemInstruction
       });
 

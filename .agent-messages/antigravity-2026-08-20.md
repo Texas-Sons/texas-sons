@@ -1,1 +1,1 @@
-antigravity 2026-08-20 16:30 UTC — Built Client Contract & Agreement System: automated legal MSA drafter under Texas law, clean PDF printing, custom scope editor, and signed contract attachment vault stored in Supabase.
+antigravity 2026-08-21 01:10 UTC — Fixing Photo Scanner multi-upload & Gemini model API call, plus building automated AI Theme & Palette Recommendation engine based on client info and uploaded photos.

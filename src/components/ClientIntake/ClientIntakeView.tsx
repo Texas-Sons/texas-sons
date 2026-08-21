@@ -27,7 +27,10 @@ import {
   Wrench,
   Stethoscope,
   Briefcase,
-  Camera
+  Camera,
+  Upload,
+  Palette,
+  Image as ImageIcon
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
@@ -849,9 +852,110 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
               {/* Section 2: Industry & Theme Archetype */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider border-b border-stone-800 pb-1.5">
-                  2. Industry Archetype & Theme Palette
-                </h4>
+                <div className="flex items-center justify-between border-b border-stone-800 pb-1.5">
+                  <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider">
+                    2. Industry Archetype & Theme Palette
+                  </h4>
+                  <span className="text-[10px] text-stone-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-orange-400" />
+                    <span>Auto-matches from business name & photos</span>
+                  </span>
+                </div>
+
+                {/* AI Theme Recommendation Banner */}
+                {(() => {
+                  const text = `${form.businessName || ''} ${form.category || ''} ${form.tagline || ''}`.toLowerCase();
+                  let rec: {
+                    theme: 'campaign-navy' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
+                    primaryColor: string;
+                    accentColor: string;
+                    category: 'Campaign & Leadership' | 'Food & Beverage' | 'Beauty & Wellness' | 'Home & Trade Services' | 'Professional & Medical';
+                    tier: Tier;
+                    name: string;
+                    desc: string;
+                  } = {
+                    theme: 'campaign-navy',
+                    primaryColor: '#00081e',
+                    accentColor: '#C5A059',
+                    category: 'Campaign & Leadership',
+                    tier: 'Lead Generation Site',
+                    name: 'Campaign Navy + Texas Gold (#C5A059)',
+                    desc: 'Optimized for high-authority political campaigns & community leadership'
+                  };
+
+                  if (text.includes('bbq') || text.includes('smokehouse') || text.includes('grill') || text.includes('restaurant') || text.includes('taco') || text.includes('diner') || text.includes('cafe') || form.category === 'Food & Beverage') {
+                    rec = {
+                      theme: 'crimson-bold',
+                      primaryColor: '#1c1917',
+                      accentColor: '#EA580C',
+                      category: 'Food & Beverage',
+                      tier: 'Lead Generation Site',
+                      name: 'Crimson Bold + Post Oak Ember (#EA580C)',
+                      desc: 'Optimized for Texas BBQ, dining & smokehouse branding'
+                    };
+                  } else if (text.includes('beauty') || text.includes('spa') || text.includes('salon') || text.includes('lash') || text.includes('wellness') || text.includes('boutique') || form.category === 'Beauty & Wellness') {
+                    rec = {
+                      theme: 'luxury',
+                      primaryColor: '#0c0a09',
+                      accentColor: '#E2B18E',
+                      category: 'Beauty & Wellness',
+                      tier: 'Basic Website',
+                      name: 'Charcoal Luxury + Rose Champagne (#E2B18E)',
+                      desc: 'Optimized for high-end salons, spas & wellness boutiques'
+                    };
+                  } else if (text.includes('roof') || text.includes('plumb') || text.includes('electric') || text.includes('hvac') || text.includes('contract') || text.includes('garage') || text.includes('landscape') || text.includes('tree') || form.category === 'Home & Trade Services') {
+                    rec = {
+                      theme: 'emerald-gold',
+                      primaryColor: '#064e3b',
+                      accentColor: '#EAB308',
+                      category: 'Home & Trade Services',
+                      tier: 'Lead Generation Site',
+                      name: 'Texas Emerald + Sun Gold (#EAB308)',
+                      desc: 'Optimized for local trades, contractors & service craftsmanship'
+                    };
+                  } else if (text.includes('law') || text.includes('legal') || text.includes('attorney') || text.includes('cpa') || text.includes('account') || text.includes('doctor') || text.includes('dental') || text.includes('clinic') || form.category === 'Professional & Medical') {
+                    rec = {
+                      theme: 'light',
+                      primaryColor: '#f8fafc',
+                      accentColor: '#0284C7',
+                      category: 'Professional & Medical',
+                      tier: 'Lead Generation Site',
+                      name: 'Clean Modern Light + Slate Blue (#0284C7)',
+                      desc: 'Optimized for legal practices, healthcare & corporate firms'
+                    };
+                  }
+
+                  return (
+                    <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 animate-in fade-in">
+                      <div className="flex items-center space-x-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="text-xs min-w-0">
+                          <span className="font-bold text-white">AI Theme Match: </span>
+                          <span className="text-orange-400 font-semibold">{rec.name}</span>
+                          <p className="text-[10.5px] text-stone-400 leading-tight mt-0.5 truncate">{rec.desc}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({
+                            ...prev,
+                            category: rec.category,
+                            theme: rec.theme,
+                            primaryColor: rec.primaryColor,
+                            accentColor: rec.accentColor
+                          }));
+                        }}
+                        className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1.5 flex-shrink-0"
+                      >
+                        <Palette className="w-3.5 h-3.5" />
+                        <span>Auto-Apply Theme</span>
+                      </button>
+                    </div>
+                  );
+                })()}
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                   <div>
@@ -874,11 +978,12 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <select
                       value={form.theme || 'campaign-navy'}
                       onChange={(e) => setForm(prev => ({ ...prev, theme: e.target.value as any }))}
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-semibold"
                     >
                       <option value="campaign-navy">Campaign Navy (Presidential & Gold)</option>
                       <option value="luxury">Luxury (Amber Glow & Stone)</option>
                       <option value="crimson-bold">Crimson Bold (Texas BBQ & Heritage)</option>
+                      <option value="emerald-gold">Emerald Gold (Trade & Craftsmanship)</option>
                       <option value="dark">Modern Dark (High-Tech / Trade)</option>
                       <option value="light">Clean Light (Medical / Corporate)</option>
                     </select>
@@ -898,7 +1003,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                   <div>
                     <label className="block text-stone-400 mb-1 font-medium">Accent Color (Hex Code)</label>
                     <div className="flex items-center gap-2">
@@ -912,7 +1017,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         type="text"
                         value={form.accentColor || '#C5A059'}
                         onChange={(e) => setForm(prev => ({ ...prev, accentColor: e.target.value }))}
-                        className="flex-1 px-3 py-1.5 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono"
+                        className="flex-1 px-3 py-1.5 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-xs"
                       />
                     </div>
                   </div>
@@ -923,8 +1028,8 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       type="text"
                       value={form.domain || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, domain: e.target.value }))}
-                      placeholder="e.g. debbieforjudge.com"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      placeholder="e.g. waylonrogerscampaign.com"
+                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-xs"
                     />
                   </div>
                 </div>
@@ -942,7 +1047,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     type="text"
                     value={form.tagline || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, tagline: e.target.value }))}
-                    placeholder="e.g. Courtroom Integrity. Constitutional Defense."
+                    placeholder="e.g. Honest Leadership. Proven Record. Protecting Our Communities."
                     className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
@@ -953,20 +1058,57 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     rows={3}
                     value={form.description || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Over 28 years in courtroom trial law..."
+                    placeholder="Over 28 years serving our county with integrity, courage, and dedication..."
                     className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 resize-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-stone-400 mb-1 font-medium">Hero Photo URL (Unsplash or Client Hosted)</label>
-                  <input
-                    type="text"
-                    value={form.heroImage || ''}
-                    onChange={(e) => setForm(prev => ({ ...prev, heroImage: e.target.value }))}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-[11px]"
-                  />
+                  <label className="block text-stone-400 mb-1 font-medium">Hero Photo (Upload Local File or Image URL)</label>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={form.heroImage || ''}
+                        onChange={(e) => setForm(prev => ({ ...prev, heroImage: e.target.value }))}
+                        placeholder="https://images.unsplash.com/... or paste data URL"
+                        className="flex-1 px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-[11px]"
+                      />
+                      <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer transition-all border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
+                        <Upload className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Upload Photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (evt) => {
+                                const dataUrl = evt.target?.result as string;
+                                setForm(prev => ({ ...prev, heroImage: dataUrl }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {form.heroImage && (
+                      <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-orange-500/40 group">
+                        <img src={form.heroImage} alt="Hero preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setForm(prev => ({ ...prev, heroImage: '' }))}
+                          className="absolute top-1 right-1 p-1 bg-black/80 rounded-full text-stone-400 hover:text-red-400 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
