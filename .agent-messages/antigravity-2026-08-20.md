@@ -1,1 +1,1 @@
-antigravity 2026-08-21 01:10 UTC — Fixing Photo Scanner multi-upload & Gemini model API call, plus building automated AI Theme & Palette Recommendation engine based on client info and uploaded photos.
+antigravity 2026-08-21 01:14 UTC — Fixed multi-photo scanner upload with parallel compression, updated Gemini 2.5 Flash Vision model endpoints, and built automated AI Theme & Palette Recommendation engine based on client info and uploaded imagery.
