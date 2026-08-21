@@ -1,1 +1,1 @@
-antigravity 2026-08-21 01:20 UTC — Built client-side HTML5 canvas pixel color palette extractor: extracts real hex color swatches directly from client photos and logos, with 1-click swatch selection and dynamic custom CSS design tokens.
+antigravity 2026-08-21 01:22 UTC — Upgraded Gemini API model references across server.ts and frontend to gemini-3.6-flash, and added automatic 404 model fallback in generateGeminiWithRetry.
