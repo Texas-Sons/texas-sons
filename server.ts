@@ -214,16 +214,34 @@ async function getGemini() {
   return geminiClient;
 }
 
-async function generateGeminiWithRetry(options: { model: string; contents: any }, maxRetries = 3): Promise<any> {
+async function generateGeminiWithRetry(options: { model?: string; contents: any }, maxRetries = 3): Promise<any> {
   const ai = await getGemini();
+  let modelName = options.model || "gemini-3.6-flash";
   let lastError: any = null;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await ai.models.generateContent(options);
+      return await ai.models.generateContent({
+        ...options,
+        model: modelName
+      });
     } catch (err: any) {
       lastError = err;
       const errMsg = err?.message || String(err);
+
+      // Model fallback if 404 / NOT_FOUND / no longer available
+      if (errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("no longer available")) {
+        if (modelName === "gemini-2.5-flash") {
+          modelName = "gemini-3.6-flash";
+          console.log(`[Gemini Fallback] Switching model to ${modelName}...`);
+          continue;
+        } else if (modelName === "gemini-3.6-flash") {
+          modelName = "gemini-2.5-flash";
+          console.log(`[Gemini Fallback] Switching model to ${modelName}...`);
+          continue;
+        }
+      }
+
       const isRateLimit = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || err?.status === "RESOURCE_EXHAUSTED";
 
       if (isRateLimit && attempt < maxRetries) {
@@ -546,7 +564,7 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
 }`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
         contents: prompt,
       });
 
@@ -657,7 +675,7 @@ REQUIREMENTS:
 
       try {
         const response = await generateGeminiWithRetry({
-          model: "gemini-2.5-flash",
+          model: "gemini-3.6-flash",
           contents: prompt,
         });
 
@@ -817,7 +835,7 @@ Return ONLY a JSON object in this format (no markdown blocks, no intro text):
 
       try {
         const response = await generateGeminiWithRetry({
-          model: "gemini-2.5-flash",
+          model: "gemini-3.6-flash",
           contents: prompt,
         });
 
@@ -1134,7 +1152,7 @@ We are Texas Sons, a premium digital agency. We offer three tiers:
 Draft a short, persuasive email proposal recommending we build them a modern website to capture more local traffic and elevate their brand. Keep it professional, not overly salesy, and highlight that we noticed they do not currently have a website listed on Google. Make it around 3-4 paragraphs.`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
         contents: prompt,
       });
 
@@ -1220,7 +1238,7 @@ Rules:
       parts.push({ text: extractionPrompt });
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
         contents: parts
       });
 
@@ -1288,7 +1306,7 @@ User Instruction:
 ${prompt}`;
 
       const response = await generateGeminiWithRetry({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
         contents: systemInstruction
       });
 

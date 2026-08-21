@@ -15,8 +15,8 @@ export interface ModelInfo {
 
 export const SUPPORTED_MODELS: ModelInfo[] = [
   {
-    id: 'gemini-2.5-flash',
-    name: 'Gemini 2.5 Flash',
+    id: 'gemini-3.6-flash',
+    name: 'Gemini 3.6 Flash',
     badge: '⚡ Ultra-Fast',
     provider: 'Google',
     costPerTaskEst: '~$0.001',
@@ -117,9 +117,9 @@ const STORAGE_KEY_MODEL = 'txsons_selected_model';
 
 export function getStoredModel(): string {
   try {
-    return localStorage.getItem(STORAGE_KEY_MODEL) || 'gemini-2.5-flash';
+    return localStorage.getItem(STORAGE_KEY_MODEL) || 'gemini-3.6-flash';
   } catch {
-    return 'gemini-2.5-flash';
+    return 'gemini-3.6-flash';
   }
 }
 
