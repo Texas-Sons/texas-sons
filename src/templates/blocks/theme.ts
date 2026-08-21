@@ -64,13 +64,14 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export function buildThemeVars(profile: ThemeProfile = {}): ThemeVars {
   const entry = THEME_BG[profile.theme || 'dark'] || THEME_BG.dark;
-  const dark = entry.dark;
-  const accent = profile.accentColor || profile.primaryColor || (dark ? '#f97316' : '#ea580c');
+  const dark = profile.theme === 'light' ? false : true;
+  const bg = profile.theme === 'custom' && profile.primaryColor ? profile.primaryColor : entry.bg;
+  const accent = profile.accentColor || (dark ? '#f97316' : '#ea580c');
   const lightAccent = LIGHT_ACCENTS.includes(String(accent).toUpperCase());
   const fonts = FONTS[profile.fontFamily || 'sans'] || FONTS.sans;
 
   return {
-    '--ts-bg': entry.bg,
+    '--ts-bg': bg,
     '--ts-surface': dark ? '#1c1917' : '#ffffff',
     '--ts-surface-raised': dark ? '#292524' : '#f5f5f4',
     '--ts-border': dark ? '#292524' : '#e7e5e4',

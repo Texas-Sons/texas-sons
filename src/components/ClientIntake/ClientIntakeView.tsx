@@ -35,6 +35,7 @@ import {
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { supabase } from '../../supabase';
+import { extractPaletteFromImage, ExtractedColorPalette } from '../../utils/colorExtractor';
 
 interface ClientIntakeViewProps {
   onLaunchStudio: (client: ClientIntake) => void;
@@ -251,6 +252,28 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
       { quote: 'Exceptional service and unmatched attention to detail.', author: 'Verified Client', role: 'Austin, TX', rating: 5, verified: true }
     ]
   });
+
+  const [photoPalette, setPhotoPalette] = useState<ExtractedColorPalette | null>(null);
+
+  // Extract real dominant color palette whenever client photo is uploaded/changed
+  useEffect(() => {
+    if (form.heroImage && (form.heroImage.startsWith('data:image') || form.heroImage.startsWith('http'))) {
+      extractPaletteFromImage(form.heroImage).then(palette => {
+        setPhotoPalette(palette);
+        // Automatically sync accent color from photo
+        if (palette.accentColor) {
+          setForm(prev => ({
+            ...prev,
+            accentColor: palette.accentColor,
+            primaryColor: palette.primaryBg,
+            theme: palette.themeRecommendation || prev.theme
+          }));
+        }
+      });
+    } else {
+      setPhotoPalette(null);
+    }
+  }, [form.heroImage]);
 
   useEffect(() => {
     if (intakePrefill && Object.keys(intakePrefill).length > 0) {
@@ -862,7 +885,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                   </span>
                 </div>
 
-                {/* AI Theme Recommendation Banner */}
+                {/* AI Theme & Image Palette Recommendation Banner */}
                 {(() => {
                   const text = `${form.businessName || ''} ${form.category || ''} ${form.tagline || ''}`.toLowerCase();
                   let rec: {
@@ -874,85 +897,128 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     name: string;
                     desc: string;
                   } = {
-                    theme: 'campaign-navy',
-                    primaryColor: '#00081e',
-                    accentColor: '#C5A059',
+                    theme: photoPalette?.themeRecommendation || 'campaign-navy',
+                    primaryColor: photoPalette?.primaryBg || '#00081e',
+                    accentColor: photoPalette?.accentColor || '#C5A059',
                     category: 'Campaign & Leadership',
                     tier: 'Lead Generation Site',
-                    name: 'Campaign Navy + Texas Gold (#C5A059)',
-                    desc: 'Optimized for high-authority political campaigns & community leadership'
+                    name: photoPalette ? `Photo Matched: ${photoPalette.themeRecommendation} (${photoPalette.accentColor})` : 'Campaign Navy + Texas Gold (#C5A059)',
+                    desc: photoPalette ? photoPalette.reason : 'Optimized for high-authority political campaigns & community leadership'
                   };
 
-                  if (text.includes('bbq') || text.includes('smokehouse') || text.includes('grill') || text.includes('restaurant') || text.includes('taco') || text.includes('diner') || text.includes('cafe') || form.category === 'Food & Beverage') {
-                    rec = {
-                      theme: 'crimson-bold',
-                      primaryColor: '#1c1917',
-                      accentColor: '#EA580C',
-                      category: 'Food & Beverage',
-                      tier: 'Lead Generation Site',
-                      name: 'Crimson Bold + Post Oak Ember (#EA580C)',
-                      desc: 'Optimized for Texas BBQ, dining & smokehouse branding'
-                    };
-                  } else if (text.includes('beauty') || text.includes('spa') || text.includes('salon') || text.includes('lash') || text.includes('wellness') || text.includes('boutique') || form.category === 'Beauty & Wellness') {
-                    rec = {
-                      theme: 'luxury',
-                      primaryColor: '#0c0a09',
-                      accentColor: '#E2B18E',
-                      category: 'Beauty & Wellness',
-                      tier: 'Basic Website',
-                      name: 'Charcoal Luxury + Rose Champagne (#E2B18E)',
-                      desc: 'Optimized for high-end salons, spas & wellness boutiques'
-                    };
-                  } else if (text.includes('roof') || text.includes('plumb') || text.includes('electric') || text.includes('hvac') || text.includes('contract') || text.includes('garage') || text.includes('landscape') || text.includes('tree') || form.category === 'Home & Trade Services') {
-                    rec = {
-                      theme: 'emerald-gold',
-                      primaryColor: '#064e3b',
-                      accentColor: '#EAB308',
-                      category: 'Home & Trade Services',
-                      tier: 'Lead Generation Site',
-                      name: 'Texas Emerald + Sun Gold (#EAB308)',
-                      desc: 'Optimized for local trades, contractors & service craftsmanship'
-                    };
-                  } else if (text.includes('law') || text.includes('legal') || text.includes('attorney') || text.includes('cpa') || text.includes('account') || text.includes('doctor') || text.includes('dental') || text.includes('clinic') || form.category === 'Professional & Medical') {
-                    rec = {
-                      theme: 'light',
-                      primaryColor: '#f8fafc',
-                      accentColor: '#0284C7',
-                      category: 'Professional & Medical',
-                      tier: 'Lead Generation Site',
-                      name: 'Clean Modern Light + Slate Blue (#0284C7)',
-                      desc: 'Optimized for legal practices, healthcare & corporate firms'
-                    };
+                  if (!photoPalette) {
+                    if (text.includes('bbq') || text.includes('smokehouse') || text.includes('grill') || text.includes('restaurant') || text.includes('taco') || text.includes('diner') || text.includes('cafe') || form.category === 'Food & Beverage') {
+                      rec = {
+                        theme: 'crimson-bold',
+                        primaryColor: '#1c1917',
+                        accentColor: '#EA580C',
+                        category: 'Food & Beverage',
+                        tier: 'Lead Generation Site',
+                        name: 'Crimson Bold + Post Oak Ember (#EA580C)',
+                        desc: 'Optimized for Texas BBQ, dining & smokehouse branding'
+                      };
+                    } else if (text.includes('beauty') || text.includes('spa') || text.includes('salon') || text.includes('lash') || text.includes('wellness') || text.includes('boutique') || form.category === 'Beauty & Wellness') {
+                      rec = {
+                        theme: 'luxury',
+                        primaryColor: '#0c0a09',
+                        accentColor: '#E2B18E',
+                        category: 'Beauty & Wellness',
+                        tier: 'Basic Website',
+                        name: 'Charcoal Luxury + Rose Champagne (#E2B18E)',
+                        desc: 'Optimized for high-end salons, spas & wellness boutiques'
+                      };
+                    } else if (text.includes('roof') || text.includes('plumb') || text.includes('electric') || text.includes('hvac') || text.includes('contract') || text.includes('garage') || text.includes('landscape') || text.includes('tree') || form.category === 'Home & Trade Services') {
+                      rec = {
+                        theme: 'emerald-gold',
+                        primaryColor: '#064e3b',
+                        accentColor: '#EAB308',
+                        category: 'Home & Trade Services',
+                        tier: 'Lead Generation Site',
+                        name: 'Texas Emerald + Sun Gold (#EAB308)',
+                        desc: 'Optimized for local trades, contractors & service craftsmanship'
+                      };
+                    } else if (text.includes('law') || text.includes('legal') || text.includes('attorney') || text.includes('cpa') || text.includes('account') || text.includes('doctor') || text.includes('dental') || text.includes('clinic') || form.category === 'Professional & Medical') {
+                      rec = {
+                        theme: 'light',
+                        primaryColor: '#f8fafc',
+                        accentColor: '#0284C7',
+                        category: 'Professional & Medical',
+                        tier: 'Lead Generation Site',
+                        name: 'Clean Modern Light + Slate Blue (#0284C7)',
+                        desc: 'Optimized for legal practices, healthcare & corporate firms'
+                      };
+                    }
                   }
 
                   return (
-                    <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 animate-in fade-in">
-                      <div className="flex items-center space-x-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
-                          <Sparkles className="w-3.5 h-3.5" />
+                    <div className="space-y-2.5">
+                      <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 animate-in fade-in">
+                        <div className="flex items-center space-x-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="text-xs min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white">AI Color & Theme Match:</span>
+                              {rec.accentColor && (
+                                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-stone-300">
+                                  <span className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: rec.accentColor }} />
+                                  <span>{rec.accentColor}</span>
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-orange-400 font-semibold truncate mt-0.5">{rec.name}</p>
+                            <p className="text-[10.5px] text-stone-400 leading-tight mt-0.5 truncate">{rec.desc}</p>
+                          </div>
                         </div>
-                        <div className="text-xs min-w-0">
-                          <span className="font-bold text-white">AI Theme Match: </span>
-                          <span className="text-orange-400 font-semibold">{rec.name}</span>
-                          <p className="text-[10.5px] text-stone-400 leading-tight mt-0.5 truncate">{rec.desc}</p>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setForm(prev => ({
+                              ...prev,
+                              category: rec.category,
+                              theme: rec.theme,
+                              primaryColor: rec.primaryColor,
+                              accentColor: rec.accentColor
+                            }));
+                          }}
+                          className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1.5 flex-shrink-0"
+                        >
+                          <Palette className="w-3.5 h-3.5" />
+                          <span>Auto-Apply Theme</span>
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setForm(prev => ({
-                            ...prev,
-                            category: rec.category,
-                            theme: rec.theme,
-                            primaryColor: rec.primaryColor,
-                            accentColor: rec.accentColor
-                          }));
-                        }}
-                        className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1.5 flex-shrink-0"
-                      >
-                        <Palette className="w-3.5 h-3.5" />
-                        <span>Auto-Apply Theme</span>
-                      </button>
+
+                      {/* Photo Extracted Color Chips */}
+                      {photoPalette && photoPalette.palette && photoPalette.palette.length > 0 && (
+                        <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 space-y-1.5 animate-in fade-in">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="font-semibold text-stone-300 flex items-center gap-1">
+                              <ImageIcon className="w-3 h-3 text-orange-400" />
+                              <span>Sampled Photo Colors (Click swatch to set accent):</span>
+                            </span>
+                            <span className="text-stone-500 text-[10px]">Real Pixel Analysis</span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                            {photoPalette.palette.map((hex, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setForm(prev => ({ ...prev, accentColor: hex }))}
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-mono transition-all ${
+                                  form.accentColor === hex
+                                    ? 'border-orange-500 bg-orange-500/20 text-white ring-1 ring-orange-500 shadow-sm'
+                                    : 'border-stone-800 bg-stone-900 text-stone-300 hover:border-stone-700'
+                                }`}
+                                title={`Set ${hex} as Accent Color`}
+                              >
+                                <span className="w-3 h-3 rounded-full border border-white/20 shadow-xs" style={{ backgroundColor: hex }} />
+                                <span>{hex}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
