@@ -1,1 +1,1 @@
-antigravity 2026-08-21 01:14 UTC — Fixed multi-photo scanner upload with parallel compression, updated Gemini 2.5 Flash Vision model endpoints, and built automated AI Theme & Palette Recommendation engine based on client info and uploaded imagery.
+antigravity 2026-08-21 01:20 UTC — Built client-side HTML5 canvas pixel color palette extractor: extracts real hex color swatches directly from client photos and logos, with 1-click swatch selection and dynamic custom CSS design tokens.
