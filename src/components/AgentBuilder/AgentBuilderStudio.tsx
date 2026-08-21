@@ -799,10 +799,12 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   };
 
   // Centralized campaign detection — uses category field for reliability with custom blueprints
-  const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy';
+  const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.theme === 'campaign-judicial';
 
   const getThemeBackgroundClass = () => {
     switch (project.theme) {
+      case 'campaign-judicial':
+        return 'bg-white text-stone-900';
       case 'campaign-navy':
         return 'bg-[#00081e] text-white';
       case 'crimson-bold':
