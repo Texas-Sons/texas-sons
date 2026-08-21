@@ -69,9 +69,9 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export function buildThemeVars(profile: ThemeProfile = {}): ThemeVars {
   const entry = THEME_BG[profile.theme || 'dark'] || THEME_BG.dark;
-  const dark = profile.theme === 'light' ? false : true;
+  const dark = profile.theme === 'light' ? false : (profile.theme === 'campaign-judicial' ? false : entry.dark);
   const bg = profile.theme === 'custom' && profile.primaryColor ? profile.primaryColor : entry.bg;
-  const accent = profile.accentColor || (dark ? '#f97316' : '#ea580c');
+  const accent = profile.accentColor || (profile.theme === 'campaign-judicial' ? '#C5A059' : (dark ? '#f97316' : '#ea580c'));
   const lightAccent = LIGHT_ACCENTS.includes(String(accent).toUpperCase());
   const isJudicial = profile.theme === 'campaign-judicial';
   const fonts = isJudicial ? FONTS.judicial : (FONTS[profile.fontFamily || 'sans'] || FONTS.sans);
@@ -79,14 +79,14 @@ export function buildThemeVars(profile: ThemeProfile = {}): ThemeVars {
   return {
     '--ts-bg': bg,
     '--ts-surface': dark ? '#1c1917' : '#ffffff',
-    '--ts-surface-raised': dark ? '#292524' : '#f5f5f4',
-    '--ts-border': dark ? '#292524' : '#e7e5e4',
-    '--ts-text': dark ? '#fafaf9' : '#1c1917',
-    '--ts-muted': dark ? '#a8a29e' : '#57534e',
+    '--ts-surface-raised': dark ? '#292524' : '#f1f5f9',
+    '--ts-border': dark ? '#292524' : '#cbd5e1',
+    '--ts-text': dark ? '#fafaf9' : '#0f172a',
+    '--ts-muted': dark ? '#a8a29e' : '#475569',
     '--ts-accent': accent,
     '--ts-accent-soft': hexToRgba(accent, 0.12),
     '--ts-accent-border': hexToRgba(accent, 0.35),
-    '--ts-accent-contrast': lightAccent ? '#0c0a09' : '#ffffff',
+    '--ts-accent-contrast': lightAccent ? '#00081e' : '#ffffff',
     '--ts-font-heading': fonts.heading,
     '--ts-font-body': fonts.body,
   };

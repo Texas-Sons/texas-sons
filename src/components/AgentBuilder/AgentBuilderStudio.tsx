@@ -61,6 +61,7 @@ import {
   VotingBannerBlock,
   VotingPageBlock,
   EventsBlock,
+  WriteInGuideBlock,
   BusinessProfile, 
   ServiceItem, 
   TestimonialItem,
@@ -124,6 +125,48 @@ interface PresetBlueprint {
 }
 
 const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
+  {
+    id: 'bp-waylon-rogers',
+    title: 'Waylon Rogers for County Judge',
+    category: 'Campaign & Leadership',
+    prompt: 'Build an authoritative, conservative judicial campaign website for Waylon Rogers for Atascosa County Judge 2026. Official Write-In Candidate, courtroom integrity, protecting rural Texas landowners, strict fiscal responsibility, and step-by-step voting machine guide.',
+    badges: ['Official Write-In Candidate', 'Judicial Integrity', 'Rural Property Advocate', 'Fiscal Responsibility'],
+    proofBadgeText: 'Write-In Waylon Rogers for County Judge · Atascosa County',
+    events: [
+      { id: '1', name: 'Atascosa County Courtroom Integrity Forum', date: 'Oct 28, 2026', time: '6:30 PM', location: 'Pleasanton Community Center', rsvpCount: 185 },
+      { id: '2', name: 'Rural Landowners & Water Rights Town Hall', date: 'Nov 04, 2026', time: '7:00 PM', location: 'Jourdanton Civic Center', rsvpCount: 220 },
+      { id: '3', name: 'Meet Waylon Rogers & Write-In Voting Demo', date: 'Nov 12, 2026', time: '5:30 PM', location: 'Poteet Volunteer Fire Hall', rsvpCount: 164 }
+    ],
+    profile: {
+      name: 'Waylon Rogers for County Judge',
+      tagline: 'A Lifetime of Service. A Commitment to Justice.',
+      description: 'Official Write-In Candidate for Atascosa County Judge. Restoring judicial integrity, protecting rural property owners, and bringing transparent fiscal stewardship to county government.',
+      phone: '(830) 555-1234',
+      email: 'campaign@waylonrogers.com',
+      address: 'Campaign HQ: 104 N Smith St, Jourdanton, TX 78026',
+      hours: 'Volunteer Office: Mon - Sat: 9:00 AM - 6:00 PM',
+      heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200',
+      category: 'Campaign & Leadership',
+      theme: 'campaign-judicial',
+      primaryColor: '#0a1f44',
+      accentColor: '#C5A059',
+      fontFamily: 'serif',
+      treasurerName: 'Sarah Jenkins',
+      faviconUrl: '/justice-scales-favicon.svg'
+    },
+    services: [
+      { title: 'Restoring Judicial Integrity & Speedy Dockets', description: 'Eliminating case backlogs, upholding constitutional rule of law, and ensuring fair, impartial justice in Atascosa County courts.', duration: 'Judicial Pillar #1', highlight: true },
+      { title: 'Protecting Rural Landowners & Property Rights', description: 'Defending agricultural tax exemptions, private groundwater rights, and ensuring county zoning respects generational family lands.', duration: 'Judicial Pillar #2' },
+      { title: 'Transparent County Budgets & Fiscal Stewardship', description: 'Demanding zero wasteful taxpayer expenditures and providing line-item transparency for every county department.', duration: 'Judicial Pillar #3' }
+    ],
+    testimonials: [
+      { quote: 'Waylon has the courtroom experience, unshakeable ethics, and deep community roots our county bench urgently requires.', author: 'Sheriff Hector Ramirez', role: 'Law Enforcement Coalition Endorsement', rating: 5, verified: true },
+      { quote: 'A steadfast defender of our landowners, water rights, and constitutional freedoms. He has our full trust and endorsement.', author: 'Sarah Jenkins', role: 'Atascosa County Cattlemen & Landowner', rating: 5, verified: true },
+      { quote: 'Fair, disciplined, and committed to transparency. Waylon will run our county courts with the highest standard of honor.', author: 'Judge Ronald Sterling', role: 'Presiding Magistrate (Ret.)', rating: 5, verified: true }
+    ],
+    theme: 'campaign-judicial',
+    heroVariant: 'split'
+  },
   {
     id: 'bp-sheriff-trevino',
     title: 'Ernest Trevino for Sheriff',
@@ -800,6 +843,11 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
   // Centralized campaign detection — uses category field for reliability with custom blueprints
   const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.theme === 'campaign-judicial';
+  const isWriteIn = isCampaignSite && (
+    (project.proofBadgeText && project.proofBadgeText.toLowerCase().includes('write-in')) ||
+    project.badges?.some(b => b.toLowerCase().includes('write-in')) ||
+    project.profile.name.toLowerCase().includes('waylon')
+  );
 
   const getThemeBackgroundClass = () => {
     switch (project.theme) {
@@ -1392,8 +1440,9 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                       phone={project.profile.phone}
                       theme={project.theme as any}
                       accentColor={project.profile.accentColor}
-                      ctaText={isCampaignSite ? 'Volunteer / Donate' : project.profile.category === 'Food & Beverage' ? 'Order Catering' : project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 'Book Appointment'}
+                      ctaText={isWriteIn ? 'Vote Write-In' : isCampaignSite ? 'Volunteer / Donate' : project.profile.category === 'Food & Beverage' ? 'Order Catering' : project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 'Book Appointment'}
                       navItems={isCampaignSite ? [
+                        ...(isWriteIn ? [{ label: "How to Vote Write-In", href: "#write-in-guide" }] : []),
                         { label: "Platform", href: "#services" },
                         { label: "Events", href: "#events" },
                         { label: "Endorsements", href: "#reviews" },
@@ -1418,8 +1467,9 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                         accentColor={project.profile.accentColor}
                         badges={project.badges}
                         proofBadgeText={project.proofBadgeText}
-                        ctaText="Join The Campaign"
+                        ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
                         secondaryCtaText="Read Our Platform"
+                        theme={project.theme}
                       />
                     ) : (
                       <HeroBlock
@@ -1444,6 +1494,23 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                     )}
                   </div>
 
+                  {/* Write-In Ballot Guide Block (When applicable) */}
+                  {isWriteIn && (
+                    <div
+                      onClick={() => inspectorActive && setSelectedBlock('WriteInGuideBlock')}
+                      className={`relative transition-all ${
+                        inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
+                      } ${selectedBlock === 'WriteInGuideBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
+                    >
+                      <WriteInGuideBlock
+                        candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
+                        officeTitle="Atascosa County Judge"
+                        theme={project.theme}
+                        accentColor={project.profile.accentColor}
+                      />
+                    </div>
+                  )}
+
                   {/* Voting Info Banner Block (Campaigns) */}
                   {isCampaignSite && (
                     <div
@@ -1458,7 +1525,12 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                         inspectorActive ? 'hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
                       } ${selectedBlock === 'VotingBannerBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
                     >
-                      <VotingBannerBlock accentColor={project.profile.accentColor} />
+                      <VotingBannerBlock
+                        accentColor={project.profile.accentColor}
+                        candidateName={project.profile.name}
+                        officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge Election' : undefined}
+                        theme={project.theme}
+                      />
                     </div>
                   )}
 

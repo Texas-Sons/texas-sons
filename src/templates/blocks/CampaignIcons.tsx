@@ -154,3 +154,117 @@ export function LeadershipIcon({ className = "w-8 h-8", color = "currentColor", 
     </svg>
   );
 }
+
+// 4. Custom Scales of Justice Icon (Judicial & Legal Authority)
+export function ScalesOfJusticeIcon({ className = "w-8 h-8", color = "currentColor", size = 32 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Central Pillar & Finial */}
+      <line x1="16" y1="4" x2="16" y2="28" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="16" cy="4" r="2.5" fill={color} />
+      <path d="M10 28H22" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M12 25H20" stroke={color} strokeWidth="2" strokeLinecap="round" />
+
+      {/* Horizontal Beam */}
+      <path d="M5 8.5H27" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* Left Pan Chains & Pan */}
+      <line x1="5" y1="9" x2="2" y2="16" stroke={color} strokeWidth="1.2" />
+      <line x1="5" y1="9" x2="8" y2="16" stroke={color} strokeWidth="1.2" />
+      <path d="M1 16C1 19 9 19 9 16Z" fill={color} opacity="0.85" />
+
+      {/* Right Pan Chains & Pan */}
+      <line x1="27" y1="9" x2="24" y2="16" stroke={color} strokeWidth="1.2" />
+      <line x1="27" y1="9" x2="30" y2="16" stroke={color} strokeWidth="1.2" />
+      <path d="M23 16C23 19 31 19 31 16Z" fill={color} opacity="0.85" />
+    </svg>
+  );
+}
+
+// 5. Custom Courtroom Gavel Crest Icon
+export function GavelCrestIcon({ className = "w-8 h-8", color = "currentColor", size = 32 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Laurel Wreath */}
+      <path d="M6 22C4 17 5 11 9 7" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+      <path d="M26 22C28 17 27 11 23 7" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+      
+      {/* Gavel Head */}
+      <rect x="10" y="7" width="12" height="6" rx="1.5" transform="rotate(-30 10 7)" fill={color} />
+      <line x1="9" y1="12" x2="23" y2="4" stroke={color} strokeWidth="2" />
+
+      {/* Gavel Handle */}
+      <line x1="16" y1="11" x2="24" y2="24" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* Sounding Block */}
+      <rect x="6" y="25" width="20" height="3" rx="1.5" fill={color} />
+    </svg>
+  );
+}
+
+// 6. Custom Courtroom / Constitutional Pillars Icon
+export function CourtroomPillarsIcon({ className = "w-8 h-8", color = "currentColor", size = 32 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Pediment / Triangular Roof */}
+      <path d="M3 9L16 3L29 9H3Z" fill={color} />
+      <rect x="3" y="10" width="26" height="2" fill={color} />
+
+      {/* Pillars */}
+      <line x1="7" y1="12" x2="7" y2="24" stroke={color} strokeWidth="2.5" />
+      <line x1="13" y1="12" x2="13" y2="24" stroke={color} strokeWidth="2.5" />
+      <line x1="19" y1="12" x2="19" y2="24" stroke={color} strokeWidth="2.5" />
+      <line x1="25" y1="12" x2="25" y2="24" stroke={color} strokeWidth="2.5" />
+
+      {/* Plinth Base */}
+      <rect x="3" y="24" width="26" height="2" fill={color} />
+      <rect x="2" y="26.5" width="28" height="2.5" rx="0.5" fill={color} />
+    </svg>
+  );
+}
+
+// 7. Custom Texas Star Judicial Seal
+export function TexasStarSealIcon({ className = "w-8 h-8", color = "currentColor", size = 32 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Outer Ring */}
+      <circle cx="16" cy="16" r="14" stroke={color} strokeWidth="1.5" strokeDasharray="2 2" />
+      <circle cx="16" cy="16" r="11.5" stroke={color} strokeWidth="1" opacity="0.8" />
+      
+      {/* Center 5-Point Texas Star */}
+      <path
+        d="M16 8L18.3 13.5L24 14.1L19.7 17.9L20.9 23.5L16 20.6L11.1 23.5L12.3 17.9L8 14.1L13.7 13.5L16 8Z"
+        fill={color}
+      />
+    </svg>
+  );
+}
+

@@ -3,9 +3,22 @@ import { Vote, ChevronRight, MapPin, Calendar } from 'lucide-react';
 
 interface VotingBannerBlockProps {
   accentColor?: string;
+  candidateName?: string;
+  officeTitle?: string;
+  theme?: string;
 }
 
-export function VotingBannerBlock({ accentColor = '#C5A059' }: VotingBannerBlockProps) {
+export function VotingBannerBlock({
+  accentColor = '#C5A059',
+  candidateName,
+  officeTitle,
+  theme
+}: VotingBannerBlockProps) {
+  const isJudicial = theme === 'campaign-judicial' || (officeTitle && officeTitle.toLowerCase().includes('judge')) || (candidateName && candidateName.toLowerCase().includes('judge'));
+  const isSheriff = officeTitle?.toLowerCase().includes('sheriff') || candidateName?.toLowerCase().includes('sheriff');
+  
+  const electionOffice = officeTitle || (isJudicial ? 'County Judge Election' : isSheriff ? 'Sheriff Election' : 'General Election');
+
   return (
     <section className="relative z-10 py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#000d2b] via-[#00081e] to-[#000d2b] border-y-2 border-[color:var(--ts-accent)] shadow-2xl overflow-hidden">
       {/* Subtle background glow effect */}
@@ -49,7 +62,7 @@ export function VotingBannerBlock({ accentColor = '#C5A059' }: VotingBannerBlock
             </div>
             
             <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
-              Make Your Voice Heard in the Upcoming Sheriff Election
+              Make Your Voice Heard in the Upcoming {electionOffice}
             </h3>
             <p className="text-xs text-slate-300 mt-0.5">
               Access early voting locations, precinct maps, accepted voter IDs, and official polling times.

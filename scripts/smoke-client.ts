@@ -67,6 +67,36 @@ const blueprints = [
     badges: ['Licensed', 'CPR Certified'],
     proofBadgeText: '5.0 Stars (200+ Reviews)',
   },
+  {
+    id: 'prj-judicial-waylon',
+    prompt: 'test judicial write-in',
+    timestamp: 'now',
+    profile: {
+      name: 'Waylon Rogers for County Judge',
+      tagline: 'A Lifetime of Service. A Commitment to Justice.',
+      description: 'Official Write-In Candidate for Atascosa County Judge.',
+      phone: '(830) 555-1234',
+      email: 'campaign@waylonrogers.test',
+      address: '104 N Smith St, Jourdanton, TX 78026',
+      hours: 'Mon - Sat: 9:00 AM - 6:00 PM',
+      heroImage: 'https://example.com/waylon.jpg',
+      category: 'Campaign & Leadership',
+      theme: 'campaign-judicial',
+      primaryColor: '#0a1f44',
+      accentColor: '#C5A059',
+      treasurerName: 'Sarah Jenkins',
+    },
+    services: [
+      { title: 'Restoring Judicial Integrity', description: 'Impartial courts and rule of law.', duration: 'Pillar #1', highlight: true },
+    ],
+    testimonials: [
+      { quote: 'Waylon has the courtroom integrity our county bench needs.', author: 'Sheriff Hector Ramirez', role: 'Law Enforcement', rating: 5, verified: true },
+    ],
+    theme: 'campaign-judicial',
+    heroVariant: 'split',
+    badges: ['Official Write-In Candidate', 'Judicial Integrity'],
+    proofBadgeText: 'Write-In Waylon Rogers for County Judge',
+  },
 ];
 
 const noop = () => {};

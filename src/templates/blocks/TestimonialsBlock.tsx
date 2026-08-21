@@ -2,7 +2,15 @@ import React from 'react';
 import { Star, CheckCircle, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TestimonialItem } from './types';
-import { MedalOfValorIcon, DetectiveIcon, LeadershipIcon } from './CampaignIcons';
+import { 
+  MedalOfValorIcon, 
+  DetectiveIcon, 
+  LeadershipIcon,
+  ScalesOfJusticeIcon,
+  GavelCrestIcon,
+  CourtroomPillarsIcon,
+  TexasStarSealIcon 
+} from './CampaignIcons';
 
 interface TestimonialsBlockProps {
   title?: string;
@@ -38,6 +46,44 @@ export function TestimonialsBlock({
   accentColor
 }: TestimonialsBlockProps) {
   const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('endorse') || title.toLowerCase().includes('judicial');
+  const isJudicial = theme === 'campaign-judicial' || title.toLowerCase().includes('judicial') || (accentColor === '#29374f' || accentColor === '#0a1f44');
+
+  const getJudicialBadgeInfo = (t: TestimonialItem, idx: number) => {
+    const text = `${t.quote} ${t.role || ''} ${t.author}`.toLowerCase();
+    if (text.includes('appeals') || text.includes('judge') || text.includes('magistrate') || text.includes('bench')) {
+      return {
+        icon: GavelCrestIcon,
+        badge: '★ Judicial Bench Endorsement',
+        sub: 'Official Courtroom Magistrate'
+      };
+    }
+    if (text.includes('sheriff') || text.includes('police') || text.includes('enforcement') || text.includes('deputy')) {
+      return {
+        icon: TexasStarSealIcon,
+        badge: '★ Law Enforcement Coalition',
+        sub: 'First Responders Endorsement'
+      };
+    }
+    if (text.includes('land') || text.includes('ranch') || text.includes('property') || text.includes('farmer') || text.includes('community')) {
+      return {
+        icon: CourtroomPillarsIcon,
+        badge: '★ Rural Landowner & Property Rights',
+        sub: 'Community Leader Endorsement'
+      };
+    }
+    if (idx === 0) {
+      return {
+        icon: ScalesOfJusticeIcon,
+        badge: '★ Judicial & Ethical Excellence',
+        sub: 'Texas Bar Verified Record'
+      };
+    }
+    return {
+      icon: ScalesOfJusticeIcon,
+      badge: '★ Constitutional Integrity',
+      sub: 'Official Campaign Endorsement'
+    };
+  };
 
   return (
     <section id="reviews" className="py-20 sm:py-32 relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)] overflow-hidden">
@@ -76,86 +122,118 @@ export function TestimonialsBlock({
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 sm:gap-8 lg:gap-10"
         >
-          {testimonials.map((t, idx) => (
-            <motion.div
-              key={idx}
-              variants={cardVariants}
-              whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              // Alternate vertical translation to create an interlocking masonry feel
-              className={`rounded-3xl p-8 sm:p-10 border flex flex-col justify-between relative bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] shadow-2xl shadow-black/30 backdrop-blur-sm ${
-                idx % 3 === 1 ? 'xl:translate-y-12' : idx % 3 === 2 ? 'xl:-translate-y-6' : ''
-              }`}
-            >
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-[color:var(--ts-bg)] px-2">
-                <Quote className="w-10 h-10 text-[color:var(--ts-accent)] opacity-80" aria-hidden="true" />
-              </div>
-
-              <div>
-                {isCampaign ? (
-                  <div className="flex items-center gap-3.5 mb-6">
-                    <div 
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg flex-shrink-0"
-                      style={{ 
-                        backgroundColor: 'rgba(197, 160, 89, 0.12)', 
-                        borderColor: 'rgba(197, 160, 89, 0.35)',
-                        color: accentColor || '#C5A059'
-                      }}
-                    >
-                      {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0 ? (
-                        <MedalOfValorIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
-                      ) : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1 ? (
-                        <DetectiveIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
-                      ) : (
-                        <LeadershipIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
-                      )}
-                    </div>
-                    <div>
-                      <span 
-                        className="text-[10px] font-extrabold uppercase tracking-widest block"
-                        style={{ color: accentColor || '#C5A059' }}
-                      >
-                        {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0
-                          ? '★ Medal of Valor Citation'
-                          : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1
-                          ? '★ Lead Criminal Investigator'
-                          : '★ Command Leadership & Trust'}
-                      </span>
-                      <span className="text-[11px] text-[color:var(--ts-muted)] font-semibold">
-                        Official Law Enforcement Endorsement
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex gap-1 mb-6" aria-label={`${t.rating || 5} star rating`}>
-                    {[...Array(t.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current text-[color:var(--ts-accent)]" aria-hidden="true" />
-                    ))}
-                  </div>
-                )}
-                <p className="text-sm sm:text-base leading-relaxed mb-8 text-[color:var(--ts-text)] font-medium">
-                  "{t.quote}"
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-6 border-t border-[color:var(--ts-border)]/50">
-                <div>
-                  <h4 className={`font-bold text-sm text-[color:var(--ts-text)] ${isCampaign ? 'uppercase tracking-wider text-xs' : ''}`}>
-                    {t.author}
-                  </h4>
-                  {t.role && <p className="text-xs text-[color:var(--ts-accent)] font-medium mt-1">{t.role}</p>}
+          {testimonials.map((t, idx) => {
+            const judicialInfo = getJudicialBadgeInfo(t, idx);
+            const JudicialIconComponent = judicialInfo.icon;
+            
+            return (
+              <motion.div
+                key={idx}
+                variants={cardVariants}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                // Alternate vertical translation to create an interlocking masonry feel
+                className={`rounded-3xl p-8 sm:p-10 border flex flex-col justify-between relative bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] shadow-2xl shadow-black/30 backdrop-blur-sm ${
+                  idx % 3 === 1 ? 'xl:translate-y-12' : idx % 3 === 2 ? 'xl:-translate-y-6' : ''
+                }`}
+              >
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-[color:var(--ts-bg)] px-2">
+                  <Quote className="w-10 h-10 text-[color:var(--ts-accent)] opacity-80" aria-hidden="true" />
                 </div>
-                {!isCampaign && t.verified && (
-                  <div className="flex items-center text-emerald-400/90 text-xs font-bold gap-1.5 uppercase tracking-wide bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                    <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>Verified</span>
+
+                <div>
+                  {isCampaign ? (
+                    isJudicial ? (
+                      <div className="flex items-center gap-3.5 mb-6">
+                        <div 
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg flex-shrink-0"
+                          style={{ 
+                            backgroundColor: 'rgba(197, 160, 89, 0.12)', 
+                            borderColor: 'rgba(197, 160, 89, 0.35)',
+                            color: accentColor || '#C5A059'
+                          }}
+                        >
+                          <JudicialIconComponent className="w-7 h-7" color={accentColor || '#C5A059'} />
+                        </div>
+                        <div>
+                          <span 
+                            className="text-[10px] font-extrabold uppercase tracking-widest block font-serif"
+                            style={{ color: accentColor || '#C5A059' }}
+                          >
+                            {judicialInfo.badge}
+                          </span>
+                          <span className="text-[11px] text-[color:var(--ts-muted)] font-semibold">
+                            {judicialInfo.sub}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3.5 mb-6">
+                        <div 
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg flex-shrink-0"
+                          style={{ 
+                            backgroundColor: 'rgba(197, 160, 89, 0.12)', 
+                            borderColor: 'rgba(197, 160, 89, 0.35)',
+                            color: accentColor || '#C5A059'
+                          }}
+                        >
+                          {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0 ? (
+                            <MedalOfValorIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                          ) : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1 ? (
+                            <DetectiveIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                          ) : (
+                            <LeadershipIcon className="w-7 h-7" color={accentColor || '#C5A059'} />
+                          )}
+                        </div>
+                        <div>
+                          <span 
+                            className="text-[10px] font-extrabold uppercase tracking-widest block"
+                            style={{ color: accentColor || '#C5A059' }}
+                          >
+                            {t.quote.toLowerCase().includes('valor') || t.role?.toLowerCase().includes('swat') || idx === 0
+                              ? '★ Medal of Valor Citation'
+                              : t.quote.toLowerCase().includes('investigat') || t.quote.toLowerCase().includes('detective') || t.role?.toLowerCase().includes('detective') || idx === 1
+                              ? '★ Lead Criminal Investigator'
+                              : '★ Command Leadership & Trust'}
+                          </span>
+                          <span className="text-[11px] text-[color:var(--ts-muted)] font-semibold">
+                            Official Law Enforcement Endorsement
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex gap-1 mb-6" aria-label={`${t.rating || 5} star rating`}>
+                      {[...Array(t.rating || 5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current text-[color:var(--ts-accent)]" aria-hidden="true" />
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-sm sm:text-base leading-relaxed mb-8 text-[color:var(--ts-text)] font-medium">
+                    "{t.quote}"
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-6 border-t border-[color:var(--ts-border)]/50">
+                  <div>
+                    <h4 className={`font-bold text-sm text-[color:var(--ts-text)] ${isCampaign ? 'uppercase tracking-wider text-xs font-serif' : ''}`}>
+                      {t.author}
+                    </h4>
+                    {t.role && <p className="text-xs text-[color:var(--ts-accent)] font-medium mt-1">{t.role}</p>}
                   </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  {!isCampaign && t.verified && (
+                    <div className="flex items-center text-emerald-400/90 text-xs font-bold gap-1.5 uppercase tracking-wide bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                      <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
+                      <span>Verified</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
       </div>
     </section>
   );
 }
+

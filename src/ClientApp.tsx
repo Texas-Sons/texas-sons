@@ -13,6 +13,7 @@ import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
+import { WriteInGuideBlock } from "./templates/blocks/WriteInGuideBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
 
@@ -76,6 +77,11 @@ export function ClientApp() {
   }
 
   const isCampaign = project.profile.category === "Campaign & Leadership" || project.theme === "campaign-navy" || project.theme === "campaign-judicial";
+  const isWriteIn = isCampaign && (
+    (project.proofBadgeText && project.proofBadgeText.toLowerCase().includes('write-in')) ||
+    project.badges?.some(b => b.toLowerCase().includes('write-in')) ||
+    project.profile.name.toLowerCase().includes('waylon')
+  );
   const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {
@@ -127,8 +133,9 @@ export function ClientApp() {
             phone={project.profile.phone}
             theme={project.theme}
             accentColor={project.profile.accentColor}
-            ctaText={isCampaign ? "Join The Campaign" : "Book Free Estimate"}
+            ctaText={isWriteIn ? "Vote Write-In" : (isCampaign ? "Join The Campaign" : "Book Free Estimate")}
             navItems={isCampaign ? [
+              ...(isWriteIn ? [{ label: "How to Vote Write-In", href: "#write-in-guide" }] : []),
               { label: "Platform", href: "#services" },
               { label: "Events", href: "#events" },
               { label: "Endorsements", href: "#reviews" },
@@ -144,7 +151,7 @@ export function ClientApp() {
               accentColor={project.profile.accentColor}
               badges={project.badges}
               proofBadgeText={project.proofBadgeText}
-              ctaText="Join The Campaign"
+              ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
               secondaryCtaText="Read Our Platform"
               theme={project.theme}
             />
@@ -169,7 +176,22 @@ export function ClientApp() {
               }
             />
           )}
-          {isCampaign && <VotingBannerBlock accentColor={project.profile.accentColor} />}
+          {isWriteIn && (
+            <WriteInGuideBlock
+              candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
+              officeTitle="Atascosa County Judge"
+              theme={project.theme}
+              accentColor={project.profile.accentColor}
+            />
+          )}
+          {isCampaign && (
+            <VotingBannerBlock
+              accentColor={project.profile.accentColor}
+              candidateName={project.profile.name}
+              officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge Election' : undefined}
+              theme={project.theme}
+            />
+          )}
           <ServicesBlock
             theme={project.theme}
             services={project.services}

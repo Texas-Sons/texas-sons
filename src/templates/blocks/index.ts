@@ -11,3 +11,5 @@ export * from './CampaignIcons';
 export * from './VotingBannerBlock';
 export * from './VotingPageBlock';
 export * from './EventsBlock';
+export * from './WriteInGuideBlock';
+
