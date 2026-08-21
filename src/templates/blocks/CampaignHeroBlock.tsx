@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Star, CheckCircle, ChevronRight, Flag, Award } from 'lucide-react';
+import { Shield, Star, CheckCircle, ChevronRight, Flag, Award, Gavel } from 'lucide-react';
 
 interface CampaignHeroBlockProps {
   headline: string;
@@ -11,6 +11,7 @@ interface CampaignHeroBlockProps {
   proofBadgeText?: string;
   ctaText?: string;
   secondaryCtaText?: string;
+  theme?: string;
 }
 
 export function CampaignHeroBlock({
@@ -21,9 +22,17 @@ export function CampaignHeroBlock({
   badges = [],
   proofBadgeText,
   ctaText = 'Join The Campaign',
-  secondaryCtaText = 'Read Our Platform'
+  secondaryCtaText = 'Read Our Platform',
+  theme
 }: CampaignHeroBlockProps) {
   
+  // Theme-specific labels and icons
+  const isJudicial = theme === 'campaign-judicial';
+  const officialLabel = isJudicial ? 'Judicial Campaign' : 'Official Campaign';
+  const candidateTitle = isJudicial ? 'Candidate for County Judge' : 'Master Peace Officer';
+  const candidateCredential = isJudicial ? 'Experienced Legal Professional' : 'SAPD Medal of Valor Recipient';
+  const CandidateIcon = isJudicial ? Gavel : Shield;
+
   // Extract candidate name or jurisdiction if present
   const words = headline.split(' ');
   const lastPhrase = words.length > 2 ? words.slice(-2).join(' ') : words[words.length - 1];
@@ -52,7 +61,7 @@ export function CampaignHeroBlock({
                 <Star key={i} className="w-4 h-4 fill-current" style={{ color: accentColor }} />
               ))}
               <span className="ml-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                Official Campaign
+                {officialLabel}
               </span>
             </div>
 
@@ -99,14 +108,14 @@ export function CampaignHeroBlock({
                       className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shadow-md"
                       style={{ backgroundColor: accentColor, color: '#00081e' }}
                     >
-                      ★
+                      {isJudicial ? <Gavel className="w-4 h-4" /> : '★'}
                     </div>
                     <div>
                       <p className="text-xs font-bold text-[color:var(--ts-text)] tracking-wide">
-                        Master Peace Officer
+                        {candidateTitle}
                       </p>
                       <p className="text-[10px] text-stone-300">
-                        SAPD Medal of Valor Recipient
+                        {candidateCredential}
                       </p>
                     </div>
                   </div>
@@ -137,7 +146,7 @@ export function CampaignHeroBlock({
                 <Star key={i} className="w-5 h-5 fill-current" style={{ color: accentColor }} />
               ))}
               <span className="ml-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                Official Campaign
+                {officialLabel}
               </span>
             </div>
 
@@ -163,7 +172,7 @@ export function CampaignHeroBlock({
                     key={idx} 
                     className="flex items-center gap-2.5 bg-stone-900/70 backdrop-blur-sm border border-stone-800/90 hover:border-[#C5A059]/40 px-3.5 py-2.5 rounded-xl transition-all shadow-sm"
                   >
-                    <Shield className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
+                    <CandidateIcon className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
                     <span className="text-xs font-bold tracking-wide uppercase text-stone-200">{badge}</span>
                   </div>
                 ))}

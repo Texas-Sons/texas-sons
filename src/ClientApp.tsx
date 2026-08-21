@@ -146,6 +146,7 @@ export function ClientApp() {
               proofBadgeText={project.proofBadgeText}
               ctaText="Join The Campaign"
               secondaryCtaText="Read Our Platform"
+              theme={project.theme}
             />
           ) : (
             <HeroBlock
