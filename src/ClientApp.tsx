@@ -154,6 +154,8 @@ export function ClientApp() {
               ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
               secondaryCtaText="Read Our Platform"
               theme={project.theme}
+              candidateName={project.profile.name}
+              officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge' : undefined}
             />
           ) : (
             <HeroBlock

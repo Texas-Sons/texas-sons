@@ -14,6 +14,9 @@ interface CampaignHeroBlockProps {
   secondaryCtaText?: string;
   theme?: string;
   county?: string;
+  candidateTitle?: string;
+  candidateName?: string;
+  officeTitle?: string;
 }
 
 export function CampaignHeroBlock({
@@ -26,28 +29,54 @@ export function CampaignHeroBlock({
   ctaText = 'Join The Campaign',
   secondaryCtaText = 'Read Our Platform',
   theme,
-  county = 'Atascosa County'
+  county = 'Atascosa County',
+  candidateTitle,
+  candidateName,
+  officeTitle
 }: CampaignHeroBlockProps) {
   
-  // Theme-specific labels and icons
-  const isJudicial = theme === 'campaign-judicial' || headline.toLowerCase().includes('judge') || headline.toLowerCase().includes('justice') || headline.toLowerCase().includes('waylon');
+  // Theme-specific and candidate-specific detection
+  const allText = `${headline} ${subheadline} ${proofBadgeText || ''} ${candidateName || ''} ${officeTitle || ''} ${badges.join(' ')}`.toLowerCase();
+  
+  const isJudicial = theme === 'campaign-judicial' || 
+                     allText.includes('judge') || 
+                     allText.includes('judicial') || 
+                     allText.includes('court') || 
+                     allText.includes('justice') || 
+                     allText.includes('waylon');
+                     
+  const isSheriff = !isJudicial && (
+                    allText.includes('sheriff') || 
+                    allText.includes('peace officer') || 
+                    allText.includes('police') || 
+                    allText.includes('trevino'));
+
   const isWriteIn = (proofBadgeText && proofBadgeText.toLowerCase().includes('write-in')) || 
                     badges.some(b => b.toLowerCase().includes('write-in')) ||
-                    subheadline.toLowerCase().includes('write-in') ||
-                    headline.toLowerCase().includes('waylon');
+                    allText.includes('write-in') ||
+                    allText.includes('waylon');
 
   const officialLabel = isWriteIn 
     ? 'Official 2026 Write-In Candidate' 
     : isJudicial 
     ? 'Judicial & Courtroom Leadership' 
+    : isSheriff
+    ? 'Law Enforcement Leadership'
     : 'Official Campaign';
 
-  const candidateTitle = isJudicial ? 'Candidate for County Judge' : 'Master Peace Officer';
+  const resolvedCandidateTitle = candidateTitle || (
+    isJudicial ? (officeTitle || 'Candidate for County Judge') :
+    isSheriff ? (officeTitle || 'Candidate for County Sheriff') :
+    (officeTitle || 'Candidate for Public Office')
+  );
+
   const candidateCredential = isWriteIn 
-    ? 'Atascosa County · Write-In' 
+    ? `${county} · Write-In` 
     : isJudicial 
-    ? 'Constitutional Integrity & Trial Record' 
-    : 'SAPD Medal of Valor Recipient';
+    ? 'Constitutional Integrity & Courtroom Record' 
+    : isSheriff
+    ? 'Command Experience & Community Safety'
+    : 'Dedicated Community Leadership';
 
   // Extract candidate name or jurisdiction if present
   const words = headline.split(' ');
@@ -147,11 +176,17 @@ export function CampaignHeroBlock({
                         color: isWriteIn ? '#ffffff' : '#00081e' 
                       }}
                     >
-                      {isJudicial ? <Gavel className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                      {isJudicial ? (
+                        <ScalesOfJusticeIcon size={18} color={isWriteIn ? '#ffffff' : '#00081e'} />
+                      ) : isSheriff ? (
+                        <Shield className="w-4 h-4" />
+                      ) : (
+                        <Star className="w-4 h-4 fill-current" />
+                      )}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-white tracking-wide truncate">
-                        {candidateTitle}
+                        {resolvedCandidateTitle}
                       </p>
                       <p className="text-[10px] text-slate-300 truncate">
                         {candidateCredential}

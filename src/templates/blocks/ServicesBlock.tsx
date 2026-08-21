@@ -27,6 +27,25 @@ export function ServicesBlock({
   const displaySubtitle = isCampaign && subtitle === 'Professional, reliable, and tailored to your needs.' ? 'Our commitment to the community and our plan for the future.' : subtitle;
   const finalCtaText = ctaText || (isCampaign ? 'Read Policy' : 'Book Service');
 
+  const isVotingStep = (s: ServiceItem) => {
+    const t = (s.title || '').toLowerCase();
+    const d = (s.duration || '').toLowerCase();
+    const desc = (s.description || '').toLowerCase();
+    return t.startsWith('step ') || 
+           t.startsWith('step:') || 
+           t.includes('select write-in') || 
+           t.includes('enter waylon') || 
+           t.includes('cast your ballot') || 
+           t.includes('review & cast') || 
+           t.includes('how to vote') || 
+           d.includes('voting guide') || 
+           desc.includes('write-in line') || 
+           desc.includes('select the labeled') ||
+           desc.includes('casting your ballot');
+  };
+
+  const filteredServices = isCampaign ? (services || []).filter(s => !isVotingStep(s)) : (services || []);
+
   return (
     <section id="services" className={`py-16 sm:py-24 relative bg-[color:var(--ts-surface)] text-[color:var(--ts-text)]`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +66,7 @@ export function ServicesBlock({
 
         {/* Services Grid */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
-          {services.map((service, idx) => (
+          {filteredServices.map((service, idx) => (
             <div
               key={idx}
               className={`rounded-2xl p-6 sm:p-7 flex flex-col justify-between border transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1 group ${

@@ -60,7 +60,7 @@ const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
     accentColor: '#C5A059',
     tagline: 'A Lifetime of Service. A Commitment to Justice.',
     description: 'Official Write-In Candidate for Atascosa County Judge. Restoring judicial integrity, protecting rural property owners, and bringing transparent fiscal stewardship to county government.',
-    heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200',
+    heroImage: '/images/candidates/waylon-rogers.png',
     badges: ['Official Write-In Candidate', 'Judicial Integrity', 'Rural Property Advocate', 'Fiscal Responsibility'],
     proofBadgeText: 'Write-In Waylon Rogers for County Judge · Atascosa County',
     services: [

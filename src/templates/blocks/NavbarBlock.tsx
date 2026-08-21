@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, ArrowRight, Shield } from 'lucide-react';
+import { Menu, X, Phone, ArrowRight, Shield, Star } from 'lucide-react';
+import { ScalesOfJusticeIcon } from './CampaignIcons';
 import { NavItem } from './types';
 
 interface NavbarBlockProps {
@@ -29,7 +30,9 @@ export function NavbarBlock({
   accentColor
 }: NavbarBlockProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign');
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign') || businessName.toLowerCase().includes('waylon');
+  const isJudicial = theme === 'campaign-judicial' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('justice') || businessName.toLowerCase().includes('waylon');
+  const isSheriff = !isJudicial && (businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('police'));
 
   // Split candidate name if formatted like "Ernest Trevino for Atascosa County Sheriff"
   let primaryName = businessName;
@@ -42,7 +45,7 @@ export function NavbarBlock({
       const firstName = primaryName.split(' ')[0] || primaryName;
       subBadgeText = `VOTE ${firstName.toUpperCase()} · ${parts[1].trim().toUpperCase()}`;
     } else {
-      subBadgeText = 'OFFICIAL 2026 CAMPAIGN';
+      subBadgeText = isJudicial ? 'OFFICIAL 2026 JUDICIAL CAMPAIGN' : 'OFFICIAL 2026 CAMPAIGN';
     }
   }
 
@@ -59,20 +62,26 @@ export function NavbarBlock({
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] ${isCampaign ? 'font-serif' : ''}`}
             >
               {isCampaign ? (
-                <Shield className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" strokeWidth={1.5} />
+                isJudicial ? (
+                  <ScalesOfJusticeIcon size={22} color="currentColor" />
+                ) : isSheriff ? (
+                  <Shield className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" strokeWidth={1.5} />
+                ) : (
+                  <Star className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
+                )
               ) : (
                 businessName.charAt(0)
               )}
             </div>
           )}
           <div className="flex flex-col flex-shrink-0">
-            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity whitespace-nowrap ${
-              isCampaign ? 'font-serif text-[color:var(--ts-accent)]' : ''
+            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity whitespace-nowrap text-[color:var(--ts-text)] ${
+              isCampaign ? 'font-serif' : ''
             }`}>
               {primaryName}
             </span>
             {isCampaign && subBadgeText && (
-              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-stone-400 group-hover:text-stone-300 whitespace-nowrap">
+              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--ts-accent)] group-hover:opacity-90 whitespace-nowrap">
                 <span className="hidden sm:inline">{subBadgeText}</span>
                 <span className="sm:hidden">{subBadgeText.includes('·') ? subBadgeText.split('·')[1].trim() : subBadgeText}</span>
               </span>

@@ -79,7 +79,7 @@ const blueprints = [
       email: 'campaign@waylonrogers.test',
       address: '104 N Smith St, Jourdanton, TX 78026',
       hours: 'Mon - Sat: 9:00 AM - 6:00 PM',
-      heroImage: 'https://example.com/waylon.jpg',
+      heroImage: '/images/candidates/waylon-rogers.png',
       category: 'Campaign & Leadership',
       theme: 'campaign-judicial',
       primaryColor: '#0a1f44',

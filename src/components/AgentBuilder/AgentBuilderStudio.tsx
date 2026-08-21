@@ -145,7 +145,7 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       email: 'campaign@waylonrogers.com',
       address: 'Campaign HQ: 104 N Smith St, Jourdanton, TX 78026',
       hours: 'Volunteer Office: Mon - Sat: 9:00 AM - 6:00 PM',
-      heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200',
+      heroImage: '/images/candidates/waylon-rogers.png',
       category: 'Campaign & Leadership',
       theme: 'campaign-judicial',
       primaryColor: '#0a1f44',
@@ -427,7 +427,18 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   const [project, setProject] = useState<ProjectSnapshot>(() => {
     try {
       const saved = localStorage.getItem('txsons_studio_project');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.profile?.name?.toLowerCase().includes('waylon')) {
+          if (!parsed.profile.heroImage || parsed.profile.heroImage.includes('unsplash.com/photo-1589829545856')) {
+            parsed.profile.heroImage = '/images/candidates/waylon-rogers.png';
+          }
+          if (parsed.services?.some((s: any) => s.title?.toLowerCase().startsWith('step ') || s.title?.toLowerCase().includes('write-in'))) {
+            parsed.services = DEFAULT_BLUEPRINTS[0].services;
+          }
+        }
+        return parsed;
+      }
     } catch {}
     return {
       id: 'prj-initial',
@@ -1470,6 +1481,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                         ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
                         secondaryCtaText="Read Our Platform"
                         theme={project.theme}
+                        candidateName={project.profile.name}
+                        officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge' : undefined}
                       />
                     ) : (
                       <HeroBlock
