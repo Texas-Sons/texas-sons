@@ -18,6 +18,9 @@ export interface ThemeVars extends Record<string, string> {
   '--ts-accent-soft': string;
   '--ts-accent-border': string;
   '--ts-accent-contrast': string;
+  '--ts-accent-red': string;
+  '--ts-accent-red-soft': string;
+  '--ts-accent-red-border': string;
   '--ts-font-heading': string;
   '--ts-font-body': string;
 }
@@ -55,6 +58,7 @@ const FONTS: Record<string, { heading: string; body: string }> = {
 };
 
 const LIGHT_ACCENTS = ['#C5A059', '#fbbf24', '#facc15', '#eab308', '#d97706', '#f59e0b'];
+const TEXAS_CRIMSON = '#bb0027';
 
 function hexToRgba(hex: string, alpha: number): string {
   const clean = String(hex || '').replace('#', '');
@@ -87,6 +91,9 @@ export function buildThemeVars(profile: ThemeProfile = {}): ThemeVars {
     '--ts-accent-soft': hexToRgba(accent, 0.12),
     '--ts-accent-border': hexToRgba(accent, 0.35),
     '--ts-accent-contrast': lightAccent ? '#00081e' : '#ffffff',
+    '--ts-accent-red': TEXAS_CRIMSON,
+    '--ts-accent-red-soft': hexToRgba(TEXAS_CRIMSON, 0.12),
+    '--ts-accent-red-border': hexToRgba(TEXAS_CRIMSON, 0.35),
     '--ts-font-heading': fonts.heading,
     '--ts-font-body': fonts.body,
   };
@@ -103,6 +110,9 @@ export const TS_VAR = {
   accentSoft: 'var(--ts-accent-soft, rgba(249, 115, 22, 0.12))',
   accentBorder: 'var(--ts-accent-border, rgba(249, 115, 22, 0.35))',
   accentContrast: 'var(--ts-accent-contrast, #ffffff)',
+  accentRed: 'var(--ts-accent-red, #bb0027)',
+  accentRedSoft: 'var(--ts-accent-red-soft, rgba(187, 0, 39, 0.12))',
+  accentRedBorder: 'var(--ts-accent-red-border, rgba(187, 0, 39, 0.35))',
   fontHeading: 'var(--ts-font-heading, inherit)',
   fontBody: 'var(--ts-font-body, inherit)',
 };

@@ -145,19 +145,13 @@ export function TestimonialsBlock({
                     isJudicial ? (
                       <div className="flex items-center gap-3.5 mb-6">
                         <div 
-                          className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-lg flex-shrink-0"
-                          style={{ 
-                            backgroundColor: 'rgba(197, 160, 89, 0.12)', 
-                            borderColor: 'rgba(197, 160, 89, 0.35)',
-                            color: accentColor || '#C5A059'
-                          }}
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-md flex-shrink-0 bg-[#bb0027]/12 border-[#bb0027]/30 text-[#bb0027]"
                         >
-                          <JudicialIconComponent className="w-7 h-7" color={accentColor || '#C5A059'} />
+                          <JudicialIconComponent className="w-7 h-7" color="#bb0027" />
                         </div>
                         <div>
                           <span 
-                            className="text-[10px] font-extrabold uppercase tracking-widest block font-serif"
-                            style={{ color: accentColor || '#C5A059' }}
+                            className="text-[10px] font-extrabold uppercase tracking-widest block font-serif text-[#bb0027] dark:text-[#ff6b81]"
                           >
                             {judicialInfo.badge}
                           </span>

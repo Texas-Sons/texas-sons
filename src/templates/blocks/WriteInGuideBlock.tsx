@@ -68,17 +68,19 @@ export function WriteInGuideBlock({
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-[color:var(--ts-accent-soft)] text-[color:var(--ts-accent)] border border-[color:var(--ts-accent-border)] shadow-sm">
-            <Vote className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider mb-4 bg-[#bb0027]/12 text-[#bb0027] border border-[#bb0027]/30 shadow-sm">
+            <Vote className="w-4 h-4 text-[#bb0027]" />
             <span>Official Write-In Voter Instructions</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#bb0027]" />
+            <span className="text-[#C5A059] font-bold">2026 Election</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight font-serif mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight font-serif mb-4 text-[color:var(--ts-text)]">
             How to Cast Your Write-In Vote
           </h2>
           
           <p className="text-sm sm:text-base text-[color:var(--ts-muted)] max-w-2xl mx-auto leading-relaxed">
-            Writing in <strong>{candidateName}</strong> for {officeTitle} is fast, valid, and fully counted on all official Texas voting machines.
+            Writing in <strong className="text-[color:var(--ts-text)]">{candidateName}</strong> for {officeTitle} is fast, valid, and fully counted on all official Texas voting machines.
           </p>
         </div>
 
@@ -96,17 +98,17 @@ export function WriteInGuideBlock({
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                 className={`p-5 sm:p-6 rounded-2xl border transition-all duration-300 shadow-md ${
                   item.highlight
-                    ? 'bg-gradient-to-r from-[color:var(--ts-surface)] to-[color:var(--ts-accent-soft)] border-[color:var(--ts-accent)] ring-1 ring-[color:var(--ts-accent-border)]'
-                    : 'bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] hover:border-[color:var(--ts-accent-border)]'
+                    ? 'bg-gradient-to-r from-[#bb0027]/10 via-[color:var(--ts-surface)] to-[color:var(--ts-surface)] border-2 border-[#bb0027] ring-2 ring-[#bb0027]/25 shadow-red-950/10'
+                    : 'bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] hover:border-[#bb0027]/40'
                 }`}
               >
                 <div className="flex items-start gap-4">
                   <div 
                     className="w-10 h-10 rounded-xl font-bold flex items-center justify-center text-sm shadow-md flex-shrink-0"
                     style={{ 
-                      backgroundColor: item.highlight ? accentColor : 'rgba(197, 160, 89, 0.12)', 
-                      color: item.highlight ? '#00081e' : accentColor,
-                      border: `1px solid ${accentColor}40`
+                      backgroundColor: item.highlight ? '#bb0027' : 'rgba(197, 160, 89, 0.12)', 
+                      color: item.highlight ? '#ffffff' : accentColor,
+                      border: item.highlight ? '1px solid #bb0027' : `1px solid ${accentColor}40`
                     }}
                   >
                     {item.step}
@@ -114,12 +116,15 @@ export function WriteInGuideBlock({
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="text-base sm:text-lg font-bold font-serif text-[color:var(--ts-text)]">
+                      <h3 className={`text-base sm:text-lg font-bold font-serif ${item.highlight ? 'text-[color:var(--ts-text)] font-extrabold' : 'text-[color:var(--ts-text)]'}`}>
                         {item.title}
                       </h3>
                       <span 
-                        className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider flex-shrink-0"
-                        style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+                        className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded tracking-wider flex-shrink-0 shadow-sm ${
+                          item.highlight 
+                            ? 'bg-[#bb0027] text-white' 
+                            : 'bg-[#C5A059]/15 text-[#C5A059] border border-[#C5A059]/30'
+                        }`}
                       >
                         {item.badge}
                       </span>
@@ -137,6 +142,9 @@ export function WriteInGuideBlock({
           <div className="lg:col-span-5 w-full">
             <div className="rounded-3xl p-6 sm:p-8 bg-[#00081e] text-white border-2 border-[#C5A059]/40 shadow-2xl relative overflow-hidden">
               
+              {/* Red Top Accent Bar */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#bb0027] via-[#C5A059] to-[#bb0027]" />
+
               {/* Background watermark */}
               <div className="absolute top-4 right-4 opacity-10 pointer-events-none">
                 <ScalesOfJusticeIcon size={120} color="#C5A059" />
@@ -145,7 +153,7 @@ export function WriteInGuideBlock({
               {/* Card Header */}
               <div className="flex items-center justify-between border-b border-[#C5A059]/30 pb-4 mb-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-[#bb0027]" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                   <span className="text-[11px] font-mono text-slate-300 ml-2 font-bold uppercase tracking-wider">
@@ -159,9 +167,14 @@ export function WriteInGuideBlock({
 
               {/* Race Title Header */}
               <div className="mb-5 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
-                <p className="text-[10px] uppercase font-bold text-[#C5A059] tracking-wider mb-0.5">Contested Office</p>
+                <div className="flex items-center justify-between mb-0.5">
+                  <p className="text-[10px] uppercase font-bold text-[#C5A059] tracking-wider">Contested Office</p>
+                  <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#bb0027] text-white uppercase tracking-wider">
+                    Vote For One
+                  </span>
+                </div>
                 <p className="text-sm sm:text-base font-serif font-bold text-white tracking-wide">{officeTitle}</p>
-                <p className="text-[11px] text-slate-400">Vote for One (1)</p>
+                <p className="text-[11px] text-slate-400">Atascosa County General Election</p>
               </div>
 
               {/* Simulated Options */}
@@ -173,15 +186,15 @@ export function WriteInGuideBlock({
                   </div>
                 </div>
 
-                {/* Selected Write-In Item */}
-                <div className="p-3.5 rounded-xl bg-[#C5A059]/15 border-2 border-[#C5A059] flex items-center justify-between shadow-lg ring-2 ring-[#C5A059]/20">
+                {/* Selected Write-In Item with Red/Gold Accent */}
+                <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#bb0027]/20 to-[#C5A059]/15 border-2 border-[#bb0027] flex items-center justify-between shadow-lg ring-2 ring-[#bb0027]/30">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-5 h-5 rounded-full bg-[#C5A059] text-[#00081e] flex items-center justify-center flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-[#bb0027] text-white flex items-center justify-center flex-shrink-0 shadow-md">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold uppercase text-[#C5A059] tracking-widest">
+                        <span className="text-xs font-mono font-black uppercase text-[#ff6b81] tracking-widest">
                           [ WRITE-IN ]
                         </span>
                       </div>
@@ -190,28 +203,28 @@ export function WriteInGuideBlock({
                       </p>
                     </div>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-[#C5A059] flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-[#ff6b81] flex-shrink-0" />
                 </div>
               </div>
 
-              {/* Copy Name to Clipboard Action */}
+              {/* Copy Name to Clipboard Action with Red Button */}
               <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center space-y-3">
                 <p className="text-xs text-slate-300">
                   Exact spelling needed at the voting booth:
                 </p>
                 
                 <div className="flex items-center justify-center gap-2">
-                  <span className="font-mono text-base font-extrabold px-3 py-1.5 rounded-lg bg-black/60 border border-[#C5A059]/50 text-[#C5A059] tracking-widest select-all">
+                  <span className="font-mono text-base font-extrabold px-3 py-1.5 rounded-lg bg-black/70 border-2 border-[#bb0027]/80 text-[#ff6b81] tracking-widest select-all shadow-inner">
                     {candidateName.toUpperCase()}
                   </span>
                   
                   <button
                     onClick={handleCopy}
-                    className="px-3 py-1.5 rounded-lg bg-[#C5A059] hover:bg-[#d4b069] text-[#00081e] text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                    className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-[#bb0027] to-[#990020] hover:from-[#d1002e] hover:to-[#bb0027] text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-red-950/40 border border-[#C5A059]/40 active:scale-95 transition-all cursor-pointer"
                     title="Copy candidate name"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? 'Copied!' : 'Copy'}</span>
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copied ? 'Copied!' : 'Copy Name'}</span>
                   </button>
                 </div>
               </div>

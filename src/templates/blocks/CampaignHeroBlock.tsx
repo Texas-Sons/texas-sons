@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Star, CheckCircle, ChevronRight, Flag, Award, Gavel, Scale, FileText } from 'lucide-react';
+import { Shield, Star, CheckCircle, ChevronRight, Flag, Award, Gavel, Scale, FileText, Vote } from 'lucide-react';
 import { ScalesOfJusticeIcon, GavelCrestIcon, TexasStarSealIcon, CourtroomPillarsIcon } from './CampaignIcons';
 
 interface CampaignHeroBlockProps {
@@ -13,6 +13,7 @@ interface CampaignHeroBlockProps {
   ctaText?: string;
   secondaryCtaText?: string;
   theme?: string;
+  county?: string;
 }
 
 export function CampaignHeroBlock({
@@ -24,7 +25,8 @@ export function CampaignHeroBlock({
   proofBadgeText,
   ctaText = 'Join The Campaign',
   secondaryCtaText = 'Read Our Platform',
-  theme
+  theme,
+  county = 'Atascosa County'
 }: CampaignHeroBlockProps) {
   
   // Theme-specific labels and icons
@@ -74,17 +76,29 @@ export function CampaignHeroBlock({
           {/* MOBILE ONLY: Top Official Tag & Headline (Shown before the photo) */}
           {/* ================================================================= */}
           <div className="block lg:hidden text-left space-y-3">
-            <div className="flex items-center gap-1.5">
-              {isJudicial ? (
-                <ScalesOfJusticeIcon size={18} color={accentColor} />
+            <div className="flex items-center gap-2">
+              {isWriteIn ? (
+                <span className="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-[#bb0027]/15 text-[#bb0027] border border-[#bb0027]/30 flex items-center gap-1.5 shadow-sm">
+                  <Vote className="w-3.5 h-3.5 text-[#bb0027]" />
+                  <span>Official 2026 Write-In Candidate</span>
+                </span>
+              ) : isJudicial ? (
+                <div className="flex items-center gap-1.5">
+                  <ScalesOfJusticeIcon size={18} color={accentColor} />
+                  <span className="text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
+                    {officialLabel}
+                  </span>
+                </div>
               ) : (
-                [...Array(3)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" style={{ color: accentColor }} />
-                ))
+                <div className="flex items-center gap-1.5">
+                  {[...Array(3)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" style={{ color: accentColor }} />
+                  ))}
+                  <span className="ml-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
+                    {officialLabel}
+                  </span>
+                </div>
               )}
-              <span className="ml-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                {officialLabel}
-              </span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-serif leading-[1.12] drop-shadow-lg text-[color:var(--ts-text)]">
@@ -107,7 +121,7 @@ export function CampaignHeroBlock({
               {/* Outer Golden Aura Glow */}
               <div 
                 className="absolute -inset-1.5 rounded-3xl opacity-30 blur-xl transition-all duration-700 pointer-events-none"
-                style={{ backgroundColor: accentColor }}
+                style={{ backgroundColor: isWriteIn ? '#bb0027' : accentColor }}
               />
 
               {/* Main Portrait Frame */}
@@ -128,7 +142,10 @@ export function CampaignHeroBlock({
                   <div className="flex items-center gap-2.5">
                     <div 
                       className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-md flex-shrink-0"
-                      style={{ backgroundColor: accentColor, color: '#00081e' }}
+                      style={{ 
+                        backgroundColor: isWriteIn ? '#bb0027' : accentColor, 
+                        color: isWriteIn ? '#ffffff' : '#00081e' 
+                      }}
                     >
                       {isJudicial ? <Gavel className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                     </div>
@@ -142,10 +159,13 @@ export function CampaignHeroBlock({
                     </div>
                   </div>
                   <span 
-                    className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider flex-shrink-0 ml-2"
-                    style={{ backgroundColor: `${accentColor}25`, color: accentColor }}
+                    className="px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider flex-shrink-0 ml-2 shadow-sm"
+                    style={{ 
+                      backgroundColor: isWriteIn ? '#bb0027' : `${accentColor}25`, 
+                      color: isWriteIn ? '#ffffff' : accentColor 
+                    }}
                   >
-                    2026
+                    {isWriteIn ? '2026 WRITE-IN' : '2026'}
                   </span>
                 </div>
 
@@ -163,17 +183,31 @@ export function CampaignHeroBlock({
             className="lg:col-span-7 lg:order-1 flex flex-col items-start"
           >
             {/* DESKTOP ONLY: Top Official Seal */}
-            <div className="hidden lg:flex items-center gap-2 mb-4">
-              {isJudicial ? (
-                <ScalesOfJusticeIcon size={22} color={accentColor} />
+            <div className="hidden lg:flex items-center gap-2.5 mb-4">
+              {isWriteIn ? (
+                <span className="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-[#bb0027]/12 text-[#bb0027] border border-[#bb0027]/30 flex items-center gap-2 shadow-sm">
+                  <Vote className="w-4 h-4 text-[#bb0027]" />
+                  <span>Official 2026 Write-In Candidate</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#bb0027]" />
+                  <span className="text-[#C5A059] font-bold">{county || 'Atascosa County'}</span>
+                </span>
+              ) : isJudicial ? (
+                <div className="flex items-center gap-2">
+                  <ScalesOfJusticeIcon size={22} color={accentColor} />
+                  <span className="ml-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
+                    {officialLabel}
+                  </span>
+                </div>
               ) : (
-                [...Array(3)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-current" style={{ color: accentColor }} />
-                ))
+                <div className="flex items-center gap-2">
+                  {[...Array(3)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-current" style={{ color: accentColor }} />
+                  ))}
+                  <span className="ml-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
+                    {officialLabel}
+                  </span>
+                </div>
               )}
-              <span className="ml-2 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                {officialLabel}
-              </span>
             </div>
 
             {/* DESKTOP ONLY: Large Serif Headline */}
@@ -185,7 +219,7 @@ export function CampaignHeroBlock({
             {/* Narrative Subheadline (Clean, Uncovered & High-Contrast) */}
             <p 
               className="text-base sm:text-lg text-[color:var(--ts-muted)] font-normal leading-relaxed mb-6 sm:mb-8 border-l-4 pl-4 bg-[color:var(--ts-surface)]/50 py-2 rounded-r-lg"
-              style={{ borderColor: accentColor }}
+              style={{ borderColor: isWriteIn ? '#bb0027' : accentColor }}
             >
               {subheadline}
             </p>
@@ -200,13 +234,13 @@ export function CampaignHeroBlock({
                       key={idx} 
                       className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all shadow-sm ${
                         isBadgeWriteIn
-                          ? 'bg-[#C5A059]/15 border-2 border-[#C5A059] text-[color:var(--ts-text)] font-extrabold ring-1 ring-[#C5A059]/30'
+                          ? 'bg-[#bb0027]/12 border-2 border-[#bb0027] text-[#bb0027] font-black ring-2 ring-[#bb0027]/20 shadow-md'
                           : 'bg-[color:var(--ts-surface)] border border-[color:var(--ts-border)] hover:border-[#C5A059]/50 text-[color:var(--ts-text)]'
                       }`}
                     >
                       {isJudicial ? (
                         isBadgeWriteIn ? (
-                          <FileText className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
+                          <FileText className="w-4 h-4 flex-shrink-0 text-[#bb0027]" />
                         ) : idx % 2 === 0 ? (
                           <Gavel className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
                         ) : (
@@ -215,7 +249,9 @@ export function CampaignHeroBlock({
                       ) : (
                         <Shield className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
                       )}
-                      <span className="text-xs font-bold tracking-wide uppercase truncate">{badge}</span>
+                      <span className={`text-xs font-bold tracking-wide uppercase truncate ${isBadgeWriteIn ? 'font-black text-[#bb0027]' : ''}`}>
+                        {badge}
+                      </span>
                     </div>
                   );
                 })}
@@ -226,10 +262,14 @@ export function CampaignHeroBlock({
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
               <a 
                 href={resolvedCtaHref}
-                className="px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-center"
-                style={{ backgroundColor: accentColor, color: '#00081e' }}
+                className={`px-8 py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-center ${
+                  isWriteIn 
+                    ? 'bg-gradient-to-r from-[#bb0027] to-[#990020] text-white border border-[#C5A059]/40 shadow-red-950/30' 
+                    : ''
+                }`}
+                style={isWriteIn ? {} : { backgroundColor: accentColor, color: '#00081e' }}
               >
-                <Flag className="w-4 h-4" />
+                <Vote className="w-4 h-4" />
                 <span>{resolvedCtaText}</span>
               </a>
               <a 
@@ -244,7 +284,7 @@ export function CampaignHeroBlock({
             {/* Proof Badge */}
             {proofBadgeText && (
               <div className="mt-6 sm:mt-8 flex items-center gap-2 text-xs font-semibold text-[color:var(--ts-muted)]">
-                <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />
+                <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: isWriteIn ? '#bb0027' : accentColor }} />
                 <span>{proofBadgeText}</span>
               </div>
             )}
