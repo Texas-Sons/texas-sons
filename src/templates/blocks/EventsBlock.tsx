@@ -4,7 +4,7 @@ import { EventItem } from './types';
 
 interface EventsBlockProps {
   events?: EventItem[];
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   title?: string;
   subtitle?: string;
@@ -51,7 +51,7 @@ export function EventsBlock({
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
           {events.map((event, idx) => {
             // Parse Date string into Month & Day if possible
             const dateParts = event.date.split(' ');

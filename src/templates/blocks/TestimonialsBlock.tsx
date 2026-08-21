@@ -8,7 +8,7 @@ interface TestimonialsBlockProps {
   title?: string;
   subtitle?: string;
   testimonials: TestimonialItem[];
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
 }
 
@@ -37,7 +37,7 @@ export function TestimonialsBlock({
   theme = 'dark',
   accentColor
 }: TestimonialsBlockProps) {
-  const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || title.toLowerCase().includes('endorse') || title.toLowerCase().includes('judicial');
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('endorse') || title.toLowerCase().includes('judicial');
 
   return (
     <section id="reviews" className="py-20 sm:py-32 relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)] overflow-hidden">
@@ -74,7 +74,7 @@ export function TestimonialsBlock({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
+          className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 sm:gap-8 lg:gap-10"
         >
           {testimonials.map((t, idx) => (
             <motion.div

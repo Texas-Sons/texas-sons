@@ -6,7 +6,7 @@ interface ServicesBlockProps {
   title?: string;
   subtitle?: string;
   services: ServiceItem[];
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   ctaText?: string;
   ctaHref?: string;
@@ -21,7 +21,7 @@ export function ServicesBlock({
   ctaText,
   ctaHref = '#contact'
 }: ServicesBlockProps) {
-  const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('issues');
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('issues');
   
   const displayTitle = isCampaign && title === 'Our Services' ? 'Campaign Platform & Priorities' : title;
   const displaySubtitle = isCampaign && subtitle === 'Professional, reliable, and tailored to your needs.' ? 'Our commitment to the community and our plan for the future.' : subtitle;
@@ -50,7 +50,7 @@ export function ServicesBlock({
           {services.map((service, idx) => (
             <div
               key={idx}
-              className={`rounded-2xl p-6 sm:p-7 flex flex-col justify-between border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group ${
+              className={`rounded-2xl p-6 sm:p-7 flex flex-col justify-between border transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1 group ${
                 service.highlight
                   ? 'border-[color:var(--ts-accent-border)] bg-[color:var(--ts-accent-soft)]'
                   : 'bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] hover:border-[color:var(--ts-accent-border)]'

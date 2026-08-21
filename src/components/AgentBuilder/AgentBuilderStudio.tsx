@@ -98,7 +98,7 @@ export interface ProjectSnapshot {
   services: ServiceItem[];
   testimonials: TestimonialItem[];
   events?: EventItem[];
-  theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   heroVariant: 'split' | 'bento' | 'centered';
   badges?: string[];
   proofBadgeText?: string;
@@ -115,7 +115,7 @@ interface PresetBlueprint {
   services: ServiceItem[];
   testimonials: TestimonialItem[];
   events?: EventItem[];
-  theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   heroVariant: 'split' | 'bento' | 'centered';
   badges?: string[];
   proofBadgeText?: string;

@@ -55,7 +55,7 @@ export function ClientApp() {
     meta.setAttribute('content', description);
 
     // Dynamic Favicon update
-    const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.profile.name.toLowerCase().includes('sheriff') || project.profile.name.toLowerCase().includes('judge');
+    const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.theme === 'campaign-judicial' || project.profile.name.toLowerCase().includes('sheriff') || project.profile.name.toLowerCase().includes('judge');
     const targetFavicon = project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png');
     let faviconLink: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
     if (!faviconLink) {
@@ -75,7 +75,7 @@ export function ClientApp() {
     );
   }
 
-  const isCampaign = project.profile.category === "Campaign & Leadership" || project.theme === "campaign-navy";
+  const isCampaign = project.profile.category === "Campaign & Leadership" || project.theme === "campaign-navy" || project.theme === "campaign-judicial";
   const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {

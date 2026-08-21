@@ -30,13 +30,13 @@ export function CampaignHeroBlock({
   const firstPhrase = words.length > 2 ? words.slice(0, -2).join(' ') : words.slice(0, -1).join(' ');
 
   return (
-    <section className="relative bg-[#00081e] text-white overflow-hidden py-12 sm:py-16 lg:py-24 flex items-center">
+    <section className="relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)] overflow-hidden py-12 sm:py-16 lg:py-24 flex items-center">
       
       {/* Premium Background Ambient Glow */}
       <div 
-        className="absolute inset-0 opacity-25 mix-blend-screen pointer-events-none" 
+        className="absolute inset-0 opacity-10 pointer-events-none" 
         style={{ 
-          backgroundImage: `radial-gradient(circle at 75% 30%, ${accentColor} 0%, transparent 60%), radial-gradient(circle at 10% 80%, #0a1f44 0%, transparent 70%)` 
+          backgroundImage: `radial-gradient(circle at 75% 30%, ${accentColor} 0%, transparent 60%), radial-gradient(circle at 10% 80%, var(--ts-border) 0%, transparent 70%)` 
         }} 
       />
 
@@ -102,7 +102,7 @@ export function CampaignHeroBlock({
                       ★
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-white tracking-wide">
+                      <p className="text-xs font-bold text-[color:var(--ts-text)] tracking-wide">
                         Master Peace Officer
                       </p>
                       <p className="text-[10px] text-stone-300">

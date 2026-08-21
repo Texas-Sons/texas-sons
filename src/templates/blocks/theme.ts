@@ -1,4 +1,4 @@
-export type ThemeName = 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+export type ThemeName = 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
 
 export interface ThemeProfile {
   theme?: string;
@@ -24,6 +24,7 @@ export interface ThemeVars extends Record<string, string> {
 
 const THEME_BG: Record<string, { bg: string; dark: boolean }> = {
   'campaign-navy': { bg: '#00081e', dark: true },
+  'campaign-judicial': { bg: '#f8fafc', dark: false },
   'crimson-bold': { bg: '#180507', dark: true },
   'emerald-gold': { bg: '#041a14', dark: true },
   luxury: { bg: '#1c1917', dark: true },
@@ -35,6 +36,10 @@ const THEME_BG: Record<string, { bg: string; dark: boolean }> = {
 // Font families must match what client.html actually loads:
 // Cinzel, Playfair Display, Inter.
 const FONTS: Record<string, { heading: string; body: string }> = {
+  judicial: {
+    heading: "'Libre Caslon Text', serif",
+    body: "'Montserrat', sans-serif",
+  },
   sans: {
     heading: "'Inter', ui-sans-serif, system-ui, sans-serif",
     body: "'Inter', ui-sans-serif, system-ui, sans-serif",
@@ -68,7 +73,8 @@ export function buildThemeVars(profile: ThemeProfile = {}): ThemeVars {
   const bg = profile.theme === 'custom' && profile.primaryColor ? profile.primaryColor : entry.bg;
   const accent = profile.accentColor || (dark ? '#f97316' : '#ea580c');
   const lightAccent = LIGHT_ACCENTS.includes(String(accent).toUpperCase());
-  const fonts = FONTS[profile.fontFamily || 'sans'] || FONTS.sans;
+  const isJudicial = profile.theme === 'campaign-judicial';
+  const fonts = isJudicial ? FONTS.judicial : (FONTS[profile.fontFamily || 'sans'] || FONTS.sans);
 
   return {
     '--ts-bg': bg,

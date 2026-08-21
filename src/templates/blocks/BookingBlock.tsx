@@ -10,7 +10,7 @@ interface BookingBlockProps {
   email?: string;
   address?: string;
   hours?: string | string[];
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   onSubmit?: (data: any) => void | Promise<void>;
 }
@@ -31,7 +31,7 @@ export function BookingBlock({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const isCampaign = theme === 'campaign-navy' ||
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') ||
     accentColor === '#C5A059' ||
     (title && (title.toLowerCase().includes('volunteer') || title.toLowerCase().includes('yard') || title.toLowerCase().includes('campaign')));
 

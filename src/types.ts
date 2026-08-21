@@ -64,7 +64,7 @@ export interface ClientIntake {
   category: 'Campaign & Leadership' | 'Food & Beverage' | 'Beauty & Wellness' | 'Home & Trade Services' | 'Professional & Medical';
   tier: Tier;
   status: IntakeStatus;
-  theme: 'campaign-navy' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
+  theme: 'campaign-navy' | 'campaign-judicial' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
   primaryColor?: string;
   accentColor?: string;
   tagline?: string;

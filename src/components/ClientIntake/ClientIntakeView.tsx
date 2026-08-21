@@ -45,6 +45,38 @@ interface ClientIntakeViewProps {
 
 const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
   {
+    id: 'intake-waylon-rogers',
+    businessName: 'Waylon Rogers campaign',
+    clientContact: 'Waylon Rogers',
+    email: 'info@waylonrogers.com',
+    phone: '(830) 555-1234',
+    address: 'Atascosa County',
+    domain: 'waylonrogers.com',
+    category: 'Campaign & Leadership',
+    tier: 'Full Custom Application',
+    status: 'Studio Ready',
+    theme: 'campaign-judicial',
+    primaryColor: '#ffffff',
+    accentColor: '#29374f',
+    tagline: 'A Lifetime of Service. A Commitment to Justice.',
+    description: 'Write-In Candidate for Atascosa County Judge. Restoring judicial integrity, protecting rural communities, and bringing fiscal responsibility to our county courts.',
+    heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200',
+    badges: ['Judicial Integrity', 'Fiscal Responsibility', 'Rural Advocacy', 'Write-In Candidate'],
+    proofBadgeText: 'Write-In Waylon Rogers for County Judge',
+    services: [
+      { title: 'Restoring Judicial Integrity', description: 'Ensuring fair, impartial, and efficient courts for all citizens of Atascosa County.', duration: 'Core Pillar', highlight: true },
+      { title: 'Fiscal Responsibility', description: 'Protecting taxpayer dollars with transparent county budgets and zero wasteful spending.', duration: 'Core Pillar' },
+      { title: 'How to Vote Write-In', description: 'Bring your ID. Go to the ballot machine. Select Write-In for County Judge, and type WAYLON ROGERS.', duration: 'Voter Guide' }
+    ],
+    testimonials: [
+      { quote: 'Waylon has the experience and the moral compass we need on the bench.', author: 'Sheriff Hector Ramirez', role: 'Law Enforcement Endorsement', rating: 5, verified: true },
+      { quote: 'A true advocate for rural Texas and a defender of our property rights.', author: 'Sarah Jenkins', role: 'Local Landowner', rating: 5, verified: true }
+    ],
+    depositAmount: 3500,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
     id: 'intake-debbie-judge',
     businessName: 'Deborah Dietzmann for Judge',
     clientContact: 'Debbie Dietzmann (Campaign Mgr: Sarah)',
@@ -889,7 +921,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 {(() => {
                   const text = `${form.businessName || ''} ${form.category || ''} ${form.tagline || ''}`.toLowerCase();
                   let rec: {
-                    theme: 'campaign-navy' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
+                    theme: 'campaign-navy' | 'campaign-judicial' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
                     primaryColor: string;
                     accentColor: string;
                     category: 'Campaign & Leadership' | 'Food & Beverage' | 'Beauty & Wellness' | 'Home & Trade Services' | 'Professional & Medical';
@@ -1047,6 +1079,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-semibold"
                     >
                       <option value="campaign-navy">Campaign Navy (Presidential & Gold)</option>
+                      <option value="campaign-judicial">Judicial Light (Navy & Crimson)</option>
                       <option value="luxury">Luxury (Amber Glow & Stone)</option>
                       <option value="crimson-bold">Crimson Bold (Texas BBQ & Heritage)</option>
                       <option value="emerald-gold">Emerald Gold (Trade & Craftsmanship)</option>

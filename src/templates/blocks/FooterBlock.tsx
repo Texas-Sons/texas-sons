@@ -12,7 +12,7 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
                      business.name.toLowerCase().includes('sheriff') ||
                      business.name.toLowerCase().includes('judge') ||
                      business.category === 'Campaign & Leadership' ||
-                     theme === 'campaign-navy';
+                     (theme === 'campaign-navy' || theme === 'campaign-judicial');
 
   const isDark = theme !== 'light';
   const currentYear = new Date().getFullYear();

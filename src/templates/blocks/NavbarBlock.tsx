@@ -9,7 +9,7 @@ interface NavbarBlockProps {
   phone?: string;
   ctaText?: string;
   ctaHref?: string;
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
 }
 
@@ -29,7 +29,7 @@ export function NavbarBlock({
   accentColor
 }: NavbarBlockProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isCampaign = theme === 'campaign-navy' || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign');
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign');
 
   // Split candidate name if formatted like "Ernest Trevino for Atascosa County Sheriff"
   let primaryName = businessName;

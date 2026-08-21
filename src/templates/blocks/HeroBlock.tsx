@@ -13,7 +13,7 @@ interface HeroBlockProps {
   reviewCount?: number;
   badges?: string[];
   variant?: 'split' | 'bento' | 'centered';
-  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'crimson-bold' | 'emerald-gold' | 'custom';
+  theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   proofBadgeText?: string;
 }
@@ -34,7 +34,7 @@ export function HeroBlock({
   accentColor,
   proofBadgeText
 }: HeroBlockProps) {
-  const isCampaign = theme === 'campaign-navy' || (accentColor === '#C5A059') || headline.toLowerCase().includes('judge') || headline.toLowerCase().includes('sheriff') || headline.toLowerCase().includes('vote');
+  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || (accentColor === '#C5A059') || headline.toLowerCase().includes('judge') || headline.toLowerCase().includes('sheriff') || headline.toLowerCase().includes('vote');
 
   const activeBadges = badges && badges.length > 0
     ? badges
