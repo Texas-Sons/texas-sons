@@ -90,7 +90,7 @@ export function NavbarBlock({
         </a>
 
         {/* Desktop Navigation Links — Stitch Synchronized Pill Track */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm">
+        <nav className="hidden xl:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm flex-shrink min-w-0">
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             
@@ -99,7 +99,7 @@ export function NavbarBlock({
                 <a
                   key={idx}
                   href={item.href}
-                  className="whitespace-nowrap inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-black bg-gradient-to-r from-[#bb0027] to-[#990020] hover:from-[#d1002e] hover:to-[#bb0027] text-white shadow-md shadow-red-950/30 border border-[#C5A059]/40 hover:scale-[1.03] active:scale-[0.98] transition-all"
+                  className="whitespace-nowrap inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-black bg-gradient-to-r from-[#bb0027] to-[#990020] hover:from-[#d1002e] hover:to-[#bb0027] text-white shadow-md shadow-red-950/30 border border-[#C5A059]/40 hover:scale-[1.03] active:scale-[0.98] transition-all flex-shrink-0"
                 >
                   <Vote className="w-3.5 h-3.5 text-[#ffdad8]" />
                   <span>{item.label}</span>
@@ -111,7 +111,7 @@ export function NavbarBlock({
               <a
                 key={idx}
                 href={item.href}
-                className="whitespace-nowrap inline-flex items-center px-3 xl:px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface)]/90 hover:shadow-xs transition-all"
+                className="whitespace-nowrap inline-flex items-center px-3 xl:px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface)]/90 hover:shadow-xs transition-all flex-shrink-0"
               >
                 {item.label}
               </a>
@@ -119,20 +119,11 @@ export function NavbarBlock({
           })}
         </nav>
 
-        {/* Desktop CTA Buttons */}
-        <div className="hidden lg:flex items-center space-x-3 xl:space-x-4 flex-shrink-0">
-          {phone && (
-            <a
-              href={`tel:${phone}`}
-              className="flex items-center text-xs xl:text-sm font-bold whitespace-nowrap transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)]"
-            >
-              <Phone className="w-4 h-4 mr-1.5 text-[color:var(--ts-accent)]" />
-              <span>{phone}</span>
-            </a>
-          )}
+        {/* Right CTA Button — Guaranteed Flex-Shrink-0 & No Cut Off */}
+        <div className="hidden sm:flex items-center flex-shrink-0 whitespace-nowrap">
           <a
             href={ctaHref}
-            className="inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95"
+            className="inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95 flex-shrink-0"
           >
             <span>{ctaText}</span>
             <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -140,16 +131,7 @@ export function NavbarBlock({
         </div>
 
         {/* Mobile Hamburger Toggle */}
-        <div className="flex lg:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
-          {phone && (
-            <a
-              href={`tel:${phone}`}
-              className="p-2 rounded-lg text-[color:var(--ts-accent)] hover:bg-[color:var(--ts-surface-raised)]"
-              aria-label={`Call ${businessName} at ${phone}`}
-            >
-              <Phone className="w-5 h-5" />
-            </a>
-          )}
+        <div className="flex xl:hidden items-center space-x-2 flex-shrink-0">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-lg text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)]"
@@ -163,7 +145,7 @@ export function NavbarBlock({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <div className="xl:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             return (

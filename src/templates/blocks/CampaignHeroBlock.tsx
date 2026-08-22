@@ -302,26 +302,14 @@ export function CampaignHeroBlock({
               </div>
             )}
 
-            {/* CTA Buttons */}
+            {/* Primary Platform CTA Button */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
               <a 
-                href={resolvedCtaHref}
-                className={`px-8 py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-center ${
-                  isWriteIn 
-                    ? 'bg-gradient-to-r from-[#bb0027] to-[#990020] text-white border border-[#C5A059]/40 shadow-red-950/30' 
-                    : ''
-                }`}
-                style={isWriteIn ? {} : { backgroundColor: accentColor, color: '#00081e' }}
-              >
-                <Vote className="w-4 h-4" />
-                <span>{resolvedCtaText}</span>
-              </a>
-              <a 
                 href="#services"
-                className="px-7 py-4 rounded-xl font-bold text-sm uppercase tracking-wider border border-[color:var(--ts-border)] hover:border-current hover:bg-[color:var(--ts-surface)] transition-all flex items-center justify-center gap-2 text-[color:var(--ts-text)] text-center"
+                className="px-8 py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-center bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95"
               >
                 <span>{resolvedSecondaryText}</span>
-                <ChevronRight className="w-4 h-4 opacity-60" />
+                <ChevronRight className="w-4 h-4" />
               </a>
             </div>
 
