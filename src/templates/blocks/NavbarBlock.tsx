@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, ArrowRight, Shield, Star } from 'lucide-react';
+import { Menu, X, Phone, ArrowRight, Shield, Star, Vote } from 'lucide-react';
 import { ScalesOfJusticeIcon } from './CampaignIcons';
 import { NavItem } from './types';
 
@@ -50,8 +50,8 @@ export function NavbarBlock({
   }
 
   return (
-    <header className={`sticky top-0 z-40 w-full backdrop-blur-md border-b transition-colors duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)] text-[color:var(--ts-text)]`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <header className={`sticky top-0 z-40 w-full backdrop-blur-md border-b transition-colors duration-200 bg-[color:var(--ts-surface)]/95 border-[color:var(--ts-border)] text-[color:var(--ts-text)]`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 lg:gap-4">
 
         {/* Brand Logo & Name */}
         <a href="#" className="flex items-center space-x-3 group flex-shrink-0">
@@ -89,41 +89,58 @@ export function NavbarBlock({
           </div>
         </a>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden xl:flex items-center space-x-6 xl:space-x-8">
-          {navItems.map((item, idx) => (
-            <a
-              key={idx}
-              href={item.href}
-              className={`text-sm font-medium transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-accent)]`}
-            >
-              {item.label}
-            </a>
-          ))}
+        {/* Desktop Navigation Links — Stitch Synchronized Pill Track */}
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm">
+          {navItems.map((item, idx) => {
+            const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
+            
+            if (isWriteInPill) {
+              return (
+                <a
+                  key={idx}
+                  href={item.href}
+                  className="whitespace-nowrap inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-black bg-gradient-to-r from-[#bb0027] to-[#990020] hover:from-[#d1002e] hover:to-[#bb0027] text-white shadow-md shadow-red-950/30 border border-[#C5A059]/40 hover:scale-[1.03] active:scale-[0.98] transition-all"
+                >
+                  <Vote className="w-3.5 h-3.5 text-[#ffdad8]" />
+                  <span>{item.label}</span>
+                </a>
+              );
+            }
+
+            return (
+              <a
+                key={idx}
+                href={item.href}
+                className="whitespace-nowrap inline-flex items-center px-3 xl:px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface)]/90 hover:shadow-xs transition-all"
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         {/* Desktop CTA Buttons */}
-        <div className="hidden lg:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-3 xl:space-x-4 flex-shrink-0">
           {phone && (
             <a
               href={`tel:${phone}`}
-              className="flex items-center text-sm font-medium whitespace-nowrap transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)]"
+              className="flex items-center text-xs xl:text-sm font-bold whitespace-nowrap transition-colors text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)]"
             >
-              <Phone className="w-4 h-4 mr-2 text-[color:var(--ts-accent)]" />
-              {phone}
+              <Phone className="w-4 h-4 mr-1.5 text-[color:var(--ts-accent)]" />
+              <span>{phone}</span>
             </a>
           )}
           <a
             href={ctaHref}
-            className={`inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
+            className="inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95"
           >
-            {ctaText}
-            <ArrowRight className="w-4 h-4 ml-2" />
+            <span>{ctaText}</span>
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </a>
         </div>
 
         {/* Mobile Hamburger Toggle */}
-        <div className="flex xl:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
+        <div className="flex lg:hidden items-center space-x-2 sm:space-x-3 flex-shrink-0">
           {phone && (
             <a
               href={`tel:${phone}`}
@@ -146,24 +163,32 @@ export function NavbarBlock({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-b px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
-          {navItems.map((item, idx) => (
-            <a
-              key={idx}
-              href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-base font-medium text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)] hover:text-[color:var(--ts-accent)]"
-            >
-              {item.label}
-            </a>
-          ))}
+        <div className="lg:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+          {navItems.map((item, idx) => {
+            const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
+            return (
+              <a
+                key={idx}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  isWriteInPill
+                    ? 'bg-gradient-to-r from-[#bb0027] to-[#990020] text-white border border-[#C5A059]/40 flex items-center justify-between'
+                    : 'text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)] hover:text-[color:var(--ts-accent)]'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isWriteInPill && <Vote className="w-4 h-4 text-[#ffdad8]" />}
+              </a>
+            );
+          })}
           <div className="pt-2">
             <a
               href={ctaHref}
               onClick={() => setMobileMenuOpen(false)}
-              className={`w-full flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold shadow-md bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
+              className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-sm font-extrabold uppercase tracking-wider shadow-md bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95"
             >
-              {ctaText}
+              <span>{ctaText}</span>
               <ArrowRight className="w-4 h-4 ml-2" />
             </a>
           </div>

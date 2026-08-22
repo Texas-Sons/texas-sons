@@ -87,6 +87,10 @@ export function CampaignHeroBlock({
   const resolvedCtaHref = isWriteIn ? '#write-in-guide' : '#contact';
   const resolvedSecondaryText = isJudicial ? 'Core Judicial Platform' : secondaryCtaText;
 
+  const resolvedHeroImage = (heroImage && !heroImage.includes('unsplash.com/photo-1589829545856') && !heroImage.includes('example.com'))
+    ? heroImage
+    : (isJudicial ? '/images/candidates/waylon-rogers.png' : (isSheriff ? '/images/candidates/trevino.jpg' : heroImage));
+
   return (
     <section className="relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)] overflow-hidden py-12 sm:py-16 lg:py-24 flex items-center">
       
@@ -156,11 +160,16 @@ export function CampaignHeroBlock({
               {/* Main Portrait Frame */}
               <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#C5A059]/40 bg-stone-950 shadow-2xl shadow-black/90">
                 <img 
-                  src={heroImage} 
+                  src={resolvedHeroImage} 
                   alt={headline}
                   className="w-full h-[360px] sm:h-[460px] lg:h-[540px] object-cover object-top"
                   loading="eager"
                   fetchPriority="high"
+                  onError={(e) => {
+                    if (isJudicial) {
+                      (e.currentTarget as HTMLImageElement).src = '/images/candidates/waylon-rogers.png';
+                    }
+                  }}
                 />
 
                 {/* Subtle Bottom Vignette for Visual Anchor */}

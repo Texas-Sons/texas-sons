@@ -522,6 +522,21 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     }
   }, [initialSnapshot]);
 
+  // Auto-upgrade and heal legacy candidate image paths
+  useEffect(() => {
+    if (project.profile?.name?.toLowerCase().includes('waylon')) {
+      if (!project.profile.heroImage || project.profile.heroImage.includes('unsplash.com/photo-1589829545856') || project.profile.heroImage.includes('example.com')) {
+        setProject(prev => ({
+          ...prev,
+          profile: {
+            ...prev.profile,
+            heroImage: '/images/candidates/waylon-rogers.png'
+          }
+        }));
+      }
+    }
+  }, [project.profile?.name, project.profile?.heroImage]);
+
   const handleApplyPreset = (preset: PresetBlueprint) => {
     const newSnapshot: ProjectSnapshot = {
       id: `prj-${Date.now()}`,
