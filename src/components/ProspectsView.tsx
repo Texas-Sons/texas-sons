@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck, Building2 } from 'lucide-react';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const API_KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY || '';
@@ -33,6 +33,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
   const placesLib = useMapsLibrary('places');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
+  const [businessName, setBusinessName] = useState('');
   const [industry, setIndustry] = useState('Any Industry');
   const [isSearching, setIsSearching] = useState(false);
   const [prospects, setProspects] = useState<any[]>([]);
@@ -105,11 +106,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     const cachedCity = localStorage.getItem('txsons_last_search_city');
     const cachedState = localStorage.getItem('txsons_last_search_state');
     const cachedIndustry = localStorage.getItem('txsons_last_search_industry');
+    const cachedBusiness = localStorage.getItem('txsons_last_search_business');
     const cachedProspects = localStorage.getItem('txsons_last_search_results');
 
     if (cachedCity) setCity(cachedCity);
     if (cachedState) setState(cachedState);
     if (cachedIndustry) setIndustry(cachedIndustry);
+    if (cachedBusiness) setBusinessName(cachedBusiness);
     if (cachedProspects) {
       try { setProspects(JSON.parse(cachedProspects)); } catch (e) {}
     }
@@ -240,8 +243,19 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     setIsSearching(true);
     try {
       const locationTerm = inputRef.current?.value || `${city}, ${state}`;
-      const industryTerm = industry && industry !== 'Any Industry' ? industry : 'Businesses';
-      const textQuery = `${industryTerm} in ${locationTerm}`;
+      const industryTerm = industry && industry !== 'Any Industry' ? industry : '';
+      const nameTerm = businessName.trim();
+
+      let textQuery = '';
+      if (nameTerm && industryTerm) {
+        textQuery = `${nameTerm} ${industryTerm} in ${locationTerm}`;
+      } else if (nameTerm) {
+        textQuery = `${nameTerm} in ${locationTerm}`;
+      } else if (industryTerm) {
+        textQuery = `${industryTerm} in ${locationTerm}`;
+      } else {
+        textQuery = `Businesses in ${locationTerm}`;
+      }
 
       const response = await placesLib.Place.searchByText({
         textQuery,
@@ -252,14 +266,16 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
       incrementUsage('searches');
 
       if (response.places) {
-        // Filter for businesses that either have NO website listed
-        const leads = response.places.filter(place => !place.websiteURI);
+        // If a specific business name was searched, show all results matching that name
+        // If searching broadly by industry/location, filter to businesses without a website
+        const leads = nameTerm ? response.places : response.places.filter(place => !place.websiteURI);
         setProspects(leads);
         
         // Cache the results
         localStorage.setItem('txsons_last_search_city', locationTerm);
         localStorage.setItem('txsons_last_search_state', '');
         localStorage.setItem('txsons_last_search_industry', industry);
+        localStorage.setItem('txsons_last_search_business', nameTerm);
         localStorage.setItem('txsons_last_search_results', JSON.stringify(leads));
       } else {
         setProspects([]);
@@ -308,7 +324,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-display font-bold text-stone-100">Lead Finder</h1>
-            <p className="text-stone-400 mt-1">Search Google Maps for businesses without websites to prospect.</p>
+            <p className="text-stone-400 mt-1">Search Google Maps for specific businesses or companies without websites to prospect.</p>
           </div>
           <div className="text-right flex flex-col items-end gap-3">
             <div className="flex items-center gap-1.5 bg-stone-900 border border-stone-800 p-1 rounded-xl">
@@ -364,23 +380,34 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           </div>
         )}
 
-        <form onSubmit={handleSearch} className="mb-10 flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
+        <form onSubmit={handleSearch} className="mb-10 grid grid-cols-1 md:grid-cols-12 gap-3">
+          <div className="md:col-span-4 relative">
+            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 pointer-events-none" />
+            <input
+              type="text"
+              id="business-name-input"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              placeholder="Business Name (Optional)"
+              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors text-sm"
+            />
+          </div>
+          <div className="md:col-span-4 relative">
             <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 pointer-events-none" />
             <input
               ref={inputRef}
               type="text"
               id="location-input"
               required
-              placeholder="Search City (e.g. Austin, TX)"
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
+              placeholder="City, State (e.g. Austin, TX)"
+              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors text-sm"
             />
           </div>
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 pointer-events-none" />
+          <div className="md:col-span-2 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 pointer-events-none" />
             <select
               id="industry-select"
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors appearance-none"
+              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-9 pr-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors appearance-none text-sm"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
             >
@@ -389,14 +416,16 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               ))}
             </select>
           </div>
-          <button 
-            type="submit" 
-            disabled={isSearching || !placesLib || apiUsage.searches >= MONTHLY_LIMIT}
-            className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-3 rounded-xl font-medium disabled:opacity-50 transition-colors flex items-center gap-2"
-          >
-            {isSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
-            Find Leads
-          </button>
+          <div className="md:col-span-2">
+            <button 
+              type="submit" 
+              disabled={isSearching || !placesLib || apiUsage.searches >= MONTHLY_LIMIT}
+              className="w-full h-full min-h-[46px] bg-orange-600 hover:bg-orange-500 text-white px-4 py-2.5 rounded-xl font-bold text-sm disabled:opacity-50 transition-all shadow-md shadow-orange-600/20 flex items-center justify-center gap-2"
+            >
+              {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              Find Leads
+            </button>
+          </div>
         </form>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -449,10 +478,19 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                     <span>{prospect.rating ? `${prospect.rating} (${prospect.userRatingCount} reviews)` : 'No ratings yet'}</span>
                   </div>
                   
-                  <div className="flex items-center gap-2 text-sm text-red-400/80 font-medium">
-                    <Globe className="w-4 h-4 flex-shrink-0" />
-                    <span>No Website Listed</span>
-                  </div>
+                  {prospect.websiteURI ? (
+                    <div className="flex items-center gap-2 text-sm text-stone-400">
+                      <Globe className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                      <a href={prospect.websiteURI} target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline truncate">
+                        {prospect.websiteURI.replace(/^https?:\/\/(www\.)?/, '')}
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-red-400/80 font-medium">
+                      <Globe className="w-4 h-4 flex-shrink-0" />
+                      <span>No Website Listed</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex gap-2 mt-auto">
