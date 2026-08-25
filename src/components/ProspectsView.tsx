@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity } from 'lucide-react';
+import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck } from 'lucide-react';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const API_KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY || '';
@@ -36,6 +36,8 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
   const [industry, setIndustry] = useState('Any Industry');
   const [isSearching, setIsSearching] = useState(false);
   const [prospects, setProspects] = useState<any[]>([]);
+  const [savedProspects, setSavedProspects] = useState<any[]>([]);
+  const [filterTab, setFilterTab] = useState<'all' | 'saved' | 'hidden'>('all');
   const [selectedProspect, setSelectedProspect] = useState<any>(null);
   const [proposalDraft, setProposalDraft] = useState('');
   const [isDrafting, setIsDrafting] = useState(false);
@@ -47,7 +49,6 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
   });
   const [showApiDashboard, setShowApiDashboard] = useState(false);
   const [dismissedPlaceIds, setDismissedPlaceIds] = useState<string[]>([]);
-  const [showHidden, setShowHidden] = useState(false);
   const [gatheringId, setGatheringId] = useState<string | null>(null);
 
   const incrementUsage = (type: keyof typeof apiUsage) => {
@@ -57,6 +58,21 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
       const monthKey = `txsons_api_usage_${d.getFullYear()}_${d.getMonth() + 1}`;
       localStorage.setItem(monthKey, JSON.stringify(next));
       return next;
+    });
+  };
+
+  const handleToggleSave = (prospect: any) => {
+    if (!prospect || !prospect.id) return;
+    setSavedProspects(prev => {
+      const isSaved = prev.some(p => p.id === prospect.id);
+      let updated: any[];
+      if (isSaved) {
+        updated = prev.filter(p => p.id !== prospect.id);
+      } else {
+        updated = [prospect, ...prev];
+      }
+      localStorage.setItem('txsons_saved_leads', JSON.stringify(updated));
+      return updated;
     });
   };
 
@@ -77,6 +93,12 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     const storedDismissed = localStorage.getItem('txsons_dismissed_places');
     if (storedDismissed) {
       try { setDismissedPlaceIds(JSON.parse(storedDismissed)); } catch (e) {}
+    }
+
+    // Load saved leads
+    const storedSaved = localStorage.getItem('txsons_saved_leads');
+    if (storedSaved) {
+      try { setSavedProspects(JSON.parse(storedSaved)); } catch (e) {}
     }
 
     // Load cached search state
@@ -186,6 +208,15 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
       const updatedProspects = prospects.map(p => p.id === prospect.id ? enrichedProspect : p);
       setProspects(updatedProspects);
       localStorage.setItem('txsons_last_search_results', JSON.stringify(updatedProspects));
+
+      setSavedProspects(prev => {
+        if (prev.some(p => p.id === prospect.id)) {
+          const updatedSaved = prev.map(p => p.id === prospect.id ? enrichedProspect : p);
+          localStorage.setItem('txsons_saved_leads', JSON.stringify(updatedSaved));
+          return updatedSaved;
+        }
+        return prev;
+      });
       
       setSelectedProspect(enrichedProspect);
       incrementUsage('assets');
@@ -280,13 +311,34 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
             <p className="text-stone-400 mt-1">Search Google Maps for businesses without websites to prospect.</p>
           </div>
           <div className="text-right flex flex-col items-end gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-stone-400">Show Hidden</span>
+            <div className="flex items-center gap-1.5 bg-stone-900 border border-stone-800 p-1 rounded-xl">
               <button 
-                onClick={() => setShowHidden(!showHidden)}
-                className={`w-10 h-6 rounded-full transition-colors relative ${showHidden ? 'bg-orange-500' : 'bg-stone-800'}`}
+                type="button"
+                onClick={() => setFilterTab('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  filterTab === 'all' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200'
+                }`}
               >
-                <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${showHidden ? 'left-5' : 'left-1'}`} />
+                All Leads ({prospects.filter(p => !dismissedPlaceIds.includes(p.id)).length})
+              </button>
+              <button 
+                type="button"
+                onClick={() => setFilterTab('saved')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  filterTab === 'saved' ? 'bg-amber-600 text-white shadow-sm shadow-amber-600/30' : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                Saved for Later ({savedProspects.length})
+              </button>
+              <button 
+                type="button"
+                onClick={() => setFilterTab('hidden')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  filterTab === 'hidden' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                Hidden ({dismissedPlaceIds.length})
               </button>
             </div>
             
@@ -348,81 +400,114 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
         </form>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {prospects
-            .filter(p => showHidden ? dismissedPlaceIds.includes(p.id) : !dismissedPlaceIds.includes(p.id))
-            .map((prospect, idx) => (
-            <div key={idx} className={`bg-stone-900 border ${showHidden ? 'border-stone-800 opacity-70' : 'border-stone-800'} rounded-xl p-6 hover:border-orange-500/30 transition-colors flex flex-col`}>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {prospect.googleMapsURI ? (
-                  <a href={prospect.googleMapsURI} target="_blank" rel="noreferrer" className="hover:text-orange-400 hover:underline transition-colors">
-                    {prospect.displayName}
-                  </a>
-                ) : (
-                  prospect.displayName
-                )}
-              </h3>
-              
-              <div className="space-y-2 mb-6 flex-1">
-                {prospect.primaryTypeDisplayName && (
-                  <div className="inline-block px-2.5 py-1 rounded-md bg-stone-800 text-xs text-stone-300 font-medium mb-2">
-                    {prospect.primaryTypeDisplayName}
+          {(filterTab === 'saved'
+            ? savedProspects
+            : filterTab === 'hidden'
+            ? prospects.filter(p => dismissedPlaceIds.includes(p.id))
+            : prospects.filter(p => !dismissedPlaceIds.includes(p.id))
+          ).map((prospect, idx) => {
+            const isSaved = savedProspects.some(p => p.id === prospect.id);
+            return (
+              <div key={idx} className={`bg-stone-900 border ${filterTab === 'hidden' ? 'border-stone-800 opacity-70' : isSaved ? 'border-amber-500/40 shadow-lg shadow-amber-500/5' : 'border-stone-800'} rounded-xl p-6 hover:border-orange-500/30 transition-colors flex flex-col`}>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h3 className="text-lg font-semibold text-white">
+                    {prospect.googleMapsURI ? (
+                      <a href={prospect.googleMapsURI} target="_blank" rel="noreferrer" className="hover:text-orange-400 hover:underline transition-colors">
+                        {prospect.displayName}
+                      </a>
+                    ) : (
+                      prospect.displayName
+                    )}
+                  </h3>
+                  <button
+                    onClick={() => handleToggleSave(prospect)}
+                    className={`p-1.5 rounded-lg border transition-all ${
+                      isSaved
+                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30'
+                        : 'bg-stone-800 text-stone-400 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                    }`}
+                    title={isSaved ? "Remove from Saved for Later" : "Save Lead for Later"}
+                  >
+                    {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                  </button>
+                </div>
+                
+                <div className="space-y-2 mb-6 flex-1">
+                  {prospect.primaryTypeDisplayName && (
+                    <div className="inline-block px-2.5 py-1 rounded-md bg-stone-800 text-xs text-stone-300 font-medium mb-2">
+                      {prospect.primaryTypeDisplayName}
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start gap-2 text-sm text-stone-400">
+                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-stone-500" />
+                    <span>{prospect.formattedAddress}</span>
                   </div>
-                )}
-                
-                <div className="flex items-start gap-2 text-sm text-stone-400">
-                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-stone-500" />
-                  <span>{prospect.formattedAddress}</span>
+                  
+                  <div className="flex items-center gap-2 text-sm text-stone-400">
+                    <Star className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                    <span>{prospect.rating ? `${prospect.rating} (${prospect.userRatingCount} reviews)` : 'No ratings yet'}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-red-400/80 font-medium">
+                    <Globe className="w-4 h-4 flex-shrink-0" />
+                    <span>No Website Listed</span>
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-2 text-sm text-stone-400">
-                  <Star className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                  <span>{prospect.rating ? `${prospect.rating} (${prospect.userRatingCount} reviews)` : 'No ratings yet'}</span>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm text-red-400/80 font-medium">
-                  <Globe className="w-4 h-4 flex-shrink-0" />
-                  <span>No Website Listed</span>
+                <div className="flex gap-2 mt-auto">
+                  <button
+                    onClick={() => handleDraftProposal(prospect)}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm font-medium transition-colors border border-stone-700"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Draft AI Proposal
+                  </button>
+                  <button
+                    onClick={() => handleGatherAssets(prospect)}
+                    disabled={gatheringId === prospect.id}
+                    className="flex-none flex items-center justify-center px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg transition-colors border border-stone-700 disabled:opacity-50"
+                    title="Pull Site Assets"
+                  >
+                    {gatheringId === prospect.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4 text-orange-400" />}
+                  </button>
+                  {filterTab === 'hidden' ? (
+                    <button
+                      onClick={() => handleRestore(prospect.id)}
+                      className="flex-none px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm font-medium transition-colors border border-stone-700"
+                      title="Restore Lead"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleDismiss(prospect.id)}
+                      className="flex-none px-3 py-2.5 bg-stone-800 hover:bg-red-900/50 text-stone-400 hover:text-red-400 rounded-lg text-sm font-medium transition-colors border border-stone-700"
+                      title="Hide Lead"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
-              
-              <div className="flex gap-2 mt-auto">
-                <button
-                  onClick={() => handleDraftProposal(prospect)}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm font-medium transition-colors border border-stone-700"
-                >
-                  <Mail className="w-4 h-4" />
-                  Draft AI Proposal
-                </button>
-                <button
-                  onClick={() => handleGatherAssets(prospect)}
-                  disabled={gatheringId === prospect.id}
-                  className="flex-none flex items-center justify-center px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg transition-colors border border-stone-700 disabled:opacity-50"
-                  title="Pull Site Assets"
-                >
-                  {gatheringId === prospect.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4 text-orange-400" />}
-                </button>
-                {showHidden ? (
-                  <button
-                    onClick={() => handleRestore(prospect.id)}
-                    className="flex-none px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-sm font-medium transition-colors border border-stone-700"
-                    title="Restore Lead"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleDismiss(prospect.id)}
-                    className="flex-none px-3 py-2.5 bg-stone-800 hover:bg-red-900/50 text-stone-400 hover:text-red-400 rounded-lg text-sm font-medium transition-colors border border-stone-700"
-                    title="Hide Lead"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
-          {prospects.length === 0 && !isSearching && city && (
+          {filterTab === 'saved' && savedProspects.length === 0 && (
+            <div className="col-span-full py-16 text-center text-stone-500 border border-dashed border-stone-800 rounded-xl">
+              <Bookmark className="w-8 h-8 text-stone-600 mx-auto mb-3" />
+              <p className="text-base font-semibold text-stone-300 mb-1">No saved leads yet</p>
+              <p className="text-sm text-stone-500">Click the bookmark icon on any lead to save it for later review.</p>
+            </div>
+          )}
+
+          {filterTab === 'hidden' && dismissedPlaceIds.length === 0 && (
+            <div className="col-span-full py-16 text-center text-stone-500 border border-dashed border-stone-800 rounded-xl">
+              No hidden leads.
+            </div>
+          )}
+
+          {filterTab === 'all' && prospects.length === 0 && !isSearching && city && (
             <div className="col-span-full py-16 text-center text-stone-500 border border-dashed border-stone-800 rounded-xl">
               No matching prospects found without websites. Try a broader search.
             </div>
@@ -438,13 +523,38 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-orange-500" />
                 <h3 className="text-lg font-semibold text-white">{selectedProspect.displayName} - Workspace</h3>
+                {savedProspects.some(p => p.id === selectedProspect.id) && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold border border-amber-500/30">
+                    <BookmarkCheck className="w-3 h-3" /> Saved for Later
+                  </span>
+                )}
               </div>
-              <button 
-                onClick={() => setSelectedProspect(null)}
-                className="text-stone-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleToggleSave(selectedProspect)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    savedProspects.some(p => p.id === selectedProspect.id)
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                      : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                  }`}
+                >
+                  {savedProspects.some(p => p.id === selectedProspect.id) ? (
+                    <>
+                      <BookmarkCheck className="w-3.5 h-3.5 text-amber-400" /> Saved
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="w-3.5 h-3.5" /> Save for Later
+                    </>
+                  )}
+                </button>
+                <button 
+                  onClick={() => setSelectedProspect(null)}
+                  className="text-stone-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
             
             <div className="flex flex-col md:flex-row overflow-hidden flex-1">
@@ -571,23 +681,43 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               </div>
             </div>
             
-            <div className="px-6 py-4 border-t border-stone-800 bg-stone-950/50 flex justify-end gap-3">
-              <button 
-                onClick={() => setSelectedProspect(null)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+            <div className="px-6 py-4 border-t border-stone-800 bg-stone-950/50 flex items-center justify-between">
+              <button
+                onClick={() => handleToggleSave(selectedProspect)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all flex items-center gap-2 ${
+                  savedProspects.some(p => p.id === selectedProspect.id)
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                    : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                }`}
               >
-                Close
+                {savedProspects.some(p => p.id === selectedProspect.id) ? (
+                  <>
+                    <BookmarkCheck className="w-4 h-4 text-amber-400" /> Lead Saved for Later
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4" /> Save Lead for Later
+                  </>
+                )}
               </button>
-              <button 
-                disabled={isDrafting || gatheringId === selectedProspect.id}
-                onClick={() => {
-                  onConvert(selectedProspect);
-                }}
-                className="px-5 py-2 rounded-lg text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white disabled:opacity-50 transition-colors flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Create Project Scaffold
-              </button>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setSelectedProspect(null)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+                >
+                  Close
+                </button>
+                <button 
+                  disabled={isDrafting || gatheringId === selectedProspect.id}
+                  onClick={() => {
+                    onConvert(selectedProspect);
+                  }}
+                  className="px-5 py-2 rounded-lg text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white disabled:opacity-50 transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Project Scaffold
+                </button>
+              </div>
             </div>
           </div>
         </div>
