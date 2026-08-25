@@ -164,7 +164,7 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/8 text-orange-400 text-xs font-semibold mb-8 backdrop-blur-sm">
             <Sparkles className="w-3.5 h-3.5" />
-            Valdez & Co. · Custom Web Development & Infrastructure
+            TX Sons · Custom Web Development & Infrastructure
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black text-white mb-6 tracking-tight leading-[0.95]">
@@ -203,7 +203,7 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               id="hero-inquiry-btn"
-              href="mailto:contact.txsons@gmail.com?subject=Custom%20Website%20Inquiry%20-%20Valdez%20%26%20Co."
+              href="mailto:contact.txsons@gmail.com?subject=Custom%20Website%20Inquiry%20-%20TX%20Sons"
               className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white text-base font-bold transition-all hover:scale-105 active:scale-100 shadow-2xl shadow-orange-600/30"
             >
               <Zap className="w-5 h-5" />
@@ -417,14 +417,14 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               id="cta-contact-btn"
-              href="mailto:contact.txsons@gmail.com?subject=Custom%20Website%20Inquiry"
+              href="mailto:contact.txsons@gmail.com?subject=Custom%20Website%20Inquiry%20-%20TX%20Sons"
               className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white text-lg font-black transition-all hover:scale-105 active:scale-100 shadow-2xl shadow-orange-600/30"
             >
               <Zap className="w-6 h-6" />
-              Contact Valdez & Co.
+              Contact TX Sons
             </a>
           </div>
-          <p className="text-stone-600 text-xs mt-8">Morgan Valdez · Pleasanton, TX · contact.txsons@gmail.com</p>
+          <p className="text-stone-600 text-xs mt-8">TX Sons · Pleasanton, TX · contact.txsons@gmail.com</p>
         </div>
       </section>
 
