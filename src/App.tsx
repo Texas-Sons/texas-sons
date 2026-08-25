@@ -357,11 +357,13 @@ export default function App() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
-        {/* Top Header */}
-        <TopBar 
-          currentView={currentView} 
-          onLogout={handleLogout} 
-        />
+        {/* Top Header (Shown on standard views; 1-Click Studio has its own full control header) */}
+        {currentView !== 'agent-builder' && (
+          <TopBar 
+            currentView={currentView} 
+            onLogout={handleLogout} 
+          />
+        )}
 
         {/* Main Canvas Area */}
         {currentView === 'agent-builder' ? (

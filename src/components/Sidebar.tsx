@@ -54,7 +54,7 @@ export default function Sidebar({
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 bottom-0 z-40 bg-stone-950 text-stone-300 flex flex-col border-r border-stone-800 transition-all duration-200 ease-in-out select-none ${
+        className={`fixed top-0 left-0 bottom-0 z-[60] bg-stone-950 text-stone-300 flex flex-col border-r border-stone-800 transition-all duration-200 ease-in-out select-none ${
           isExpanded 
             ? 'w-60 shadow-2xl shadow-black/80 bg-stone-950/98 backdrop-blur-xl' 
             : 'w-14'

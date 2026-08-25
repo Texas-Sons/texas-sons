@@ -904,7 +904,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : 'h-full flex-1 overflow-hidden'
     }`}>
       {/* Top Studio Action Bar (Redesigned per Modern Mockup) */}
-      <header className="h-16 border-b border-stone-800/80 px-4 sm:px-6 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-50 gap-4">
+      <header className="h-16 border-b border-stone-800/80 px-4 sm:px-6 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-20 gap-4">
         
         {/* Left Section: Brand & Grouped Action Pill */}
         <div className="flex items-center gap-4">
