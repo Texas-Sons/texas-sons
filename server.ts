@@ -22,11 +22,39 @@ interface SiteConfig {
 }
 
 // ---------------------------------------------------------------------------
+// Security & Path Traversal Guards (OWASP / CWE-22)
+// ---------------------------------------------------------------------------
+
+function sanitizeIdentifier(id: string): string {
+  if (!id || typeof id !== 'string') {
+    throw new Error('Invalid identifier provided');
+  }
+  // Strip any directory traversal sequences, slashes, or null bytes
+  const sanitized = id.replace(/[^a-zA-Z0-9_-]/g, '');
+  if (!sanitized) {
+    throw new Error('Identifier cannot be empty after sanitization');
+  }
+  return sanitized;
+}
+
+function safeResolvePath(baseDir: string, ...segments: string[]): string {
+  const resolvedBase = path.resolve(baseDir);
+  const safeSegments = segments.map(s => path.normalize(s).replace(/^(\.\.[\/\\])+/, ''));
+  const resolvedTarget = path.resolve(resolvedBase, ...safeSegments);
+  
+  if (!resolvedTarget.startsWith(resolvedBase)) {
+    throw new Error('Security Violation: Path traversal attempt detected');
+  }
+  return resolvedTarget;
+}
+
+// ---------------------------------------------------------------------------
 // Shared template engine
 // ---------------------------------------------------------------------------
 
 async function loadManifest(templateId: string): Promise<any> {
-  const manifestPath = path.join(TEMPLATES_ROOT, templateId, 'manifest.json');
+  const safeId = sanitizeIdentifier(templateId);
+  const manifestPath = safeResolvePath(TEMPLATES_ROOT, safeId, 'manifest.json');
   return JSON.parse(await fs.readFile(manifestPath, 'utf8'));
 }
 
@@ -57,11 +85,15 @@ async function renderSite(
   options: { includeAdmin?: boolean } = {}
 ): Promise<{ desktop: string; mobile: string | null; admin: string | null }> {
   const includeAdmin = options.includeAdmin ?? true;
-  const manifest = await loadManifest(templateId);
-  const versionFiles = manifest.versions?.[versionId];
-  const templateDir = path.join(TEMPLATES_ROOT, templateId);
-  const desktopFile = path.join(templateDir, versionFiles?.desktop || `${versionId}-desktop.html`);
-  const mobileFile = path.join(templateDir, versionFiles?.mobile || `${versionId}-mobile.html`);
+  const safeTemplateId = sanitizeIdentifier(templateId);
+  const safeVersionId = sanitizeIdentifier(versionId);
+  const manifest = await loadManifest(safeTemplateId);
+  const versionFiles = manifest.versions?.[safeVersionId];
+  const templateDir = safeResolvePath(TEMPLATES_ROOT, safeTemplateId);
+  const desktopFilename = path.basename(versionFiles?.desktop || `${safeVersionId}-desktop.html`);
+  const mobileFilename = path.basename(versionFiles?.mobile || `${safeVersionId}-mobile.html`);
+  const desktopFile = safeResolvePath(templateDir, desktopFilename);
+  const mobileFile = safeResolvePath(templateDir, mobileFilename);
 
   let desktop: string | null = null;
   try {
@@ -79,8 +111,8 @@ async function renderSite(
   }
 
   let admin: string | null = null;
-  if (includeAdmin && templateId !== 'universal-admin') {
-    const adminFile = path.join(TEMPLATES_ROOT, 'admin', 'universal-admin.html');
+  if (includeAdmin && safeTemplateId !== 'universal-admin') {
+    const adminFile = safeResolvePath(TEMPLATES_ROOT, 'admin', 'universal-admin.html');
     try {
       admin = processHtml(await fs.readFile(adminFile, 'utf8'), config);
     } catch {
@@ -555,20 +587,21 @@ async function startServer() {
   app.post("/api/generate-config", async (req, res) => {
     try {
       const { templateId, versionId, business } = req.body;
-      if (!templateId || !versionId) {
-        return res.status(400).json({ success: false, error: "templateId and versionId are required" });
-      }
+      const safeTemplateId = sanitizeIdentifier(templateId);
+      const safeVersionId = sanitizeIdentifier(versionId);
 
-      const manifest = await loadManifest(templateId);
-      const versionFiles = manifest.versions?.[versionId];
-      const templateDir = path.join(TEMPLATES_ROOT, templateId);
+      const manifest = await loadManifest(safeTemplateId);
+      const versionFiles = manifest.versions?.[safeVersionId];
+      const templateDir = safeResolvePath(TEMPLATES_ROOT, safeTemplateId);
 
       let html = '';
       try {
-        html += await fs.readFile(path.join(templateDir, versionFiles?.desktop || `${versionId}-desktop.html`), 'utf8');
+        const desktopFilename = path.basename(versionFiles?.desktop || `${safeVersionId}-desktop.html`);
+        html += await fs.readFile(safeResolvePath(templateDir, desktopFilename), 'utf8');
       } catch {}
       try {
-        html += await fs.readFile(path.join(templateDir, versionFiles?.mobile || `${versionId}-mobile.html`), 'utf8');
+        const mobileFilename = path.basename(versionFiles?.mobile || `${safeVersionId}-mobile.html`);
+        html += await fs.readFile(safeResolvePath(templateDir, mobileFilename), 'utf8');
       } catch {}
 
       const tokensInHtml = extractTokens(html);
@@ -1072,19 +1105,22 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
       };
 
       // Favicon bundle
+      const PUBLIC_DIR = safeResolvePath(process.cwd(), 'public');
       for (const iconFile of ['favicon.png', 'sheriff-badge-favicon.svg', 'justice-scales-favicon.svg', 'smokehouse-flame-favicon.svg']) {
         try {
-          const iconBuffer = await fs.readFile(path.join(process.cwd(), 'public', iconFile));
+          const iconBuffer = await fs.readFile(safeResolvePath(PUBLIC_DIR, path.basename(iconFile)));
           files[iconFile] = iconBuffer;
         } catch {}
       }
 
       // Gather all compiled assets and public files copied to dist
+      const DIST_DIR = safeResolvePath(process.cwd(), 'dist');
       async function gatherFiles(dir: string, baseRoute: string = '') {
         try {
-          const entries = await fs.readdir(dir, { withFileTypes: true });
+          const safeDirPath = safeResolvePath(dir);
+          const entries = await fs.readdir(safeDirPath, { withFileTypes: true });
           for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
+            const fullPath = safeResolvePath(safeDirPath, path.basename(entry.name));
             const routePath = baseRoute ? `${baseRoute}/${entry.name}` : entry.name;
             
             if (entry.isDirectory()) {
@@ -1101,7 +1137,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         }
       }
       
-      await gatherFiles(path.join(process.cwd(), 'dist'));
+      await gatherFiles(DIST_DIR);
 
       const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
 
