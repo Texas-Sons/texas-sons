@@ -1134,6 +1134,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             {studioMode === 'instant' && (
               <div className="flex-1 overflow-y-auto">
                 <BlueprintFormPanel
+                  activeSnapshot={project}
                   isBusy={agentState.step !== 'ready'}
                   onOpenScanner={() => setIsScannerOpen(true)}
                   onOpenHandoff={() => setIsHandoffOpen(true)}
