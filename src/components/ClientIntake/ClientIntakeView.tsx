@@ -501,10 +501,10 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
   };
 
   return (
-    <div className="flex-1 bg-stone-950 text-stone-100 p-4 sm:p-8 overflow-y-auto min-h-screen">
+    <div className="flex-1 bg-stone-950 text-stone-100 p-4 sm:p-8 pb-32 sm:pb-40 overflow-y-auto w-full h-full">
       
       {/* Top Header */}
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6 pb-20">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
           <div>
@@ -648,16 +648,16 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         </div>
 
         {/* Client Intake Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10">
           {filteredClients.map((client) => {
             const Icon = getCategoryIcon(client.category);
             return (
               <div 
                 key={client.id}
-                className="rounded-2xl bg-stone-900/70 border border-stone-800/80 hover:border-stone-700 transition-all flex flex-col justify-between overflow-hidden group shadow-lg"
+                className="rounded-2xl bg-stone-900/70 border border-stone-800/80 hover:border-stone-700 transition-all flex flex-col justify-between overflow-hidden group shadow-lg h-full"
               >
                 {/* Card Header & Identity */}
-                <div className="p-5 space-y-4">
+                <div className="p-5 space-y-4 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center space-x-3 min-w-0">
                       <div 
@@ -721,12 +721,12 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 </div>
 
                 {/* Card Action Footers */}
-                <div className="p-3 bg-stone-950 border-t border-stone-800/80 flex flex-col gap-2">
+                <div className="p-3.5 bg-stone-950 border-t border-stone-800/80 flex flex-col gap-2.5 mt-auto flex-shrink-0">
                   
                   {/* Primary Studio Bridge Button */}
                   <button
                     onClick={() => onLaunchStudio(client)}
-                    className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-950/40 transition-all"
+                    className="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-950/40 transition-all active:scale-95"
                   >
                     <Wand2 className="w-3.5 h-3.5" />
                     <span>Launch in 1-Click Studio</span>
@@ -737,7 +737,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => onInvoiceClient(client)}
                       title="Create 50% Deposit Invoice"
-                      className="py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-emerald-400 text-xs flex items-center justify-center transition-colors"
+                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-emerald-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Receipt className="w-3.5 h-3.5" />
                     </button>
@@ -745,7 +745,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => setShareModalClient(client)}
                       title="Share Intake Questionnaire / Copy Templates"
-                      className="py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-blue-400 text-xs flex items-center justify-center transition-colors"
+                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-blue-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Share2 className="w-3.5 h-3.5" />
                     </button>
@@ -753,7 +753,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => handleEditClient(client)}
                       title="Edit Dossier"
-                      className="py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-white text-xs flex items-center justify-center transition-colors"
+                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-white text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
@@ -761,7 +761,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => handleDeleteClient(client.id)}
                       title="Delete Dossier"
-                      className="py-1.5 rounded-lg bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-400 hover:text-red-400 text-xs flex items-center justify-center transition-colors"
+                      className="py-2 rounded-lg bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-400 hover:text-red-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
