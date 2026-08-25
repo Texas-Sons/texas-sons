@@ -105,7 +105,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
                         <button
                           onClick={() => onEditProject(project)}
                           className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-stone-100 hover:bg-stone-800 text-stone-700 hover:text-white rounded-lg transition-all border border-stone-200 hover:border-stone-800 shadow-sm"
-                          title="Open and update site in AI Builder Studio"
+                          title="Open and update site in 1-Click Studio"
                         >
                           <Wand2 className="w-3.5 h-3.5" />
                           <span>Studio</span>

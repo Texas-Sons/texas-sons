@@ -1334,7 +1334,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold transition-all flex items-center gap-2 border border-stone-700"
                   >
                     <Wand2 className="w-3.5 h-3.5 text-orange-400" />
-                    <span>Open in AI Builder Studio</span>
+                    <span>Open in 1-Click Studio</span>
                   </button>
                 )}
 

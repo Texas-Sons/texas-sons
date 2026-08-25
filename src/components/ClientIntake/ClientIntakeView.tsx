@@ -520,7 +520,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                   </span>
                 </h1>
                 <p className="text-xs sm:text-sm text-stone-400 mt-0.5">
-                  Fast client onboarding, brand asset collection, and 1-click bridge into AI Builder Studio.
+                  Fast client onboarding, brand asset collection, and 1-click bridge into 1-Click Studio.
                 </p>
               </div>
             </div>
@@ -729,7 +729,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-950/40 transition-all"
                   >
                     <Wand2 className="w-3.5 h-3.5" />
-                    <span>Launch in AI Builder Studio</span>
+                    <span>Launch in 1-Click Studio</span>
                   </button>
 
                   {/* Secondary Action Toolbar */}

@@ -1,3 +1,2 @@
-antigravity: Completed 1-Click Blueprint Studio integration pass at 2026-08-25T03:06.
-Changes: BlueprintFormPanel.tsx created, AgentBuilderStudio.tsx updated (panel toggle + import), Sidebar.tsx renamed nav item, LandingPage.tsx rebuilt with premium scrollytelling design.
-Pending: TypeScript build verification in progress.
+antigravity: Completed 1-Click Studio sync, TopBar naming alignment, and NavbarBlock responsive container-safe fix at 2026-08-25T04:30.
+Changes: TopBar.tsx (renamed to 1-Click Studio), ClientIntakeView / ProjectList / ProjectProposalModal synced, NavbarBlock.tsx container responsiveness to eliminate pill overlap. All builds verified.

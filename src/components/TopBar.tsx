@@ -12,7 +12,7 @@ export default function TopBar({ currentView, onLogout }: TopBarProps) {
     projects: 'Project Management',
     clients: 'Client Intake Vault',
     prospects: 'Lead Finder',
-    'agent-builder': 'AI Builder Studio',
+    'agent-builder': '1-Click Studio',
     billing: 'Billing & Invoicing',
     settings: 'Studio Settings'
   };

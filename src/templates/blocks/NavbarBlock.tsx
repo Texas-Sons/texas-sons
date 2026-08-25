@@ -90,7 +90,7 @@ export function NavbarBlock({
         </a>
 
         {/* Desktop Navigation Links — Stitch Synchronized Pill Track */}
-        <nav className="hidden xl:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm flex-shrink min-w-0">
+        <nav className="hidden 2xl:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm flex-shrink min-w-0">
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             
@@ -120,7 +120,7 @@ export function NavbarBlock({
         </nav>
 
         {/* Right CTA Button — Guaranteed Flex-Shrink-0 & No Cut Off */}
-        <div className="hidden sm:flex items-center flex-shrink-0 whitespace-nowrap">
+        <div className="hidden sm:flex items-center flex-shrink-0 whitespace-nowrap z-10">
           <a
             href={ctaHref}
             className="inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95 flex-shrink-0"
@@ -130,8 +130,8 @@ export function NavbarBlock({
           </a>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <div className="flex xl:hidden items-center space-x-2 flex-shrink-0">
+        {/* Mobile / Tablet / Studio Split-Screen Hamburger Toggle */}
+        <div className="flex 2xl:hidden items-center space-x-2 flex-shrink-0">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-lg text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)]"
@@ -143,9 +143,9 @@ export function NavbarBlock({
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile / Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <div className="2xl:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             return (
