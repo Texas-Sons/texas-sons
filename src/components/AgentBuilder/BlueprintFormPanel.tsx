@@ -126,17 +126,17 @@ export default function BlueprintFormPanel({
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
 
   const Section = ({ id, label, children }: { id: string; label: string; children: React.ReactNode }) => (
-    <div className="border border-stone-800 rounded-xl overflow-hidden">
+    <div className="border border-stone-800 rounded-xl overflow-hidden flex-shrink-0">
       <button
         type="button"
         onClick={() => setOpenSection(openSection === id ? '' : id)}
-        className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-stone-200 bg-stone-900/80 hover:bg-stone-800/80 transition-colors"
+        className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-stone-100 bg-stone-900 hover:bg-stone-800/90 transition-colors"
       >
-        {label}
-        <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 ${openSection === id ? 'rotate-180 text-orange-400' : ''}`} />
+        <span>{label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${openSection === id ? 'rotate-180 text-orange-400' : ''}`} />
       </button>
       {openSection === id && (
-        <div className="p-3.5 space-y-3 bg-stone-950/60 animate-in fade-in duration-150">
+        <div className="p-3.5 space-y-3.5 bg-stone-950/80 border-t border-stone-800/80 animate-in fade-in duration-150">
           {children}
         </div>
       )}
@@ -146,12 +146,12 @@ export default function BlueprintFormPanel({
   const Field = ({ label, id, placeholder, value, onChange, type = 'text' }: {
     label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; type?: string;
   }) => (
-    <div>
-      <label htmlFor={id} className="block text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1">{label}</label>
+    <div className="space-y-1.5 flex-shrink-0">
+      <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">{label}</label>
       <input
         id={id} type={type} value={value} placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-700/80 text-xs text-stone-100 placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30 transition-all"
+        className="w-full h-9 min-h-[36px] px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-xs text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/40 transition-all flex-shrink-0"
       />
     </div>
   );
@@ -159,18 +159,18 @@ export default function BlueprintFormPanel({
   const TextArea = ({ label, id, placeholder, value, onChange }: {
     label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void;
   }) => (
-    <div>
-      <label htmlFor={id} className="block text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1">{label}</label>
+    <div className="space-y-1.5 flex-shrink-0">
+      <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">{label}</label>
       <textarea
         id={id} rows={2} value={value} placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-700/80 text-xs text-stone-100 placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30 transition-all resize-none"
+        className="w-full min-h-[64px] px-3 py-2 rounded-lg bg-stone-900 border border-stone-700 text-xs text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/40 transition-all resize-none flex-shrink-0"
       />
     </div>
   );
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto space-y-3 px-3.5 py-3">
+    <div className="w-full space-y-3.5 px-3.5 py-3 pb-28">
 
       {/* ── Vertical Preset Tiles ────────────────────────────────────────── */}
       <div>
