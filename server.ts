@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: '.env.local' });
 
 import express from "express";
+import helmet from "helmet";
 import path from "path";
 import fs from "fs/promises";
 import JSZip from "jszip";
@@ -419,6 +420,65 @@ async function uploadDeployment(
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
+
+  // Security Headers via Helmet (OWASP / Aikido standard)
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            "https://maps.googleapis.com",
+            "https://js.stripe.com",
+            "https://cdn.tailwindcss.com"
+          ],
+          scriptSrcAttr: ["'unsafe-inline'"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com"
+          ],
+          fontSrc: [
+            "'self'",
+            "https://fonts.gstatic.com",
+            "data:"
+          ],
+          imgSrc: [
+            "'self'",
+            "data:",
+            "blob:",
+            "https:",
+            "https://*.google.com",
+            "https://*.googleapis.com",
+            "https://*.gstatic.com",
+            "https://images.unsplash.com"
+          ],
+          connectSrc: [
+            "'self'",
+            "https://*.supabase.co",
+            "https://maps.googleapis.com",
+            "https://places.googleapis.com",
+            "https://api.stripe.com",
+            "ws:",
+            "wss:"
+          ],
+          frameSrc: [
+            "'self'",
+            "https://js.stripe.com",
+            "https://*.pages.dev",
+            "http://localhost:*"
+          ],
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: null
+        }
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: { policy: "cross-origin" }
+    })
+  );
 
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
