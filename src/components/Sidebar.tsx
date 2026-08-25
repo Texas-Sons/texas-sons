@@ -6,7 +6,7 @@ import {
   Settings,
   Receipt,
   Target,
-  Wand2,
+  Zap,
   Lock,
   Unlock,
   LucideIcon
@@ -37,7 +37,7 @@ export default function Sidebar({
 
   const navItems: NavItemConfig[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'agent-builder', label: 'AI Builder Studio', icon: Wand2, highlight: true },
+    { id: 'agent-builder', label: '1-Click Studio', icon: Zap, highlight: true },
     { id: 'projects', label: 'Projects', icon: Folders },
     { id: 'prospects', label: 'Lead Finder', icon: Target },
     { id: 'clients', label: 'Client Intake', icon: Users },

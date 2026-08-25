@@ -47,7 +47,8 @@ import {
   Terminal,
   Search,
   Bell,
-  Bookmark
+  Bookmark,
+  Zap
 } from 'lucide-react';
 import { 
   NavbarBlock, 
@@ -84,6 +85,7 @@ import {
 } from './aiModelConfig';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake } from '../../types';
+import BlueprintFormPanel from './BlueprintFormPanel';
 
 interface AgentState {
   step: 'idle' | 'scouting' | 'architecting' | 'building' | 'ready';
@@ -353,6 +355,7 @@ export interface AgentBuilderStudioProps {
 
 export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStudioProps = {}) {
   const [prompt, setPrompt] = useState('');
+  const [studioMode, setStudioMode] = useState<'instant' | 'ai'>('instant');
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState<'preview' | 'admin' | 'code' | 'blueprint'>('preview');
   const [inspectorActive, setInspectorActive] = useState(false);
@@ -917,7 +920,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
               <Wand2 className="w-4 h-4" />
             </div>
-            <span className="font-bold text-sm text-white tracking-tight hidden sm:inline">AI Builder Studio</span>
+            <span className="font-bold text-sm text-white tracking-tight hidden sm:inline">1-Click Studio</span>
           </div>
 
           {/* Grouped Action Pill */}
@@ -1103,9 +1106,59 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       {/* Main Studio Split Layout */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* Left Side: Conversational AI Agent & Blueprints (Streamlined, Spacious) */}
+        {/* Left Side: 1-Click Instant Builder OR AI Chat (toggle) */}
         {!isChatCollapsed && (
           <div className="w-80 sm:w-96 border-r border-stone-800 bg-stone-900/60 flex flex-col flex-shrink-0 z-10 animate-in slide-in-from-left-2 duration-200">
+
+            {/* Studio Mode Toggle */}
+            <div className="flex items-center gap-1 px-3 pt-3 pb-2 bg-stone-950 border-b border-stone-800">
+              <button
+                onClick={() => setStudioMode('instant')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                  studioMode === 'instant' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                }`}
+              >
+                <Zap className="w-3 h-3" /> 1-Click Builder
+              </button>
+              <button
+                onClick={() => setStudioMode('ai')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                  studioMode === 'ai' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                }`}
+              >
+                <Bot className="w-3 h-3" /> AI Chat
+              </button>
+            </div>
+
+            {/* 1-Click Instant Builder Panel */}
+            {studioMode === 'instant' && (
+              <div className="flex-1 overflow-y-auto">
+                <BlueprintFormPanel
+                  isBusy={agentState.step !== 'ready'}
+                  onOpenScanner={() => setIsScannerOpen(true)}
+                  onOpenHandoff={() => setIsHandoffOpen(true)}
+                  onOpenAudit={() => setIsAuditOpen(true)}
+                  onOpenProposal={() => setIsProposalModalOpen(true)}
+                  onBuild={(snap) => {
+                    const newSnapshot: ProjectSnapshot = {
+                      id: `prj-${Date.now()}`,
+                      prompt: `1-Click Build: ${snap.profile.name}`,
+                      timestamp: new Date().toLocaleTimeString(),
+                      ...snap,
+                    };
+                    setProject(newSnapshot);
+                    setHistory(prev => [newSnapshot, ...prev]);
+                    setActiveTab('preview');
+                    setAgentState({ step: 'ready', message: `⚡ Instant build ready: ${snap.profile.name}`, tokensUsed: 0 });
+                  }}
+                />
+              </div>
+            )}
+
+            {/* AI Chat Panel (preserved) */}
+            {studioMode === 'ai' && (
+              <>
+
             
             {/* Top Dropdown Blueprint Selector */}
             <div className="p-3 border-b border-stone-800 bg-stone-950/80 relative" ref={dropdownRef}>
@@ -1296,6 +1349,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
               </div>
             </div>
 
+              </>
+            )}
           </div>
         )}
 
