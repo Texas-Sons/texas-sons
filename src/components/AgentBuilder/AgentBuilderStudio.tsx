@@ -380,6 +380,9 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   }, []);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isChatCollapsed, setIsChatCollapsed] = useState(false);
+  const [isMobileDirectorOpen, setIsMobileDirectorOpen] = useState(false);
+  const [isMobileQuickMenuOpen, setIsMobileQuickMenuOpen] = useState(false);
+  const [outlawMode, setOutlawMode] = useState(true);
 
   // Blueprint Dropdown State
   const [isBlueprintDropdownOpen, setIsBlueprintDropdownOpen] = useState(false);
@@ -919,10 +922,16 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       {/* Top Studio Master Action Bar */}
       <header className="h-16 border-b border-stone-800/80 px-3 sm:px-4 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
         
-        {/* Left Section: Sidebar Toggle, Active Blueprint Dropdown Pill, Quick Tools */}
+        {/* Left Section: Sidebar Toggle, Active Experience Dropdown Pill, Quick Tools */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           <button
-            onClick={() => setIsChatCollapsed(!isChatCollapsed)}
+            onClick={() => {
+              if (window.innerWidth < 768) {
+                setIsMobileDirectorOpen(true);
+              } else {
+                setIsChatCollapsed(!isChatCollapsed);
+              }
+            }}
             className="p-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-900 border border-transparent hover:border-stone-800 transition-colors flex-shrink-0 cursor-pointer"
             title={isChatCollapsed ? "Expand Configurator" : "Collapse Configurator"}
           >
@@ -933,7 +942,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[160px] sm:max-w-[200px]"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[150px] sm:max-w-[200px]"
               title="Click to Switch Client Brand Experience"
             >
               <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold flex-shrink-0">
@@ -1015,7 +1024,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             )}
           </div>
 
-          {/* Quick Studio Tools */}
+          {/* Quick Studio Tools (Desktop 2XL) */}
           <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={handleSaveToProjects}
@@ -1060,8 +1069,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </div>
         </div>
 
-        {/* Center: Main Workspace View Switcher */}
-        <div className="flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner flex-shrink-0 mx-1 sm:mx-2">
+        {/* Center: Main Workspace View Switcher (Desktop/Tablet) + Outlaw Swagger Pill (Mobile) */}
+        <div className="hidden md:flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner flex-shrink-0 mx-1 sm:mx-2">
           <button
             onClick={() => setActiveTab('preview')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -1100,6 +1109,20 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             <span className="hidden md:inline">React Code</span>
           </button>
         </div>
+
+        {/* Mobile-Only Outlaw Heat Badge */}
+        <button
+          onClick={() => setOutlawMode(!outlawMode)}
+          className={`flex md:hidden items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex-shrink-0 cursor-pointer border ${
+            outlawMode 
+              ? 'bg-orange-500/15 border-orange-500/40 text-orange-400 shadow-sm shadow-orange-500/20' 
+              : 'bg-stone-900 border-stone-800 text-stone-400'
+          }`}
+          title="Toggle Texas Outlaw Swagger Mode"
+        >
+          <Flame className={`w-3.5 h-3.5 ${outlawMode ? 'text-orange-400 fill-orange-400/40 animate-pulse' : 'text-stone-500'}`} />
+          <span>{outlawMode ? 'Outlaw 🔥' : 'Classic'}</span>
+        </button>
 
         {/* Right Section: Devices, Live Status Badge, Custom Domain, Deploy, Model */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -1214,9 +1237,9 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       {/* Main Studio Split Layout */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* Left Side: 1-Click Instant Builder Panel (Dedicated Pure Configurator) */}
+        {/* Left Side: Desktop 1-Click Instant Builder Panel (Dedicated Pure Configurator) */}
         {!isChatCollapsed && (
-          <div className="w-80 sm:w-96 border-r border-stone-800 bg-stone-900/60 flex flex-col flex-shrink-0 z-10 animate-in slide-in-from-left-2 duration-200">
+          <div className="hidden md:flex w-80 lg:w-96 border-r border-stone-800 bg-stone-900/60 flex-col flex-shrink-0 z-10 animate-in slide-in-from-left-2 duration-200">
             <div className="flex-1 overflow-y-auto">
               <BlueprintFormPanel
                 activeSnapshot={project}
@@ -1240,6 +1263,76 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                   setAgentState({ step: 'ready', message: `⚡ Instant build ready: ${snap.profile.name}`, tokensUsed: 0 });
                 }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Full-Screen Slide-Up Experience Director Drawer */}
+        {isMobileDirectorOpen && (
+          <div className="fixed inset-0 z-50 md:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end animate-in fade-in duration-200">
+            <div className="bg-stone-950 border-t border-orange-500/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
+              {/* Drawer Tactile Drag Header */}
+              <div className="px-4 py-3 border-b border-stone-800 flex items-center justify-between bg-stone-900/95 flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-black">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-white uppercase tracking-wider">Brand DNA & Experience Director</h3>
+                    <p className="text-[10px] text-orange-400 font-mono flex items-center gap-1">
+                      <Flame className="w-2.5 h-2.5" />
+                      <span>Texas Sons Mobile Studio</span>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsMobileDirectorOpen(false)}
+                  className="p-1.5 rounded-xl bg-stone-800 text-stone-300 hover:text-white hover:bg-stone-700 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Outlaw Voltage Gauge Banner inside Drawer */}
+              <div className="px-4 py-2 bg-gradient-to-r from-orange-950/60 via-stone-900 to-amber-950/60 border-b border-orange-500/20 flex items-center justify-between text-[10px] text-stone-300 flex-shrink-0">
+                <div className="flex items-center gap-1.5 font-bold text-orange-400">
+                  <Flame className="w-3 h-3 fill-current" />
+                  <span>Outlaw Heat: 99.4% · High Voltage</span>
+                </div>
+                <button
+                  onClick={() => setOutlawMode(!outlawMode)}
+                  className="text-[9px] font-mono uppercase font-bold text-stone-400 hover:text-white underline cursor-pointer"
+                >
+                  {outlawMode ? '⚡ Outlaw Mode Active' : 'Switch to Outlaw'}
+                </button>
+              </div>
+
+              {/* Drawer Scrollable Content */}
+              <div className="flex-1 overflow-y-auto pb-20">
+                <BlueprintFormPanel
+                  activeSnapshot={project}
+                  isBusy={agentState.step !== 'ready'}
+                  selectedModel={selectedModel}
+                  onSelectModel={handleSelectModel}
+                  onOpenScanner={() => { setIsScannerOpen(true); setIsMobileDirectorOpen(false); }}
+                  onOpenHandoff={() => { setIsHandoffOpen(true); setIsMobileDirectorOpen(false); }}
+                  onOpenAudit={() => { setIsAuditOpen(true); setIsMobileDirectorOpen(false); }}
+                  onOpenProposal={() => { setIsProposalModalOpen(true); setIsMobileDirectorOpen(false); }}
+                  onBuild={(snap) => {
+                    const newSnapshot: ProjectSnapshot = {
+                      id: `prj-${Date.now()}`,
+                      prompt: `1-Click Build: ${snap.profile.name}`,
+                      timestamp: new Date().toLocaleTimeString(),
+                      ...snap,
+                    };
+                    setProject(newSnapshot);
+                    setHistory(prev => [newSnapshot, ...prev]);
+                    setActiveTab('preview');
+                    setIsMobileDirectorOpen(false);
+                    setAgentState({ step: 'ready', message: `⚡ Instant build ready: ${snap.profile.name}`, tokensUsed: 0 });
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -1348,7 +1441,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </div>
 
           {/* Canvas Viewport Body */}
-          <div className="flex-1 overflow-y-auto p-2 sm:p-6 flex items-start justify-center bg-stone-950">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-6 pb-28 md:pb-6 flex items-start justify-center bg-stone-950">
             
             {/* TAB 1: Live Public Website Preview */}
             {activeTab === 'preview' && (
@@ -1359,6 +1452,15 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                   device === 'desktop' ? 'w-full max-w-full' : device === 'tablet' ? 'w-[768px]' : 'w-[375px]'
                 }`}
               >
+                {/* Outlaw Texas Attitude Ribbon (When Outlaw Mode Active) */}
+                {outlawMode && (
+                  <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest py-1.5 px-4 text-center flex items-center justify-center gap-2 shadow-inner select-none flex-shrink-0">
+                    <Flame className="w-3.5 h-3.5 fill-current animate-bounce" />
+                    <span>Texas Outlaw Edition · 100% Unapologetic Craft · Zero Cookie-Cutter BS</span>
+                    <Flame className="w-3.5 h-3.5 fill-current animate-bounce" />
+                  </div>
+                )}
+
                 {/* Simulated Browser Top Frame */}
                 <div className="h-9 bg-stone-900/90 border-b border-stone-800 px-4 flex items-center justify-between text-xs text-stone-400 select-none flex-shrink-0">
                   <div className="flex items-center space-x-1.5">
@@ -1989,6 +2091,95 @@ export default function ClientSite() {
         onRedeploy={handleDeploySite}
         isDeploying={agentState.step === 'building'}
       />
+
+      {/* ── MOBILE CYBER-WESTERN FLOATING OUTLAW DOCK ──────────────────────── */}
+      <div className="fixed bottom-3 inset-x-3 z-40 md:hidden flex flex-col items-center select-none">
+        {/* Floating Outlaw Radial Quick-Action Arc Popover */}
+        {isMobileQuickMenuOpen && (
+          <div className="w-full mb-2 p-3 bg-stone-900/95 border border-orange-500/40 rounded-2xl shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
+            <button
+              onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-orange-500 text-orange-400 cursor-pointer active:scale-95 transition-all"
+            >
+              <Camera className="w-4 h-4" />
+              <span>Scan Flyer</span>
+            </button>
+            <button
+              onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-emerald-500 text-emerald-400 cursor-pointer active:scale-95 transition-all"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>QA Audit</span>
+            </button>
+            <button
+              onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-blue-500 text-blue-400 cursor-pointer active:scale-95 transition-all"
+            >
+              <Globe className="w-4 h-4" />
+              <span>Domain</span>
+            </button>
+            <button
+              onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-stone-950/80 border border-orange-500/40 flex flex-col items-center gap-1 text-orange-400 cursor-pointer active:scale-95 transition-all"
+            >
+              <Terminal className="w-4 h-4" />
+              <span>AGY Spec</span>
+            </button>
+          </div>
+        )}
+
+        {/* Curved Floating Action Bar */}
+        <div className="w-full h-15 bg-stone-950/95 border border-orange-500/30 rounded-2xl shadow-[0_4px_30px_rgba(249,115,22,0.22)] backdrop-blur-xl px-2 py-1 flex items-center justify-between gap-1">
+          <button
+            onClick={() => setIsMobileDirectorOpen(true)}
+            className="flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black text-orange-400 hover:text-white flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-orange-400 fill-orange-400/20 animate-pulse" />
+            <span>Director</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('preview'); setIsMobileDirectorOpen(false); }}
+            className={`flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'preview' && !isMobileDirectorOpen ? 'text-white font-bold bg-orange-600/30 border border-orange-500/40' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Eye className="w-4 h-4" />
+            <span>Live</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('admin'); setIsMobileDirectorOpen(false); }}
+            className={`flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'admin' && !isMobileDirectorOpen ? 'text-white font-bold bg-orange-600/30 border border-orange-500/40' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>Admin</span>
+          </button>
+
+          <button
+            onClick={() => setIsMobileQuickMenuOpen(!isMobileQuickMenuOpen)}
+            className={`p-2 rounded-xl border transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center ${
+              isMobileQuickMenuOpen
+                ? 'bg-orange-500/20 border-orange-500 text-orange-400 shadow-sm shadow-orange-500/30'
+                : 'bg-stone-900 border-stone-800 text-stone-300'
+            }`}
+            title="Outlaw Tools"
+          >
+            <Sliders className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleDeploySite}
+            disabled={agentState.step === 'building'}
+            className="ml-1 px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/40 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span>{agentState.step === 'building' ? '...' : 'Deploy'}</span>
+          </button>
+        </div>
+      </div>
 
     </div>
   );
