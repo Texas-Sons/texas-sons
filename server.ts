@@ -1468,6 +1468,69 @@ Draft a short, persuasive email proposal recommending we build them a modern web
     }
   });
 
+  // Scrape Existing Website Route
+  app.post("/api/scrape-site", async (req, res) => {
+    try {
+      const { url } = req.body;
+      if (!url) return res.status(400).json({ success: false, error: "URL is required" });
+
+      console.log(`[Scraper] Fetching URL: ${url}`);
+      
+      // Ensure url has protocol
+      const targetUrl = url.startsWith('http') ? url : `https://${url}`;
+      
+      const response = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch website: ${response.statusText}`);
+      }
+
+      const htmlText = await response.text();
+      // Simple HTML cleanup to save tokens: remove script and style tags, then remove all tags, then collapse whitespace
+      const cleanHtml = htmlText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                                .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+                                .replace(/<[^>]+>/g, ' ')
+                                .replace(/\s+/g, ' ')
+                                .trim()
+                                .substring(0, 30000); // cap at ~10k tokens
+
+      const ai = await getGemini();
+      const prompt = `You are an expert data extraction AI. Read the following website text and extract a JSON dossier for a web agency client intake.
+      
+      Website Text:
+      ${cleanHtml}
+      
+      Extract as much of the following as possible. Return ONLY valid JSON, nothing else. No markdown formatting blocks.
+      {
+        "businessName": "Name of business",
+        "email": "Contact email if found",
+        "phone": "Phone number if found",
+        "address": "Address if found",
+        "hours": "Operating hours if found",
+        "tagline": "A short marketing tagline for them",
+        "description": "A 1-2 sentence description of what they do",
+        "category": "One of: 'Food & Beverage', 'Beauty & Wellness', 'Home & Trade Services', 'Professional & Medical', 'Campaign & Leadership'",
+        "services": [
+           { "id": "s1", "name": "Service name", "description": "Short description", "price": "Price if found" }
+        ]
+      }`;
+      
+      const result = await ai.generateContent(prompt);
+      let text = result.response.text();
+      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      const parsed = JSON.parse(text);
+      res.json({ success: true, data: parsed });
+    } catch (error: any) {
+      console.error("Scraping Error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // Multimodal AI Photo / Menu / Flyer Extraction Route
   app.post("/api/extract-dossier", async (req, res) => {
     try {
