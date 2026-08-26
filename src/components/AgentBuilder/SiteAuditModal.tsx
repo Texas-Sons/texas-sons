@@ -22,7 +22,8 @@ import {
   Link2,
   Search,
   Eye,
-  AlertCircle
+  AlertCircle,
+  Terminal
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
 import { recordUsage, SUPPORTED_MODELS } from './aiModelConfig';
@@ -644,21 +645,18 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
             <button
               onClick={handleTriggerScan}
               disabled={isScanning}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-200 flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
-              <span>Re-Scan Blueprint</span>
+              <span>Re-Run QA Audit</span>
             </button>
 
             <button
-              onClick={() => {
-                onClose();
-                onOpenHandoff();
-              }}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-orange-600 hover:bg-orange-500 text-white flex items-center gap-1.5 shadow-md shadow-orange-600/30 transition-all hover:scale-105"
+              onClick={onOpenHandoff}
+              className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-orange-600/30 cursor-pointer"
             >
-              <span>Export Master Blueprint</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Export Master Experience Spec</span>
             </button>
           </div>
         </div>

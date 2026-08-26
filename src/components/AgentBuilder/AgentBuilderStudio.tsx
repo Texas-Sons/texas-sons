@@ -929,12 +929,12 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
 
-          {/* Active Blueprint Preset Switcher Pill */}
+          {/* Active Client Experience Switcher Pill */}
           <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[160px] sm:max-w-[200px]"
-              title="Click to Switch Candidate or Business Blueprint"
+              title="Click to Switch Client Brand Experience"
             >
               <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold flex-shrink-0">
                 <Zap className="w-3.5 h-3.5" />
@@ -944,7 +944,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                   {currentBlueprintObj?.title || project.profile.name}
                 </p>
                 <p className="text-[10px] text-stone-400 truncate">
-                  {currentBlueprintObj?.category || 'Blueprint'}
+                  {currentBlueprintObj?.category || 'Client Experience'}
                 </p>
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
@@ -956,7 +956,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             {isBlueprintDropdownOpen && (
               <div className="absolute top-full left-0 mt-1.5 w-80 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
                 <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
-                  <span>Select Blueprint Preset</span>
+                  <span>Select Client Experience</span>
                   <span className="text-orange-400 font-mono text-[9px]">1-Click Ready</span>
                 </div>
                 {allBlueprints.map((preset) => {
@@ -989,7 +989,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                           <button
                             onClick={(e) => handleDeleteCustomBlueprint(preset.id, e)}
                             className="p-1 text-stone-500 hover:text-red-400 rounded-lg ml-1"
-                            title="Delete custom blueprint"
+                            title="Delete custom experience"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -1008,7 +1008,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                     className="w-full py-2 px-3 rounded-xl bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Create New Custom Blueprint</span>
+                    <span>Create New Client Experience</span>
                   </button>
                 </div>
               </div>
@@ -1644,7 +1644,7 @@ export default function ClientSite() {
 
       </div>
 
-      {/* Custom Blueprint & Intake Creator Modal */}
+      {/* Custom Experience & Brand Creator Modal */}
       {intakeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col text-stone-200">
@@ -1654,8 +1654,8 @@ export default function ClientSite() {
               <div className="flex items-center space-x-2.5">
                 <Vote className="w-5 h-5 text-orange-500" />
                 <div>
-                  <h3 className="font-bold text-white text-base">Create Custom Blueprint & Theme Scheme</h3>
-                  <p className="text-xs text-stone-400">Set custom colors, photos, platform context, and admin rules.</p>
+                  <h3 className="font-bold text-white text-base">Create New Client Brand Experience</h3>
+                  <p className="text-xs text-stone-400">Configure brand identity, spatial layout archetype, and signature interactive features.</p>
                 </div>
               </div>
               <button 
@@ -1672,7 +1672,7 @@ export default function ClientSite() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-semibold uppercase tracking-wider text-stone-400 mb-1.5">
-                    Blueprint Title
+                    Experience Title
                   </label>
                   <input
                     type="text"
@@ -1920,7 +1920,7 @@ export default function ClientSite() {
                   className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-orange-600/30"
                 >
                   <Save className="w-4 h-4" />
-                  <span>Generate & Save Blueprint</span>
+                  <span>Generate & Save Experience</span>
                 </button>
               </div>
             </div>

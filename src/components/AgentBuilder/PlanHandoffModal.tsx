@@ -20,7 +20,7 @@ export const PlanHandoffModal: React.FC<PlanHandoffModalProps> = ({
 
   if (!isOpen) return null;
 
-  const markdownPlan = `# Texas Sons Master Execution Blueprint for Antigravity
+  const markdownPlan = `# Texas Sons Master Experience Spec for Antigravity
 **Generated via:** ${selectedModel.toUpperCase()}
 **Client/Candidate:** ${project.profile.name}
 **Theme System:** ${project.theme} (${project.profile.category})
@@ -61,7 +61,7 @@ ${project.testimonials.map((t, idx) => `### Item #${idx + 1} (${t.author} - ${t.
 1. **Component Scaffolding:** Ensure \`NavbarBlock\`, \`CampaignHeroBlock\`, \`ServicesBlock\`, \`TestimonialsBlock\`, and \`BookingBlock\` are fully populated with these exact strings.
 2. **Sub-Route Setup:** If campaign, wire \`#voting\` hash route to \`VotingPageBlock\` and display \`VotingBannerBlock\` beneath the Hero.
 3. **Responsive Container Verification:** Use auto-fit minmax grids (\`minmax(280px,1fr)\`) to prevent mobile & tablet frame squishing.
-4. **Database Injection:** Upsert this blueprint into the Supabase \`projects\` table for immediate live sync.
+4. **Database Injection:** Upsert this experience into the Supabase \`projects\` table for immediate live sync.
 5. **Type Safety Test:** Run \`npx tsc --noEmit\` and ensure 0 compilation errors before committing.
 `;
 
@@ -86,7 +86,7 @@ ${project.testimonials.map((t, idx) => `### Item #${idx + 1} (${t.author} - ${t.
               <Terminal className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">Master Execution Blueprint</h3>
+              <h3 className="font-bold text-base text-white">Antigravity Master Experience Spec</h3>
               <p className="text-xs text-stone-400">Handoff spec for Antigravity Autonomous Code Execution</p>
             </div>
           </div>

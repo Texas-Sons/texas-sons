@@ -395,66 +395,72 @@ export default function BlueprintFormPanel({
       </div>
 
       {/* ── Segmented Navigation Tabs ────────────────────────────────────── */}
-      <div className="flex items-center gap-1 p-1 bg-stone-950 rounded-xl border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md overflow-x-auto no-scrollbar">
+      <div className="grid grid-cols-6 gap-1 p-1 bg-stone-950 rounded-xl border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md">
         <button
           type="button"
           onClick={() => setActiveTab('archetype')}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'archetype' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
+          title="Visual Archetype"
         >
-          <LayoutGrid className="w-3 h-3" />
-          <span>Archetype</span>
+          <LayoutGrid className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">Archetype</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('feature')}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'feature' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
+          title="Signature Feature"
         >
-          <Zap className="w-3 h-3" />
-          <span>Feature</span>
+          <Zap className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">Feature</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('brand')}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'brand' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
+          title="Identity & Bio"
         >
-          <Building2 className="w-3 h-3" />
-          <span>Identity</span>
+          <Building2 className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">Identity</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('pillars')}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'pillars' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
+          title="Platform / Services"
         >
-          <ShieldCheck className="w-3 h-3" />
-          <span>Pillars</span>
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">Pillars</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('theme')}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'theme' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
+          title="Style & Tokens"
         >
-          <Palette className="w-3 h-3" />
-          <span>Style</span>
+          <Palette className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">Style</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('all')}
-          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'all' ? 'bg-stone-800 text-orange-400 border border-stone-700' : 'text-stone-500 hover:text-stone-300'
           }`}
           title="Show all sections"
         >
-          <Sliders className="w-3 h-3" />
+          <Sliders className="w-3.5 h-3.5" />
+          <span className="truncate w-full text-center">All</span>
         </button>
       </div>
 
@@ -867,7 +873,7 @@ export default function BlueprintFormPanel({
           title="Get AI Master Plan prompt to give directly to Antigravity"
         >
           <Terminal className="w-4 h-4 text-orange-400" />
-          <span>⚡ Antigravity AI Blueprint Prompt</span>
+          <span>⚡ Antigravity AI Experience Prompt</span>
         </button>
       </div>
 
