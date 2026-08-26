@@ -77,7 +77,7 @@ export default function DeploymentHistoryModal({
         {/* Header */}
         <div className="flex items-start justify-between border-b border-stone-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <UploadCloud className="w-5 h-5" />
             </div>
             <div>
@@ -120,7 +120,7 @@ export default function DeploymentHistoryModal({
               href={liveUrl}
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-mono font-bold text-orange-400 hover:text-orange-300 truncate flex items-center gap-1.5"
+              className="text-xs font-mono font-bold text-[#C5A059] hover:text-[#C5A059] truncate flex items-center gap-1.5"
             >
               <span>{liveUrl}</span>
               <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
@@ -140,7 +140,7 @@ export default function DeploymentHistoryModal({
                 href={liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-orange-600/30"
+                className="px-3 py-1.5 rounded-lg bg-[#C5A059]/90 hover:bg-[#C5A059] text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-[#C5A059]/30"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span>Visit</span>
@@ -155,9 +155,9 @@ export default function DeploymentHistoryModal({
                 onClose();
                 onOpenCustomDomains();
               }}
-              className="text-xs font-semibold text-stone-300 hover:text-orange-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-stone-300 hover:text-[#C5A059] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
               <span>Connect Custom Domain (Namecheap / GoDaddy)</span>
             </button>
 
@@ -165,7 +165,7 @@ export default function DeploymentHistoryModal({
               type="button"
               onClick={onRedeploy}
               disabled={isDeploying}
-              className="text-xs font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-xs font-bold text-[#C5A059] hover:text-[#C5A059] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span>{isDeploying ? 'Deploying...' : 'Redeploy Blueprint'}</span>
@@ -184,7 +184,7 @@ export default function DeploymentHistoryModal({
               type="button"
               onClick={fetchHistory}
               disabled={isLoading}
-              className="text-[10px] font-bold text-stone-400 hover:text-orange-400 flex items-center gap-1 transition-colors"
+              className="text-[10px] font-bold text-stone-400 hover:text-[#C5A059] flex items-center gap-1 transition-colors"
             >
               <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
@@ -210,7 +210,7 @@ export default function DeploymentHistoryModal({
                     key={dep.id || idx}
                     className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${
                       isCurrent
-                        ? 'bg-stone-950 border-orange-500/40 ring-1 ring-orange-500/20'
+                        ? 'bg-stone-950 border-[#C5A059]/40 ring-1 ring-[#C5A059]/20'
                         : 'bg-stone-950/80 border-stone-800'
                     }`}
                   >
@@ -220,7 +220,7 @@ export default function DeploymentHistoryModal({
                           {dep.id ? dep.id.slice(0, 10) : `Deploy #${idx + 1}`}
                         </span>
                         {isCurrent && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-orange-500/10 text-orange-400 border border-orange-500/30">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30">
                             Active Current
                           </span>
                         )}

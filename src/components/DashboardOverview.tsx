@@ -1,15 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, Clock, CheckCircle2, Zap, Folders, Users, TrendingUp, ExternalLink } from 'lucide-react';
-import { Project } from '../types';
+import { Project, ViewState } from '../types';
+import { supabase } from '../supabase';
 
 interface DashboardOverviewProps {
   projects: Project[];
+  onNavigate?: (view: ViewState) => void;
 }
 
-export default function DashboardOverview({ projects }: DashboardOverviewProps) {
+export default function DashboardOverview({ projects, onNavigate }: DashboardOverviewProps) {
   const activeProjects = projects.filter(p => p.status !== 'Live').length;
   const liveSites = projects.filter(p => p.status === 'Live').length;
   const totalProjects = projects.length;
+
+  const [leadCount, setLeadCount] = useState<number>(0);
+
+  useEffect(() => {
+    // Fetch exact count of intake forms
+    supabase.from('leads').select('*', { count: 'exact', head: true }).then(({ count }) => {
+      if (count !== null) setLeadCount(count);
+    });
+  }, []);
+
+  // Calculate actual average turnaround time
+  const liveProjectsArray = projects.filter(p => p.status === 'Live' && p.createdAt && p.updatedAt);
+  let avgDays = "N/A";
+  if (liveProjectsArray.length > 0) {
+    const totalDays = liveProjectsArray.reduce((sum, p) => {
+      const created = new Date(p.createdAt || new Date()).getTime();
+      const updated = new Date(p.updatedAt || new Date()).getTime();
+      const days = (updated - created) / (1000 * 60 * 60 * 24);
+      return sum + Math.max(0, days);
+    }, 0);
+    const avg = totalDays / liveProjectsArray.length;
+    avgDays = avg < 1 ? "< 1d" : `${avg.toFixed(1)}d`;
+  }
+
+  const handleQuickLaunch = (promptPrefill: string) => {
+    // If we wanted to pass a prompt prefill, we could store it in localStorage or state.
+    // For now, we'll just navigate to the studio.
+    localStorage.setItem('txsons_studio_prompt_prefill', promptPrefill);
+    if (onNavigate) onNavigate('agent-builder');
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -32,7 +64,7 @@ export default function DashboardOverview({ projects }: DashboardOverviewProps) 
           title="Active Builds"
           value={activeProjects.toString()}
           icon={Zap}
-          trend="+2 this week"
+          trend="In Progress"
           color="gold"
         />
         <MetricCard
@@ -44,16 +76,16 @@ export default function DashboardOverview({ projects }: DashboardOverviewProps) 
         />
         <MetricCard
           title="Avg. Turnaround"
-          value="4.2d"
+          value={avgDays}
           icon={Clock}
-          trend="-15% vs last month"
+          trend="Time to Live"
           color="blue"
         />
         <MetricCard
           title="Intake Forms"
-          value="12"
+          value={leadCount.toString()}
           icon={Users}
-          trend="3 awaiting review"
+          trend="Awaiting Review"
           color="purple"
         />
       </div>
@@ -111,18 +143,20 @@ export default function DashboardOverview({ projects }: DashboardOverviewProps) 
               Provision environments, repos, and Cloudflare deployments instantly.
             </p>
             {[
-              { label: 'Basic Website', accent: true },
-              { label: 'Lead Generation Site', accent: false },
-              { label: 'Full Custom Application', accent: false },
-            ].map(({ label, accent }) => (
+              { label: 'Basic Website', accent: true, prompt: 'Build a standard professional website.' },
+              { label: 'Lead Generation Site', accent: false, prompt: 'Build a high-conversion lead generation landing page.' },
+              { label: 'Full Custom Application', accent: false, prompt: 'Initialize a custom full-stack web application.' },
+            ].map(({ label, accent, prompt }) => (
               <button
                 key={label}
-                className={`w-full px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-98 ${
+                onClick={() => handleQuickLaunch(prompt)}
+                className={`w-full px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-2 ${
                   accent
                     ? 'bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 shadow-lg shadow-[#C5A059]/10'
                     : 'bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700'
                 }`}
               >
+                <Zap className="w-3.5 h-3.5" />
                 {label}
               </button>
             ))}
@@ -133,7 +167,7 @@ export default function DashboardOverview({ projects }: DashboardOverviewProps) 
             <div className="flex items-center justify-between text-[10px]">
               <span className="font-mono text-stone-500">THIS MONTH</span>
               <span className="text-[#C5A059] font-bold flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" /> +3 deployed
+                <TrendingUp className="w-3 h-3" /> +{projects.filter(p => p.createdAt && new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length} deployed
               </span>
             </div>
           </div>
@@ -174,16 +208,18 @@ function MetricCard({ title, value, icon: Icon, trend, color }: { title: string;
   };
 
   return (
-    <div className="bg-stone-900 border border-stone-800 rounded-2xl p-4">
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-[9px] font-black text-stone-500 uppercase tracking-widest font-mono">{title}</p>
-        <div className={`w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center flex-shrink-0 ${iconClass[color]}`}>
-          <Icon className="w-3.5 h-3.5" />
+    <div className="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col justify-between">
+      <div>
+        <div className="flex items-start justify-between mb-3">
+          <p className="text-[9px] font-black text-stone-500 uppercase tracking-widest font-mono">{title}</p>
+          <div className={`w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center flex-shrink-0 ${iconClass[color]}`}>
+            <Icon className="w-3.5 h-3.5" />
+          </div>
         </div>
+        <p className={`text-3xl font-bold ${valueClass[color]}`}>{value}</p>
       </div>
-      <p className={`text-3xl font-bold ${valueClass[color]}`}>{value}</p>
       {trend && (
-        <p className="text-[10px] font-mono text-stone-600 mt-1.5 flex items-center gap-1">
+        <p className="text-[10px] font-mono text-stone-600 mt-2 flex items-center gap-1">
           <ArrowUpRight className="w-3 h-3" />
           {trend}
         </p>

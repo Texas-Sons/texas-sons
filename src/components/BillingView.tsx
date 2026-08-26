@@ -29,7 +29,9 @@ export default function BillingView({ invoices, onNewInvoice }: BillingViewProps
     if (filter === 'all') return true;
     if (filter === 'pending') return inv.status === 'Sent';
     if (filter === 'paid') return inv.status === 'Paid';
-    if (filter === 'overdue') return false; // Basic mock for overdue logic
+    if (filter === 'overdue') {
+      return inv.status !== 'Paid' && inv.dueDate && new Date(inv.dueDate) < new Date();
+    }
     return true;
   });
 

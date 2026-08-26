@@ -32,6 +32,7 @@ export interface Project {
   companyName: string;
   tier: Tier;
   status: Status;
+  createdAt?: string;
   updatedAt: string;
   domain?: string;
   ownerId: string;

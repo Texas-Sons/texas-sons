@@ -503,7 +503,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
               margin: 0;
             }
             .header {
-              border-bottom: 2px solid #ea580c;
+              border-bottom: 2px solid #C5A059;
               padding-bottom: 12px;
               margin-bottom: 20px;
               display: flex;
@@ -714,15 +714,15 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-stone-800 flex items-center justify-between bg-stone-950/80">
           <div className="flex items-center space-x-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 flex-shrink-0">
+            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059] flex-shrink-0">
               {isCampaign ? <Shield className="w-5 h-5" /> : <Building className="w-5 h-5" />}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white tracking-tight truncate">
+                <h3 className="text-base font-bold text-stone-100 tracking-tight truncate">
                   {editForm.companyName}
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/20">
                   {isCampaign ? 'Campaign Platform' : 'Client Website'}
                 </span>
                 {contractsList.length > 0 && (
@@ -733,7 +733,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                 )}
               </div>
               <p className="text-xs text-stone-400 truncate mt-0.5 flex items-center gap-2">
-                <a href={editForm.domain} target="_blank" rel="noopener noreferrer" className="hover:text-orange-400 flex items-center gap-1 font-mono text-[11px]">
+                <a href={editForm.domain} target="_blank" rel="noopener noreferrer" className="hover:text-[#C5A059] flex items-center gap-1 font-mono text-[11px]">
                   <span>{editForm.domain}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
@@ -744,7 +744,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
           <div className="flex items-center space-x-2">
             <button
               onClick={onClose}
-              className="p-2 text-stone-400 hover:text-white hover:bg-stone-800 rounded-lg transition-colors"
+              className="p-2 text-stone-400 hover:text-stone-100 hover:bg-stone-800 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -757,7 +757,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
             onClick={() => setActiveTab('proposal')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-colors ${
               activeTab === 'proposal'
-                ? 'border-orange-500 text-orange-400'
+                ? 'border-[#C5A059] text-[#C5A059]'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -769,7 +769,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
             onClick={() => setActiveTab('contract')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-colors ${
               activeTab === 'contract'
-                ? 'border-orange-500 text-orange-400'
+                ? 'border-[#C5A059] text-[#C5A059]'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -786,7 +786,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
             onClick={() => setActiveTab('edit')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-colors ${
               activeTab === 'edit'
-                ? 'border-orange-500 text-orange-400'
+                ? 'border-[#C5A059] text-[#C5A059]'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -813,11 +813,11 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     onClick={() => handleSelectTone('agency-proposal')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'agency-proposal'
-                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
+                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-stone-100 ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
-                    <p className="text-xs font-bold flex items-center gap-1.5 text-orange-400">
+                    <p className="text-xs font-bold flex items-center gap-1.5 text-[#C5A059]">
                       <span>💼 Client Pitch & Meeting</span>
                     </p>
                     <p className="text-[10px] text-stone-400 mt-1 leading-tight">
@@ -830,7 +830,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     onClick={() => handleSelectTone('campaign-presentation')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'campaign-presentation'
-                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
+                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-stone-100 ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
@@ -847,7 +847,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     onClick={() => handleSelectTone('launch-handoff')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'launch-handoff'
-                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
+                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-stone-100 ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
@@ -864,7 +864,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     onClick={() => handleSelectTone('donor-outreach')}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       tone === 'donor-outreach'
-                        ? 'border-orange-500 bg-orange-600/20 text-white ring-1 ring-orange-500/40 shadow-sm'
+                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-stone-100 ring-1 ring-orange-500/40 shadow-sm'
                         : 'border-stone-800 bg-stone-950/60 text-stone-400 hover:border-stone-700'
                     }`}
                   >
@@ -889,7 +889,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
                     placeholder="e.g. Ernest Trevino"
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
                 <div>
@@ -901,7 +901,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                     placeholder="e.g. trevinofortransparency@yahoo.com"
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -917,12 +917,12 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={customNotes}
                     onChange={(e) => setCustomNotes(e.target.value)}
                     placeholder="e.g. Offer meeting on Tuesday or Thursday, mention the gold Sheriff badge favicon..."
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500 pr-24"
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 pr-24"
                   />
                   <button
                     onClick={() => generateProposal(tone, customNotes)}
                     disabled={isGenerating}
-                    className="absolute right-1.5 top-1.5 px-3 py-1 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+                    className="absolute right-1.5 top-1.5 px-3 py-1 bg-[#C5A059]/90 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 font-black rounded-lg text-xs  transition-all flex items-center gap-1 shadow-sm"
                   >
                     <RefreshCw className={`w-3 h-3 ${isGenerating ? 'animate-spin' : ''}`} />
                     <span>{isGenerating ? 'Drafting...' : 'Re-Draft'}</span>
@@ -939,7 +939,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-bold text-orange-400 focus:outline-none focus:border-orange-500"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-bold text-[#C5A059] focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                 />
               </div>
 
@@ -957,7 +957,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   rows={11}
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  className="w-full p-3.5 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-200 leading-relaxed font-sans focus:outline-none focus:border-orange-500 resize-none font-mono text-[11px]"
+                  className="w-full p-3.5 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-200 leading-relaxed font-sans focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 resize-none font-mono text-[11px]"
                 />
               </div>
 
@@ -972,7 +972,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
               <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-3">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#C5A059] flex items-center gap-1.5">
                       <FileCheck className="w-4 h-4" />
                       <span>Contract Terms & Deliverables</span>
                     </h4>
@@ -985,7 +985,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     <button
                       type="button"
                       onClick={handlePrintContract}
-                      className="px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                      className="px-3.5 py-1.5 rounded-lg bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs  transition-all shadow-md flex items-center gap-1.5"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       <span>Print / PDF</span>
@@ -1007,7 +1007,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     <select
                       value={contractType}
                       onChange={(e) => setContractType(e.target.value as any)}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     >
                       <option value="campaign-platform">Campaign Platform MSA</option>
                       <option value="website-build">Commercial Website MSA</option>
@@ -1026,7 +1026,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                         setContractTotal(val);
                         setContractDeposit(Math.round(val * 0.5));
                       }}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono"
                     />
                   </div>
 
@@ -1036,7 +1036,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                       type="number"
                       value={contractDeposit}
                       onChange={(e) => setContractDeposit(Number(e.target.value))}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono"
                     />
                   </div>
 
@@ -1047,7 +1047,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                       value={contractTimeline}
                       onChange={(e) => setContractTimeline(e.target.value)}
                       placeholder="3 to 5 business days"
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
                 </div>
@@ -1058,13 +1058,13 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={contractCustomClauses}
                     onChange={(e) => setContractCustomClauses(e.target.value)}
                     placeholder="Custom Clauses / Special Notes (e.g. Includes Joseph S. Boyle campaign treasurer setup)..."
-                    className="flex-1 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-200 focus:outline-none focus:border-orange-500"
+                    className="flex-1 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-200 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                   <button
                     type="button"
                     onClick={generateContract}
                     disabled={isGeneratingContract}
-                    className="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-orange-400 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border border-stone-700 flex-shrink-0"
+                    className="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-[#C5A059] rounded-lg text-xs font-bold transition-all flex items-center gap-1 border border-stone-700 flex-shrink-0"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingContract ? 'animate-spin' : ''}`} />
                     <span>{isGeneratingContract ? 'Synthesizing...' : 'Re-Draft Contract'}</span>
@@ -1081,7 +1081,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   rows={13}
                   value={contractText}
                   onChange={(e) => setContractText(e.target.value)}
-                  className="w-full p-4 rounded-xl bg-stone-950 border border-stone-800 text-stone-200 leading-relaxed font-mono text-[11px] focus:outline-none focus:border-orange-500 resize-none"
+                  className="w-full p-4 rounded-xl bg-stone-950 border border-stone-800 text-stone-200 leading-relaxed font-mono text-[11px] focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 resize-none"
                 />
               </div>
 
@@ -1089,7 +1089,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
               <div className="p-4 rounded-xl bg-stone-950/80 border border-stone-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h5 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <h5 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
                       <Paperclip className="w-3.5 h-3.5 text-emerald-400" />
                       <span>Attached Signed Agreements Vault</span>
                     </h5>
@@ -1131,7 +1131,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-white truncate">{cnt.signedFileName || cnt.title}</span>
+                              <span className="font-bold text-stone-100 truncate">{cnt.signedFileName || cnt.title}</span>
                               <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                                 {cnt.status}
                               </span>
@@ -1147,7 +1147,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                             <a
                               href={cnt.signedFileUrl}
                               download={cnt.signedFileName || 'Signed-Contract.pdf'}
-                              className="p-1.5 text-stone-400 hover:text-white hover:bg-stone-800 rounded-lg transition-colors"
+                              className="p-1.5 text-stone-400 hover:text-stone-100 hover:bg-stone-800 rounded-lg transition-colors"
                               title="Download Signed Contract"
                             >
                               <Download className="w-3.5 h-3.5" />
@@ -1189,7 +1189,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="text"
                     value={editForm.companyName}
                     onChange={(e) => setEditForm({ ...editForm, companyName: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     required
                   />
                 </div>
@@ -1201,7 +1201,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="text"
                     value={editForm.clientName}
                     onChange={(e) => setEditForm({ ...editForm, clientName: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -1215,7 +1215,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="email"
                     value={editForm.email}
                     onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
                 <div>
@@ -1226,7 +1226,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="text"
                     value={editForm.phone}
                     onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -1239,7 +1239,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   <select
                     value={editForm.status}
                     onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Status })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   >
                     <option value="Intake">Intake</option>
                     <option value="Scaffolding">Scaffolding</option>
@@ -1256,7 +1256,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   <select
                     value={editForm.tier}
                     onChange={(e) => setEditForm({ ...editForm, tier: e.target.value as Tier })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   >
                     <option value="Basic Website">Basic Website ($495)</option>
                     <option value="Lead Generation Site">Lead Generation Site ($995)</option>
@@ -1273,7 +1273,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={editForm.treasurer}
                     onChange={(e) => setEditForm({ ...editForm, treasurer: e.target.value })}
                     placeholder="Joseph S. Boyle"
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -1287,7 +1287,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="url"
                     value={editForm.domain}
                     onChange={(e) => setEditForm({ ...editForm, domain: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-mono text-stone-300 focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs font-mono text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
                 <div>
@@ -1299,7 +1299,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     value={editForm.address}
                     onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
                     placeholder="Jourdanton, TX 78026"
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -1312,7 +1312,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   type="text"
                   value={editForm.tagline}
                   onChange={(e) => setEditForm({ ...editForm, tagline: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-white focus:outline-none focus:border-orange-500"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                 />
               </div>
 
@@ -1333,7 +1333,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     }}
                     className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold transition-all flex items-center gap-2 border border-stone-700"
                   >
-                    <Wand2 className="w-3.5 h-3.5 text-orange-400" />
+                    <Wand2 className="w-3.5 h-3.5 text-[#C5A059]" />
                     <span>Open in 1-Click Studio</span>
                   </button>
                 )}
@@ -1341,7 +1341,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white text-xs font-bold transition-all shadow-lg shadow-orange-600/30 flex items-center gap-1.5 ml-auto"
+                  className="px-5 py-2 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 font-black text-xs  transition-all shadow-lg shadow-[#C5A059]/30 flex items-center gap-1.5 ml-auto"
                 >
                   {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                   <span>{isSaving ? 'Saving...' : 'Save Project Changes'}</span>
@@ -1357,7 +1357,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         {activeTab === 'proposal' && (
           <div className="p-4 border-t border-stone-800 bg-stone-950 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs text-stone-500 flex items-center gap-2">
-              <Mail className="w-4 h-4 text-orange-400" />
+              <Mail className="w-4 h-4 text-[#C5A059]" />
               <span>Ready to send to candidate or prospective client</span>
             </div>
 
@@ -1374,7 +1374,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
               <button
                 type="button"
                 onClick={handleOpenMailClient}
-                className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-all shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 hover:scale-105"
+                className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs  transition-all shadow-lg shadow-[#C5A059]/30 flex items-center justify-center gap-2 hover:scale-105"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Open in Email App</span>

@@ -158,13 +158,13 @@ export default function CustomDomainModal({
         {/* Header */}
         <div className="flex items-start justify-between border-b border-stone-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
               <Globe className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                 <span>Custom Domain Manager</span>
-                <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-stone-800 text-orange-400 border border-stone-700">
+                <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-stone-800 text-[#C5A059] border border-stone-700">
                   Cloudflare Edge
                 </span>
               </h2>
@@ -208,13 +208,13 @@ export default function CustomDomainModal({
                 placeholder="e.g. trevinoforsheriff.com or www.valdezsalon.com"
                 value={domainInput}
                 onChange={e => setDomainInput(e.target.value)}
-                className="w-full h-11 pl-10 pr-4 rounded-xl bg-stone-950 border border-stone-700 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all"
+                className="w-full h-11 pl-10 pr-4 rounded-xl bg-stone-950 border border-stone-700 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all"
               />
             </div>
             <button
               type="submit"
               disabled={isLoading || !domainInput.trim()}
-              className="px-5 h-11 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-xs font-bold transition-all shadow-lg shadow-orange-600/30 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+              className="px-5 h-11 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] disabled:opacity-40 text-white text-xs font-bold transition-all shadow-lg shadow-[#C5A059]/30 flex items-center gap-1.5 cursor-pointer flex-shrink-0"
             >
               {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
               <span>Attach Domain</span>
@@ -233,7 +233,7 @@ export default function CustomDomainModal({
               onClick={() => setSelectedRegistrar('namecheap')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 selectedRegistrar === 'namecheap'
-                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  ? 'bg-[#C5A059]/90 text-white shadow-md shadow-[#C5A059]/30'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -246,7 +246,7 @@ export default function CustomDomainModal({
               onClick={() => setSelectedRegistrar('cloudflare')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 selectedRegistrar === 'cloudflare'
-                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  ? 'bg-[#C5A059]/90 text-white shadow-md shadow-[#C5A059]/30'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -259,7 +259,7 @@ export default function CustomDomainModal({
               onClick={() => setSelectedRegistrar('other')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 selectedRegistrar === 'other'
-                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  ? 'bg-[#C5A059]/90 text-white shadow-md shadow-[#C5A059]/30'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -272,27 +272,27 @@ export default function CustomDomainModal({
         {selectedRegistrar === 'namecheap' && (
           <div className="bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-inner">
             <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
-              <span className="text-xs font-black text-orange-400 uppercase tracking-wider flex items-center gap-2">
-                <Server className="w-4 h-4 text-orange-400" />
+              <span className="text-xs font-black text-[#C5A059] uppercase tracking-wider flex items-center gap-2">
+                <Server className="w-4 h-4 text-[#C5A059]" />
                 <span>Step-by-Step Namecheap Setup (60 Seconds)</span>
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/20">
                 Recommended
               </span>
             </div>
 
             <ol className="space-y-3 text-xs text-stone-300">
               <li className="flex items-start gap-2.5">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-[#C5A059] font-bold text-[10px] flex-shrink-0 mt-0.5">
                   1
                 </span>
                 <span>
-                  Buy domain on <strong className="text-white">Namecheap</strong> (e.g. <span className="font-mono text-orange-300 font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span>).
+                  Buy domain on <strong className="text-white">Namecheap</strong> (e.g. <span className="font-mono text-[#C5A059] font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span>).
                 </span>
               </li>
 
               <li className="flex items-start gap-2.5">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-[#C5A059] font-bold text-[10px] flex-shrink-0 mt-0.5">
                   2
                 </span>
                 <span>
@@ -301,16 +301,16 @@ export default function CustomDomainModal({
               </li>
 
               <li className="flex items-start gap-2.5">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-[#C5A059] font-bold text-[10px] flex-shrink-0 mt-0.5">
                   3
                 </span>
                 <span>
-                  Type <span className="font-mono text-orange-300 font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span> and click <strong className="text-white">Attach Domain</strong>.
+                  Type <span className="font-mono text-[#C5A059] font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span> and click <strong className="text-white">Attach Domain</strong>.
                 </span>
               </li>
 
               <li className="flex items-start gap-2.5">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-[#C5A059] font-bold text-[10px] flex-shrink-0 mt-0.5">
                   4
                 </span>
                 <div className="space-y-2 w-full">
@@ -319,7 +319,7 @@ export default function CustomDomainModal({
                   </span>
                   <div className="p-2.5 bg-stone-900/90 rounded-xl border border-stone-800 space-y-2">
                     <span className="text-[11px] font-bold text-stone-300 block">
-                      Add CNAME Record: Host <strong className="text-orange-400 font-mono">www</strong> (or <strong className="text-orange-400 font-mono">@</strong>), Target <strong className="text-orange-400 font-mono">{targetCname}</strong>:
+                      Add CNAME Record: Host <strong className="text-[#C5A059] font-mono">www</strong> (or <strong className="text-[#C5A059] font-mono">@</strong>), Target <strong className="text-[#C5A059] font-mono">{targetCname}</strong>:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <div className="p-2 bg-stone-950 rounded-lg border border-stone-800 flex items-center justify-between">
@@ -355,7 +355,7 @@ export default function CustomDomainModal({
                       <div className="p-2 bg-stone-950 rounded-lg border border-stone-800 flex items-center justify-between truncate">
                         <div className="truncate pr-1">
                           <span className="text-[9px] uppercase font-bold text-stone-500 block">Target / Value</span>
-                          <span className="text-xs font-mono font-bold text-orange-400 truncate block">{targetCname}</span>
+                          <span className="text-xs font-mono font-bold text-[#C5A059] truncate block">{targetCname}</span>
                         </div>
                         <button
                           type="button"
@@ -372,7 +372,7 @@ export default function CustomDomainModal({
               </li>
 
               <li className="flex items-start gap-2.5">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-[#C5A059] font-bold text-[10px] flex-shrink-0 mt-0.5">
                   5
                 </span>
                 <span>
@@ -481,7 +481,7 @@ export default function CustomDomainModal({
               type="button"
               onClick={fetchDomains}
               disabled={isLoading}
-              className="text-[10px] font-bold text-stone-400 hover:text-orange-400 flex items-center gap-1 transition-colors cursor-pointer"
+              className="text-[10px] font-bold text-stone-400 hover:text-[#C5A059] flex items-center gap-1 transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
               <span>Refresh Status</span>
@@ -521,7 +521,7 @@ export default function CustomDomainModal({
                         className="px-2.5 py-1.5 rounded-xl border border-stone-700 bg-stone-900 hover:bg-stone-800 text-stone-200 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
                         title="Check DNS and SSL status"
                       >
-                        <RefreshCw className={`w-3 h-3 ${isVerifying ? 'animate-spin text-orange-400' : ''}`} />
+                        <RefreshCw className={`w-3 h-3 ${isVerifying ? 'animate-spin text-[#C5A059]' : ''}`} />
                         <span>Verify</span>
                       </button>
                       
