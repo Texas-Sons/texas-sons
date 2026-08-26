@@ -357,6 +357,18 @@ export interface AgentBuilderStudioProps {
   initialSnapshot?: ProjectSnapshot | null;
 }
 
+export const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { className?: string }) => (
+  <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path
+      d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStudioProps = {}) {
   const [prompt, setPrompt] = useState('');
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -1110,19 +1122,11 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </button>
         </div>
 
-        {/* Mobile-Only Outlaw Heat Badge */}
-        <button
-          onClick={() => setOutlawMode(!outlawMode)}
-          className={`flex md:hidden items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex-shrink-0 cursor-pointer border ${
-            outlawMode 
-              ? 'bg-orange-500/15 border-orange-500/40 text-orange-400 shadow-sm shadow-orange-500/20' 
-              : 'bg-stone-900 border-stone-800 text-stone-400'
-          }`}
-          title="Toggle Texas Outlaw Swagger Mode"
-        >
-          <Flame className={`w-3.5 h-3.5 ${outlawMode ? 'text-orange-400 fill-orange-400/40 animate-pulse' : 'text-stone-500'}`} />
-          <span>{outlawMode ? 'Outlaw 🔥' : 'Classic'}</span>
-        </button>
+        {/* Mobile Center Status Pill */}
+        <div className="flex md:hidden items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-900/90 border border-stone-800 text-[10px] font-mono text-stone-300 flex-shrink-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-bold text-stone-200 truncate max-w-[100px]">{project.profile.name}</span>
+        </div>
 
         {/* Right Section: Devices, Live Status Badge, Custom Domain, Deploy, Model */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -1272,43 +1276,33 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           <div className="fixed inset-0 z-50 md:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end animate-in fade-in duration-200">
             <div className="bg-stone-950 border-t border-orange-500/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
               {/* Drawer Tactile Drag Header */}
-              <div className="px-4 py-3 border-b border-stone-800 flex items-center justify-between bg-stone-900/95 flex-shrink-0">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-black">
-                    <Sparkles className="w-4 h-4" />
+              <div className="pt-2 pb-3 px-4 border-b border-stone-800 bg-stone-950 flex flex-col flex-shrink-0">
+                {/* Drag handle pill */}
+                <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-2.5" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xs font-black text-white uppercase tracking-wider">Experience Director</h3>
+                        <Squiggle className="w-6 h-1.5 text-orange-500/80" />
+                      </div>
+                      <p className="text-[10px] text-stone-400">Brand DNA · Archetypes · Signature Features</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xs font-black text-white uppercase tracking-wider">Brand DNA & Experience Director</h3>
-                    <p className="text-[10px] text-orange-400 font-mono flex items-center gap-1">
-                      <Flame className="w-2.5 h-2.5" />
-                      <span>Texas Sons Mobile Studio</span>
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => setIsMobileDirectorOpen(false)}
+                    className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => setIsMobileDirectorOpen(false)}
-                  className="p-1.5 rounded-xl bg-stone-800 text-stone-300 hover:text-white hover:bg-stone-700 cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Outlaw Voltage Gauge Banner inside Drawer */}
-              <div className="px-4 py-2 bg-gradient-to-r from-orange-950/60 via-stone-900 to-amber-950/60 border-b border-orange-500/20 flex items-center justify-between text-[10px] text-stone-300 flex-shrink-0">
-                <div className="flex items-center gap-1.5 font-bold text-orange-400">
-                  <Flame className="w-3 h-3 fill-current" />
-                  <span>Outlaw Heat: 99.4% · High Voltage</span>
-                </div>
-                <button
-                  onClick={() => setOutlawMode(!outlawMode)}
-                  className="text-[9px] font-mono uppercase font-bold text-stone-400 hover:text-white underline cursor-pointer"
-                >
-                  {outlawMode ? '⚡ Outlaw Mode Active' : 'Switch to Outlaw'}
-                </button>
               </div>
 
               {/* Drawer Scrollable Content */}
-              <div className="flex-1 overflow-y-auto pb-20">
+              <div className="flex-1 overflow-y-auto pb-24 bg-stone-950">
                 <BlueprintFormPanel
                   activeSnapshot={project}
                   isBusy={agentState.step !== 'ready'}
@@ -1440,27 +1434,18 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             </div>
           </div>
 
-          {/* Canvas Viewport Body */}
-          <div className="flex-1 overflow-y-auto p-2 sm:p-6 pb-28 md:pb-6 flex items-start justify-center bg-stone-950">
+          {/* Canvas Viewport Body with Edgy Color Blocking & Dot Matrix */}
+          <div className="flex-1 overflow-y-auto p-2 sm:p-6 pb-28 md:pb-6 flex items-start justify-center bg-stone-950 bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:20px_20px]">
             
             {/* TAB 1: Live Public Website Preview */}
             {activeTab === 'preview' && (
               <div 
                 data-ts-site=""
                 style={buildThemeVars({ theme: project.theme, ...project.profile }) as React.CSSProperties}
-                className={`transition-all duration-300 rounded-2xl shadow-2xl border border-stone-800 overflow-hidden flex flex-col ${getThemeBackgroundClass()} ${
+                className={`transition-all duration-300 rounded-2xl shadow-2xl border border-stone-800/80 overflow-hidden flex flex-col ${getThemeBackgroundClass()} ${
                   device === 'desktop' ? 'w-full max-w-full' : device === 'tablet' ? 'w-[768px]' : 'w-[375px]'
                 }`}
               >
-                {/* Outlaw Texas Attitude Ribbon (When Outlaw Mode Active) */}
-                {outlawMode && (
-                  <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest py-1.5 px-4 text-center flex items-center justify-center gap-2 shadow-inner select-none flex-shrink-0">
-                    <Flame className="w-3.5 h-3.5 fill-current animate-bounce" />
-                    <span>Texas Outlaw Edition · 100% Unapologetic Craft · Zero Cookie-Cutter BS</span>
-                    <Flame className="w-3.5 h-3.5 fill-current animate-bounce" />
-                  </div>
-                )}
-
                 {/* Simulated Browser Top Frame */}
                 <div className="h-9 bg-stone-900/90 border-b border-stone-800 px-4 flex items-center justify-between text-xs text-stone-400 select-none flex-shrink-0">
                   <div className="flex items-center space-x-1.5">
@@ -2092,80 +2077,90 @@ export default function ClientSite() {
         isDeploying={agentState.step === 'building'}
       />
 
-      {/* ── MOBILE CYBER-WESTERN FLOATING OUTLAW DOCK ──────────────────────── */}
+      {/* ── MOBILE TACTILE FLOATING DOCK (Color-Blocked & Oddly Satisfying) ─── */}
       <div className="fixed bottom-3 inset-x-3 z-40 md:hidden flex flex-col items-center select-none">
-        {/* Floating Outlaw Radial Quick-Action Arc Popover */}
+        {/* Floating Quick-Action Radial Popover */}
         {isMobileQuickMenuOpen && (
-          <div className="w-full mb-2 p-3 bg-stone-900/95 border border-orange-500/40 rounded-2xl shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
+          <div className="w-full mb-2 p-3 bg-stone-950/95 border border-stone-800 rounded-3xl shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
             <button
               onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-orange-500 text-orange-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-4 h-4 text-orange-400" />
               <span>Scan Flyer</span>
             </button>
             <button
               onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-emerald-500 text-emerald-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>QA Audit</span>
             </button>
             <button
               onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col items-center gap-1 hover:border-blue-500 text-blue-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Globe className="w-4 h-4" />
+              <Globe className="w-4 h-4 text-blue-400" />
               <span>Domain</span>
             </button>
             <button
               onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-xl bg-stone-950/80 border border-orange-500/40 flex flex-col items-center gap-1 text-orange-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Terminal className="w-4 h-4" />
+              <Terminal className="w-4 h-4 text-orange-400" />
               <span>AGY Spec</span>
             </button>
           </div>
         )}
 
         {/* Curved Floating Action Bar */}
-        <div className="w-full h-15 bg-stone-950/95 border border-orange-500/30 rounded-2xl shadow-[0_4px_30px_rgba(249,115,22,0.22)] backdrop-blur-xl px-2 py-1 flex items-center justify-between gap-1">
+        <div className="w-full h-15 bg-stone-950/95 border border-stone-800/90 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl px-2.5 py-1.5 flex items-center justify-between gap-1.5">
           <button
             onClick={() => setIsMobileDirectorOpen(true)}
-            className="flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black text-orange-400 hover:text-white flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold text-stone-300 hover:text-white flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer group"
           >
-            <Sparkles className="w-4 h-4 text-orange-400 fill-orange-400/20 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-orange-400 group-hover:rotate-12 transition-transform" />
             <span>Director</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('preview'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'preview' && !isMobileDirectorOpen ? 'text-white font-bold bg-orange-600/30 border border-orange-500/40' : 'text-stone-400 hover:text-stone-200'
+            className={`flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'preview' && !isMobileDirectorOpen
+                ? 'bg-stone-900 border border-stone-800 text-orange-400 shadow-inner'
+                : 'text-stone-400 hover:text-stone-200'
             }`}
           >
             <Eye className="w-4 h-4" />
             <span>Live</span>
+            {activeTab === 'preview' && !isMobileDirectorOpen && (
+              <Squiggle className="w-4 h-1 text-orange-500 -mt-0.5" />
+            )}
           </button>
 
           <button
             onClick={() => { setActiveTab('admin'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1.5 px-1 rounded-xl text-[11px] font-black flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'admin' && !isMobileDirectorOpen ? 'text-white font-bold bg-orange-600/30 border border-orange-500/40' : 'text-stone-400 hover:text-stone-200'
+            className={`flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'admin' && !isMobileDirectorOpen
+                ? 'bg-stone-900 border border-stone-800 text-orange-400 shadow-inner'
+                : 'text-stone-400 hover:text-stone-200'
             }`}
           >
             <LayoutDashboard className="w-4 h-4" />
             <span>Admin</span>
+            {activeTab === 'admin' && !isMobileDirectorOpen && (
+              <Squiggle className="w-4 h-1 text-orange-500 -mt-0.5" />
+            )}
           </button>
 
           <button
             onClick={() => setIsMobileQuickMenuOpen(!isMobileQuickMenuOpen)}
-            className={`p-2 rounded-xl border transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center ${
+            className={`p-2.5 rounded-2xl border transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center ${
               isMobileQuickMenuOpen
-                ? 'bg-orange-500/20 border-orange-500 text-orange-400 shadow-sm shadow-orange-500/30'
-                : 'bg-stone-900 border-stone-800 text-stone-300'
+                ? 'bg-stone-900 border-orange-500/50 text-orange-400'
+                : 'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-stone-200'
             }`}
-            title="Outlaw Tools"
+            title="Studio Tools"
           >
             <Sliders className="w-4 h-4" />
           </button>
@@ -2173,7 +2168,7 @@ export default function ClientSite() {
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="ml-1 px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/40 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+            className="ml-1 px-4 py-2 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/30 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? '...' : 'Deploy'}</span>

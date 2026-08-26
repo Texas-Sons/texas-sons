@@ -266,6 +266,18 @@ interface BlueprintFormPanelProps {
 
 type TabKey = 'archetype' | 'brand' | 'pillars' | 'badges' | 'feature' | 'theme' | 'all';
 
+const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { className?: string }) => (
+  <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path
+      d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function BlueprintFormPanel({
   activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy,
   selectedModel = 'claude-3-7-sonnet', onSelectModel
@@ -386,10 +398,13 @@ export default function BlueprintFormPanel({
       {/* ── Brand DNA & Experience Director Header ───────────────────────── */}
       <div className="flex items-center justify-between px-1">
         <div>
-          <h2 className="text-xs font-black uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-            <span>Brand DNA & Experience Director</span>
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-black uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+              <span>Brand DNA & Experience Director</span>
+            </h2>
+            <Squiggle className="w-6 h-1.5 text-orange-500/70" />
+          </div>
           <p className="text-[10px] text-stone-500">Generative Layouts · Signature Features · Motion</p>
         </div>
       </div>
