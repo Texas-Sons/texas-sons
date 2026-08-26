@@ -86,32 +86,36 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-stone-900 border border-stone-800 rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-stone-200 flex items-center justify-between bg-stone-50/50">
-          <div>
-            <h3 className="text-lg font-display font-semibold text-stone-900 flex items-center">
-              <Receipt className="w-5 h-5 mr-2 text-stone-400" />
-              Generate Invoice
-            </h3>
-            <p className="text-sm text-stone-500 mt-1">Create a new invoice for a client project.</p>
+        <div className="px-6 py-5 border-b border-stone-800 flex items-center justify-between bg-stone-900">
+          <div className="flex items-center">
+            <div className="rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 p-2 mr-3 flex items-center justify-center">
+              <Receipt className="w-5 h-5 text-[#C5A059]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-stone-100 flex items-center">
+                Generate Invoice
+              </h3>
+              <p className="text-xs text-stone-500 font-mono mt-0.5">Create a new invoice for a client project.</p>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
             {/* View Toggle */}
-            <div className="flex bg-stone-200 p-1 rounded-lg">
+            <div className="flex bg-stone-950 border border-stone-800 p-1 rounded-lg">
               <button
                 onClick={() => setViewMode('edit')}
-                className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'edit' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
+                className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'edit' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-500 hover:text-stone-300'}`}
               >
                 <Edit2 className="w-4 h-4 mr-1.5" />
                 Edit
               </button>
               <button
                 onClick={() => setViewMode('preview')}
-                className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'preview' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
+                className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'preview' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-500 hover:text-stone-300'}`}
               >
                 <Eye className="w-4 h-4 mr-1.5" />
                 Preview
@@ -119,7 +123,7 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
             </div>
             <button 
               onClick={onClose}
-              className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-colors ml-2"
+              className="p-2 text-stone-500 hover:text-stone-200 hover:bg-stone-800 rounded-full transition-colors ml-2"
             >
               <X className="w-5 h-5" />
             </button>
@@ -133,9 +137,9 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                 
                 {/* Billing Method Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-stone-900 mb-3">Billing Method</label>
+                  <label className="block text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-3">Billing Method</label>
                   <div className="grid grid-cols-2 gap-4">
-                    <label className={`cursor-pointer flex items-center p-4 border rounded-xl transition-colors ${billingMethod === 'stripe' ? 'border-orange-500 bg-orange-50/30' : 'border-stone-200 hover:border-stone-300 bg-white'}`}>
+                    <label className={`cursor-pointer flex items-center p-4 border rounded-xl transition-colors ${billingMethod === 'stripe' ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-stone-800 hover:border-stone-700 bg-stone-900'}`}>
                       <input 
                         type="radio" 
                         name="billingMethod" 
@@ -144,13 +148,13 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                         onChange={() => setBillingMethod('stripe')}
                         className="sr-only"
                       />
-                      <CreditCard className={`w-5 h-5 mr-3 ${billingMethod === 'stripe' ? 'text-orange-500' : 'text-stone-400'}`} />
+                      <CreditCard className={`w-5 h-5 mr-3 ${billingMethod === 'stripe' ? 'text-[#C5A059]' : 'text-stone-500'}`} />
                       <div>
-                        <p className={`text-sm font-medium ${billingMethod === 'stripe' ? 'text-orange-900' : 'text-stone-900'}`}>Stripe Invoice</p>
-                        <p className="text-xs text-stone-500 mt-0.5">Collect payment online via Stripe</p>
+                        <p className={`text-sm font-medium ${billingMethod === 'stripe' ? 'text-[#C5A059]' : 'text-stone-200'}`}>Stripe Invoice</p>
+                        <p className="text-xs text-stone-500 mt-0.5 font-mono">Collect payment online via Stripe</p>
                       </div>
                     </label>
-                    <label className={`cursor-pointer flex items-center p-4 border rounded-xl transition-colors ${billingMethod === 'manual' ? 'border-orange-500 bg-orange-50/30' : 'border-stone-200 hover:border-stone-300 bg-white'}`}>
+                    <label className={`cursor-pointer flex items-center p-4 border rounded-xl transition-colors ${billingMethod === 'manual' ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-stone-800 hover:border-stone-700 bg-stone-900'}`}>
                       <input 
                         type="radio" 
                         name="billingMethod" 
@@ -159,22 +163,22 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                         onChange={() => setBillingMethod('manual')}
                         className="sr-only"
                       />
-                      <FileText className={`w-5 h-5 mr-3 ${billingMethod === 'manual' ? 'text-orange-500' : 'text-stone-400'}`} />
+                      <FileText className={`w-5 h-5 mr-3 ${billingMethod === 'manual' ? 'text-[#C5A059]' : 'text-stone-500'}`} />
                       <div>
-                        <p className={`text-sm font-medium ${billingMethod === 'manual' ? 'text-orange-900' : 'text-stone-900'}`}>Generic Invoice</p>
-                        <p className="text-xs text-stone-500 mt-0.5">Manual tracking without Stripe</p>
+                        <p className={`text-sm font-medium ${billingMethod === 'manual' ? 'text-[#C5A059]' : 'text-stone-200'}`}>Generic Invoice</p>
+                        <p className="text-xs text-stone-500 mt-0.5 font-mono">Manual tracking without Stripe</p>
                       </div>
                     </label>
                   </div>
                 </div>
 
                 <div>
-                  <label className="flex items-center space-x-3 text-sm font-medium text-stone-700 cursor-pointer">
+                  <label className="flex items-center space-x-3 text-sm font-medium text-stone-300 cursor-pointer">
                     <input 
                       type="checkbox"
                       checked={showFullAddress}
                       onChange={(e) => setShowFullAddress(e.target.checked)}
-                      className="w-4 h-4 text-orange-600 rounded border-stone-300 focus:ring-orange-500"
+                      className="w-4 h-4 text-[#C5A059] rounded border-stone-800 bg-stone-900 focus:ring-[#C5A059] focus:ring-offset-stone-900"
                     />
                     <span>Show full address (Street, City, State, Zip)</span>
                   </label>
@@ -182,12 +186,12 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1.5">Client / Project</label>
+                    <label className="block text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-2">Client / Project</label>
                     <select 
                       required
                       value={selectedProjectId}
                       onChange={(e) => setSelectedProjectId(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                     >
                       <option value="" disabled>Select a project</option>
                       {projects.map(p => (
@@ -196,20 +200,21 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1.5">Due Date</label>
+                    <label className="block text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-2">Due Date</label>
                     <input 
                       type="date" 
                       required
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
+                      style={{ colorScheme: 'dark' }}
                     />
                   </div>
                 </div>
 
                 <div className="pt-2">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-medium text-stone-700">Line Items</label>
+                    <label className="block text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Line Items</label>
                   </div>
                   
                   <div className="space-y-3">
@@ -222,7 +227,7 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                             placeholder="Description (e.g., UI Design, Hosting Setup)"
                             value={item.description}
                             onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                            className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                           />
                         </div>
                         <div className="w-24">
@@ -234,7 +239,7 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                             placeholder="Qty"
                             value={item.qty || ''}
                             onChange={(e) => updateLineItem(item.id, 'qty', parseFloat(e.target.value) || 0)}
-                            className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                            className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                           />
                         </div>
                         <div className="w-32 relative">
@@ -249,14 +254,14 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                             placeholder="Price"
                             value={item.price || ''}
                             onChange={(e) => updateLineItem(item.id, 'price', parseFloat(e.target.value) || 0)}
-                            className="w-full pl-7 pr-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                            className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                           />
                         </div>
                         <button 
                           type="button"
                           onClick={() => removeLineItem(item.id)}
                           disabled={lineItems.length === 1}
-                          className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:hover:text-stone-400 disabled:hover:bg-transparent"
+                          className="p-2 text-stone-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:hover:text-stone-500 disabled:hover:bg-transparent"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -267,16 +272,16 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                   <button 
                     type="button"
                     onClick={addLineItem}
-                    className="mt-3 text-sm font-medium text-orange-600 hover:text-orange-700 flex items-center transition-colors"
+                    className="mt-3 text-sm font-medium text-[#C5A059] hover:text-[#C5A059]/80 flex items-center transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Add Item
                   </button>
                 </div>
 
-                <div className="pt-2 border-t border-stone-100">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-medium text-stone-700">Custom Fields (Optional)</label>
+                <div className="pt-2 border-t border-stone-800">
+                  <div className="flex items-center justify-between mb-3 mt-4">
+                    <label className="block text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Custom Fields (Optional)</label>
                   </div>
                   <div className="space-y-3">
                     {customFields.map((field) => (
@@ -287,7 +292,7 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                             placeholder="Name (e.g., Hours, PO Number)"
                             value={field.name}
                             onChange={(e) => updateCustomField(field.id, 'name', e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                            className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                           />
                         </div>
                         <div className="flex-1">
@@ -296,13 +301,13 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                             placeholder="Value (e.g., 13.4)"
                             value={field.value}
                             onChange={(e) => updateCustomField(field.id, 'value', e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                            className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 text-sm"
                           />
                         </div>
                         <button 
                           type="button"
                           onClick={() => removeCustomField(field.id)}
-                          className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-stone-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -312,17 +317,17 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                   <button 
                     type="button"
                     onClick={addCustomField}
-                    className="mt-3 text-sm font-medium text-orange-600 hover:text-orange-700 flex items-center transition-colors"
+                    className="mt-3 text-sm font-medium text-[#C5A059] hover:text-[#C5A059]/80 flex items-center transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Add Custom Field
                   </button>
                 </div>
 
-                <div className="pt-4 border-t border-stone-200 flex justify-end">
+                <div className="pt-4 border-t border-stone-800 flex justify-end">
                   <div className="text-right">
-                    <p className="text-sm text-stone-500">Total Amount</p>
-                    <p className="text-3xl font-display font-semibold text-stone-900 mt-1">
+                    <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Total Amount</p>
+                    <p className="text-3xl font-bold text-stone-100 mt-1">
                       ${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </p>
                   </div>
@@ -331,22 +336,22 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
             </div>
           ) : (
             /* PREVIEW MODE */
-            <div className="p-8 bg-stone-100 min-h-[500px] flex justify-center">
-              <div className="bg-white shadow-sm border border-stone-200 w-full max-w-3xl p-12 rounded-sm text-sm">
+            <div className="p-8 bg-stone-950 min-h-[500px] flex justify-center bg-[radial-gradient(circle,_#2a2a2a_1px,_transparent_1px)] bg-[length:24px_24px]">
+              <div className="bg-stone-800 shadow-xl border border-stone-700 w-full max-w-3xl p-12 rounded-sm text-sm">
                 
                 <div className="flex justify-between items-start mb-16">
                   {/* Top Left: Logo & From Address */}
                   <div>
                     <div className="mb-6 flex items-center gap-3">
-                      <TexasSonsLogo className="w-12 h-12 text-orange-600" />
+                      <TexasSonsLogo className="w-12 h-12 text-[#C5A059]" />
                       <div className="flex flex-col">
-                        <span className="font-texas font-normal text-2xl tracking-wide text-stone-900 leading-none">Texas Sons</span>
-                        <span className="text-orange-600 font-sans text-xs font-bold tracking-widest uppercase mt-1">- WEBSITES</span>
+                        <span className="font-texas font-normal text-2xl tracking-wide text-stone-100 leading-none">Texas Sons</span>
+                        <span className="text-[#C5A059] font-sans text-[10px] font-bold tracking-widest uppercase mt-1">- WEBSITES</span>
                       </div>
                     </div>
-                    <div className="text-stone-500 text-xs font-semibold mb-1">From</div>
-                    <div className="font-bold text-stone-900 mb-1">Morgan Valdez</div>
-                    <div className="text-stone-500 leading-relaxed">
+                    <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">From</div>
+                    <div className="font-bold text-stone-200 mb-1">Morgan Valdez</div>
+                    <div className="text-stone-400 leading-relaxed font-mono text-xs">
                       {showFullAddress ? (
                         <>
                           9360 U.S. 281, # 6<br />
@@ -362,28 +367,28 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                   <div className="text-right flex gap-12">
                     <div className="flex flex-col gap-6">
                       <div>
-                        <div className="text-stone-500 font-semibold mb-1">Due date</div>
-                        <div className="text-stone-900">{new Date(dueDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
+                        <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">Due date</div>
+                        <div className="text-stone-200 font-mono text-xs">{new Date(dueDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
                       </div>
                       <div>
-                        <div className="text-stone-500 font-semibold mb-1">Issue date</div>
-                        <div className="text-stone-900">{new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
+                        <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">Issue date</div>
+                        <div className="text-stone-200 font-mono text-xs">{new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
                       </div>
                     </div>
                     
                     <div className="flex flex-col gap-6 text-right">
                       <div>
-                        <div className="text-stone-500 font-semibold mb-1">Amount due</div>
-                        <div className="text-stone-900 font-bold">${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                        <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">Amount due</div>
+                        <div className="text-[#C5A059] font-bold text-lg">${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                       </div>
                       <div>
-                        <div className="text-stone-500 font-semibold mb-1">Invoice number</div>
-                        <div className="text-stone-900"># 1001</div>
+                        <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">Invoice number</div>
+                        <div className="text-stone-200 font-mono text-xs"># 1001</div>
                       </div>
                       {customFields.filter(cf => cf.name).map((cf) => (
                         <div key={cf.id}>
-                          <div className="text-stone-500 font-semibold mb-1">{cf.name}</div>
-                          <div className="text-stone-900">{cf.value}</div>
+                          <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">{cf.name}</div>
+                          <div className="text-stone-200 font-mono text-xs">{cf.value}</div>
                         </div>
                       ))}
                     </div>
@@ -392,30 +397,30 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
 
                 {/* Bill To */}
                 <div className="mb-12">
-                  <div className="text-stone-500 font-semibold mb-1 text-xs">Bill to</div>
-                  <div className="text-stone-900 font-bold">{selectedProject?.clientName || 'Client Name'}</div>
+                  <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">Bill to</div>
+                  <div className="text-stone-100 font-bold text-lg">{selectedProject?.clientName || 'Client Name'}</div>
                   {selectedProject?.companyName && (
-                    <div className="text-stone-500 mt-1">{selectedProject.companyName}</div>
+                    <div className="text-stone-400 mt-1 font-mono text-xs">{selectedProject.companyName}</div>
                   )}
                 </div>
 
                 {/* Table */}
                 <table className="w-full text-left mb-8">
                   <thead>
-                    <tr className="border-b-2 border-stone-100">
-                      <th className="py-3 font-semibold text-stone-900">Item</th>
-                      <th className="py-3 font-semibold text-stone-900 text-right w-24">Qty</th>
-                      <th className="py-3 font-semibold text-stone-900 text-right w-32">Price</th>
-                      <th className="py-3 font-semibold text-stone-900 text-right w-32">Total</th>
+                    <tr className="border-b-2 border-stone-700">
+                      <th className="py-3 font-semibold text-stone-300">Item</th>
+                      <th className="py-3 font-semibold text-stone-300 text-right w-24">Qty</th>
+                      <th className="py-3 font-semibold text-stone-300 text-right w-32">Price</th>
+                      <th className="py-3 font-semibold text-stone-300 text-right w-32">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lineItems.map((item, index) => (
-                      <tr key={index} className="border-b border-stone-100">
-                        <td className="py-4 text-stone-800">{item.description || 'Item Description'}</td>
-                        <td className="py-4 text-stone-800 text-right">{item.qty || 1}</td>
-                        <td className="py-4 text-stone-800 text-right">${(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                        <td className="py-4 text-stone-800 text-right">${((item.qty || 0) * (item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <tr key={index} className="border-b border-stone-700/50">
+                        <td className="py-4 text-stone-300">{item.description || 'Item Description'}</td>
+                        <td className="py-4 text-stone-300 text-right">{item.qty || 1}</td>
+                        <td className="py-4 text-stone-300 text-right font-mono text-xs">${(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="py-4 text-stone-300 text-right font-mono text-xs">${((item.qty || 0) * (item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -423,33 +428,33 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
 
                 {/* Totals */}
                 <div className="flex justify-end mb-24">
-                  <div className="w-64 space-y-3">
-                    <div className="flex justify-between text-stone-500">
+                  <div className="w-64 space-y-3 font-mono text-sm">
+                    <div className="flex justify-between text-stone-400">
                       <span>Subtotal</span>
                       <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="flex justify-between text-stone-500">
+                    <div className="flex justify-between text-stone-400">
                       <span>Tax</span>
                       <span>$0.00</span>
                     </div>
-                    <div className="flex justify-between font-bold text-stone-900 pt-3">
+                    <div className="flex justify-between font-bold text-stone-100 pt-3 border-t border-stone-700">
                       <span>Total</span>
-                      <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-[#C5A059]">${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer */}
                 <div className="flex flex-col items-center justify-center pt-8 pb-4">
-                  <div className="text-stone-400 text-[10px] font-bold tracking-wider mb-3 uppercase">
+                  <div className="text-stone-500 text-[10px] font-bold tracking-widest font-mono mb-3 uppercase">
                     Invoices Powered By
                   </div>
                   {billingMethod === 'stripe' ? (
-                    <div className="px-4 py-1.5 bg-[#f6f9fc] text-[#635BFF] rounded-full font-bold tracking-tight text-sm">
+                    <div className="px-4 py-1.5 bg-[#635BFF]/10 text-[#8c86ff] rounded-full font-bold tracking-tight text-sm">
                       stripe
                     </div>
                   ) : (
-                    <div className="px-4 py-1.5 bg-orange-50 text-orange-600 rounded-full font-bold tracking-tight text-sm flex items-center">
+                    <div className="px-4 py-1.5 bg-[#C5A059]/10 text-[#C5A059] rounded-full font-bold tracking-tight text-sm flex items-center">
                       <TexasSonsLogo className="w-4 h-4 mr-1.5" /> 
                       <span className="font-texas font-normal text-lg tracking-wide">Texas Sons</span>
                       <span className="text-[10px] ml-1 opacity-80 uppercase tracking-widest">- WEBSITES</span>
@@ -462,11 +467,11 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-stone-200 bg-stone-50/50 flex justify-end space-x-3">
+        <div className="px-6 py-4 border-t border-stone-800 bg-stone-900 flex justify-end space-x-3">
           <button 
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-stone-200 bg-stone-900 border border-stone-700 rounded-lg hover:bg-stone-800 transition-colors"
           >
             Cancel
           </button>
@@ -481,7 +486,7 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                 handleSubmit(fakeEvent);
               }
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-stone-900 border border-transparent rounded-lg hover:bg-stone-800 focus:ring-2 focus:ring-stone-900 focus:ring-offset-2 flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm text-stone-950 font-black bg-[#C5A059]/90 border border-transparent rounded-lg hover:bg-[#C5A059] focus:ring-2 focus:ring-[#C5A059] focus:ring-offset-2 focus:ring-offset-stone-900 flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {billingMethod === 'stripe' ? 'Create Stripe Invoice' : 'Create Generic Invoice'}
           </button>
@@ -491,3 +496,4 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
     </div>
   );
 }
+
