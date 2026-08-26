@@ -342,15 +342,20 @@ export default function App() {
     );
   }
 
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50">
       
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation (Desktop + Mobile Slide-Out Drawer) */}
       <Sidebar 
         currentView={currentView} 
+        isMobileOpen={isMobileNavOpen}
+        onCloseMobile={() => setIsMobileNavOpen(false)}
         onNavigate={(view) => {
           setSelectedClientSnapshot(null);
           setCurrentView(view);
+          setIsMobileNavOpen(false);
         }} 
       />
 
@@ -361,14 +366,18 @@ export default function App() {
         {currentView !== 'agent-builder' && (
           <TopBar 
             currentView={currentView} 
-            onLogout={handleLogout} 
+            onLogout={handleLogout}
+            onOpenMobileNav={() => setIsMobileNavOpen(true)}
           />
         )}
 
         {/* Main Canvas Area */}
         {currentView === 'agent-builder' ? (
           <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-            <AgentBuilderStudio initialSnapshot={selectedClientSnapshot} />
+            <AgentBuilderStudio 
+              initialSnapshot={selectedClientSnapshot} 
+              onOpenAppNav={() => setIsMobileNavOpen(true)}
+            />
           </main>
         ) : currentView === 'clients' ? (
           <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

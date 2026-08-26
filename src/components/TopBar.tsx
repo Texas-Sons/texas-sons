@@ -1,12 +1,13 @@
-import { Bell, Search, LogOut } from 'lucide-react';
+import { Bell, Search, LogOut, Menu } from 'lucide-react';
 import { ViewState } from '../types';
 
 interface TopBarProps {
   currentView: ViewState;
   onLogout?: () => void;
+  onOpenMobileNav?: () => void;
 }
 
-export default function TopBar({ currentView, onLogout }: TopBarProps) {
+export default function TopBar({ currentView, onLogout, onOpenMobileNav }: TopBarProps) {
   const titles: Record<ViewState, string> = {
     dashboard: 'Dashboard Overview',
     projects: 'Project Management',
@@ -18,9 +19,18 @@ export default function TopBar({ currentView, onLogout }: TopBarProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-6 flex-shrink-0 z-10">
+    <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-10">
       <div className="flex items-center space-x-3">
-        <h1 className="text-lg font-display font-bold text-stone-900">{titles[currentView] || 'Overview'}</h1>
+        {onOpenMobileNav && (
+          <button
+            onClick={onOpenMobileNav}
+            className="md:hidden p-2 rounded-xl bg-stone-100 border border-stone-200 text-stone-700 hover:text-stone-900 cursor-pointer active:scale-95 transition-all"
+            title="Open App Navigation"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+        )}
+        <h1 className="text-base sm:text-lg font-display font-bold text-stone-900 truncate">{titles[currentView] || 'Overview'}</h1>
       </div>
       
       <div className="flex items-center space-x-5">

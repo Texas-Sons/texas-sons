@@ -27,6 +27,7 @@ import {
   Minimize2,
   PanelLeftClose,
   PanelLeftOpen,
+  Menu,
   Plus,
   X,
   Image as ImageIcon,
@@ -50,7 +51,12 @@ import {
   Bookmark,
   Zap,
   Globe,
-  History
+  History,
+  Building2,
+  CalendarCheck,
+  Copy,
+  Info,
+  Share2
 } from 'lucide-react';
 import { 
   NavbarBlock, 
@@ -355,6 +361,7 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
 
 export interface AgentBuilderStudioProps {
   initialSnapshot?: ProjectSnapshot | null;
+  onOpenAppNav?: () => void;
 }
 
 export const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { className?: string }) => (
@@ -369,7 +376,7 @@ export const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { classNam
   </svg>
 );
 
-export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStudioProps = {}) {
+export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: AgentBuilderStudioProps = {}) {
   const [prompt, setPrompt] = useState('');
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState<'preview' | 'admin' | 'code' | 'blueprint'>('preview');
@@ -934,8 +941,19 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       {/* Top Studio Master Action Bar */}
       <header className="h-16 border-b border-stone-800/80 px-3 sm:px-4 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
         
-        {/* Left Section: Sidebar Toggle, Active Experience Dropdown Pill, Quick Tools */}
+        {/* Left Section: Mobile App Navigation Hamburger, Director / Sidebar Toggle, Active Experience Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          {/* Mobile App Navigation Hamburger Button */}
+          {onOpenAppNav && (
+            <button
+              onClick={onOpenAppNav}
+              className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-orange-500/40 cursor-pointer active:scale-95 transition-all shadow-sm"
+              title="Open Texas Sons App Menu"
+            >
+              <Menu className="w-4 h-4 text-orange-400" />
+            </button>
+          )}
+
           <button
             onClick={() => {
               if (window.innerWidth < 768) {
@@ -944,7 +962,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
                 setIsChatCollapsed(!isChatCollapsed);
               }
             }}
-            className="p-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-900 border border-transparent hover:border-stone-800 transition-colors flex-shrink-0 cursor-pointer"
+            className="p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-stone-400 hover:text-white bg-stone-900/60 md:bg-transparent hover:bg-stone-900 border border-stone-800/80 md:border-transparent hover:border-stone-800 transition-all flex-shrink-0 cursor-pointer active:scale-95"
             title={isChatCollapsed ? "Expand Configurator" : "Collapse Configurator"}
           >
             {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
