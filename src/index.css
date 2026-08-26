@@ -2,13 +2,15 @@
 
 @theme {
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rajdhani", ui-sans-serif, system-ui, sans-serif;
   --font-texas: "Rye", serif;
+  --font-cyber: "Oxanium", ui-sans-serif, system-ui, sans-serif;
+  --font-slab: "Alfa Slab One", serif;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #FAFAFA;
+  background-color: #0c0a09;
 }
 
 h1, h2, h3, h4, h5, h6 {
