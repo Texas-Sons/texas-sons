@@ -344,7 +344,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50">
+    <div className="flex h-screen overflow-hidden bg-stone-950">
       
       {/* Sidebar Navigation (Desktop + Mobile Slide-Out Drawer) */}
       <Sidebar 
@@ -391,8 +391,8 @@ export default function App() {
             <SettingsView />
           </main>
         ) : (
-          <main className="flex-1 overflow-y-auto p-8 pb-32">
-            <div className="max-w-6xl mx-auto pb-16">
+          <main className="flex-1 overflow-y-auto bg-stone-950 pb-24">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16">
               {currentView === 'dashboard' && (
                 <DashboardOverview projects={projects} />
               )}

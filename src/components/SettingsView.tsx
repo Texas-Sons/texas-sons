@@ -223,23 +223,23 @@ export default function SettingsView() {
   const aiDailyPercent = Math.min(100, Math.round((aiUsageCount.requests / settings.maxDailyRequests) * 100));
 
   return (
-    <div className="flex-1 bg-stone-950 text-stone-100 p-4 sm:p-8 overflow-y-auto min-h-screen">
+    <div className="flex-1 bg-stone-950 text-stone-100 p-4 sm:p-8 overflow-y-auto min-h-screen bg-[radial-gradient(circle,_#2a2a2a_1px,_transparent_1px)] bg-[length:24px_24px]">
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <h1 className="text-xl font-bold text-stone-100 flex items-center gap-2">
                 Studio Settings & Mission Control
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-mono">
                   Engine v1.2 Live
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-stone-400 mt-0.5">
+              <p className="text-xs font-mono text-stone-500 mt-0.5">
                 Manage AI tokens, Google Cloud credits, package pricing, Cloudflare deployment rules, and team governance.
               </p>
             </div>
@@ -249,8 +249,8 @@ export default function SettingsView() {
             onClick={handleSaveSettings}
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-lg transition-all active:scale-95 ${
               savedSuccess
-                ? 'bg-emerald-600 text-white shadow-emerald-950/50'
-                : 'bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-orange-950/30'
+                ? 'bg-emerald-600 text-stone-200 shadow-emerald-950/50'
+                : 'bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black'
             }`}
           >
             {savedSuccess ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
@@ -276,11 +276,11 @@ export default function SettingsView() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap ${
                   isActive 
-                    ? 'bg-stone-900 text-white border border-stone-800 shadow-inner font-semibold' 
+                    ? 'bg-stone-900 text-stone-200 border border-stone-800 shadow-inner font-semibold' 
                     : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/50'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-orange-400' : 'text-stone-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#C5A059]' : 'text-stone-500'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -295,19 +295,19 @@ export default function SettingsView() {
             
             {/* Live Quota Consumption Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl bg-stone-900/70 border border-stone-800/80 space-y-2">
-                <div className="flex items-center justify-between text-stone-400 text-xs font-semibold uppercase">
+              <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
                   <span>Daily Free AI Requests</span>
                   <Zap className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-white">{aiUsageCount.requests}</span>
+                  <span className="text-2xl font-bold text-stone-100">{aiUsageCount.requests}</span>
                   <span className="text-xs text-stone-500 font-mono">/ {settings.maxDailyRequests} RPD</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-stone-800 overflow-hidden">
                   <div 
                     style={{ width: `${aiDailyPercent}%` }}
-                    className="h-full bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-[#C5A059] rounded-full"
                   />
                 </div>
                 <p className="text-[11px] text-stone-500">
@@ -315,8 +315,8 @@ export default function SettingsView() {
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-stone-900/70 border border-stone-800/80 space-y-2">
-                <div className="flex items-center justify-between text-stone-400 text-xs font-semibold uppercase">
+              <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
                   <span>Rate Limit Capacity</span>
                   <Activity className="w-4 h-4 text-blue-400" />
                 </div>
@@ -333,13 +333,13 @@ export default function SettingsView() {
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-stone-900/70 border border-stone-800/80 space-y-2">
-                <div className="flex items-center justify-between text-stone-400 text-xs font-semibold uppercase">
+              <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
                   <span>Token Budget Guardrail</span>
                   <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-white font-mono">{aiUsageCount.tokens.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-stone-100 font-mono">{aiUsageCount.tokens.toLocaleString()}</span>
                   <span className="text-xs text-stone-500">Tokens Today</span>
                 </div>
                 <div className="text-[11px] text-stone-400">
@@ -352,19 +352,19 @@ export default function SettingsView() {
             </div>
 
             {/* AI Model Controls */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-5">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-orange-400" />
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-5">
+              <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-[#C5A059]" />
                 Gemini AI Engine Configuration
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
                 <div>
-                  <label className="block text-stone-300 font-semibold mb-1.5">Primary Vision & Synthesis Model</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1.5">Primary Vision & Synthesis Model</label>
                   <select
                     value={settings.aiModel}
                     onChange={(e) => setSettings(prev => ({ ...prev, aiModel: e.target.value as any }))}
-                    className="w-full px-3 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2.5 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   >
                     <option value="gemini-3.6-flash">Gemini 3.6 Flash (Recommended — Fastest, Free 1,500 RPD)</option>
                     <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Complex Reasoning & Synthesis)</option>
@@ -375,8 +375,8 @@ export default function SettingsView() {
                 </div>
 
                 <div>
-                  <label className="block text-stone-300 font-semibold mb-1.5">
-                    Creativity & Temperature: <span className="text-orange-400 font-mono">{settings.aiTemperature}</span>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1.5">
+                    Creativity & Temperature: <span className="text-[#C5A059] font-mono">{settings.aiTemperature}</span>
                   </label>
                   <input
                     type="range"
@@ -385,7 +385,7 @@ export default function SettingsView() {
                     step="0.05"
                     value={settings.aiTemperature}
                     onChange={(e) => setSettings(prev => ({ ...prev, aiTemperature: parseFloat(e.target.value) }))}
-                    className="w-full accent-orange-500 cursor-pointer h-2 bg-stone-950 rounded-lg"
+                    className="w-full accent-[#C5A059] cursor-pointer h-2 bg-stone-950 rounded-lg"
                   />
                   <div className="flex justify-between text-[10px] text-stone-500 mt-1">
                     <span>0.1 (Strict / Factual)</span>
@@ -395,12 +395,12 @@ export default function SettingsView() {
                 </div>
 
                 <div>
-                  <label className="block text-stone-300 font-semibold mb-1.5">Daily Safety Request Cap</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1.5">Daily Safety Request Cap</label>
                   <input
                     type="number"
                     value={settings.maxDailyRequests}
                     onChange={(e) => setSettings(prev => ({ ...prev, maxDailyRequests: parseInt(e.target.value, 10) || 1500 }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white font-mono focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 font-mono focus:outline-none focus:border-orange-500"
                   />
                   <p className="text-[11px] text-stone-500 mt-1">
                     Maximum requests per 24 hours before triggering warning alerts. Default is 1,500.
@@ -416,7 +416,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.tokenOptimization}
                     onChange={(e) => setSettings(prev => ({ ...prev, tokenOptimization: e.target.checked }))}
-                    className="w-4 h-4 accent-orange-500 cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -436,8 +436,8 @@ export default function SettingsView() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5 text-orange-400" />
-                    <h3 className="text-base font-bold text-white">Google Maps Platform Free Tier ($200 Monthly Credit)</h3>
+                    <MapPin className="w-5 h-5 text-[#C5A059]" />
+                    <h3 className="text-base font-bold text-stone-100">Google Maps Platform Free Tier ($200 Monthly Credit)</h3>
                   </div>
                   <p className="text-xs text-stone-400 mt-1">
                     Google provides $200 in free recurring API usage every month (approx 4,500 Place lookups).
@@ -445,7 +445,7 @@ export default function SettingsView() {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-2xl font-bold text-orange-400 font-mono">{totalMapsUsage}</span>
+                  <span className="text-2xl font-bold text-[#C5A059] font-mono">{totalMapsUsage}</span>
                   <span className="text-xs text-stone-500 font-mono"> / {settings.mapsMonthlyLimit} Hits</span>
                 </div>
               </div>
@@ -454,41 +454,41 @@ export default function SettingsView() {
                 <div 
                   style={{ width: `${mapsPercent}%` }}
                   className={`h-full rounded-full transition-all ${
-                    mapsPercent > 80 ? 'bg-red-500' : mapsPercent > 50 ? 'bg-amber-500' : 'bg-emerald-500'
+                    mapsPercent > 80 ? 'bg-red-500' : mapsPercent > 50 ? 'bg-[#C5A059]' : 'bg-emerald-500'
                   }`}
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3 text-center text-xs">
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-stone-500 text-[10px] uppercase font-semibold">Places Searches</p>
-                  <p className="text-base font-bold text-white mt-0.5">{mapsUsageCount.searches || 0}</p>
+                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Places Searches</p>
+                  <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.searches || 0}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-stone-500 text-[10px] uppercase font-semibold">Autocomplete</p>
-                  <p className="text-base font-bold text-white mt-0.5">{mapsUsageCount.autocomplete || 0}</p>
+                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Autocomplete</p>
+                  <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.autocomplete || 0}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-stone-500 text-[10px] uppercase font-semibold">Place Assets</p>
-                  <p className="text-base font-bold text-white mt-0.5">{mapsUsageCount.assets || 0}</p>
+                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Place Assets</p>
+                  <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.assets || 0}</p>
                 </div>
               </div>
             </div>
 
             {/* Threshold Controls */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4 text-xs">
-              <h4 className="font-bold text-white uppercase tracking-wider text-xs border-b border-stone-800 pb-2">
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4 text-xs">
+              <h4 className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono border-b border-stone-800 pb-2">
                 Monthly Cap & Warning Thresholds
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-stone-300 font-medium mb-1">Monthly Safe Request Limit</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Monthly Safe Request Limit</label>
                   <input
                     type="number"
                     value={settings.mapsMonthlyLimit}
                     onChange={(e) => setSettings(prev => ({ ...prev, mapsMonthlyLimit: parseInt(e.target.value, 10) || 4500 }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white font-mono focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 font-mono focus:outline-none focus:border-orange-500"
                   />
                   <p className="text-[11px] text-stone-500 mt-1">
                     Prevents accidental billing beyond Google's $200 free allowance.
@@ -496,12 +496,12 @@ export default function SettingsView() {
                 </div>
 
                 <div>
-                  <label className="block text-stone-300 font-medium mb-1">Warning Notification Threshold</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Warning Notification Threshold</label>
                   <input
                     type="number"
                     value={settings.mapsWarningThreshold}
                     onChange={(e) => setSettings(prev => ({ ...prev, mapsWarningThreshold: parseInt(e.target.value, 10) || 4000 }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white font-mono focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 font-mono focus:outline-none focus:border-orange-500"
                   />
                   <p className="text-[11px] text-stone-500 mt-1">
                     Triggers a banner alert in Lead Finder when approaching the budget limit.
@@ -520,100 +520,100 @@ export default function SettingsView() {
           <div className="space-y-6 animate-in fade-in text-xs">
             
             {/* Agency Brand Identity */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Building className="w-4 h-4 text-orange-400" />
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
+              <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
+                <Building className="w-4 h-4 text-[#C5A059]" />
                 Agency Brand Information
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-stone-400 font-medium mb-1">Agency Display Name</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Agency Display Name</label>
                   <input
                     type="text"
                     value={settings.agencyName}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyName: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-stone-400 font-medium mb-1">Primary Support Email</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Primary Support Email</label>
                   <input
                     type="email"
                     value={settings.agencyEmail}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyEmail: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-stone-400 font-medium mb-1">Phone Number</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Phone Number</label>
                   <input
                     type="text"
                     value={settings.agencyPhone}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyPhone: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-stone-400 font-medium mb-1">Office / Legal Address</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Office / Legal Address</label>
                   <input
                     type="text"
                     value={settings.agencyAddress}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyAddress: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
               </div>
             </div>
 
             {/* Architecture Tier Rates & Deposit Defaults */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
+              <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-emerald-400" />
                 Default Package Pricing & Deposit Rates
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-2">
-                  <span className="font-bold text-white block">Spur Tier (Static Landing)</span>
+                  <span className="font-bold text-stone-100 block">Spur Tier (Static Landing)</span>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 font-bold">$</span>
                     <input
                       type="number"
                       value={settings.spurPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, spurPrice: parseInt(e.target.value, 10) || 1500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-orange-500"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.spurPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-2">
-                  <span className="font-bold text-white block">Ranger Tier (Flow / Lead Gen)</span>
+                  <span className="font-bold text-stone-100 block">Ranger Tier (Flow / Lead Gen)</span>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 font-bold">$</span>
                     <input
                       type="number"
                       value={settings.rangerPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, rangerPrice: parseInt(e.target.value, 10) || 3500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-orange-500"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.rangerPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-2">
-                  <span className="font-bold text-white block">Maverick Tier (Full Custom Engine)</span>
+                  <span className="font-bold text-stone-100 block">Maverick Tier (Full Custom Engine)</span>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 font-bold">$</span>
                     <input
                       type="number"
                       value={settings.maverickPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, maverickPrice: parseInt(e.target.value, 10) || 7500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-orange-500"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.maverickPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
@@ -622,7 +622,7 @@ export default function SettingsView() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label className="block text-stone-300 font-semibold mb-1">Default Upfront Deposit Percentage</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Default Upfront Deposit Percentage</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
@@ -630,7 +630,7 @@ export default function SettingsView() {
                       max="100"
                       value={settings.defaultDepositPercent}
                       onChange={(e) => setSettings(prev => ({ ...prev, defaultDepositPercent: parseInt(e.target.value, 10) || 50 }))}
-                      className="w-24 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-orange-500"
+                      className="w-24 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 font-mono text-sm focus:outline-none focus:border-orange-500"
                     />
                     <span className="text-stone-400 text-sm font-semibold">%</span>
                   </div>
@@ -648,7 +648,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.whiteLabelWatermark}
                     onChange={(e) => setSettings(prev => ({ ...prev, whiteLabelWatermark: e.target.checked }))}
-                    className="w-4 h-4 accent-orange-500 cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -665,27 +665,27 @@ export default function SettingsView() {
             
             {/* Health Status Matrix */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800 space-y-2">
+              <div className="p-4 rounded-xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">Cloudflare API</span>
+                  <span className="font-bold text-stone-100">Cloudflare API</span>
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 </div>
                 <p className="text-stone-400 text-[11px]">Deployments: <strong>Direct to Pages</strong></p>
                 <span className="text-[10px] text-emerald-400 font-mono block">Token Verified</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800 space-y-2">
+              <div className="p-4 rounded-xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">Stripe Invoicing</span>
+                  <span className="font-bold text-stone-100">Stripe Invoicing</span>
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 </div>
                 <p className="text-stone-400 text-[11px]">Mode: <strong>Live Production</strong></p>
                 <span className="text-[10px] text-emerald-400 font-mono block">Hosted Links Active</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800 space-y-2">
+              <div className="p-4 rounded-xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">GitHub Sync</span>
+                  <span className="font-bold text-stone-100">GitHub Sync</span>
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 </div>
                 <p className="text-stone-400 text-[11px]">Repository: <strong>Texas-Sons/texas-sons</strong></p>
@@ -694,20 +694,20 @@ export default function SettingsView() {
             </div>
 
             {/* Cloudflare Routing Configuration */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
+              <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
                 <Cloud className="w-4 h-4 text-blue-400" />
                 Cloudflare Pages Staging & Custom Domains
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-stone-400 font-medium mb-1">Staging Subdomain Suffix</label>
+                  <label className="block text-stone-500 font-mono text-xs font-semibold mb-1">Staging Subdomain Suffix</label>
                   <input
                     type="text"
                     value={settings.cfSubdomainPrefix}
                     onChange={(e) => setSettings(prev => ({ ...prev, cfSubdomainPrefix: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white font-mono focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-200 font-mono focus:outline-none focus:border-orange-500"
                   />
                   <p className="text-[11px] text-stone-500 mt-1">
                     Default format: [client-slug].{settings.cfSubdomainPrefix}
@@ -723,7 +723,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.autoDeployApproved}
                     onChange={(e) => setSettings(prev => ({ ...prev, autoDeployApproved: e.target.checked }))}
-                    className="w-4 h-4 accent-orange-500 cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -738,10 +738,10 @@ export default function SettingsView() {
         {activeTab === 'access' && (
           <div className="space-y-6 animate-in fade-in text-xs">
             
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-stone-800 pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     Authorized Google Administrator Accounts
                   </h3>
@@ -758,11 +758,11 @@ export default function SettingsView() {
                   value={newEmailInput}
                   onChange={(e) => setNewEmailInput(e.target.value)}
                   placeholder="name@texassons.com or partner@gmail.com"
-                  className="flex-1 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-white focus:outline-none focus:border-orange-500"
+                  className="flex-1 px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-4 py-2 bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Admin Email</span>
@@ -774,11 +774,11 @@ export default function SettingsView() {
                 {settings.authorizedEmails.map((email, idx) => (
                   <div key={idx} className="p-3.5 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-xs font-bold text-orange-400">
+                      <div className="w-8 h-8 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-xs font-bold text-[#C5A059]">
                         {email[0].toUpperCase()}
                       </div>
                       <div>
-                        <span className="font-semibold text-white block">{email}</span>
+                        <span className="font-semibold text-stone-200 block">{email}</span>
                         <span className="text-[10px] text-stone-500">Super Administrator (Full Engine Permissions)</span>
                       </div>
                     </div>
@@ -807,13 +807,13 @@ export default function SettingsView() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               
               {/* Export Full Studio Backup */}
-              <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
+              <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-600/10 border border-orange-500/30 flex items-center justify-center text-orange-400">
+                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
                     <Download className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">Export Studio Data Backup</h3>
+                    <h3 className="text-base font-bold text-stone-100">Export Studio Data Backup</h3>
                     <p className="text-stone-400 text-xs">Download full JSON snapshot of clients, blueprints, and settings.</p>
                   </div>
                 </div>
@@ -824,7 +824,7 @@ export default function SettingsView() {
 
                 <button
                   onClick={handleExportBackup}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition-all"
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-stone-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition-all"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download Backup JSON File</span>
@@ -832,13 +832,13 @@ export default function SettingsView() {
               </div>
 
               {/* Import / Restore Backup */}
-              <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-4">
+              <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
                     <Upload className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">Restore Studio Backup</h3>
+                    <h3 className="text-base font-bold text-stone-100">Restore Studio Backup</h3>
                     <p className="text-stone-400 text-xs">Upload a previously exported JSON backup file.</p>
                   </div>
                 </div>
@@ -847,7 +847,7 @@ export default function SettingsView() {
                   Restore previously saved client intake records, custom blueprints, and studio configuration settings across browsers.
                 </p>
 
-                <label className="w-full py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-white font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors">
+                <label className="w-full py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors">
                   <Upload className="w-4 h-4" />
                   <span>Select JSON File to Restore</span>
                   <input
@@ -862,10 +862,10 @@ export default function SettingsView() {
             </div>
 
             {/* Cache Diagnostic Cleaner */}
-            <div className="p-6 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-3">
+            <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                  <h4 className="font-bold text-stone-100 text-sm flex items-center gap-2">
                     <RefreshCw className="w-4 h-4 text-stone-400" />
                     Reset Search & Temporary Discovery Caches
                   </h4>

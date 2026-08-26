@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, MoreHorizontal, ExternalLink, Wand2, Trash2, Mail, Sparkles, FileText, FileCheck } from 'lucide-react';
+import { Plus, ExternalLink, Wand2, Trash2, FileText, FileCheck, Search, Folders, Globe } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 import { ProjectProposalModal } from './ProjectProposalModal';
 
@@ -11,144 +11,189 @@ interface ProjectListProps {
   onSaveProject?: (project: Project) => void;
 }
 
+type FilterState = 'all' | 'live' | 'active' | 'draft';
+
 export default function ProjectList({ projects, onNewProject, onEditProject, onDeleteProject, onSaveProject }: ProjectListProps) {
   const [selectedProjectForModal, setSelectedProjectForModal] = useState<Project | null>(null);
-  
+  const [filter, setFilter] = useState<FilterState>('all');
+  const [search, setSearch] = useState('');
+
   const getStatusColor = (status: Status) => {
     switch (status) {
-      case 'Intake': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'Scaffolding': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'Theme Assembly': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'QA & Staging': return 'bg-orange-100 text-orange-700 border-orange-200';
-      case 'Live': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      default: return 'bg-stone-100 text-stone-700 border-stone-200';
+      case 'Intake': return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+      case 'Scaffolding': return 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30';
+      case 'Theme Assembly': return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+      case 'QA & Staging': return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+      case 'Live': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+      default: return 'bg-stone-800 text-stone-400 border-stone-700';
     }
   };
 
   const getTierColor = (tier: Tier) => {
-    if (tier.includes('Basic') || tier.includes('Spur') || tier.includes('Sprout')) return 'text-orange-600';
-    if (tier.includes('Lead') || tier.includes('Ranger') || tier.includes('Stem')) return 'text-teal-600';
-    return 'text-indigo-600';
+    if (tier.includes('Basic') || tier.includes('Spur') || tier.includes('Sprout')) return 'text-[#C5A059]';
+    if (tier.includes('Lead') || tier.includes('Ranger') || tier.includes('Stem')) return 'text-teal-400';
+    return 'text-blue-400';
   };
 
+  const filtered = projects.filter(p => {
+    const matchesFilter =
+      filter === 'all' ||
+      (filter === 'live' && p.status === 'Live') ||
+      (filter === 'active' && p.status !== 'Live' && p.status !== 'Intake') ||
+      (filter === 'draft' && p.status === 'Intake');
+    const matchesSearch =
+      !search ||
+      p.companyName.toLowerCase().includes(search.toLowerCase()) ||
+      p.clientName.toLowerCase().includes(search.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
   return (
-    <div className="animate-in fade-in duration-500">
-      
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-5 animate-in fade-in duration-500">
+
+      {/* ── Page Header ──────────────────────────────────── */}
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-display font-semibold text-stone-900">Active Deployments</h2>
-          <p className="text-sm text-stone-500 mt-1">Manage client sites, candidate campaigns, AI proposals, and signed legal agreements.</p>
+          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-1">ACTIVE</p>
+          <h1 className="text-2xl font-bold text-stone-100">Deployments</h1>
         </div>
-        <button 
+        <button
           onClick={onNewProject}
-          className="flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 text-xs font-black rounded-xl transition-all cursor-pointer active:scale-95 shadow-lg shadow-[#C5A059]/10"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Provision New Site
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">New Site</span>
         </button>
       </div>
 
-      <div className="bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-stone-200 bg-stone-50/50">
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Company / Campaign</th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Product Tier</th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Stage</th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Last Updated</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-stone-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-200">
-              {projects.map((project) => (
-                <tr key={project.id} className="hover:bg-stone-50/50 transition-colors group cursor-pointer" onClick={() => setSelectedProjectForModal(project)}>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-stone-900 group-hover:text-orange-600 transition-colors">{project.companyName}</span>
-                        {project.contracts && project.contracts.length > 0 && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-2xs" title="Signed Agreement on File">
-                            <FileCheck className="w-3 h-3 text-emerald-600" />
-                            <span>Signed Agreement</span>
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-stone-500 mt-0.5">{project.clientName}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-sm font-medium ${getTierColor(project.tier)}`}>
-                      {project.tier}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
-                      {project.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-stone-500">
-                    {new Date(project.updatedAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() => setSelectedProjectForModal(project)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold bg-orange-500/10 hover:bg-orange-600 text-orange-600 hover:text-white rounded-lg transition-all border border-orange-500/30 hover:border-orange-600 shadow-sm"
-                        title="Draft AI Proposal, generate contract, or upload signed agreement"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Proposal & Contract</span>
-                      </button>
-
-                      {onEditProject && (
-                        <button
-                          onClick={() => onEditProject(project)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-stone-100 hover:bg-stone-800 text-stone-700 hover:text-white rounded-lg transition-all border border-stone-200 hover:border-stone-800 shadow-sm"
-                          title="Open and update site in 1-Click Studio"
-                        >
-                          <Wand2 className="w-3.5 h-3.5" />
-                          <span>Studio</span>
-                        </button>
-                      )}
-                      
-                      {project.domain && (
-                        <a 
-                          href={project.domain} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors" 
-                          title="View Live Site"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-
-                      {onDeleteProject && (
-                        <button
-                          onClick={() => onDeleteProject(project.id)}
-                          className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete Project"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              
-              {projects.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center">
-                    <p className="text-sm text-stone-500">No active projects found. Provision your first site to get started.</p>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* ── Search + Filter Bar ──────────────────────────── */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="w-3.5 h-3.5 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-8 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 placeholder:text-stone-600 focus:border-[#C5A059]/50 focus:ring-1 focus:ring-[#C5A059]/20 outline-none transition-all"
+          />
+        </div>
+        <div className="flex gap-1.5">
+          {(['all', 'live', 'active', 'draft'] as FilterState[]).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer capitalize ${
+                filter === f
+                  ? 'bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30'
+                  : 'bg-stone-900 text-stone-500 border border-stone-800 hover:text-stone-300'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
         </div>
       </div>
+
+      {/* ── Project Cards ─────────────────────────────────── */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-12 h-12 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mb-4">
+            <Folders className="w-6 h-6 text-[#C5A059]" />
+          </div>
+          <p className="text-sm font-bold text-stone-300">No projects found</p>
+          <p className="text-xs text-stone-600 mt-1">Provision your first site to get started.</p>
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {filtered.map((project) => (
+            <div
+              key={project.id}
+              className="bg-stone-900 border border-stone-800 rounded-2xl p-4 hover:border-stone-700 transition-all group cursor-pointer"
+              onClick={() => setSelectedProjectForModal(project)}
+            >
+              <div className="flex items-start justify-between gap-3">
+                {/* Left: Company Info */}
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center flex-shrink-0 text-xs font-black text-[#C5A059]">
+                    {project.companyName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-stone-100 group-hover:text-[#C5A059] transition-colors truncate">
+                        {project.companyName}
+                      </span>
+                      {project.contracts && project.contracts.length > 0 && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">
+                          <FileCheck className="w-2.5 h-2.5" />SIGNED
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] font-mono text-stone-500 mt-0.5">{project.clientName}</p>
+                    {project.domain && (
+                      <p className="text-[10px] font-mono text-stone-600 mt-0.5 flex items-center gap-1">
+                        <Globe className="w-3 h-3" />
+                        {project.domain.replace(/^https?:\/\//, '')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: Status + Tier + Actions */}
+                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                  <span className={`text-[9px] font-black font-mono px-2 py-0.5 rounded-full border ${getStatusColor(project.status)}`}>
+                    {project.status.toUpperCase()}
+                  </span>
+                  <span className={`text-[10px] font-bold ${getTierColor(project.tier)}`}>
+                    {project.tier}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Row */}
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-800/60" onClick={e => e.stopPropagation()}>
+                <button
+                  onClick={() => setSelectedProjectForModal(project)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-[#C5A059] bg-[#C5A059]/10 hover:bg-[#C5A059]/20 border border-[#C5A059]/30 rounded-lg transition-all cursor-pointer active:scale-95"
+                >
+                  <FileText className="w-3.5 h-3.5" />Proposal
+                </button>
+                {onEditProject && (
+                  <button
+                    onClick={() => onEditProject(project)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-stone-300 bg-stone-800 hover:bg-stone-700 border border-stone-700 rounded-lg transition-all cursor-pointer active:scale-95"
+                  >
+                    <Wand2 className="w-3.5 h-3.5" />Studio
+                  </button>
+                )}
+                {project.domain && (
+                  <a
+                    href={project.domain}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 text-stone-500 hover:text-stone-200 hover:bg-stone-800 rounded-lg transition-colors"
+                    title="View Live Site"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {onDeleteProject && (
+                  <button
+                    onClick={() => onDeleteProject(project.id)}
+                    className="p-1.5 text-stone-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-auto cursor-pointer"
+                    title="Delete Project"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <span className="text-[9px] font-mono text-stone-600 ml-auto">
+                  {new Date(project.updatedAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Project Proposal & Details Modal */}
       {selectedProjectForModal && (
@@ -171,4 +216,3 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
     </div>
   );
 }
-

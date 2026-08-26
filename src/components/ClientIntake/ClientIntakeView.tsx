@@ -492,16 +492,17 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
   const getStatusColor = (status: IntakeStatus) => {
     switch (status) {
-      case 'New Intake': return 'bg-stone-800 text-stone-300 border-stone-700';
-      case 'Assets Pending': return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
-      case 'Studio Ready': return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
-      case 'Deposit Paid': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
-      case 'Live': return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+      case 'New Intake': return 'bg-stone-800 text-stone-400 border-stone-700';
+      case 'Assets Pending': return 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30';
+      case 'Studio Ready': return 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30';
+      case 'Deposit Paid': return 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30';
+      case 'Live': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+      default: return 'bg-stone-800 text-stone-400 border-stone-700';
     }
   };
 
   return (
-    <div className="flex-1 bg-stone-950 text-stone-100 p-4 sm:p-8 pb-32 sm:pb-40 overflow-y-auto w-full h-full">
+    <div className="flex-1 min-h-screen bg-stone-950 text-stone-100 p-4 sm:p-8 pb-32 sm:pb-40 overflow-y-auto w-full h-full bg-[radial-gradient(circle,_#2a2a2a_1px,_transparent_1px)] bg-[length:24px_24px]">
       
       {/* Top Header */}
       <div className="max-w-7xl mx-auto space-y-6 pb-20">
@@ -509,17 +510,17 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
           <div>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+              <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                <h1 className="text-xl font-bold text-stone-100 tracking-tight flex items-center gap-2">
                   Client Intake Vault
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-mono">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30 font-mono">
                     {clients.length} Active Dossiers
                   </span>
                 </h1>
-                <p className="text-xs sm:text-sm text-stone-400 mt-0.5">
+                <p className="text-xs font-mono text-stone-500 mt-0.5">
                   Fast client onboarding, brand asset collection, and 1-click bridge into 1-Click Studio.
                 </p>
               </div>
@@ -529,15 +530,15 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/50 hover:bg-stone-800 text-stone-200 hover:text-white font-semibold text-xs sm:text-sm shadow-md transition-all active:scale-95"
+              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-700 font-semibold text-xs sm:text-sm shadow-md transition-all active:scale-95"
             >
-              <Camera className="w-4 h-4 text-orange-400" />
+              <Camera className="w-4 h-4 text-[#C5A059]" />
               <span>Scan Photo / Menu</span>
             </button>
 
             <button
               onClick={() => handleOpenNewModal()}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-orange-900/30 transition-all active:scale-95"
+              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs sm:text-sm shadow-lg shadow-[#C5A059]/20 transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>New Client Intake</span>
@@ -547,58 +548,58 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
         {/* Pipeline Metrics Counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-          <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800/80 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">Awaiting Assets</p>
-              <p className="text-xl font-bold text-amber-400 mt-0.5">
+              <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Awaiting Assets</p>
+              <p className="text-xl font-bold text-stone-200 mt-0.5">
                 {clients.filter(c => c.status === 'Assets Pending' || c.status === 'New Intake').length}
               </p>
             </div>
-            <Clock className="w-6 h-6 text-amber-500/40" />
+            <Clock className="w-6 h-6 text-stone-500" />
           </div>
 
-          <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800/80 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">Studio Ready</p>
-              <p className="text-xl font-bold text-blue-400 mt-0.5">
+              <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Studio Ready</p>
+              <p className="text-xl font-bold text-stone-200 mt-0.5">
                 {clients.filter(c => c.status === 'Studio Ready').length}
               </p>
             </div>
-            <Wand2 className="w-6 h-6 text-blue-500/40" />
+            <Wand2 className="w-6 h-6 text-stone-500" />
           </div>
 
-          <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800/80 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">Deposit Paid</p>
-              <p className="text-xl font-bold text-emerald-400 mt-0.5">
+              <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Deposit Paid</p>
+              <p className="text-xl font-bold text-stone-200 mt-0.5">
                 {clients.filter(c => c.status === 'Deposit Paid').length}
               </p>
             </div>
-            <Receipt className="w-6 h-6 text-emerald-500/40" />
+            <Receipt className="w-6 h-6 text-stone-500" />
           </div>
 
-          <div className="p-4 rounded-xl bg-stone-900/60 border border-stone-800/80 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">Live & Deployed</p>
-              <p className="text-xl font-bold text-purple-400 mt-0.5">
+              <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Live & Deployed</p>
+              <p className="text-xl font-bold text-stone-200 mt-0.5">
                 {clients.filter(c => c.status === 'Live').length}
               </p>
             </div>
-            <Globe className="w-6 h-6 text-purple-500/40" />
+            <Globe className="w-6 h-6 text-stone-500" />
           </div>
         </div>
 
         {/* Quick Presets Carousel / Quick Add Pills */}
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Fast-Start Industry Templates:</p>
+          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Fast-Start Industry Templates:</p>
           <div className="flex flex-wrap gap-2">
             {PRESET_TEMPLATES.map((preset, idx) => (
               <button
                 key={idx}
                 onClick={() => handleOpenNewModal(preset)}
-                className="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 hover:border-orange-500/50 hover:bg-stone-800/80 text-xs font-medium text-stone-300 hover:text-white transition-all flex items-center gap-1.5 group"
+                className="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 hover:border-[#C5A059]/50 hover:bg-stone-800 text-xs font-medium text-stone-300 hover:text-stone-100 transition-all flex items-center gap-1.5 group"
               >
-                <Plus className="w-3 h-3 text-orange-400 group-hover:rotate-90 transition-transform" />
+                <Plus className="w-3 h-3 text-[#C5A059] group-hover:rotate-90 transition-transform" />
                 <span>{preset.name}</span>
               </button>
             ))}
@@ -606,15 +607,15 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         </div>
 
         {/* Search & Filter Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-stone-900/40 p-3 rounded-xl border border-stone-800/60">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-stone-900 p-3 rounded-2xl border border-stone-800">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by client, domain, or contact..."
-              className="w-full pl-9 pr-4 py-2 bg-stone-950 border border-stone-800 rounded-lg text-xs focus:outline-none focus:border-orange-500 text-stone-200 placeholder-stone-500"
+              className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 placeholder:text-stone-600"
             />
           </div>
 
@@ -622,7 +623,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-xs text-stone-300 focus:outline-none focus:border-orange-500"
+              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
             >
               <option value="all">All Industries</option>
               <option value="Campaign & Leadership">Campaign & Leadership</option>
@@ -635,7 +636,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-xs text-stone-300 focus:outline-none focus:border-orange-500"
+              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
             >
               <option value="all">All Statuses</option>
               <option value="New Intake">New Intake</option>
@@ -654,55 +655,55 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             return (
               <div 
                 key={client.id}
-                className="rounded-2xl bg-stone-900/70 border border-stone-800/80 hover:border-stone-700 transition-all flex flex-col justify-between overflow-hidden group shadow-lg h-full"
+                className="rounded-2xl bg-stone-900 border border-stone-800 hover:border-[#C5A059]/50 transition-all flex flex-col justify-between overflow-hidden group shadow-lg h-full"
               >
                 {/* Card Header & Identity */}
                 <div className="p-5 space-y-4 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center space-x-3 min-w-0">
                       <div 
-                        style={{ backgroundColor: client.accentColor ? `${client.accentColor}20` : undefined }}
-                        className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 flex-shrink-0"
+                        style={{ backgroundColor: client.accentColor ? `${client.accentColor}20` : undefined, borderColor: client.accentColor ? `${client.accentColor}30` : undefined }}
+                        className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059] flex-shrink-0"
                       >
                         <Icon className="w-5 h-5" style={{ color: client.accentColor || undefined }} />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-base font-bold text-white tracking-tight truncate group-hover:text-orange-400 transition-colors">
+                        <h3 className="text-base font-bold text-stone-100 tracking-tight truncate group-hover:text-[#C5A059] transition-colors">
                           {client.businessName}
                         </h3>
-                        <p className="text-xs text-stone-400 truncate">
+                        <p className="text-xs text-stone-500 font-mono truncate">
                           {client.clientContact || 'Primary Contact'}
                         </p>
                       </div>
                     </div>
 
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border flex-shrink-0 ${getStatusColor(client.status)}`}>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border flex-shrink-0 font-mono ${getStatusColor(client.status)}`}>
                       {client.status}
                     </span>
                   </div>
 
                   {/* Tagline / Pitch */}
                   {client.tagline && (
-                    <p className="text-xs text-stone-300 italic line-clamp-2 leading-relaxed bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/50">
+                    <p className="text-xs text-stone-300 italic line-clamp-2 leading-relaxed bg-stone-950 p-2.5 rounded-xl border border-stone-800">
                       "{client.tagline}"
                     </p>
                   )}
 
                   {/* Dossier Meta Pills */}
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="p-2 rounded-lg bg-stone-950/40 border border-stone-800/60 text-stone-400">
-                      <span className="text-[10px] uppercase block font-semibold text-stone-500">Tier / Scope</span>
+                    <div className="p-2 rounded-xl bg-stone-950 border border-stone-800 text-stone-400">
+                      <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono block mb-1">Tier / Scope</span>
                       <span className="text-stone-200 font-medium truncate block">{client.tier}</span>
                     </div>
 
-                    <div className="p-2 rounded-lg bg-stone-950/40 border border-stone-800/60 text-stone-400">
-                      <span className="text-[10px] uppercase block font-semibold text-stone-500">Theme Scheme</span>
+                    <div className="p-2 rounded-xl bg-stone-950 border border-stone-800 text-stone-400">
+                      <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono block mb-1">Theme Scheme</span>
                       <span className="text-stone-200 font-medium capitalize truncate block">{client.theme}</span>
                     </div>
                   </div>
 
                   {/* Content Assets Counters */}
-                  <div className="flex items-center gap-3 text-xs text-stone-400 pt-1">
+                  <div className="flex items-center gap-3 text-[10px] text-stone-500 font-mono pt-1">
                     <span className="flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{client.services?.length || 0} Offerings</span>
@@ -712,7 +713,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       <span>{client.badges?.length || 0} Badges</span>
                     </span>
                     {client.domain && (
-                      <span className="flex items-center gap-1 text-stone-300 font-mono text-[11px] truncate">
+                      <span className="flex items-center gap-1 text-stone-400 truncate">
                         <Globe className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
                         <span className="truncate">{client.domain}</span>
                       </span>
@@ -721,12 +722,12 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 </div>
 
                 {/* Card Action Footers */}
-                <div className="p-3.5 bg-stone-950 border-t border-stone-800/80 flex flex-col gap-2.5 mt-auto flex-shrink-0">
+                <div className="p-3.5 bg-stone-950 border-t border-stone-800 flex flex-col gap-2.5 mt-auto flex-shrink-0">
                   
                   {/* Primary Studio Bridge Button */}
                   <button
                     onClick={() => onLaunchStudio(client)}
-                    className="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-950/40 transition-all active:scale-95"
+                    className="w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
                   >
                     <Wand2 className="w-3.5 h-3.5" />
                     <span>Launch in 1-Click Studio</span>
@@ -737,7 +738,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => onInvoiceClient(client)}
                       title="Create 50% Deposit Invoice"
-                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-emerald-400 text-xs flex items-center justify-center transition-colors shadow-sm"
+                      className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-emerald-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Receipt className="w-3.5 h-3.5" />
                     </button>
@@ -745,7 +746,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => setShareModalClient(client)}
                       title="Share Intake Questionnaire / Copy Templates"
-                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-blue-400 text-xs flex items-center justify-center transition-colors shadow-sm"
+                      className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-blue-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Share2 className="w-3.5 h-3.5" />
                     </button>
@@ -753,7 +754,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => handleEditClient(client)}
                       title="Edit Dossier"
-                      className="py-2 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-white text-xs flex items-center justify-center transition-colors shadow-sm"
+                      className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-stone-100 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
@@ -761,7 +762,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <button
                       onClick={() => handleDeleteClient(client.id)}
                       title="Delete Dossier"
-                      className="py-2 rounded-lg bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-400 hover:text-red-400 text-xs flex items-center justify-center transition-colors shadow-sm"
+                      className="py-2 rounded-xl bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-500 hover:text-red-400 text-xs flex items-center justify-center transition-colors shadow-sm"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -773,17 +774,17 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         </div>
 
         {filteredClients.length === 0 && (
-          <div className="p-12 text-center rounded-2xl bg-stone-900/30 border border-stone-800/60 space-y-4">
+          <div className="p-12 text-center rounded-2xl bg-stone-900 border border-stone-800 space-y-4">
             <Users className="w-12 h-12 text-stone-600 mx-auto" />
             <div>
-              <h3 className="text-base font-semibold text-stone-300">No client intake dossiers found</h3>
-              <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1">
+              <h3 className="text-base font-bold text-stone-100">No client intake dossiers found</h3>
+              <p className="text-xs text-stone-500 font-mono max-w-sm mx-auto mt-1">
                 Create a new intake dossier using the button above or pick one of the fast-start industry presets.
               </p>
             </div>
             <button
               onClick={() => handleOpenNewModal()}
-              className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 text-xs font-black"
             >
               + Create First Dossier
             </button>
@@ -1247,7 +1248,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <div className="px-6 py-4 border-t border-stone-800 bg-stone-950 flex flex-col sm:flex-row items-center justify-between gap-3">
               <button
                 onClick={() => setIsNewModalOpen(false)}
-                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-medium transition-colors"
+                className="w-full sm:w-auto px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-700 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -1255,14 +1256,14 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => handleSaveClient(false)}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-white text-xs font-semibold transition-colors"
+                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-200 text-xs font-semibold transition-colors"
                 >
                   Save to Vault
                 </button>
 
                 <button
                   onClick={() => handleSaveClient(true)}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-lg shadow-orange-950/40"
+                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-lg shadow-[#C5A059]/20"
                 >
                   <Wand2 className="w-3.5 h-3.5" />
                   <span>Save & Open in Studio</span>

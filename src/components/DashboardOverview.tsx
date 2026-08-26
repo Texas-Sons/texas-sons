@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, Clock, CheckCircle2, Zap } from 'lucide-react';
+import { ArrowUpRight, Clock, CheckCircle2, Zap, Folders, Users, TrendingUp, ExternalLink } from 'lucide-react';
 import { Project } from '../types';
 
 interface DashboardOverviewProps {
@@ -9,61 +9,91 @@ interface DashboardOverviewProps {
 export default function DashboardOverview({ projects }: DashboardOverviewProps) {
   const activeProjects = projects.filter(p => p.status !== 'Live').length;
   const liveSites = projects.filter(p => p.status === 'Live').length;
+  const totalProjects = projects.length;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <MetricCard 
-          title="Active Builds" 
-          value={activeProjects.toString()} 
-          icon={Zap} 
+    <div className="space-y-6 animate-in fade-in duration-500">
+
+      {/* ── Page Header ─────────────────────────────────── */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-1">TEXAS SONS STUDIO</p>
+          <h1 className="text-2xl font-bold text-stone-100">Overview</h1>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-900 border border-stone-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[10px] font-mono text-stone-400">SYSTEMS NOMINAL</span>
+        </div>
+      </div>
+
+      {/* ── Metric Cards ─────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <MetricCard
+          title="Active Builds"
+          value={activeProjects.toString()}
+          icon={Zap}
           trend="+2 this week"
-          color="orange"
+          color="gold"
         />
-        <MetricCard 
-          title="Live Sites" 
-          value={liveSites.toString()} 
+        <MetricCard
+          title="Live Sites"
+          value={liveSites.toString()}
           icon={CheckCircle2}
+          trend={`of ${totalProjects} total`}
+          color="emerald"
+        />
+        <MetricCard
+          title="Avg. Turnaround"
+          value="4.2d"
+          icon={Clock}
+          trend="-15% vs last month"
           color="blue"
         />
-        <MetricCard 
-          title="Avg. Turnaround" 
-          value="4.2 Days" 
-          icon={Clock} 
-          trend="-15% vs last month"
-          color="amber"
-        />
-        <MetricCard 
-          title="Intake Forms" 
-          value="12" 
-          icon={ArrowUpRight} 
+        <MetricCard
+          title="Intake Forms"
+          value="12"
+          icon={Users}
           trend="3 awaiting review"
           color="purple"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-stone-200 p-6 shadow-sm">
-          <h2 className="text-lg font-display font-semibold text-stone-900 mb-6">Recent Deployments</h2>
-          <div className="space-y-6">
-            {projects.slice(0, 4).map((project) => (
-              <div key={project.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className={`w-2 h-2 rounded-full ${project.status === 'Live' ? 'bg-orange-500' : 'bg-amber-500 animate-pulse'}`}></div>
-                  <div>
-                    <p className="text-sm font-medium text-stone-900">{project.companyName}</p>
-                    <p className="text-xs text-stone-500">Client: {project.clientName}</p>
+      {/* ── Main Grid ─────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {/* Recent Deployments */}
+        <div className="lg:col-span-2 bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-stone-800/60 flex items-center justify-between">
+            <div>
+              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">RECENT</p>
+              <h2 className="text-sm font-bold text-stone-100">Deployments</h2>
+            </div>
+            <Folders className="w-4 h-4 text-stone-600" />
+          </div>
+          <div className="divide-y divide-stone-800/60">
+            {projects.length === 0 && (
+              <div className="px-5 py-8 text-center">
+                <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mx-auto mb-3">
+                  <Folders className="w-5 h-5 text-[#C5A059]" />
+                </div>
+                <p className="text-sm text-stone-400">No deployments yet</p>
+                <p className="text-xs text-stone-600 mt-1">Launch your first site from the 1-Click Studio</p>
+              </div>
+            )}
+            {projects.slice(0, 5).map((project) => (
+              <div key={project.id} className="px-5 py-3 flex items-center justify-between hover:bg-stone-800/40 transition-colors group">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    project.status === 'Live' ? 'bg-emerald-400' : 'bg-[#C5A059] animate-pulse'
+                  }`} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-stone-100 truncate">{project.companyName}</p>
+                    <p className="text-[10px] font-mono text-stone-500 truncate">{project.clientName}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-800">
-                    {project.tier}
-                  </span>
-                  <p className="text-xs text-stone-400 mt-1">Updated today</p>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <StatusBadge status={project.status} />
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
@@ -71,51 +101,92 @@ export default function DashboardOverview({ projects }: DashboardOverviewProps) 
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-stone-900 rounded-xl border border-stone-800 p-6 shadow-sm text-white">
-          <h2 className="text-lg font-display font-semibold mb-2">Automated Scaffolding</h2>
-          <p className="text-sm text-stone-400 mb-6 leading-relaxed">
-            Instantly provision new Supabase environments, GitHub repositories, and Vercel deployments.
-          </p>
-          <div className="space-y-3">
-            <button className="w-full bg-orange-600 hover:bg-orange-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
-              Initialize Basic Website
-            </button>
-            <button className="w-full bg-stone-800 hover:bg-stone-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium border border-stone-700 transition-colors">
-              Initialize Lead Generation Site
-            </button>
-            <button className="w-full bg-stone-800 hover:bg-stone-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium border border-stone-700 transition-colors">
-              Initialize Full Custom Application
-            </button>
+        <div className="bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-stone-800/60">
+            <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">QUICK LAUNCH</p>
+            <h2 className="text-sm font-bold text-stone-100">Scaffolding</h2>
+          </div>
+          <div className="px-4 py-4 space-y-2">
+            <p className="text-[11px] text-stone-500 leading-relaxed mb-3">
+              Provision environments, repos, and Cloudflare deployments instantly.
+            </p>
+            {[
+              { label: 'Basic Website', accent: true },
+              { label: 'Lead Generation Site', accent: false },
+              { label: 'Full Custom Application', accent: false },
+            ].map(({ label, accent }) => (
+              <button
+                key={label}
+                className={`w-full px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-98 ${
+                  accent
+                    ? 'bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 shadow-lg shadow-[#C5A059]/10'
+                    : 'bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Stats footer */}
+          <div className="px-4 pb-4 pt-2 border-t border-stone-800/60 mt-2">
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="font-mono text-stone-500">THIS MONTH</span>
+              <span className="text-[#C5A059] font-bold flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +3 deployed
+              </span>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 }
 
-function MetricCard({ title, value, icon: Icon, trend, color }: any) {
-  const colorMap: Record<string, string> = {
-    orange: 'text-orange-600 bg-orange-50',
-    blue: 'text-blue-600 bg-blue-50',
-    amber: 'text-amber-600 bg-amber-50',
-    purple: 'text-purple-600 bg-purple-50',
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    Live: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    Intake: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+    Scaffolding: 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30',
+    'Theme Assembly': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+    'QA & Staging': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+  };
+  return (
+    <span className={`text-[9px] font-black font-mono px-2 py-0.5 rounded-full border ${map[status] || 'bg-stone-800 text-stone-400 border-stone-700'}`}>
+      {status.toUpperCase()}
+    </span>
+  );
+}
+
+function MetricCard({ title, value, icon: Icon, trend, color }: { title: string; value: string; icon: React.ComponentType<{ className?: string }>; trend?: string; color: string }) {
+  const iconClass: Record<string, string> = {
+    gold: 'bg-[#C5A059]/10 border-[#C5A059]/20 text-[#C5A059]',
+    emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+    blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+    purple: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
+  };
+  const valueClass: Record<string, string> = {
+    gold: 'text-[#C5A059]',
+    emerald: 'text-emerald-400',
+    blue: 'text-blue-400',
+    purple: 'text-purple-400',
   };
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-stone-500">{title}</p>
-          <p className="text-3xl font-display font-semibold text-stone-900 mt-2">{value}</p>
-        </div>
-        <div className={`p-3 rounded-lg ${colorMap[color]}`}>
-          <Icon className="w-6 h-6" />
+    <div className="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+      <div className="flex items-start justify-between mb-3">
+        <p className="text-[9px] font-black text-stone-500 uppercase tracking-widest font-mono">{title}</p>
+        <div className={`w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center flex-shrink-0 ${iconClass[color]}`}>
+          <Icon className="w-3.5 h-3.5" />
         </div>
       </div>
+      <p className={`text-3xl font-bold ${valueClass[color]}`}>{value}</p>
       {trend && (
-        <div className="mt-4 text-xs font-medium text-stone-500">
+        <p className="text-[10px] font-mono text-stone-600 mt-1.5 flex items-center gap-1">
+          <ArrowUpRight className="w-3 h-3" />
           {trend}
-        </div>
+        </p>
       )}
     </div>
   );

@@ -319,12 +319,12 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
   };
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="max-w-6xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
+    <div className="flex-1 overflow-y-auto bg-stone-950 text-stone-100 bg-[radial-gradient(circle,_#2a2a2a_1px,_transparent_1px)] bg-[length:24px_24px]">
+      <div className="max-w-6xl mx-auto pb-8">
+        <div className="px-4 sm:px-6 pt-6 pb-4 flex items-center justify-between mb-4 border-b border-stone-800/50 bg-stone-950/80 sticky top-0 z-10 backdrop-blur-md">
           <div>
-            <h1 className="text-3xl font-display font-bold text-stone-100">Lead Finder</h1>
-            <p className="text-stone-400 mt-1">Search Google Maps for specific businesses or companies without websites to prospect.</p>
+            <h1 className="text-xl font-bold text-stone-100">Lead Finder</h1>
+            <p className="text-xs font-mono text-stone-500 mt-1">Search Google Maps for specific businesses or companies without websites to prospect.</p>
           </div>
           <div className="text-right flex flex-col items-end gap-3">
             <div className="flex items-center gap-1.5 bg-stone-900 border border-stone-800 p-1 rounded-xl">
@@ -332,7 +332,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 type="button"
                 onClick={() => setFilterTab('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  filterTab === 'all' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200'
+                  filterTab === 'all' ? 'bg-[#C5A059]/90 text-stone-950 font-black shadow-sm shadow-[#C5A059]/30' : 'text-stone-400 hover:text-stone-200'
                 }`}
               >
                 All Leads ({prospects.filter(p => !dismissedPlaceIds.includes(p.id)).length})
@@ -341,7 +341,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 type="button"
                 onClick={() => setFilterTab('saved')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  filterTab === 'saved' ? 'bg-amber-600 text-white shadow-sm shadow-amber-600/30' : 'text-stone-400 hover:text-stone-200'
+                  filterTab === 'saved' ? 'bg-[#C5A059]/90 text-stone-950 font-black shadow-sm shadow-[#C5A059]/30' : 'text-stone-400 hover:text-stone-200'
                 }`}
               >
                 <Bookmark className="w-3.5 h-3.5" />
@@ -351,7 +351,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 type="button"
                 onClick={() => setFilterTab('hidden')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  filterTab === 'hidden' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'
+                  filterTab === 'hidden' ? 'bg-stone-700 text-stone-100 shadow-sm' : 'text-stone-400 hover:text-stone-200'
                 }`}
               >
                 Hidden ({dismissedPlaceIds.length})
@@ -380,7 +380,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           </div>
         )}
 
-        <form onSubmit={handleSearch} className="mb-10 grid grid-cols-1 md:grid-cols-12 gap-3">
+        <form onSubmit={handleSearch} className="mb-10 px-4 sm:px-6 grid grid-cols-1 md:grid-cols-12 gap-3">
           <div className="md:col-span-4 relative">
             <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 pointer-events-none" />
             <input
@@ -389,7 +389,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               placeholder="Business Name (Optional)"
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors text-sm"
+              className="bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 w-full py-3 pl-12 pr-4 transition-colors text-sm font-mono"
             />
           </div>
           <div className="md:col-span-4 relative">
@@ -400,14 +400,14 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               id="location-input"
               required
               placeholder="City, State (e.g. Austin, TX)"
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors text-sm"
+              className="bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 w-full py-3 pl-12 pr-4 transition-colors text-sm font-mono"
             />
           </div>
           <div className="md:col-span-2 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 pointer-events-none" />
             <select
               id="industry-select"
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl py-3 pl-9 pr-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors appearance-none text-sm"
+              className="bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600 w-full py-3 pl-9 pr-3 transition-colors appearance-none text-sm font-mono"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
             >
@@ -420,7 +420,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
             <button 
               type="submit" 
               disabled={isSearching || !placesLib || apiUsage.searches >= MONTHLY_LIMIT}
-              className="w-full h-full min-h-[46px] bg-orange-600 hover:bg-orange-500 text-white px-4 py-2.5 rounded-xl font-bold text-sm disabled:opacity-50 transition-all shadow-md shadow-orange-600/20 flex items-center justify-center gap-2"
+              className="w-full h-full min-h-[46px] bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black px-4 py-2.5 rounded-xl font-bold text-sm disabled:opacity-50 transition-all shadow-md shadow-[#C5A059]/20 flex items-center justify-center gap-2"
             >
               {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
               Find Leads
@@ -428,7 +428,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           </div>
         </form>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="px-4 sm:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(filterTab === 'saved'
             ? savedProspects
             : filterTab === 'hidden'
@@ -437,11 +437,11 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           ).map((prospect, idx) => {
             const isSaved = savedProspects.some(p => p.id === prospect.id);
             return (
-              <div key={idx} className={`bg-stone-900 border ${filterTab === 'hidden' ? 'border-stone-800 opacity-70' : isSaved ? 'border-amber-500/40 shadow-lg shadow-amber-500/5' : 'border-stone-800'} rounded-xl p-6 hover:border-orange-500/30 transition-colors flex flex-col`}>
+              <div key={idx} className={`bg-stone-900 border ${filterTab === 'hidden' ? 'border-stone-800 opacity-70' : isSaved ? 'border-[#C5A059]/40 shadow-lg shadow-[#C5A059]/5' : 'border-stone-800'} rounded-2xl p-6 hover:border-[#C5A059]/60/30 transition-colors flex flex-col`}>
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-stone-100">
                     {prospect.googleMapsURI ? (
-                      <a href={prospect.googleMapsURI} target="_blank" rel="noreferrer" className="hover:text-orange-400 hover:underline transition-colors">
+                      <a href={prospect.googleMapsURI} target="_blank" rel="noreferrer" className="hover:text-[#C5A059] hover:underline transition-colors">
                         {prospect.displayName}
                       </a>
                     ) : (
@@ -452,8 +452,8 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                     onClick={() => handleToggleSave(prospect)}
                     className={`p-1.5 rounded-lg border transition-all ${
                       isSaved
-                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30'
-                        : 'bg-stone-800 text-stone-400 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                        ? 'bg-[#C5A059]/20 text-[#C5A059] border-[#C5A059]/40 hover:bg-[#C5A059]/30'
+                        : 'bg-stone-800 text-stone-400 border-stone-700 hover:text-[#C5A059] hover:border-[#C5A059]/30'
                     }`}
                     title={isSaved ? "Remove from Saved for Later" : "Save Lead for Later"}
                   >
@@ -463,7 +463,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 
                 <div className="space-y-2 mb-6 flex-1">
                   {prospect.primaryTypeDisplayName && (
-                    <div className="inline-block px-2.5 py-1 rounded-md bg-stone-800 text-xs text-stone-300 font-medium mb-2">
+                    <div className="inline-block px-2.5 py-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 text-xs text-[#C5A059] font-mono mb-2">
                       {prospect.primaryTypeDisplayName}
                     </div>
                   )}
@@ -474,7 +474,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                   </div>
                   
                   <div className="flex items-center gap-2 text-sm text-stone-400">
-                    <Star className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                    <Star className="w-4 h-4 text-[#C5A059] flex-shrink-0" />
                     <span>{prospect.rating ? `${prospect.rating} (${prospect.userRatingCount} reviews)` : 'No ratings yet'}</span>
                   </div>
                   
@@ -507,7 +507,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                     className="flex-none flex items-center justify-center px-3 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg transition-colors border border-stone-700 disabled:opacity-50"
                     title="Pull Site Assets"
                   >
-                    {gatheringId === prospect.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4 text-orange-400" />}
+                    {gatheringId === prospect.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4 text-[#C5A059]" />}
                   </button>
                   {filterTab === 'hidden' ? (
                     <button
@@ -559,10 +559,10 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-stone-800 flex justify-between items-center bg-stone-950/50">
               <div className="flex items-center gap-3">
-                <Globe className="w-5 h-5 text-orange-500" />
-                <h3 className="text-lg font-semibold text-white">{selectedProspect.displayName} - Workspace</h3>
+                <Globe className="w-5 h-5 text-[#C5A059]" />
+                <h3 className="text-lg font-semibold text-stone-100">{selectedProspect.displayName} - Workspace</h3>
                 {savedProspects.some(p => p.id === selectedProspect.id) && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold border border-amber-500/30">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#C5A059]/20 text-[#C5A059] text-xs font-semibold border border-[#C5A059]/30">
                     <BookmarkCheck className="w-3 h-3" /> Saved for Later
                   </span>
                 )}
@@ -572,13 +572,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                   onClick={() => handleToggleSave(selectedProspect)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5 ${
                     savedProspects.some(p => p.id === selectedProspect.id)
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                      : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                      ? 'bg-[#C5A059]/20 text-[#C5A059] border-[#C5A059]/40 hover:bg-[#C5A059]/30'
+                      : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-[#C5A059] hover:border-[#C5A059]/30'
                   }`}
                 >
                   {savedProspects.some(p => p.id === selectedProspect.id) ? (
                     <>
-                      <BookmarkCheck className="w-3.5 h-3.5 text-amber-400" /> Saved
+                      <BookmarkCheck className="w-3.5 h-3.5 text-[#C5A059]" /> Saved
                     </>
                   ) : (
                     <>
@@ -588,7 +588,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 </button>
                 <button 
                   onClick={() => setSelectedProspect(null)}
-                  className="text-stone-400 hover:text-white p-1"
+                  className="text-stone-400 hover:text-stone-100 p-1"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -600,12 +600,12 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               {/* Left Column: Proposal */}
               <div className="w-full md:w-1/2 flex flex-col border-r border-stone-800">
                 <div className="px-6 py-3 border-b border-stone-800 bg-stone-900 font-medium text-stone-300 text-sm flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-orange-500" /> Sales Proposal
+                  <Mail className="w-4 h-4 text-[#C5A059]" /> Sales Proposal
                 </div>
                 <div className="p-6 overflow-y-auto flex-1 bg-stone-950">
                   {isDrafting ? (
                     <div className="h-full flex flex-col items-center justify-center text-stone-500">
-                      <Loader2 className="w-8 h-8 animate-spin text-orange-500 mb-4" />
+                      <Loader2 className="w-8 h-8 animate-spin text-[#C5A059] mb-4" />
                       <span>Texas Sons Engine is analyzing the prospect...</span>
                     </div>
                   ) : proposalDraft ? (
@@ -630,13 +630,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               <div className="w-full md:w-1/2 flex flex-col">
                 <div className="px-6 py-3 border-b border-stone-800 bg-stone-900 font-medium text-stone-300 text-sm flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-orange-500" /> Site Assets
+                    <ImageIcon className="w-4 h-4 text-[#C5A059]" /> Site Assets
                   </div>
                   {!selectedProspect.phoneNumber && (
                     <button
                       onClick={() => handleGatherAssets(selectedProspect)}
                       disabled={gatheringId === selectedProspect.id}
-                      className="text-xs font-bold text-orange-400 hover:text-orange-300 disabled:opacity-50 flex items-center gap-1"
+                      className="text-xs font-bold text-[#C5A059] hover:text-[#C5A059] disabled:opacity-50 flex items-center gap-1"
                     >
                       {gatheringId === selectedProspect.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
                       Pull from Google
@@ -658,7 +658,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                   )}
                   {gatheringId === selectedProspect.id && (
                     <div className="h-full flex flex-col items-center justify-center text-stone-500">
-                      <Loader2 className="w-8 h-8 animate-spin text-orange-500 mb-4" />
+                      <Loader2 className="w-8 h-8 animate-spin text-[#C5A059] mb-4" />
                       <span>Fetching photos and details...</span>
                     </div>
                   )}
@@ -685,7 +685,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                       {/* Photos */}
                       {selectedProspect.photos && selectedProspect.photos.length > 0 && (
                         <div>
-                          <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3">Photos ({selectedProspect.photos.length})</h4>
+                          <h4 className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-3">Photos ({selectedProspect.photos.length})</h4>
                           <div className="grid grid-cols-2 gap-2">
                             {selectedProspect.photos.slice(0, 4).map((url: string, i: number) => (
                               <img key={i} src={url} alt="Business" className="w-full h-24 object-cover rounded-lg border border-stone-800" />
@@ -697,13 +697,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                       {/* Reviews */}
                       {selectedProspect.reviews && selectedProspect.reviews.length > 0 && (
                         <div>
-                          <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3">Top Reviews</h4>
+                          <h4 className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-3">Top Reviews</h4>
                           <div className="space-y-3">
                             {selectedProspect.reviews.slice(0, 2).map((r: any, i: number) => (
                               <div key={i} className="bg-stone-950 p-3 rounded-lg border border-stone-800">
                                 <div className="flex items-center gap-1 mb-1">
                                   {Array.from({ length: r.rating }).map((_, j) => (
-                                    <Star key={j} className="w-3 h-3 text-orange-500 fill-orange-500" />
+                                    <Star key={j} className="w-3 h-3 text-[#C5A059] fill-orange-500" />
                                   ))}
                                 </div>
                                 <p className="text-xs text-stone-300 italic line-clamp-3">"{r.text}"</p>
@@ -724,13 +724,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                 onClick={() => handleToggleSave(selectedProspect)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all flex items-center gap-2 ${
                   savedProspects.some(p => p.id === selectedProspect.id)
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                    : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-amber-400 hover:border-amber-500/30'
+                    ? 'bg-[#C5A059]/20 text-[#C5A059] border-[#C5A059]/40 hover:bg-[#C5A059]/30'
+                    : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-[#C5A059] hover:border-[#C5A059]/30'
                 }`}
               >
                 {savedProspects.some(p => p.id === selectedProspect.id) ? (
                   <>
-                    <BookmarkCheck className="w-4 h-4 text-amber-400" /> Lead Saved for Later
+                    <BookmarkCheck className="w-4 h-4 text-[#C5A059]" /> Lead Saved for Later
                   </>
                 ) : (
                   <>
@@ -741,7 +741,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setSelectedProspect(null)}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-stone-400 hover:text-stone-100 hover:bg-stone-800 transition-colors"
                 >
                   Close
                 </button>
@@ -750,7 +750,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                   onClick={() => {
                     onConvert(selectedProspect);
                   }}
-                  className="px-5 py-2 rounded-lg text-sm font-medium bg-orange-600 hover:bg-orange-500 text-white disabled:opacity-50 transition-colors flex items-center gap-2"
+                  className="px-5 py-2 rounded-lg text-sm font-medium bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black disabled:opacity-50 transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Create Project Scaffold
@@ -766,12 +766,12 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
           <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden">
             <div className="px-6 py-4 border-b border-stone-800 flex justify-between items-center bg-stone-950/50">
               <div className="flex items-center gap-3">
-                <Activity className="w-5 h-5 text-orange-500" />
-                <h3 className="text-lg font-semibold text-white">API Usage Dashboard</h3>
+                <Activity className="w-5 h-5 text-[#C5A059]" />
+                <h3 className="text-lg font-semibold text-stone-100">API Usage Dashboard</h3>
               </div>
               <button 
                 onClick={() => setShowApiDashboard(false)}
-                className="text-stone-400 hover:text-white transition-colors"
+                className="text-stone-400 hover:text-stone-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -850,15 +850,15 @@ export default function ProspectsView({ onConvert }: { onConvert: (business: any
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <div className="bg-stone-900 border border-stone-800 p-8 rounded-2xl max-w-lg shadow-xl">
-          <Globe className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-          <h2 className="text-xl font-display font-bold text-white mb-3">Google Maps Integration Required</h2>
+          <Globe className="w-12 h-12 text-[#C5A059] mx-auto mb-4" />
+          <h2 className="text-xl font-display font-bold text-stone-100 mb-3">Google Maps Integration Required</h2>
           <p className="text-stone-400 text-sm mb-6 leading-relaxed">
             To search for local businesses and generate prospect lists, the Texas Sons Engine requires a Google Maps Platform API Key.
           </p>
           <div className="text-left text-sm text-stone-300 bg-stone-950 p-4 rounded-xl border border-stone-800 space-y-2">
             <p>1. Open <strong>Settings</strong> (⚙️ icon, top-right)</p>
             <p>2. Select <strong>Secrets</strong></p>
-            <p>3. Add secret: <code className="text-orange-400">GOOGLE_MAPS_PLATFORM_KEY</code></p>
+            <p>3. Add secret: <code className="text-[#C5A059]">GOOGLE_MAPS_PLATFORM_KEY</code></p>
             <p>4. The application will rebuild automatically.</p>
           </div>
         </div>
