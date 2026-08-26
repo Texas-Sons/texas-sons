@@ -2077,98 +2077,113 @@ export default function ClientSite() {
         isDeploying={agentState.step === 'building'}
       />
 
-      {/* ── MOBILE TACTILE FLOATING DOCK (Color-Blocked & Oddly Satisfying) ─── */}
+      {/* ── MOBILE TACTILE FLOATING DOCK (Squiggly Icon Pods & Color-Blocked) ─── */}
       <div className="fixed bottom-3 inset-x-3 z-40 md:hidden flex flex-col items-center select-none">
         {/* Floating Quick-Action Radial Popover */}
         {isMobileQuickMenuOpen && (
-          <div className="w-full mb-2 p-3 bg-stone-950/95 border border-stone-800 rounded-3xl shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
+          <div className="w-full mb-2 p-3 bg-stone-950/95 border border-stone-800 rounded-[24px_12px_22px_14px/14px_22px_12px_24px] shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
             <button
               onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Camera className="w-4 h-4 text-orange-400" />
-              <span>Scan Flyer</span>
+              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                <Camera className="w-3.5 h-3.5 text-orange-400" />
+              </div>
+              <span className="text-[10px]">Scan Flyer</span>
             </button>
             <button
               onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
             >
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>QA Audit</span>
+              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              </div>
+              <span className="text-[10px]">QA Audit</span>
             </button>
             <button
               onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Globe className="w-4 h-4 text-blue-400" />
-              <span>Domain</span>
+              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <Globe className="w-3.5 h-3.5 text-blue-400" />
+              </div>
+              <span className="text-[10px]">Domain</span>
             </button>
             <button
               onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2.5 rounded-2xl bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
+              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
             >
-              <Terminal className="w-4 h-4 text-orange-400" />
-              <span>AGY Spec</span>
+              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                <Terminal className="w-3.5 h-3.5 text-orange-400" />
+              </div>
+              <span className="text-[10px]">AGY Spec</span>
             </button>
           </div>
         )}
 
         {/* Curved Floating Action Bar */}
-        <div className="w-full h-15 bg-stone-950/95 border border-stone-800/90 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl px-2.5 py-1.5 flex items-center justify-between gap-1.5">
+        <div className="w-full h-16 bg-stone-950/95 border border-stone-800/90 rounded-[28px_14px_26px_14px/14px_26px_14px_28px] shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl px-2.5 py-1.5 flex items-center justify-between gap-1">
           <button
             onClick={() => setIsMobileDirectorOpen(true)}
-            className="flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold text-stone-300 hover:text-white flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer group"
+            className="flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold text-stone-300 hover:text-white flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer group"
           >
-            <Sparkles className="w-4 h-4 text-orange-400 group-hover:rotate-12 transition-transform" />
+            <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:rotate-6 transition-all shadow-sm">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
             <span>Director</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('preview'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'preview' && !isMobileDirectorOpen
-                ? 'bg-stone-900 border border-stone-800 text-orange-400 shadow-inner'
-                : 'text-stone-400 hover:text-stone-200'
+            className={`flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'preview' && !isMobileDirectorOpen ? 'text-orange-400' : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <Eye className="w-4 h-4" />
+            <div className={`w-7 h-7 rounded-[8px_16px_6px_14px/14px_6px_16px_8px] border flex items-center justify-center transition-all ${
+              activeTab === 'preview' && !isMobileDirectorOpen
+                ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                : 'bg-stone-900/80 border-stone-800 text-stone-400'
+            }`}>
+              <Eye className="w-3.5 h-3.5" />
+            </div>
             <span>Live</span>
-            {activeTab === 'preview' && !isMobileDirectorOpen && (
-              <Squiggle className="w-4 h-1 text-orange-500 -mt-0.5" />
-            )}
           </button>
 
           <button
             onClick={() => { setActiveTab('admin'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'admin' && !isMobileDirectorOpen
-                ? 'bg-stone-900 border border-stone-800 text-orange-400 shadow-inner'
-                : 'text-stone-400 hover:text-stone-200'
+            className={`flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer ${
+              activeTab === 'admin' && !isMobileDirectorOpen ? 'text-orange-400' : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <div className={`w-7 h-7 rounded-[16px_8px_14px_6px/6px_14px_8px_16px] border flex items-center justify-center transition-all ${
+              activeTab === 'admin' && !isMobileDirectorOpen
+                ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                : 'bg-stone-900/80 border-stone-800 text-stone-400'
+            }`}>
+              <LayoutDashboard className="w-3.5 h-3.5" />
+            </div>
             <span>Admin</span>
-            {activeTab === 'admin' && !isMobileDirectorOpen && (
-              <Squiggle className="w-4 h-1 text-orange-500 -mt-0.5" />
-            )}
           </button>
 
           <button
             onClick={() => setIsMobileQuickMenuOpen(!isMobileQuickMenuOpen)}
-            className={`p-2.5 rounded-2xl border transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center ${
-              isMobileQuickMenuOpen
-                ? 'bg-stone-900 border-orange-500/50 text-orange-400'
-                : 'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-stone-200'
-            }`}
+            className="p-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-stone-400"
             title="Studio Tools"
           >
-            <Sliders className="w-4 h-4" />
+            <div className={`w-7 h-7 rounded-[6px_14px_8px_16px/16px_8px_14px_6px] border flex items-center justify-center transition-all ${
+              isMobileQuickMenuOpen
+                ? 'bg-orange-500/20 border-orange-500/50 text-orange-400 shadow-sm'
+                : 'bg-stone-900/80 border-stone-800 text-stone-400 hover:text-stone-200'
+            }`}>
+              <Sliders className="w-3.5 h-3.5" />
+            </div>
+            <span>Tools</span>
           </button>
 
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="ml-1 px-4 py-2 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/30 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+            className="ml-0.5 px-3.5 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/30 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? '...' : 'Deploy'}</span>

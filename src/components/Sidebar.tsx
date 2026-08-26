@@ -47,14 +47,14 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Static Spacer so content doesn't jump */}
-      <div className="w-14 flex-shrink-0" />
+      {/* Static Spacer so content doesn't jump on desktop */}
+      <div className="hidden md:block w-14 flex-shrink-0" />
 
-      {/* Supabase-style Floating / Expanding Sidebar */}
+      {/* Supabase-style Floating / Expanding Sidebar (Desktop Only) */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 bottom-0 z-[60] bg-stone-950 text-stone-300 flex flex-col border-r border-stone-800 transition-all duration-200 ease-in-out select-none ${
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-[60] bg-stone-950 text-stone-300 flex-col border-r border-stone-800 transition-all duration-200 ease-in-out select-none ${
           isExpanded 
             ? 'w-60 shadow-2xl shadow-black/80 bg-stone-950/98 backdrop-blur-xl' 
             : 'w-14'

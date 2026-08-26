@@ -317,18 +317,18 @@ export default function BlueprintFormPanel({
 
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
 
-  // ── UI Card Primitive ──────────────────────────────────────────────────────
+  // ── UI Card Primitive with Edgy Color-Blocking & Squiggly Corners ───────────
   const FormCard = ({ title, icon: Icon, badge, children }: { title: string; icon: React.ComponentType<{ className?: string }>; badge?: string; children: React.ReactNode }) => (
-    <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-md backdrop-blur-sm">
+    <div className="bg-stone-900/90 border border-stone-800/80 rounded-[22px_12px_24px_14px/14px_24px_12px_22px] p-4 space-y-3.5 shadow-lg backdrop-blur-sm">
       <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+          <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-sm">
             <Icon className="w-3.5 h-3.5" />
           </div>
           <h3 className="text-xs font-bold text-stone-100 tracking-wide">{title}</h3>
         </div>
         {badge && (
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-stone-400 border border-stone-700">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-[10px_4px_12px_5px/5px_12px_4px_10px] bg-stone-800 text-stone-300 border border-stone-700">
             {badge}
           </span>
         )}
@@ -363,7 +363,7 @@ export default function BlueprintFormPanel({
           value={value}
           placeholder={placeholder}
           onChange={e => onChange(e.target.value)}
-          className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-xl bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all shadow-inner`}
+          className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all shadow-inner`}
         />
       </div>
     </div>
@@ -387,7 +387,7 @@ export default function BlueprintFormPanel({
         value={value}
         placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all resize-none shadow-inner leading-relaxed"
+        className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all resize-none shadow-inner leading-relaxed"
       />
     </div>
   );
@@ -410,12 +410,12 @@ export default function BlueprintFormPanel({
       </div>
 
       {/* ── Segmented Navigation Tabs ────────────────────────────────────── */}
-      <div className="grid grid-cols-6 gap-1 p-1 bg-stone-950 rounded-xl border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md">
+      <div className="grid grid-cols-6 gap-1 p-1 bg-stone-950 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md">
         <button
           type="button"
           onClick={() => setActiveTab('archetype')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'archetype' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+            activeTab === 'archetype' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Visual Archetype"
         >
@@ -425,8 +425,8 @@ export default function BlueprintFormPanel({
         <button
           type="button"
           onClick={() => setActiveTab('feature')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'feature' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+            activeTab === 'feature' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Signature Feature"
         >
@@ -436,8 +436,8 @@ export default function BlueprintFormPanel({
         <button
           type="button"
           onClick={() => setActiveTab('brand')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'brand' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+            activeTab === 'brand' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Identity & Bio"
         >
@@ -447,8 +447,8 @@ export default function BlueprintFormPanel({
         <button
           type="button"
           onClick={() => setActiveTab('pillars')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'pillars' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+            activeTab === 'pillars' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Platform / Services"
         >
@@ -458,8 +458,8 @@ export default function BlueprintFormPanel({
         <button
           type="button"
           onClick={() => setActiveTab('theme')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'theme' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+            activeTab === 'theme' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Style & Tokens"
         >
@@ -469,7 +469,7 @@ export default function BlueprintFormPanel({
         <button
           type="button"
           onClick={() => setActiveTab('all')}
-          className={`py-1.5 px-1 rounded-lg text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
+          className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
             activeTab === 'all' ? 'bg-stone-800 text-orange-400 border border-stone-700' : 'text-stone-500 hover:text-stone-300'
           }`}
           title="Show all sections"
@@ -492,27 +492,31 @@ export default function BlueprintFormPanel({
                 <div
                   key={arch.id}
                   onClick={() => applyArchetype(arch)}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
+                  className={`p-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-orange-500 bg-orange-500/10 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
-                      : 'border-stone-800 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                      ? 'border-orange-500 bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center">
-                        <arch.icon className={`w-4 h-4 ${active ? 'text-orange-400' : 'text-stone-400'}`} />
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
+                        active
+                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                          : 'bg-stone-900 border-stone-800 text-stone-400'
+                      }`}>
+                        <arch.icon className="w-4 h-4" />
                       </div>
                       <div>
                         <span className="text-xs font-bold text-white">{arch.name}</span>
-                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">
+                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded-[8px_3px_10px_4px/4px_10px_3px_8px] bg-stone-800 text-stone-400 border border-stone-700">
                           {arch.badge}
                         </span>
                       </div>
                     </div>
                     {active && <Check className="w-4 h-4 text-orange-400" />}
                   </div>
-                  <p className="text-[11px] text-stone-400 mt-1.5 pl-9 leading-relaxed">{arch.description}</p>
+                  <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{arch.description}</p>
                 </div>
               );
             })}
@@ -533,27 +537,31 @@ export default function BlueprintFormPanel({
                 <div
                   key={feat.id}
                   onClick={() => set('selectedFeature', feat.id)}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
+                  className={`p-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-orange-500 bg-orange-500/10 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
-                      : 'border-stone-800 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                      ? 'border-orange-500 bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center">
-                        <feat.icon className={`w-4 h-4 ${active ? 'text-orange-400' : 'text-stone-400'}`} />
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
+                        active
+                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                          : 'bg-stone-900 border-stone-800 text-stone-400'
+                      }`}>
+                        <feat.icon className="w-4 h-4" />
                       </div>
                       <div>
                         <span className="text-xs font-bold text-white">{feat.name}</span>
-                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">
+                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded-[8px_3px_10px_4px/4px_10px_3px_8px] bg-stone-800 text-stone-400 border border-stone-700">
                           {feat.tag}
                         </span>
                       </div>
                     </div>
                     {active && <Check className="w-4 h-4 text-orange-400" />}
                   </div>
-                  <p className="text-[11px] text-stone-400 mt-1.5 pl-9 leading-relaxed">{feat.description}</p>
+                  <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{feat.description}</p>
                 </div>
               );
             })}
@@ -830,7 +838,7 @@ export default function BlueprintFormPanel({
           <select
             value={selectedModel}
             onChange={(e) => onSelectModel?.(e.target.value)}
-            className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-lg px-2 py-1 focus:outline-none focus:border-orange-500 cursor-pointer max-w-[190px]"
+            className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-[14px_6px_16px_8px/8px_16px_6px_14px] px-2.5 py-1 focus:outline-none focus:border-orange-500 cursor-pointer max-w-[190px] shadow-sm"
             title="Choose AI Model for Experience Synthesis"
           >
             {SUPPORTED_MODELS.map(m => (
@@ -846,7 +854,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={handleBuild}
           disabled={isBusy || !form.name.trim()}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-100 cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
         >
           <Zap className="w-4 h-4 fill-current" />
           <span>⚡ Generate Custom Experience</span>
@@ -857,7 +865,7 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenAudit}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Auto-QC</span>
@@ -865,7 +873,7 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenProposal}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
           >
             <Layers className="w-4 h-4 text-blue-400" />
             <span>Proposal</span>
@@ -873,7 +881,7 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenScanner}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
           >
             <Camera className="w-4 h-4 text-orange-400" />
             <span>Scan Flyer</span>
@@ -884,7 +892,7 @@ export default function BlueprintFormPanel({
         <button 
           type="button" 
           onClick={onOpenHandoff}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 text-xs font-bold transition-all cursor-pointer shadow-sm"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-[0.98]"
           title="Get AI Master Plan prompt to give directly to Antigravity"
         >
           <Terminal className="w-4 h-4 text-orange-400" />
