@@ -615,7 +615,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by client, domain, or contact..."
-              className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 placeholder:text-stone-600"
+              className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 placeholder:text-stone-600"
             />
           </div>
 
@@ -623,7 +623,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
+              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20/60 focus:ring-1 focus:ring-[#C5A059]/20"
             >
               <option value="all">All Industries</option>
               <option value="Campaign & Leadership">Campaign & Leadership</option>
@@ -636,7 +636,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
+              className="px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20/60 focus:ring-1 focus:ring-[#C5A059]/20"
             >
               <option value="all">All Statuses</option>
               <option value="New Intake">New Intake</option>
@@ -803,8 +803,8 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-stone-800 flex items-center justify-between bg-stone-950">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-orange-400" />
+                <h3 className="text-lg font-bold text-stone-100 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#C5A059]" />
                   {editingClient ? `Edit Intake: ${editingClient.businessName}` : 'New Client Intake Dossier'}
                 </h3>
                 <p className="text-xs text-stone-400">
@@ -813,7 +813,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               </div>
               <button 
                 onClick={() => setIsNewModalOpen(false)}
-                className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+                className="p-1.5 text-stone-400 hover:text-stone-100 rounded-lg hover:bg-stone-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -823,20 +823,20 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             <div className="p-6 overflow-y-auto space-y-6 text-xs">
               
               {/* Data Vault Ingestion Banner */}
-              <div className="p-3.5 rounded-xl bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 border border-orange-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#C5A059]/10 via-stone-900 to-stone-950 border border-[#C5A059]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400 flex-shrink-0">
+                  <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059] flex-shrink-0">
                     <Camera className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-white block">Have a photo, flyer, resume, or business card?</span>
+                    <span className="text-xs font-bold text-stone-100 block">Have a photo, flyer, resume, or business card?</span>
                     <span className="text-[11px] text-stone-400">Let Gemini Vision parse all fields, offerings, and colors instantly.</span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsScannerOpen(true)}
-                  className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md flex-shrink-0"
+                  className="px-3 py-1.5 rounded-lg bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md flex-shrink-0"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Scan Photo</span>
@@ -845,7 +845,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
               {/* Section 1: Business Identity */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider border-b border-stone-800 pb-1.5">
+                <h4 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider border-b border-stone-800 pb-1.5">
                   1. Business Identity & Primary Contact
                 </h4>
                 
@@ -857,7 +857,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.businessName || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, businessName: e.target.value }))}
                       placeholder="e.g. Deborah Dietzmann for Judge"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
 
@@ -868,7 +868,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.clientContact || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, clientContact: e.target.value }))}
                       placeholder="e.g. Debbie Dietzmann"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
 
@@ -879,7 +879,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.phone || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))}
                       placeholder="e.g. (512) 555-0194"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
 
@@ -890,7 +890,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.email || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="e.g. campaign@debbieforjudge.com"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
 
@@ -901,7 +901,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.address || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, address: e.target.value }))}
                       placeholder="e.g. 701 Brazos St, Suite 500, Austin, TX"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     />
                   </div>
                 </div>
@@ -910,11 +910,11 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               {/* Section 2: Industry & Theme Archetype */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-stone-800 pb-1.5">
-                  <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider">
+                  <h4 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
                     2. Industry Archetype & Theme Palette
                   </h4>
                   <span className="text-[10px] text-stone-400 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-orange-400" />
+                    <Sparkles className="w-3 h-3 text-[#C5A059]" />
                     <span>Auto-matches from business name & photos</span>
                   </span>
                 </div>
@@ -986,14 +986,14 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
                   return (
                     <div className="space-y-2.5">
-                      <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 animate-in fade-in">
+                      <div className="p-3 rounded-xl bg-[#C5A059]/10 border border-[#C5A059]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 animate-in fade-in">
                         <div className="flex items-center space-x-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
+                          <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/20 flex items-center justify-center flex-shrink-0">
                             <Sparkles className="w-3.5 h-3.5" />
                           </div>
                           <div className="text-xs min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-white">AI Color & Theme Match:</span>
+                              <span className="font-bold text-stone-100">AI Color & Theme Match:</span>
                               {rec.accentColor && (
                                 <span className="inline-flex items-center gap-1 font-mono text-[11px] text-stone-300">
                                   <span className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: rec.accentColor }} />
@@ -1001,7 +1001,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-orange-400 font-semibold truncate mt-0.5">{rec.name}</p>
+                            <p className="text-[11px] text-[#C5A059] font-semibold truncate mt-0.5">{rec.name}</p>
                             <p className="text-[10.5px] text-stone-400 leading-tight mt-0.5 truncate">{rec.desc}</p>
                           </div>
                         </div>
@@ -1016,7 +1016,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                               accentColor: rec.accentColor
                             }));
                           }}
-                          className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1.5 flex-shrink-0"
+                          className="px-3 py-1.5 bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-100 rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1.5 flex-shrink-0"
                         >
                           <Palette className="w-3.5 h-3.5" />
                           <span>Auto-Apply Theme</span>
@@ -1028,7 +1028,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 space-y-1.5 animate-in fade-in">
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="font-semibold text-stone-300 flex items-center gap-1">
-                              <ImageIcon className="w-3 h-3 text-orange-400" />
+                              <ImageIcon className="w-3 h-3 text-[#C5A059]" />
                               <span>Sampled Photo Colors (Click swatch to set accent):</span>
                             </span>
                             <span className="text-stone-500 text-[10px]">Real Pixel Analysis</span>
@@ -1041,7 +1041,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                                 onClick={() => setForm(prev => ({ ...prev, accentColor: hex }))}
                                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-mono transition-all ${
                                   form.accentColor === hex
-                                    ? 'border-orange-500 bg-orange-500/20 text-white ring-1 ring-orange-500 shadow-sm'
+                                    ? 'border-[#C5A059] bg-[#C5A059]/10 text-stone-100 ring-1 ring-[#C5A059] shadow-sm'
                                     : 'border-stone-800 bg-stone-900 text-stone-300 hover:border-stone-700'
                                 }`}
                                 title={`Set ${hex} as Accent Color`}
@@ -1063,7 +1063,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <select
                       value={form.category || 'Campaign & Leadership'}
                       onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value as any }))}
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     >
                       <option value="Campaign & Leadership">Campaign & Leadership</option>
                       <option value="Food & Beverage">Food & Beverage (BBQ/Dining)</option>
@@ -1078,7 +1078,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <select
                       value={form.theme || 'campaign-navy'}
                       onChange={(e) => setForm(prev => ({ ...prev, theme: e.target.value as any }))}
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-semibold"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-semibold"
                     >
                       <option value="campaign-navy">Campaign Navy (Presidential & Gold)</option>
                       <option value="campaign-judicial">Judicial Light (Navy & Crimson)</option>
@@ -1095,7 +1095,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     <select
                       value={form.tier || 'Lead Generation Site'}
                       onChange={(e) => setForm(prev => ({ ...prev, tier: e.target.value as Tier }))}
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                     >
                       <option value="Basic Website">Spur Tier ($1,500 - Landing Page)</option>
                       <option value="Lead Generation Site">Ranger Tier ($3,500 - Flow/Lead Gen)</option>
@@ -1118,7 +1118,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         type="text"
                         value={form.accentColor || '#C5A059'}
                         onChange={(e) => setForm(prev => ({ ...prev, accentColor: e.target.value }))}
-                        className="flex-1 px-3 py-1.5 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-xs"
+                        className="flex-1 px-3 py-1.5 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono text-xs"
                       />
                     </div>
                   </div>
@@ -1130,7 +1130,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       value={form.domain || ''}
                       onChange={(e) => setForm(prev => ({ ...prev, domain: e.target.value }))}
                       placeholder="e.g. waylonrogerscampaign.com"
-                      className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-xs"
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono text-xs"
                     />
                   </div>
                 </div>
@@ -1138,7 +1138,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
               {/* Section 3: Brand Messaging & Hero Imagery */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider border-b border-stone-800 pb-1.5">
+                <h4 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider border-b border-stone-800 pb-1.5">
                   3. Brand Narrative & Hero Imagery
                 </h4>
 
@@ -1149,7 +1149,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     value={form.tagline || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, tagline: e.target.value }))}
                     placeholder="e.g. Honest Leadership. Proven Record. Protecting Our Communities."
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
 
@@ -1160,7 +1160,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     value={form.description || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Over 28 years serving our county with integrity, courage, and dedication..."
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 resize-none"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 resize-none"
                   />
                 </div>
 
@@ -1173,10 +1173,10 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         value={form.heroImage || ''}
                         onChange={(e) => setForm(prev => ({ ...prev, heroImage: e.target.value }))}
                         placeholder="https://images.unsplash.com/... or paste data URL"
-                        className="flex-1 px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500 font-mono text-[11px]"
+                        className="flex-1 px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono text-[11px]"
                       />
                       <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer transition-all border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
-                        <Upload className="w-3.5 h-3.5 text-orange-400" />
+                        <Upload className="w-3.5 h-3.5 text-[#C5A059]" />
                         <span>Upload Photo</span>
                         <input
                           type="file"
@@ -1198,7 +1198,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     </div>
 
                     {form.heroImage && (
-                      <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-orange-500/40 group">
+                      <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-[#C5A059]/40 group">
                         <img src={form.heroImage} alt="Hero preview" className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -1215,7 +1215,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
               {/* Section 4: Accreditations & Badges */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider border-b border-stone-800 pb-1.5">
+                <h4 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider border-b border-stone-800 pb-1.5">
                   4. Accreditations & Authority Badges
                 </h4>
 
@@ -1226,7 +1226,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     value={form.badges?.join(', ') || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, badges: e.target.value.split(',').map(b => b.trim()).filter(Boolean) }))}
                     placeholder="28+ Years Trial Experience, Endorsed by Law Enforcement, Preserving the Constitution"
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
 
@@ -1237,7 +1237,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                     value={form.proofBadgeText || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, proofBadgeText: e.target.value }))}
                     placeholder="Official 2026 Endorsements · Texas Bar Association Verified"
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
               </div>
@@ -1284,8 +1284,8 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
             
             <div className="px-6 py-4 border-b border-stone-800 flex items-center justify-between bg-stone-950">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Share2 className="w-4 h-4 text-orange-400" />
+                <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
+                  <Share2 className="w-4 h-4 text-[#C5A059]" />
                   Share Intake Questionnaire: {shareModalClient.businessName}
                 </h3>
                 <p className="text-xs text-stone-400">
@@ -1294,7 +1294,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               </div>
               <button 
                 onClick={() => setShareModalClient(null)}
-                className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+                className="p-1.5 text-stone-400 hover:text-stone-100 rounded-lg hover:bg-stone-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1306,7 +1306,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-stone-200 uppercase tracking-wider flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-orange-400" />
+                    <Mail className="w-3.5 h-3.5 text-[#C5A059]" />
                     Client Welcome Email Template
                   </span>
                   <button
@@ -1382,7 +1382,7 @@ TX Sons Delivery Engine`}
             <div className="px-6 py-3 border-t border-stone-800 bg-stone-950 flex justify-end">
               <button
                 onClick={() => setShareModalClient(null)}
-                className="px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-white font-medium"
+                className="px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-100 font-medium"
               >
                 Done
               </button>
@@ -1404,3 +1404,8 @@ TX Sons Delivery Engine`}
     </div>
   );
 }
+
+
+
+
+
