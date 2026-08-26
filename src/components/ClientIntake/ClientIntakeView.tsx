@@ -258,6 +258,8 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
   const [editingClient, setEditingClient] = useState<ClientIntake | null>(null);
   const [shareModalClient, setShareModalClient] = useState<ClientIntake | null>(null);
   const [copiedType, setCopiedType] = useState<string | null>(null);
+  const [scanUrl, setScanUrl] = useState('');
+  const [isScanningUrl, setIsScanningUrl] = useState(false);
 
   // Form State
   const [form, setForm] = useState<Partial<ClientIntake>>({
@@ -452,6 +454,29 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }));
     setIsScannerOpen(false);
     setIsNewModalOpen(true);
+  };
+
+  const handleScanWebsite = async () => {
+    if (!scanUrl) return;
+    setIsScanningUrl(true);
+    try {
+      const res = await fetch('/api/scrape-site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: scanUrl })
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        handleApplyFromScanner(data.data);
+        setScanUrl('');
+      } else {
+        alert("Failed to scrape: " + data.error);
+      }
+    } catch (e: any) {
+      alert("Error scanning website: " + e.message);
+    } finally {
+      setIsScanningUrl(false);
+    }
   };
 
   const handleDeleteClient = (id: string) => {
@@ -842,6 +867,33 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                   <span>Scan Photo</span>
                 </button>
               </div>
+
+                {/* Website Scanner Banner */}
+                <div className="p-3.5 rounded-xl bg-gradient-to-r from-stone-900 to-stone-950 border border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center space-x-2.5 flex-1 min-w-0">
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-800 border border-stone-700 flex items-center justify-center text-stone-400 flex-shrink-0">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 w-full min-w-0">
+                      <input
+                        type="url"
+                        value={scanUrl}
+                        onChange={(e) => setScanUrl(e.target.value)}
+                        placeholder="Or paste an existing website URL to scrape (e.g., Square)..."
+                        className="w-full bg-transparent border-none text-stone-200 placeholder:text-stone-500 focus:outline-none text-xs truncate"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleScanWebsite}
+                    disabled={isScanningUrl || !scanUrl}
+                    className="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 disabled:opacity-50 disabled:cursor-not-allowed text-stone-200 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md flex-shrink-0"
+                  >
+                    {isScanningUrl ? <span className="w-3.5 h-3.5 border-2 border-stone-400 border-t-transparent rounded-full animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+                    <span>{isScanningUrl ? 'Scraping...' : 'Extract Data'}</span>
+                  </button>
+                </div>
 
               {/* Section 1: Business Identity */}
               <div className="space-y-3">
