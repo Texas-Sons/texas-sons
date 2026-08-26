@@ -364,7 +364,7 @@ export interface AgentBuilderStudioProps {
   onOpenAppNav?: () => void;
 }
 
-export const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { className?: string }) => (
+export const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: string }) => (
   <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path
       d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
@@ -944,7 +944,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         {onOpenAppNav && (
           <button
             onClick={onOpenAppNav}
-            className="p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer active:scale-95 transition-all"
+            className="p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer active:scale-95 transition-all"
           >
             <Menu className="w-4 h-4 text-[#C5A059]" />
           </button>
@@ -996,7 +996,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             })}
             <div className="pt-2 border-t border-stone-800">
               <button onClick={() => { setIsBlueprintDropdownOpen(false); setIntakeModalOpen(true); }}
-                className="w-full py-2 px-3 rounded-xl bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
                 <Plus className="w-3.5 h-3.5" />New Client Experience
               </button>
             </div>
@@ -1013,10 +1013,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           {onOpenAppNav && (
             <button
               onClick={onOpenAppNav}
-              className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-orange-500/40 cursor-pointer active:scale-95 transition-all shadow-sm"
+              className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-[#C5A059]/40 cursor-pointer active:scale-95 transition-all shadow-sm"
               title="Open Texas Sons App Menu"
             >
-              <Menu className="w-4 h-4 text-orange-400" />
+              <Menu className="w-4 h-4 text-[#C5A059]" />
             </button>
           )}
 
@@ -1031,21 +1031,21 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-stone-400 hover:text-white bg-stone-900/60 md:bg-transparent hover:bg-stone-900 border border-stone-800/80 md:border-transparent hover:border-stone-800 transition-all flex-shrink-0 cursor-pointer active:scale-95"
             title={isChatCollapsed ? "Expand Configurator" : "Collapse Configurator"}
           >
-            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
+            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-[#C5A059]" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
 
           {/* Active Client Experience Switcher Pill */}
           <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[150px] sm:max-w-[200px]"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[150px] sm:max-w-[200px]"
               title="Click to Switch Client Brand Experience"
             >
-              <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold flex-shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-[#C5A059]/20 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] font-bold flex-shrink-0">
                 <Zap className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate group-hover:text-orange-400">
+                <p className="text-xs font-bold text-white truncate group-hover:text-[#C5A059]">
                   {currentBlueprintObj?.title || project.profile.name}
                 </p>
                 <p className="text-[10px] text-stone-400 truncate">
@@ -1053,7 +1053,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 </p>
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
-                isBlueprintDropdownOpen ? 'rotate-180 text-orange-400' : ''
+                isBlueprintDropdownOpen ? 'rotate-180 text-[#C5A059]' : ''
               }`} />
             </button>
 
@@ -1062,7 +1062,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               <div className="absolute top-full left-0 mt-1.5 w-80 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
                 <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
                   <span>Select Client Experience</span>
-                  <span className="text-orange-400 font-mono text-[9px]">1-Click Ready</span>
+                  <span className="text-[#C5A059] font-mono text-[9px]">1-Click Ready</span>
                 </div>
                 {allBlueprints.map((preset) => {
                   const isSelected = project.profile.name === preset.profile.name;
@@ -1075,7 +1075,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       }}
                       className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                         isSelected
-                          ? 'border-orange-500/80 bg-orange-500/10 text-white'
+                          ? 'border-[#C5A059]/80 bg-[#C5A059]/10 text-white'
                           : 'border-transparent hover:bg-stone-800 text-stone-300'
                       }`}
                     >
@@ -1084,16 +1084,16 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                         <div className="flex items-center space-x-1.5 text-[10px] text-stone-400 mt-0.5">
                           <span>{preset.category}</span>
                           <span>•</span>
-                          <span className="uppercase text-[9px] font-semibold text-orange-400/90">{preset.theme}</span>
+                          <span className="uppercase text-[9px] font-semibold text-[#C5A059]/90">{preset.theme}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center space-x-1">
-                        {isSelected && <Check className="w-4 h-4 text-orange-500" />}
+                        {isSelected && <Check className="w-4 h-4 text-[#C5A059]" />}
                         {preset.isCustom && (
                           <button
                             onClick={(e) => handleDeleteCustomBlueprint(preset.id, e)}
-                            className="p-1 text-stone-500 hover:text-red-400 rounded-lg ml-1"
+                            className="p-1 text-stone-500 hover:text-red-400 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] ml-1"
                             title="Delete custom experience"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -1110,7 +1110,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       setIsBlueprintDropdownOpen(false);
                       setIntakeModalOpen(true);
                     }}
-                    className="w-full py-2 px-3 rounded-xl bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/20 hover:bg-[#C5A059]/30 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Create New Client Experience</span>
@@ -1124,7 +1124,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={handleSaveToProjects}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Save Project to Database"
             >
               <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
@@ -1132,23 +1132,23 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             </button>
             <button
               onClick={() => setIsHandoffOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-[#C5A059] hover:text-[#C5A059] hover:bg-[#C5A059]/10 transition-all cursor-pointer"
               title="Get Antigravity AI Master Plan Prompt"
             >
-              <Terminal className="w-3.5 h-3.5 text-orange-400" />
+              <Terminal className="w-3.5 h-3.5 text-[#C5A059]" />
               <span>AGY Prompt</span>
             </button>
             <button
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Scan photo of flyer or menu"
             >
-              <Camera className="w-3.5 h-3.5 text-orange-400" />
+              <Camera className="w-3.5 h-3.5 text-[#C5A059]" />
               <span>Scan</span>
             </button>
             <button
               onClick={() => setIsAuditOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Run Design & QA Audit"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
@@ -1156,7 +1156,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             </button>
             <button
               onClick={() => setIsProposalModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Generate Client Proposal"
             >
               <FileText className="w-3.5 h-3.5 text-amber-400" />
@@ -1169,9 +1169,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         <div className="hidden md:flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner flex-shrink-0 mx-1 sm:mx-2">
           <button
             onClick={() => setActiveTab('preview')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'preview'
-                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1182,9 +1182,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
           <button
             onClick={() => setActiveTab('admin')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'admin'
-                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1195,9 +1195,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
           <button
             onClick={() => setActiveTab('code')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'code'
-                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1219,8 +1219,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <div className="hidden lg:flex items-center bg-stone-900 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={() => setDevice('desktop')}
-              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                device === 'desktop' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
+                device === 'desktop' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Desktop View"
             >
@@ -1228,8 +1228,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             </button>
             <button
               onClick={() => setDevice('tablet')}
-              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                device === 'tablet' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
+                device === 'tablet' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Tablet View"
             >
@@ -1237,8 +1237,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             </button>
             <button
               onClick={() => setDevice('mobile')}
-              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                device === 'mobile' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
+              className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
+                device === 'mobile' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Mobile View"
             >
@@ -1250,7 +1250,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <button
             type="button"
             onClick={() => setIsDeploymentHistoryOpen(true)}
-            className="hidden xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group flex-shrink-0"
+            className="hidden xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] cursor-pointer transition-all group flex-shrink-0"
             title="View Live Deployment Status & History"
           >
             <span className="relative flex h-2 w-2">
@@ -1260,14 +1260,14 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[120px] 2xl:max-w-[160px]">
               {activeDeployedUrl.replace(/^https?:\/\//, '') || `${project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
             </span>
-            <History className="w-3 h-3 text-stone-500 group-hover:text-orange-400 transition-colors" />
+            <History className="w-3 h-3 text-stone-500 group-hover:text-[#C5A059] transition-colors" />
           </button>
 
           {/* AGY Prompt Shortcut (Visible on medium/large screens) */}
           <button
             type="button"
             onClick={() => setIsHandoffOpen(true)}
-            className="hidden md:flex 2xl:hidden items-center gap-1 px-2.5 py-1.5 rounded-xl border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-xs font-bold transition-all cursor-pointer flex-shrink-0"
+            className="hidden md:flex 2xl:hidden items-center gap-1 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-[#C5A059]/30 bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] text-xs font-bold transition-all cursor-pointer flex-shrink-0"
             title="Get Antigravity AI Master Plan Prompt"
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -1278,10 +1278,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <button
             type="button"
             onClick={() => setIsCustomDomainOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer flex-shrink-0"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer flex-shrink-0"
             title="Connect Namecheap or Custom Domain"
           >
-            <Globe className="w-3.5 h-3.5 text-orange-400" />
+            <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
             <span className="hidden md:inline">Custom Domain</span>
           </button>
 
@@ -1289,7 +1289,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black shadow-lg shadow-orange-600/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer flex-shrink-0"
+            className="bg-[#C5A059] hover:bg-[#C5A059] disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-black shadow-lg shadow-[#C5A059]/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer flex-shrink-0"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? 'Deploying...' : 'Deploy'}</span>
@@ -1301,7 +1301,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="hidden 2xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-xl px-2.5 py-1 border border-stone-800 cursor-pointer transition-colors flex-shrink-0"
             title="Click to change AI Model"
           >
-            <Cpu className="w-3.5 h-3.5 text-orange-400" />
+            <Cpu className="w-3.5 h-3.5 text-[#C5A059]" />
             <div className="flex flex-col text-left">
               <span className="text-[8px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
               <span className="text-[11px] font-semibold text-white leading-tight">
@@ -1313,10 +1313,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           {/* Fullscreen Toggle */}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-xl hidden sm:block cursor-pointer flex-shrink-0"
+            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] hidden sm:block cursor-pointer flex-shrink-0"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4 text-orange-400" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-4 h-4 text-[#C5A059]" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
         </div>
@@ -1358,27 +1358,27 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         {/* Mobile Full-Screen Slide-Up Experience Director Drawer */}
         {isMobileDirectorOpen && (
           <div className="fixed inset-0 z-50 md:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end animate-in fade-in duration-200">
-            <div className="bg-stone-950 border-t border-orange-500/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
+            <div className="bg-stone-950 border-t border-[#C5A059]/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
               {/* Drawer Tactile Drag Header */}
               <div className="pt-2 pb-3 px-4 border-b border-stone-800 bg-stone-950 flex flex-col flex-shrink-0">
                 {/* Drag handle pill */}
                 <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-2.5" />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
+                    <div className="w-7 h-7 rounded-xl bg-[#C5A059]/20 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] font-bold">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-xs font-black text-white uppercase tracking-wider">Experience Director</h3>
-                        <Squiggle className="w-6 h-1.5 text-orange-500/80" />
+                        <Squiggle className="w-6 h-1.5 text-[#C5A059]/80" />
                       </div>
                       <p className="text-[10px] text-stone-400">Brand DNA · Archetypes · Signature Features</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setIsMobileDirectorOpen(false)}
-                    className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer"
+                    className="p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1424,7 +1424,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               {/* Component Inspector Button */}
               <button
                 onClick={() => setInspectorActive(!inspectorActive)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                   inspectorActive 
                     ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 ring-1 ring-blue-500/20' 
                     : 'text-stone-400 hover:text-stone-200 bg-stone-900/60 border border-stone-800'
@@ -1437,7 +1437,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
               {/* Theme Harmony Quick Indicator */}
               <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-stone-400 bg-stone-900/60 px-2.5 py-1 rounded-lg border border-stone-800">
-                <Palette className="w-3.5 h-3.5 text-orange-400" />
+                <Palette className="w-3.5 h-3.5 text-[#C5A059]" />
                 <span>Theme:</span>
                 <span className="font-bold text-stone-200 uppercase">{project.theme}</span>
               </div>
@@ -1448,7 +1448,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               <div className="relative">
                 <button
                   onClick={() => setIsFaviconMenuOpen(!isFaviconMenuOpen)}
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-[11px] transition-all hover:border-orange-500/60 shadow-sm"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-[11px] transition-all hover:border-[#C5A059]/60 shadow-sm"
                   title="Change Browser Tab Icon"
                 >
                   <img
@@ -1477,9 +1477,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                             }));
                             setIsFaviconMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors ${
                             (project.profile.faviconUrl === fav.url || (!project.profile.faviconUrl && isCampaignSite && fav.url === '/sheriff-badge-favicon.svg'))
-                              ? 'bg-orange-600/20 text-orange-400 font-bold border border-orange-500/40'
+                              ? 'bg-[#C5A059]/20 text-[#C5A059] font-bold border border-[#C5A059]/40'
                               : 'text-stone-300 hover:bg-stone-800'
                           }`}
                         >
@@ -1502,7 +1502,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                           ...prev,
                           profile: { ...prev.profile, faviconUrl: e.target.value }
                         }))}
-                        className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[11px] text-white font-mono focus:outline-none focus:border-orange-500"
+                        className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[11px] text-white font-mono focus:outline-none focus:border-[#C5A059]"
                       />
                     </div>
                   </div>
@@ -1804,7 +1804,7 @@ export default function ClientSite() {
             {/* TAB 4: Blueprint JSON Schema */}
             {activeTab === 'blueprint' && (
               <div className="w-full max-w-5xl bg-stone-900 rounded-2xl border border-stone-800 p-6 font-mono text-xs text-stone-300 overflow-x-auto shadow-2xl">
-                <div className="text-xs text-orange-400 mb-3 font-bold">// Multi-Agent Distilled Blueprint JSON</div>
+                <div className="text-xs text-[#C5A059] mb-3 font-bold">// Multi-Agent Distilled Blueprint JSON</div>
                 <pre>{JSON.stringify(project, null, 2)}</pre>
               </div>
             )}
@@ -1823,7 +1823,7 @@ export default function ClientSite() {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-stone-800 flex items-center justify-between bg-stone-950">
               <div className="flex items-center space-x-2.5">
-                <Vote className="w-5 h-5 text-orange-500" />
+                <Vote className="w-5 h-5 text-[#C5A059]" />
                 <div>
                   <h3 className="font-bold text-white text-base">Create New Client Brand Experience</h3>
                   <p className="text-xs text-stone-400">Configure brand identity, spatial layout archetype, and signature interactive features.</p>
@@ -1831,7 +1831,7 @@ export default function ClientSite() {
               </div>
               <button 
                 onClick={() => setIntakeModalOpen(false)}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800"
+                className="p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-stone-400 hover:text-white hover:bg-stone-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1851,7 +1851,7 @@ export default function ClientSite() {
                     value={intakeForm.title}
                     onChange={(e) => setIntakeForm({ ...intakeForm, title: e.target.value })}
                     placeholder="e.g. Debbie Dietzmann for Judge"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
                   />
                 </div>
 
@@ -1862,7 +1862,7 @@ export default function ClientSite() {
                   <select
                     value={intakeForm.category}
                     onChange={(e) => setIntakeForm({ ...intakeForm, category: e.target.value as any })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
                   >
                     <option value="Campaign & Leadership">Campaign & Political Leadership</option>
                     <option value="Beauty & Wellness">Beauty & Wellness (Salons & Spas)</option>
@@ -1885,7 +1885,7 @@ export default function ClientSite() {
                     value={intakeForm.name}
                     onChange={(e) => setIntakeForm({ ...intakeForm, name: e.target.value })}
                     placeholder="e.g. Deborah Dietzmann for Judge"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
                   />
                 </div>
 
@@ -1898,7 +1898,7 @@ export default function ClientSite() {
                     value={intakeForm.tagline}
                     onChange={(e) => setIntakeForm({ ...intakeForm, tagline: e.target.value })}
                     placeholder="e.g. Equal Justice. Constitutional Integrity."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
                   />
                 </div>
               </div>
@@ -1906,7 +1906,7 @@ export default function ClientSite() {
               {/* Color Scheme Picker */}
               <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Palette className="w-4 h-4 text-orange-500" />
+                  <Palette className="w-4 h-4 text-[#C5A059]" />
                   <span className="font-semibold uppercase tracking-wider text-stone-300 text-xs">Color Scheme & Aesthetic Harmony</span>
                 </div>
 
@@ -1971,7 +1971,7 @@ export default function ClientSite() {
                   value={intakeForm.description}
                   onChange={(e) => setIntakeForm({ ...intakeForm, description: e.target.value })}
                   placeholder="Paste background, 28 years legal counsel, felony trial prosecution, courtroom integrity, judicial achievements..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
                 />
               </div>
 
@@ -1984,7 +1984,7 @@ export default function ClientSite() {
                   value={intakeForm.heroImage}
                   onChange={(e) => setIntakeForm({ ...intakeForm, heroImage: e.target.value })}
                   placeholder="https://images.unsplash.com/... or hosted portrait URL"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-orange-500 font-mono text-[11px]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059] font-mono text-[11px]"
                 />
               </div>
 
@@ -2036,7 +2036,7 @@ export default function ClientSite() {
                   value={intakeForm.servicesText}
                   onChange={(e) => setIntakeForm({ ...intakeForm, servicesText: e.target.value })}
                   placeholder="Courtroom Rule of Law | Applying the law as written without political bias&#10;Youth Diversion Programs | Early intervention for non-violent offenders&#10;Docket Efficiency | Eliminating backlogs to save taxpayer funds"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-orange-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#C5A059]"
                 />
               </div>
 
@@ -2049,7 +2049,7 @@ export default function ClientSite() {
                   value={intakeForm.testimonialsText}
                   onChange={(e) => setIntakeForm({ ...intakeForm, testimonialsText: e.target.value })}
                   placeholder={`"Deborah has the highest ethical standard in our district." — Justice Franklin Vance (Appeals Court)&#10;"Fair, decisive, and dedicated to Texas families." — Sheriff Douglas (Law Enforcement Coalition)`}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-orange-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#C5A059]"
                 />
               </div>
 
@@ -2081,14 +2081,14 @@ export default function ClientSite() {
                 <button
                   type="button"
                   onClick={() => setIntakeModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold"
+                  className="px-4 py-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   form="custom-intake-form"
-                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-orange-600/30"
+                  className="px-5 py-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059] hover:bg-[#C5A059] text-white font-bold flex items-center gap-1.5 shadow-lg shadow-[#C5A059]/30"
                 >
                   <Save className="w-4 h-4" />
                   <span>Generate & Save Experience</span>
@@ -2174,7 +2174,7 @@ export default function ClientSite() {
                   <div>
                     <h3 className="text-sm font-black text-[#C5A059] uppercase tracking-widest font-mono">STUDIO TOOLS</h3>
                   </div>
-                  <button onClick={() => setIsMobileQuickMenuOpen(false)} className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer active:scale-95">
+                  <button onClick={() => setIsMobileQuickMenuOpen(false)} className="p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer active:scale-95">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -2194,7 +2194,7 @@ export default function ClientSite() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
                   >
                     <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
                       <Camera className="w-4 h-4 text-[#C5A059]" />
@@ -2206,7 +2206,7 @@ export default function ClientSite() {
                   </button>
                   <button
                     onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
                   >
                     <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -2218,7 +2218,7 @@ export default function ClientSite() {
                   </button>
                   <button
                     onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
                   >
                     <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
                       <Globe className="w-4 h-4 text-blue-400" />
@@ -2230,7 +2230,7 @@ export default function ClientSite() {
                   </button>
                   <button
                     onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
                   >
                     <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
                       <Terminal className="w-4 h-4 text-[#C5A059]" />
@@ -2272,7 +2272,7 @@ export default function ClientSite() {
                         </div>
                       ))}
                     </div>
-                    <button className="w-full py-2.5 rounded-xl border border-stone-700 text-[11px] font-black text-stone-300 hover:border-[#C5A059]/60 hover:text-[#C5A059] transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-1.5">
+                    <button className="w-full py-2.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-stone-700 text-[11px] font-black text-stone-300 hover:border-[#C5A059]/60 hover:text-[#C5A059] transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-1.5">
                       CONFIGURE <Sliders className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -2292,7 +2292,7 @@ export default function ClientSite() {
                 <h2 className="text-lg font-bold text-stone-100">Deploy</h2>
                 <p className="text-[11px] text-stone-500 font-mono">Push live to production</p>
               </div>
-              <button onClick={() => setActiveTab('preview')} className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer">
+              <button onClick={() => setActiveTab('preview')} className="p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -2346,7 +2346,7 @@ export default function ClientSite() {
                 <button
                   onClick={handleDeploySite}
                   disabled={agentState.step === 'building'}
-                  className="w-full py-3 rounded-xl bg-[#C5A059]/80 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 text-xs font-black uppercase tracking-widest transition-all cursor-pointer active:scale-98 shadow-lg shadow-[#C5A059]/20 flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/80 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 text-xs font-black uppercase tracking-widest transition-all cursor-pointer active:scale-98 shadow-lg shadow-[#C5A059]/20 flex items-center justify-center gap-2"
                 >
                   {agentState.step === 'building' ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> DEPLOYING...</> : 'DEPLOY SITE'}
                 </button>
@@ -2356,14 +2356,14 @@ export default function ClientSite() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setIsCustomDomainOpen(true)}
-                  className="p-3.5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
                 >
                   <Globe className="w-5 h-5" />
                   <span className="text-[10px] font-black">Custom Domain</span>
                 </button>
                 <button
                   onClick={() => setIsDeploymentHistoryOpen(true)}
-                  className="p-3.5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
                 >
                   <History className="w-5 h-5" />
                   <span className="text-[10px] font-black">History</span>
@@ -2415,12 +2415,16 @@ export default function ClientSite() {
                     setIsMobileQuickMenuOpen(false);
                   }
                 }}
-                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95 min-w-[52px] ${
-                  isActive ? 'text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
-                }`}
+                className={
+                  id === 'director'
+                    ? "flex flex-col items-center justify-center gap-1 w-14 h-14 -mt-5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] transition-all cursor-pointer shadow-lg shadow-[#C5A059]/20 bg-[#C5A059] text-stone-950 font-black"
+                    : `flex flex-col items-center gap-1 px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] transition-all cursor-pointer active:scale-95 min-w-[52px] ${
+                        isActive ? 'text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                      }`
+                }
               >
                 <Icon className="w-5 h-5" />
-                <span className={`text-[10px] font-bold ${isActive ? 'text-[#C5A059]' : ''}`}>{label}</span>
+                <span className={`text-[10px] font-bold ${id === 'director' ? 'text-stone-950' : isActive ? 'text-[#C5A059]' : ''}`}>{label}</span>
               </button>
             );
           })}

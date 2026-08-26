@@ -266,7 +266,7 @@ interface BlueprintFormPanelProps {
 
 type TabKey = 'archetype' | 'brand' | 'pillars' | 'badges' | 'feature' | 'theme' | 'all';
 
-const Squiggle = ({ className = "w-8 h-1.5 text-orange-500" }: { className?: string }) => (
+const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: string }) => (
   <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path
       d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
@@ -322,7 +322,7 @@ export default function BlueprintFormPanel({
     <div className="bg-stone-900/90 border border-stone-800/80 rounded-[22px_12px_24px_14px/14px_24px_12px_22px] p-4 space-y-3.5 shadow-lg backdrop-blur-sm">
       <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-sm">
+          <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] shadow-sm">
             <Icon className="w-3.5 h-3.5" />
           </div>
           <h3 className="text-xs font-bold text-stone-100 tracking-wide">{title}</h3>
@@ -363,7 +363,7 @@ export default function BlueprintFormPanel({
           value={value}
           placeholder={placeholder}
           onChange={e => onChange(e.target.value)}
-          className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all shadow-inner`}
+          className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all shadow-inner`}
         />
       </div>
     </div>
@@ -387,7 +387,7 @@ export default function BlueprintFormPanel({
         value={value}
         placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 transition-all resize-none shadow-inner leading-relaxed"
+        className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all resize-none shadow-inner leading-relaxed"
       />
     </div>
   );
@@ -400,10 +400,10 @@ export default function BlueprintFormPanel({
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-black uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
               <span>Brand DNA & Experience Director</span>
             </h2>
-            <Squiggle className="w-6 h-1.5 text-orange-500/70" />
+            <Squiggle className="w-6 h-1.5 text-[#C5A059]/70" />
           </div>
           <p className="text-[10px] text-stone-500">Generative Layouts · Signature Features · Motion</p>
         </div>
@@ -415,7 +415,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('archetype')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'archetype' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'archetype' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Visual Archetype"
         >
@@ -426,7 +426,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('feature')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'feature' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'feature' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Signature Feature"
         >
@@ -437,7 +437,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('brand')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'brand' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'brand' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Identity & Bio"
         >
@@ -448,7 +448,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('pillars')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'pillars' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'pillars' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Platform / Services"
         >
@@ -459,7 +459,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('theme')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'theme' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'theme' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Style & Tokens"
         >
@@ -470,7 +470,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('all')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'all' ? 'bg-stone-800 text-orange-400 border border-stone-700' : 'text-stone-500 hover:text-stone-300'
+            activeTab === 'all' ? 'bg-stone-800 text-[#C5A059] border border-stone-700' : 'text-stone-500 hover:text-stone-300'
           }`}
           title="Show all sections"
         >
@@ -492,9 +492,9 @@ export default function BlueprintFormPanel({
                 <div
                   key={arch.id}
                   onClick={() => applyArchetype(arch)}
-                  className={`p-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
+                  className={`p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-orange-500 bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      ? 'border-[#C5A059] bg-gradient-to-r from-[#C5A059]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#C5A059]/20 ring-1 ring-[#C5A059]/40'
                       : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
@@ -502,7 +502,7 @@ export default function BlueprintFormPanel({
                     <div className="flex items-center gap-2.5">
                       <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
                         active
-                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                          ? 'bg-[#C5A059]/20 border-[#C5A059]/40 text-[#C5A059] shadow-sm'
                           : 'bg-stone-900 border-stone-800 text-stone-400'
                       }`}>
                         <arch.icon className="w-4 h-4" />
@@ -514,7 +514,7 @@ export default function BlueprintFormPanel({
                         </span>
                       </div>
                     </div>
-                    {active && <Check className="w-4 h-4 text-orange-400" />}
+                    {active && <Check className="w-4 h-4 text-[#C5A059]" />}
                   </div>
                   <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{arch.description}</p>
                 </div>
@@ -537,9 +537,9 @@ export default function BlueprintFormPanel({
                 <div
                   key={feat.id}
                   onClick={() => set('selectedFeature', feat.id)}
-                  className={`p-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
+                  className={`p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-orange-500 bg-gradient-to-r from-orange-950/40 via-stone-900 to-stone-950 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      ? 'border-[#C5A059] bg-gradient-to-r from-[#C5A059]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#C5A059]/20 ring-1 ring-[#C5A059]/40'
                       : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
@@ -547,7 +547,7 @@ export default function BlueprintFormPanel({
                     <div className="flex items-center gap-2.5">
                       <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
                         active
-                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                          ? 'bg-[#C5A059]/20 border-[#C5A059]/40 text-[#C5A059] shadow-sm'
                           : 'bg-stone-900 border-stone-800 text-stone-400'
                       }`}>
                         <feat.icon className="w-4 h-4" />
@@ -559,7 +559,7 @@ export default function BlueprintFormPanel({
                         </span>
                       </div>
                     </div>
-                    {active && <Check className="w-4 h-4 text-orange-400" />}
+                    {active && <Check className="w-4 h-4 text-[#C5A059]" />}
                   </div>
                   <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{feat.description}</p>
                 </div>
@@ -658,7 +658,7 @@ export default function BlueprintFormPanel({
         <FormCard title={isCampaign ? "3 Campaign Pillars" : "3 Core Services"} icon={ShieldCheck} badge="Key Focus">
           <div className="space-y-3">
             <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
+              <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
               <InputField 
                 label="Pillar 1 Title" 
                 id="p1title" 
@@ -738,7 +738,7 @@ export default function BlueprintFormPanel({
 
           <FormCard title="Verified Quotes & Endorsements" icon={MessageSquareQuote} badge="Social Proof">
             <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Endorsement #1</span>
+              <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Endorsement #1</span>
               <TextareaField label="Quote" id="e1q" placeholder="Enter endorsement quote..." value={form.endorsement1quote} onChange={v => set('endorsement1quote', v)} rows={2} />
               <div className="grid grid-cols-2 gap-2">
                 <InputField label="Author Name" id="e1a" placeholder="Judge Ronald Sterling" value={form.endorsement1author} onChange={v => set('endorsement1author', v)} />
@@ -767,7 +767,7 @@ export default function BlueprintFormPanel({
               <select
                 value={form.theme}
                 onChange={e => set('theme', e.target.value as any)}
-                className="w-full h-10 px-3 rounded-xl bg-stone-950 border border-stone-700/80 text-xs font-semibold text-white focus:outline-none focus:border-orange-500"
+                className="w-full h-10 px-3 rounded-xl bg-stone-950 border border-stone-700/80 text-xs font-semibold text-white focus:outline-none focus:border-[#C5A059]"
               >
                 <option value="campaign-navy">🏛️ Civic Navy & Texas Gold (Authoritative)</option>
                 <option value="campaign-judicial">⚖️ Courtroom Slate & Integrity Bronze</option>
@@ -787,7 +787,7 @@ export default function BlueprintFormPanel({
                     onClick={() => set('heroVariant', v)}
                     className={`py-2 px-2 rounded-xl border text-[11px] font-bold capitalize transition-all cursor-pointer ${
                       form.heroVariant === v 
-                        ? 'border-orange-500 bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30' 
+                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-[#C5A059] ring-1 ring-[#C5A059]/30' 
                         : 'border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200'
                     }`}
                   >
@@ -832,13 +832,13 @@ export default function BlueprintFormPanel({
         {/* Model Selection Chip */}
         <div className="flex items-center justify-between px-1 text-xs">
           <span className="font-semibold text-stone-400 flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-orange-400" />
+            <Cpu className="w-3.5 h-3.5 text-[#C5A059]" />
             <span className="text-[11px]">AI Synthesis Engine:</span>
           </span>
           <select
             value={selectedModel}
             onChange={(e) => onSelectModel?.(e.target.value)}
-            className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-[14px_6px_16px_8px/8px_16px_6px_14px] px-2.5 py-1 focus:outline-none focus:border-orange-500 cursor-pointer max-w-[190px] shadow-sm"
+            className="bg-stone-900 border border-stone-700 text-[#C5A059] text-xs font-bold rounded-[14px_6px_16px_8px/8px_16px_6px_14px] px-2.5 py-1 focus:outline-none focus:border-[#C5A059] cursor-pointer max-w-[190px] shadow-sm"
             title="Choose AI Model for Experience Synthesis"
           >
             {SUPPORTED_MODELS.map(m => (
@@ -854,7 +854,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={handleBuild}
           disabled={isBusy || !form.name.trim()}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] bg-[#C5A059] hover:bg-[#C5A059] disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-[#C5A059]/30 transition-all hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
         >
           <Zap className="w-4 h-4 fill-current" />
           <span>⚡ Generate Custom Experience</span>
@@ -883,7 +883,7 @@ export default function BlueprintFormPanel({
             onClick={onOpenScanner}
             className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
           >
-            <Camera className="w-4 h-4 text-orange-400" />
+            <Camera className="w-4 h-4 text-[#C5A059]" />
             <span>Scan Flyer</span>
           </button>
         </div>
@@ -892,10 +892,10 @@ export default function BlueprintFormPanel({
         <button 
           type="button" 
           onClick={onOpenHandoff}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border border-[#C5A059]/30 bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] hover:text-[#C5A059] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-[0.98]"
           title="Get AI Master Plan prompt to give directly to Antigravity"
         >
-          <Terminal className="w-4 h-4 text-orange-400" />
+          <Terminal className="w-4 h-4 text-[#C5A059]" />
           <span>⚡ Antigravity AI Experience Prompt</span>
         </button>
       </div>
