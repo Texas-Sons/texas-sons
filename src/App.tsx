@@ -58,6 +58,7 @@ export default function App() {
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
     const checkUser = async (currentUser: User | null) => {
@@ -341,8 +342,6 @@ export default function App() {
       />
     );
   }
-
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50">
