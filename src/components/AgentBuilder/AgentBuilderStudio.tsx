@@ -359,7 +359,6 @@ export interface AgentBuilderStudioProps {
 
 export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStudioProps = {}) {
   const [prompt, setPrompt] = useState('');
-  const [studioMode, setStudioMode] = useState<'instant' | 'ai'>('instant');
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState<'preview' | 'admin' | 'code' | 'blueprint'>('preview');
   const [inspectorActive, setInspectorActive] = useState(false);
@@ -917,197 +916,239 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
     <div className={`w-full flex flex-col bg-stone-950 text-stone-100 ${
       isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : 'h-full flex-1 overflow-hidden'
     }`}>
-      {/* Top Studio Action Bar (Redesigned per Modern Mockup) */}
-      <header className="h-16 border-b border-stone-800/80 px-4 sm:px-6 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-20 gap-4">
+      {/* Top Studio Master Action Bar */}
+      <header className="h-16 border-b border-stone-800/80 px-3 sm:px-5 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-3">
         
-        {/* Left Section: Brand & Grouped Action Pill */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2.5">
+        {/* Left Section: Sidebar Toggle, Active Blueprint Dropdown Pill, Quick Tools */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <button
+            onClick={() => setIsChatCollapsed(!isChatCollapsed)}
+            className="p-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-900 border border-transparent hover:border-stone-800 transition-colors flex-shrink-0 cursor-pointer"
+            title={isChatCollapsed ? "Expand Configurator" : "Collapse Configurator"}
+          >
+            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
+          </button>
+
+          {/* Active Blueprint Preset Switcher Pill */}
+          <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setIsChatCollapsed(!isChatCollapsed)}
-              className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
-              title={isChatCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer"
+              title="Click to Switch Candidate or Business Blueprint"
             >
-              {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-orange-400" /> : <PanelLeftClose className="w-4 h-4" />}
+              <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold flex-shrink-0">
+                <Zap className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0 max-w-[140px] sm:max-w-[190px]">
+                <p className="text-xs font-bold text-white truncate group-hover:text-orange-400">
+                  {currentBlueprintObj?.title || project.profile.name}
+                </p>
+                <p className="text-[10px] text-stone-400 truncate">
+                  {currentBlueprintObj?.category || 'Blueprint'} · <span className="uppercase text-orange-400/90 font-semibold">{project.theme}</span>
+                </p>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
+                isBlueprintDropdownOpen ? 'rotate-180 text-orange-400' : ''
+              }`} />
             </button>
-            
-            <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold">
-              <Wand2 className="w-4 h-4" />
-            </div>
-            <span className="font-bold text-sm text-white tracking-tight hidden sm:inline">1-Click Studio</span>
+
+            {/* Dropdown Menu Popover */}
+            {isBlueprintDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1.5 w-80 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                  <span>Select Blueprint Preset</span>
+                  <span className="text-orange-400 font-mono text-[9px]">1-Click Ready</span>
+                </div>
+                {allBlueprints.map((preset) => {
+                  const isSelected = project.profile.name === preset.profile.name;
+                  return (
+                    <div
+                      key={preset.id}
+                      onClick={() => {
+                        handleApplyPreset(preset);
+                        setIsBlueprintDropdownOpen(false);
+                      }}
+                      className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                        isSelected
+                          ? 'border-orange-500/80 bg-orange-500/10 text-white'
+                          : 'border-transparent hover:bg-stone-800 text-stone-300'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1 pr-2">
+                        <p className="text-xs font-bold truncate">{preset.title}</p>
+                        <div className="flex items-center space-x-1.5 text-[10px] text-stone-400 mt-0.5">
+                          <span>{preset.category}</span>
+                          <span>•</span>
+                          <span className="uppercase text-[9px] font-semibold text-orange-400/90">{preset.theme}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-1">
+                        {isSelected && <Check className="w-4 h-4 text-orange-500" />}
+                        {preset.isCustom && (
+                          <button
+                            onClick={(e) => handleDeleteCustomBlueprint(preset.id, e)}
+                            className="p-1 text-stone-500 hover:text-red-400 rounded-lg ml-1"
+                            title="Delete custom blueprint"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="pt-2 border-t border-stone-800 mt-1">
+                  <button
+                    onClick={() => {
+                      setIsBlueprintDropdownOpen(false);
+                      setIntakeModalOpen(true);
+                    }}
+                    className="w-full py-2 px-3 rounded-xl bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Create New Custom Blueprint</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Grouped Action Pill */}
-          <div className="hidden lg:flex items-center gap-1 bg-stone-900/90 rounded-xl p-1 border border-stone-800 shadow-sm">
+          {/* Quick Studio Tools */}
+          <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800">
             <button
               onClick={handleSaveToProjects}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Save Project to Database"
             >
               <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Save Project</span>
+              <span>Save</span>
             </button>
-
-            <button
-              onClick={() => setActiveTab('preview')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
-                activeTab === 'preview'
-                  ? 'bg-orange-600 text-white shadow-orange-600/30'
-                  : 'text-stone-400 hover:text-stone-200'
-              }`}
-            >
-              <Monitor className="w-3.5 h-3.5" />
-              <span>Live Preview</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
-                activeTab === 'admin'
-                  ? 'bg-orange-600 text-white shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
-              }`}
-            >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>Admin Portal</span>
-            </button>
-
-            <div className="w-px h-4 bg-stone-800 mx-1" />
-
-            <button
-              onClick={() => setInspectorActive(!inspectorActive)}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
-                inspectorActive 
-                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 ring-1 ring-blue-500/20' 
-                  : 'text-stone-400 hover:text-stone-200'
-              }`}
-              title="Click to Inspect Components"
-            >
-              <MousePointer className="w-3.5 h-3.5" />
-              <span>Inspect</span>
-            </button>
-
             <button
               onClick={() => setIsScannerOpen(true)}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Scan photo of flyer or menu"
             >
               <Camera className="w-3.5 h-3.5 text-orange-400" />
               <span>Scan</span>
             </button>
-
-            <button
-              onClick={() => setIsHandoffOpen(true)}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
-              title="Export Master Plan for Antigravity"
-            >
-              <Terminal className="w-3.5 h-3.5 text-orange-400" />
-              <span>Export</span>
-            </button>
-
             <button
               onClick={() => setIsAuditOpen(true)}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 flex items-center gap-1.5 transition-all"
-              title="Run Project Manager & Design QA Audit"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              title="Run Design & QA Audit"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>PM Audit</span>
+              <span>Audit</span>
+            </button>
+            <button
+              onClick={() => setIsProposalModalOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
+              title="Generate Client Proposal"
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
+              <span>Proposal</span>
             </button>
           </div>
         </div>
 
-        {/* Center Search Input */}
-        <div className="hidden xl:flex flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
-            <input
-              type="text"
-              placeholder="Search projects & clients..."
-              className="w-full bg-stone-900 border border-stone-800 rounded-full py-1.5 pl-9 pr-4 text-xs text-stone-200 placeholder:text-stone-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 transition-all"
-            />
-          </div>
+        {/* Center: Main Workspace View Switcher */}
+        <div className="flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner">
+          <button
+            onClick={() => setActiveTab('preview')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'preview'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Live Website</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'admin'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Client Admin</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('code')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'code'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Code2 className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">React Code</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('blueprint')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'blueprint'
+                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Blueprint</span>
+          </button>
         </div>
 
-        {/* Right Section: Spend, Devices, Model Card, Bell, Deploy */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Right Section: Devices, Live Status Badge, Custom Domain, Deploy, Model */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           
-          {/* Real-Time Spend Ticker */}
-          <div
-            onClick={() => setIsModelSettingsOpen(true)}
-            className="hidden 2xl:flex items-center gap-1.5 bg-stone-900 px-3 py-1.5 rounded-lg border border-stone-800 font-mono text-orange-400 shadow-inner cursor-pointer hover:border-stone-700 transition-colors"
-            title="Session spend & token usage"
-          >
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-xs font-bold tracking-wider">${usageStats.estimatedCostUsd.toFixed(4)}</span>
-          </div>
-
           {/* Viewport Device Controls */}
-          <div className="hidden md:flex items-center bg-stone-900 rounded-lg p-1 border border-stone-800">
+          <div className="hidden lg:flex items-center bg-stone-900 rounded-xl p-1 border border-stone-800">
             <button
               onClick={() => setDevice('desktop')}
-              className={`p-1.5 rounded text-xs transition-colors ${
+              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
                 device === 'desktop' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
-              title="Desktop"
+              title="Desktop View"
             >
               <Monitor className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setDevice('tablet')}
-              className={`p-1.5 rounded text-xs transition-colors ${
+              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
                 device === 'tablet' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
-              title="Tablet"
+              title="Tablet View"
             >
               <Tablet className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setDevice('mobile')}
-              className={`p-1.5 rounded text-xs transition-colors ${
+              className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
                 device === 'mobile' ? 'bg-stone-800 text-orange-400 shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
-              title="Mobile"
+              title="Mobile View"
             >
               <Smartphone className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Model Selector Card */}
-          <div
-            onClick={() => setIsModelSettingsOpen(true)}
-            className="hidden sm:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-lg px-3 py-1 border border-stone-800 cursor-pointer transition-colors"
-            title="Click to change AI Model"
-          >
-            <Cpu className="w-4 h-4 text-orange-400" />
-            <div className="flex flex-col text-left">
-              <span className="text-[9px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
-              <span className="text-xs font-semibold text-white leading-tight">
-                {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini 2.5'}
-              </span>
-            </div>
-          </div>
-
-          {/* Notification Bell */}
-          <button
-            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-full relative"
-            title="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500 border-2 border-stone-900" />
-          </button>
-
-          {/* Live Deployment Status & Edge Hub Badge */}
+          {/* Live Deployment Status Badge */}
           <button
             type="button"
             onClick={() => setIsDeploymentHistoryOpen(true)}
-            className="hidden lg:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group"
+            className="hidden xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group"
             title="View Live Deployment Status & History"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[140px] sm:max-w-[200px]">
+            <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[130px] 2xl:max-w-[180px]">
               {activeDeployedUrl.replace(/^https?:\/\//, '') || `${project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
             </span>
             <History className="w-3 h-3 text-stone-500 group-hover:text-orange-400 transition-colors" />
@@ -1117,27 +1158,42 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           <button
             type="button"
             onClick={() => setIsCustomDomainOpen(true)}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
             title="Connect Namecheap or Custom Domain"
           >
             <Globe className="w-3.5 h-3.5 text-orange-400" />
-            <span>Custom Domain</span>
+            <span className="hidden md:inline">Custom Domain</span>
           </button>
 
           {/* Deploy Button */}
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-4 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 hover:scale-105 cursor-pointer"
+            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black shadow-lg shadow-orange-600/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer"
           >
-            <UploadCloud className="w-4 h-4" />
+            <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? 'Deploying...' : 'Deploy'}</span>
           </button>
+
+          {/* Model Selector Card */}
+          <div
+            onClick={() => setIsModelSettingsOpen(true)}
+            className="hidden 2xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-xl px-2.5 py-1 border border-stone-800 cursor-pointer transition-colors"
+            title="Click to change AI Model"
+          >
+            <Cpu className="w-3.5 h-3.5 text-orange-400" />
+            <div className="flex flex-col text-left">
+              <span className="text-[8px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">
+                {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini'}
+              </span>
+            </div>
+          </div>
 
           {/* Fullscreen Toggle */}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-lg hidden sm:block"
+            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-xl hidden sm:block cursor-pointer"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4 text-orange-400" /> : <Maximize2 className="w-4 h-4" />}
@@ -1149,300 +1205,60 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       {/* Main Studio Split Layout */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* Left Side: 1-Click Instant Builder OR AI Chat (toggle) */}
+        {/* Left Side: 1-Click Instant Builder Panel (Dedicated Pure Configurator) */}
         {!isChatCollapsed && (
           <div className="w-80 sm:w-96 border-r border-stone-800 bg-stone-900/60 flex flex-col flex-shrink-0 z-10 animate-in slide-in-from-left-2 duration-200">
-
-            {/* Studio Mode Toggle */}
-            <div className="flex items-center gap-1 px-3 pt-3 pb-2 bg-stone-950 border-b border-stone-800">
-              <button
-                onClick={() => setStudioMode('instant')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                  studioMode === 'instant' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
-                }`}
-              >
-                <Zap className="w-3 h-3" /> 1-Click Builder
-              </button>
-              <button
-                onClick={() => setStudioMode('ai')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                  studioMode === 'ai' ? 'bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
-                }`}
-              >
-                <Bot className="w-3 h-3" /> AI Chat
-              </button>
+            <div className="flex-1 overflow-y-auto">
+              <BlueprintFormPanel
+                activeSnapshot={project}
+                isBusy={agentState.step !== 'ready'}
+                onOpenScanner={() => setIsScannerOpen(true)}
+                onOpenHandoff={() => setIsHandoffOpen(true)}
+                onOpenAudit={() => setIsAuditOpen(true)}
+                onOpenProposal={() => setIsProposalModalOpen(true)}
+                onBuild={(snap) => {
+                  const newSnapshot: ProjectSnapshot = {
+                    id: `prj-${Date.now()}`,
+                    prompt: `1-Click Build: ${snap.profile.name}`,
+                    timestamp: new Date().toLocaleTimeString(),
+                    ...snap,
+                  };
+                  setProject(newSnapshot);
+                  setHistory(prev => [newSnapshot, ...prev]);
+                  setActiveTab('preview');
+                  setAgentState({ step: 'ready', message: `⚡ Instant build ready: ${snap.profile.name}`, tokensUsed: 0 });
+                }}
+              />
             </div>
-
-            {/* 1-Click Instant Builder Panel */}
-            {studioMode === 'instant' && (
-              <div className="flex-1 overflow-y-auto">
-                <BlueprintFormPanel
-                  activeSnapshot={project}
-                  isBusy={agentState.step !== 'ready'}
-                  onOpenScanner={() => setIsScannerOpen(true)}
-                  onOpenHandoff={() => setIsHandoffOpen(true)}
-                  onOpenAudit={() => setIsAuditOpen(true)}
-                  onOpenProposal={() => setIsProposalModalOpen(true)}
-                  onBuild={(snap) => {
-                    const newSnapshot: ProjectSnapshot = {
-                      id: `prj-${Date.now()}`,
-                      prompt: `1-Click Build: ${snap.profile.name}`,
-                      timestamp: new Date().toLocaleTimeString(),
-                      ...snap,
-                    };
-                    setProject(newSnapshot);
-                    setHistory(prev => [newSnapshot, ...prev]);
-                    setActiveTab('preview');
-                    setAgentState({ step: 'ready', message: `⚡ Instant build ready: ${snap.profile.name}`, tokensUsed: 0 });
-                  }}
-                />
-              </div>
-            )}
-
-            {/* AI Chat Panel (preserved) */}
-            {studioMode === 'ai' && (
-              <>
-
-            
-            {/* Top Dropdown Blueprint Selector */}
-            <div className="p-3 border-b border-stone-800 bg-stone-950/80 relative" ref={dropdownRef}>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-orange-500" />
-                  <span>Active Blueprint</span>
-                </span>
-                <span className="text-[10px] text-stone-500 font-mono">
-                  Tokens: ~{agentState.tokensUsed}
-                </span>
-              </div>
-
-              {/* Dropdown Trigger Button */}
-              <button
-                onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
-                className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-700/80 hover:border-orange-500/60 text-left flex items-center justify-between transition-all group shadow-sm"
-              >
-                <div className="min-w-0 flex-1 pr-2">
-                  <p className="text-xs font-bold text-white truncate group-hover:text-orange-400">
-                    {currentBlueprintObj?.title || project.profile.name}
-                  </p>
-                  <p className="text-[10px] text-stone-400 truncate mt-0.5">
-                    {currentBlueprintObj?.category || 'Custom Blueprint'} · <span className="uppercase text-orange-400/90 font-semibold">{project.theme}</span>
-                  </p>
-                </div>
-                <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform duration-200 flex-shrink-0 ${
-                  isBlueprintDropdownOpen ? 'rotate-180 text-orange-400' : ''
-                }`} />
-              </button>
-
-              {/* Dropdown Menu Popover */}
-              {isBlueprintDropdownOpen && (
-                <div className="absolute top-full left-3 right-3 mt-1 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
-                  <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1">
-                    Select Blueprint Preset
-                  </div>
-                  {allBlueprints.map((preset) => {
-                    const isSelected = project.profile.name === preset.profile.name;
-                    return (
-                      <div
-                        key={preset.id}
-                        onClick={() => handleApplyPreset(preset)}
-                        className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
-                          isSelected
-                            ? 'border-orange-500/80 bg-orange-500/10 text-white'
-                            : 'border-transparent hover:bg-stone-800 text-stone-300'
-                        }`}
-                      >
-                        <div className="min-w-0 flex-1 pr-2">
-                          <p className="text-xs font-bold truncate">{preset.title}</p>
-                          <div className="flex items-center space-x-1.5 text-[10px] text-stone-400 mt-0.5">
-                            <span>{preset.category}</span>
-                            <span>•</span>
-                            <span className="uppercase text-[9px] font-semibold text-orange-400/90">{preset.theme}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-1">
-                          {isSelected && <Check className="w-4 h-4 text-orange-500" />}
-                          {preset.isCustom && (
-                            <button
-                              onClick={(e) => handleDeleteCustomBlueprint(preset.id, e)}
-                              className="p-1 text-stone-500 hover:text-red-400 rounded-lg ml-1"
-                              title="Delete custom blueprint"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  <div className="pt-2 border-t border-stone-800 mt-1">
-                    <button
-                      onClick={() => {
-                        setIsBlueprintDropdownOpen(false);
-                        setIntakeModalOpen(true);
-                      }}
-                      className="w-full py-2 px-3 rounded-xl bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Create New Custom Blueprint</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Compact Agent Status Pill */}
-            <div className="px-3.5 py-2 border-b border-stone-800 bg-stone-950/60 flex items-center justify-between text-xs">
-              <div className="flex items-center space-x-2 min-w-0">
-                {agentState.step === 'ready' ? (
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-                ) : (
-                  <Loader2 className="w-3.5 h-3.5 text-orange-400 animate-spin flex-shrink-0" />
-                )}
-                <span className="text-[11px] text-stone-300 truncate font-medium">{agentState.message}</span>
-              </div>
-            </div>
-
-            {/* Timeline Checkpoints (Dedicated Spacious Feed) */}
-            <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">
-                <span>Timeline Checkpoints ({history.length})</span>
-                <span className="text-[10px] text-stone-500 font-normal">Click to restore</span>
-              </div>
-
-              {history.map((h, idx) => (
-                <div
-                  key={h.id}
-                  onClick={() => handleRollback(h)}
-                  className={`p-3 rounded-xl border cursor-pointer transition-all ${
-                    h.id === project.id 
-                      ? 'border-orange-500/80 bg-orange-500/10 text-white shadow-sm' 
-                      : 'border-stone-800 bg-stone-950/50 text-stone-400 hover:border-stone-700 hover:text-stone-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-stone-200 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                      Turn #{idx + 1}
-                    </span>
-                    <span className="text-[10px] text-stone-500 font-mono">{h.timestamp}</span>
-                  </div>
-                  <p className="text-xs line-clamp-2 text-stone-300 leading-relaxed">{h.prompt}</p>
-                </div>
-              ))}
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Quick Prompt Chips */}
-            <div className="px-3 pt-2 pb-1 bg-stone-950 border-t border-stone-800 flex items-center gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
-              <button
-                onClick={() => handleGenerate("Add 3 verified endorsements from local community leaders")}
-                className="px-2.5 py-1 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-800 whitespace-nowrap transition-colors flex items-center gap-1"
-              >
-                <Sparkles className="w-3 h-3 text-orange-400" /> +3 Endorsements
-              </button>
-              <button
-                onClick={() => handleGenerate("Switch to bento grid hero layout with live metric counters")}
-                className="px-2.5 py-1 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-800 whitespace-nowrap transition-colors"
-              >
-                Bento Hero
-              </button>
-              <button
-                onClick={() => handleGenerate("Add community volunteer intake with yard sign delivery options")}
-                className="px-2.5 py-1 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-800 whitespace-nowrap transition-colors"
-              >
-                Volunteer Intake
-              </button>
-            </div>
-
-            {/* Prompt Input Box */}
-            <div className="p-3 bg-stone-950">
-              {selectedBlock && (
-                <div className="mb-2 px-3 py-1.5 rounded-lg bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs flex items-center justify-between">
-                  <span>Targeting: <strong>{selectedBlock}</strong></span>
-                  <button onClick={() => setSelectedBlock(null)} className="text-blue-400 hover:text-white">✕</button>
-                </div>
-              )}
-              <div className="relative">
-                <textarea
-                  rows={2}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleGenerate();
-                    }
-                  }}
-                  placeholder={selectedBlock ? `Change ${selectedBlock}...` : "Type instructions or pick a chip above..."}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-700/80 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                />
-                <button
-                  onClick={() => handleGenerate()}
-                  disabled={agentState.step !== 'ready' || !prompt.trim()}
-                  className="absolute bottom-2.5 right-2.5 p-2 rounded-lg bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-30 disabled:hover:bg-orange-600 transition-all"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              <div className="flex items-center justify-between mt-1.5 text-[10px] text-stone-500">
-                <span>Enter to send · Shift+Enter for newline</span>
-                <span>Swarm Engine Active</span>
-              </div>
-            </div>
-
-              </>
-            )}
           </div>
         )}
 
         {/* Right Side: Interactive Live Preview & Code View */}
         <div className="flex-1 flex flex-col min-w-0 bg-stone-950">
           
-          {/* Canvas Sub-Header */}
-          <div className="h-10 border-b border-stone-800 px-4 sm:px-6 flex items-center justify-between bg-stone-900/40 flex-shrink-0 text-xs text-stone-400">
-            <div className="flex items-center space-x-4">
+          {/* Canvas Sub-Header: In-Canvas Contextual Controls */}
+          <div className="h-10 border-b border-stone-800/80 px-4 sm:px-6 flex items-center justify-between bg-stone-900/40 flex-shrink-0 text-xs text-stone-400">
+            <div className="flex items-center space-x-3">
+              {/* Component Inspector Button */}
               <button
-                onClick={() => setActiveTab('preview')}
-                className={`flex items-center gap-1.5 py-1 font-medium transition-colors ${
-                  activeTab === 'preview' ? 'text-orange-400 border-b-2 border-orange-500 font-bold' : 'hover:text-stone-200'
+                onClick={() => setInspectorActive(!inspectorActive)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  inspectorActive 
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 ring-1 ring-blue-500/20' 
+                    : 'text-stone-400 hover:text-stone-200 bg-stone-900/60 border border-stone-800'
                 }`}
+                title="Click to Inspect Components"
               >
-                <Eye className="w-3.5 h-3.5" />
-                <span>Live Website</span>
+                <MousePointer className="w-3.5 h-3.5" />
+                <span>{inspectorActive ? 'Inspecting On' : 'Inspect'}</span>
               </button>
 
-              <button
-                onClick={() => setActiveTab('admin')}
-                className={`flex items-center gap-1.5 py-1 font-medium transition-colors ${
-                  activeTab === 'admin' ? 'text-orange-400 border-b-2 border-orange-500 font-bold' : 'hover:text-stone-200'
-                }`}
-              >
-                <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
-                <span>Client Admin Portal</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('code')}
-                className={`flex items-center gap-1.5 py-1 font-medium transition-colors ${
-                  activeTab === 'code' ? 'text-orange-400 border-b-2 border-orange-500 font-bold' : 'hover:text-stone-200'
-                }`}
-              >
-                <Code2 className="w-3.5 h-3.5" />
-                <span>React Code</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('blueprint')}
-                className={`flex items-center gap-1.5 py-1 font-medium transition-colors ${
-                  activeTab === 'blueprint' ? 'text-orange-400 border-b-2 border-orange-500 font-bold' : 'hover:text-stone-200'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Blueprint</span>
-              </button>
+              {/* Theme Harmony Quick Indicator */}
+              <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-stone-400 bg-stone-900/60 px-2.5 py-1 rounded-lg border border-stone-800">
+                <Palette className="w-3.5 h-3.5 text-orange-400" />
+                <span>Theme:</span>
+                <span className="font-bold text-stone-200 uppercase">{project.theme}</span>
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
