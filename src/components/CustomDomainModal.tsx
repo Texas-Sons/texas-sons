@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import {
   Globe, X, Check, Copy, ExternalLink, ShieldCheck,
-  AlertCircle, RefreshCw, Trash2, ArrowRight, Lock, Server, Sparkles
+  AlertCircle, RefreshCw, Trash2, ArrowRight, Lock, Server, Sparkles, Cloud
 } from 'lucide-react';
 
 interface CustomDomainModalProps {
@@ -28,6 +28,7 @@ export default function CustomDomainModal({
   onDomainUpdated
 }: CustomDomainModalProps) {
   const [domainInput, setDomainInput] = useState('');
+  const [selectedRegistrar, setSelectedRegistrar] = useState<'namecheap' | 'cloudflare' | 'other'>('namecheap');
   const [domains, setDomains] = useState<DomainInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -85,7 +86,7 @@ export default function CustomDomainModal({
 
       setFeedback({
         type: 'success',
-        message: `Successfully registered ${clean} on Cloudflare Pages! Now add the CNAME record in Namecheap.`
+        message: `Successfully registered ${clean} on Cloudflare Pages! Follow the ${selectedRegistrar === 'namecheap' ? 'Namecheap' : 'DNS'} steps below.`
       });
       setDomainInput('');
       await fetchDomains();
@@ -168,7 +169,7 @@ export default function CustomDomainModal({
                 </span>
               </h2>
               <p className="text-xs text-stone-400 mt-0.5">
-                Attach Namecheap, GoDaddy, or Google domains to <span className="text-stone-200 font-mono font-semibold">{targetCname}</span>
+                Attach Namecheap, GoDaddy, or Cloudflare domains to <span className="text-stone-200 font-mono font-semibold">{targetCname}</span>
               </p>
             </div>
           </div>
@@ -197,7 +198,7 @@ export default function CustomDomainModal({
         {/* Add Domain Form */}
         <form onSubmit={handleAddDomain} className="space-y-2.5">
           <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
-            Add New Custom Domain
+            Enter Domain Name
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -221,66 +222,254 @@ export default function CustomDomainModal({
           </div>
         </form>
 
-        {/* Namecheap DNS Setup Instructions Card */}
-        <div className="bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3 shadow-inner">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-200 flex items-center gap-2">
-              <Server className="w-3.5 h-3.5 text-orange-400" />
-              <span>Namecheap DNS Configuration (Copy/Paste)</span>
-            </span>
-            <span className="text-[10px] text-stone-500">60-sec setup</span>
-          </div>
-          <p className="text-[11px] text-stone-400 leading-relaxed">
-            In your Namecheap Dashboard, go to <strong className="text-stone-200">Domain List ➔ Manage ➔ Advanced DNS</strong> and add this CNAME record:
-          </p>
+        {/* Registrar Provider Selector Tabs */}
+        <div className="space-y-2">
+          <label className="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+            Choose Your Registrar for Setup Instructions
+          </label>
+          <div className="flex items-center gap-1.5 p-1 bg-stone-950 rounded-2xl border border-stone-800">
+            <button
+              type="button"
+              onClick={() => setSelectedRegistrar('namecheap')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedRegistrar === 'namecheap'
+                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <span>🏷️ Namecheap</span>
+              <span className="text-[9px] uppercase px-1.5 py-0.2 bg-black/30 rounded font-semibold hidden sm:inline">Best Price</span>
+            </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div className="p-2.5 bg-stone-900/80 rounded-xl border border-stone-800 flex items-center justify-between">
-              <div>
-                <span className="text-[9px] uppercase font-bold text-stone-500 block">Type</span>
-                <span className="text-xs font-mono font-bold text-stone-200">CNAME Record</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard('CNAME', 'type')}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
-                title="Copy Type"
-              >
-                {copiedKey === 'type' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedRegistrar('cloudflare')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedRegistrar === 'cloudflare'
+                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <Cloud className="w-3.5 h-3.5" />
+              <span>Cloudflare DNS</span>
+            </button>
 
-            <div className="p-2.5 bg-stone-900/80 rounded-xl border border-stone-800 flex items-center justify-between">
-              <div>
-                <span className="text-[9px] uppercase font-bold text-stone-500 block">Host</span>
-                <span className="text-xs font-mono font-bold text-stone-200">www (or @)</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard('www', 'host')}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
-                title="Copy Host"
-              >
-                {copiedKey === 'host' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              </button>
-            </div>
-
-            <div className="p-2.5 bg-stone-900/80 rounded-xl border border-stone-800 flex items-center justify-between">
-              <div className="truncate pr-1">
-                <span className="text-[9px] uppercase font-bold text-stone-500 block">Value / Target</span>
-                <span className="text-xs font-mono font-bold text-orange-400 truncate block">{targetCname}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(targetCname, 'target')}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors flex-shrink-0"
-                title="Copy Target"
-              >
-                {copiedKey === 'target' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedRegistrar('other')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedRegistrar === 'other'
+                  ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <span>🌐 GoDaddy / Other</span>
+            </button>
           </div>
         </div>
+
+        {/* REGISTRAR 1: NAMECHEAP STEP-BY-STEP INSTRUCTIONS */}
+        {selectedRegistrar === 'namecheap' && (
+          <div className="bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-inner">
+            <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
+              <span className="text-xs font-black text-orange-400 uppercase tracking-wider flex items-center gap-2">
+                <Server className="w-4 h-4 text-orange-400" />
+                <span>Step-by-Step Namecheap Setup (60 Seconds)</span>
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                Recommended
+              </span>
+            </div>
+
+            <ol className="space-y-3 text-xs text-stone-300">
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  1
+                </span>
+                <span>
+                  Buy domain on <strong className="text-white">Namecheap</strong> (e.g. <span className="font-mono text-orange-300 font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span>).
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  2
+                </span>
+                <span>
+                  In Texas Sons Studio, click <strong className="text-white">Custom Domain</strong> in the top bar.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  3
+                </span>
+                <span>
+                  Type <span className="font-mono text-orange-300 font-semibold">{domainInput.trim() || 'trevinoforsheriff.com'}</span> and click <strong className="text-white">Attach Domain</strong>.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  4
+                </span>
+                <div className="space-y-2 w-full">
+                  <span>
+                    In Namecheap Dashboard ➔ <strong className="text-white">Domain List</strong> ➔ <strong className="text-white">Manage</strong> ➔ <strong className="text-white">Advanced DNS</strong>:
+                  </span>
+                  <div className="p-2.5 bg-stone-900/90 rounded-xl border border-stone-800 space-y-2">
+                    <span className="text-[11px] font-bold text-stone-300 block">
+                      Add CNAME Record: Host <strong className="text-orange-400 font-mono">www</strong> (or <strong className="text-orange-400 font-mono">@</strong>), Target <strong className="text-orange-400 font-mono">{targetCname}</strong>:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="p-2 bg-stone-950 rounded-lg border border-stone-800 flex items-center justify-between">
+                        <div>
+                          <span className="text-[9px] uppercase font-bold text-stone-500 block">Type</span>
+                          <span className="text-xs font-mono font-bold text-stone-200">CNAME Record</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('CNAME', 'type')}
+                          className="p-1 rounded text-stone-400 hover:text-white"
+                          title="Copy Type"
+                        >
+                          {copiedKey === 'type' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+
+                      <div className="p-2 bg-stone-950 rounded-lg border border-stone-800 flex items-center justify-between">
+                        <div>
+                          <span className="text-[9px] uppercase font-bold text-stone-500 block">Host</span>
+                          <span className="text-xs font-mono font-bold text-stone-200">www (or @)</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('www', 'host')}
+                          className="p-1 rounded text-stone-400 hover:text-white"
+                          title="Copy Host"
+                        >
+                          {copiedKey === 'host' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+
+                      <div className="p-2 bg-stone-950 rounded-lg border border-stone-800 flex items-center justify-between truncate">
+                        <div className="truncate pr-1">
+                          <span className="text-[9px] uppercase font-bold text-stone-500 block">Target / Value</span>
+                          <span className="text-xs font-mono font-bold text-orange-400 truncate block">{targetCname}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(targetCname, 'target')}
+                          className="p-1 rounded text-stone-400 hover:text-white flex-shrink-0"
+                          title="Copy Target"
+                        >
+                          {copiedKey === 'target' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-orange-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  5
+                </span>
+                <span>
+                  Back in Texas Sons Studio, click <strong className="text-white">Verify</strong>. Once DNS resolves, Cloudflare automatically provisions the SSL certificate and secures the site!
+                </span>
+              </li>
+            </ol>
+          </div>
+        )}
+
+        {/* REGISTRAR 2: CLOUDFLARE INSTRUCTIONS */}
+        {selectedRegistrar === 'cloudflare' && (
+          <div className="bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-inner">
+            <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
+              <span className="text-xs font-black text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                <Cloud className="w-4 h-4 text-blue-400" />
+                <span>Cloudflare DNS / Registrar Setup (Zero-Config)</span>
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                Full DNS Automation
+              </span>
+            </div>
+
+            <ol className="space-y-2.5 text-xs text-stone-300">
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-blue-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  1
+                </span>
+                <span>
+                  If the domain is on Cloudflare (or pointed to Cloudflare Nameservers), type your domain above and click <strong className="text-white">"Attach Domain"</strong>.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-blue-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  2
+                </span>
+                <span>
+                  Cloudflare Pages automatically creates the CNAME record in your Cloudflare DNS Zone and flattens apex root domains (<span className="font-mono text-blue-300 font-semibold">@</span>) automatically.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-blue-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  3
+                </span>
+                <span>
+                  Click <strong className="text-white">"Verify"</strong> below to confirm live status. Universal SSL & Edge CDN are active immediately!
+                </span>
+              </li>
+            </ol>
+          </div>
+        )}
+
+        {/* REGISTRAR 3: GODADDY / OTHER INSTRUCTIONS */}
+        {selectedRegistrar === 'other' && (
+          <div className="bg-stone-950 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-inner">
+            <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
+              <span className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                <Globe className="w-4 h-4 text-amber-400" />
+                <span>GoDaddy / Google Domains / Other Registrars</span>
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Standard CNAME
+              </span>
+            </div>
+
+            <ol className="space-y-2.5 text-xs text-stone-300">
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-amber-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  1
+                </span>
+                <span>
+                  In your registrar's DNS Management panel, add a <strong className="text-white">CNAME record</strong>.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-amber-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  2
+                </span>
+                <span>
+                  Set Host to <strong className="text-amber-400 font-mono">www</strong> (or <strong className="text-amber-400 font-mono">@</strong>) and Points to / Target to <strong className="text-amber-400 font-mono">{targetCname}</strong>.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-2.5">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 border border-stone-700 text-amber-400 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                  3
+                </span>
+                <span>
+                  Click <strong className="text-white">Verify</strong> below to activate automated SSL.
+                </span>
+              </li>
+            </ol>
+          </div>
+        )}
 
         {/* Attached Custom Domains List */}
         <div className="space-y-2.5">
@@ -292,7 +481,7 @@ export default function CustomDomainModal({
               type="button"
               onClick={fetchDomains}
               disabled={isLoading}
-              className="text-[10px] font-bold text-stone-400 hover:text-orange-400 flex items-center gap-1 transition-colors"
+              className="text-[10px] font-bold text-stone-400 hover:text-orange-400 flex items-center gap-1 transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
               <span>Refresh Status</span>
