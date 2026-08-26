@@ -449,6 +449,72 @@ async function uploadDeployment(
   return createDeployment(accountId, apiToken, projectName, manifest);
 }
 
+async function addPagesDomain(
+  accountId: string,
+  apiToken: string,
+  projectName: string,
+  domainName: string
+): Promise<any> {
+  return cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/domains`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: domainName }),
+  });
+}
+
+async function listPagesDomains(
+  accountId: string,
+  apiToken: string,
+  projectName: string
+): Promise<any[]> {
+  try {
+    const res = await cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/domains`, {
+      headers: { Authorization: `Bearer ${apiToken}` },
+    });
+    return Array.isArray(res) ? res : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getPagesDomainStatus(
+  accountId: string,
+  apiToken: string,
+  projectName: string,
+  domainName: string
+): Promise<any> {
+  return cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/domains/${domainName}`, {
+    headers: { Authorization: `Bearer ${apiToken}` },
+  });
+}
+
+async function deletePagesDomain(
+  accountId: string,
+  apiToken: string,
+  projectName: string,
+  domainName: string
+): Promise<any> {
+  return cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/domains/${domainName}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${apiToken}` },
+  });
+}
+
+async function listPagesDeployments(
+  accountId: string,
+  apiToken: string,
+  projectName: string
+): Promise<any[]> {
+  try {
+    const res = await cfFetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/deployments`, {
+      headers: { Authorization: `Bearer ${apiToken}` },
+    });
+    return Array.isArray(res) ? res : [];
+  } catch {
+    return [];
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
@@ -1149,6 +1215,149 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
       });
     } catch (error: any) {
       console.error('Deploy error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Attach Custom Domain (e.g. from Namecheap) to Cloudflare Pages Project
+  app.post("/api/domains/add", async (req, res) => {
+    try {
+      const { projectName, domainName } = req.body;
+      if (!projectName || !domainName) {
+        return res.status(400).json({ success: false, error: "projectName and domainName are required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const slug = sanitizeProjectName(projectName);
+      const cleanDomain = domainName.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+
+      const domainResult = await addPagesDomain(accountId, apiToken, slug, cleanDomain);
+
+      res.json({
+        success: true,
+        domain: domainResult,
+        domainName: cleanDomain,
+        targetCname: `${slug}.pages.dev`,
+        dnsInstructions: {
+          type: 'CNAME',
+          host: cleanDomain.startsWith('www.') ? 'www' : '@',
+          target: `${slug}.pages.dev`,
+          ttl: 'Automatic',
+          note: 'Add this CNAME record in your domain registrar (e.g. Namecheap Advanced DNS) to point to Cloudflare Pages.'
+        }
+      });
+    } catch (error: any) {
+      console.error('Add domain error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // List Custom Domains attached to a project
+  app.get("/api/domains/list", async (req, res) => {
+    try {
+      const projectName = req.query.project as string;
+      if (!projectName) {
+        return res.status(400).json({ success: false, error: "project query parameter is required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const slug = sanitizeProjectName(projectName);
+      const domains = await listPagesDomains(accountId, apiToken, slug);
+
+      res.json({
+        success: true,
+        projectName: slug,
+        domains: domains.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          status: d.status,
+          verification_data: d.verification_data,
+          ssl: d.ssl,
+          certificate_authority: d.certificate_authority,
+          created_on: d.created_on
+        }))
+      });
+    } catch (error: any) {
+      console.error('List domains error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Verify DNS and SSL status for a custom domain
+  app.get("/api/domains/verify", async (req, res) => {
+    try {
+      const projectName = req.query.project as string;
+      const domainName = req.query.domain as string;
+      if (!projectName || !domainName) {
+        return res.status(400).json({ success: false, error: "project and domain query parameters are required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const slug = sanitizeProjectName(projectName);
+      const cleanDomain = domainName.trim().toLowerCase();
+
+      const status = await getPagesDomainStatus(accountId, apiToken, slug, cleanDomain);
+
+      res.json({
+        success: true,
+        domain: status,
+        isLive: status?.status === 'active' || status?.status === 'ready'
+      });
+    } catch (error: any) {
+      console.error('Verify domain error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Remove a Custom Domain
+  app.delete("/api/domains/remove", async (req, res) => {
+    try {
+      const projectName = req.query.project as string || req.body?.projectName;
+      const domainName = req.query.domain as string || req.body?.domainName;
+      if (!projectName || !domainName) {
+        return res.status(400).json({ success: false, error: "project and domain are required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const slug = sanitizeProjectName(projectName);
+      const cleanDomain = domainName.trim().toLowerCase();
+
+      await deletePagesDomain(accountId, apiToken, slug, cleanDomain);
+
+      res.json({ success: true, removed: cleanDomain });
+    } catch (error: any) {
+      console.error('Remove domain error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Get Deployment History for a Project
+  app.get("/api/deployments/history", async (req, res) => {
+    try {
+      const projectName = req.query.project as string;
+      if (!projectName) {
+        return res.status(400).json({ success: false, error: "project query parameter is required" });
+      }
+
+      const { accountId, apiToken } = getCloudflareCredentials();
+      const slug = sanitizeProjectName(projectName);
+      const deployments = await listPagesDeployments(accountId, apiToken, slug);
+
+      res.json({
+        success: true,
+        projectName: slug,
+        deployments: deployments.slice(0, 10).map((dep: any) => ({
+          id: dep.id,
+          url: dep.url,
+          environment: dep.environment,
+          created_on: dep.created_on,
+          latest_stage: dep.latest_stage,
+          aliases: dep.aliases,
+          is_current: dep.is_current
+        }))
+      });
+    } catch (error: any) {
+      console.error('Deployment history error:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   });

@@ -48,7 +48,9 @@ import {
   Search,
   Bell,
   Bookmark,
-  Zap
+  Zap,
+  Globe,
+  History
 } from 'lucide-react';
 import { 
   NavbarBlock, 
@@ -86,6 +88,8 @@ import {
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake } from '../../types';
 import BlueprintFormPanel from './BlueprintFormPanel';
+import CustomDomainModal from '../CustomDomainModal';
+import DeploymentHistoryModal from '../DeploymentHistoryModal';
 
 interface AgentState {
   step: 'idle' | 'scouting' | 'architecting' | 'building' | 'ready';
@@ -463,6 +467,12 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
   const [isModelSettingsOpen, setIsModelSettingsOpen] = useState(false);
   const [isHandoffOpen, setIsHandoffOpen] = useState(false);
   const [isAuditOpen, setIsAuditOpen] = useState(false);
+  const [isCustomDomainOpen, setIsCustomDomainOpen] = useState(false);
+  const [isDeploymentHistoryOpen, setIsDeploymentHistoryOpen] = useState(false);
+  const [activeDeployedUrl, setActiveDeployedUrl] = useState<string>(() => {
+    const slug = project.profile?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || '';
+    return slug ? `https://${slug}.pages.dev` : '';
+  });
 
   const handleSelectModel = (modelId: string) => {
     setSelectedModel(modelId);
@@ -853,6 +863,10 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
         console.warn('Auto-save to projects failed:', dbErr);
       }
 
+      if (data.url) {
+        setActiveDeployedUrl(data.url);
+      }
+
       setAgentState({
         step: 'ready',
         message: `Deployed successfully! Live at: ${data.url}`,
@@ -1082,13 +1096,42 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500 border-2 border-stone-900" />
           </button>
 
+          {/* Live Deployment Status & Edge Hub Badge */}
+          <button
+            type="button"
+            onClick={() => setIsDeploymentHistoryOpen(true)}
+            className="hidden lg:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group"
+            title="View Live Deployment Status & History"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[140px] sm:max-w-[200px]">
+              {activeDeployedUrl.replace(/^https?:\/\//, '') || `${project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
+            </span>
+            <History className="w-3 h-3 text-stone-500 group-hover:text-orange-400 transition-colors" />
+          </button>
+
+          {/* Custom Domain Shortcut */}
+          <button
+            type="button"
+            onClick={() => setIsCustomDomainOpen(true)}
+            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
+            title="Connect Namecheap or Custom Domain"
+          >
+            <Globe className="w-3.5 h-3.5 text-orange-400" />
+            <span>Custom Domain</span>
+          </button>
+
           {/* Deploy Button */}
           <button
             onClick={handleDeploySite}
-            className="bg-orange-600 hover:bg-orange-500 text-white px-4 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 hover:scale-105"
+            disabled={agentState.step === 'building'}
+            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-4 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 hover:scale-105 cursor-pointer"
           >
             <UploadCloud className="w-4 h-4" />
-            <span>Deploy</span>
+            <span>{agentState.step === 'building' ? 'Deploying...' : 'Deploy'}</span>
           </button>
 
           {/* Fullscreen Toggle */}
@@ -2097,6 +2140,26 @@ export default function ClientSite() {
         onClose={() => setIsProposalModalOpen(false)}
         snapshot={project}
         onApplySnapshot={(updatedSnapshot) => setProject(updatedSnapshot)}
+      />
+
+      <CustomDomainModal
+        isOpen={isCustomDomainOpen}
+        onClose={() => setIsCustomDomainOpen(false)}
+        projectName={project.profile.name}
+        currentDomain={activeDeployedUrl}
+        onDomainUpdated={(domain) => {
+          if (domain) setActiveDeployedUrl(`https://${domain}`);
+        }}
+      />
+
+      <DeploymentHistoryModal
+        isOpen={isDeploymentHistoryOpen}
+        onClose={() => setIsDeploymentHistoryOpen(false)}
+        projectName={project.profile.name}
+        activeUrl={activeDeployedUrl}
+        onOpenCustomDomains={() => setIsCustomDomainOpen(true)}
+        onRedeploy={handleDeploySite}
+        isDeploying={agentState.step === 'building'}
       />
 
     </div>
