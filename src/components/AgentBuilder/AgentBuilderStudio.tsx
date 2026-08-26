@@ -1099,18 +1099,6 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             <Code2 className="w-3.5 h-3.5" />
             <span className="hidden md:inline">React Code</span>
           </button>
-
-          <button
-            onClick={() => setActiveTab('blueprint')}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeTab === 'blueprint'
-                ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
-                : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Blueprint</span>
-          </button>
         </div>
 
         {/* Right Section: Devices, Live Status Badge, Custom Domain, Deploy, Model */}

@@ -3,51 +3,117 @@ import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
   Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon,
-  Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal
+  Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal,
+  LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
 import { SUPPORTED_MODELS } from './aiModelConfig';
 import type { BusinessProfile, ServiceItem, TestimonialItem } from '../../templates/blocks';
 
-// ── Vertical preset config ────────────────────────────────────────────────────
-const VERTICALS = [
-  { 
-    id: 'campaign', 
-    label: 'Campaign & Leadership', 
-    icon: ShieldCheck, 
-    theme: 'campaign-navy' as const, 
-    accentColor: '#C5A059', 
+// ── Layout Archetypes ────────────────────────────────────────────────────────
+export interface ArchetypeOption {
+  id: string;
+  name: string;
+  badge: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  heroVariant: 'split' | 'bento' | 'centered';
+  recommendedTheme: ProjectSnapshot['theme'];
+  primaryColor: string;
+  accentColor: string;
+  category: string;
+}
+
+export const ARCHETYPES: ArchetypeOption[] = [
+  {
+    id: 'civic',
+    name: 'Civic Authority',
+    badge: 'Commanding',
+    icon: ShieldCheck,
+    description: 'Split portrait hero, verified credential badges, and direct civic voting access.',
+    heroVariant: 'split',
+    recommendedTheme: 'campaign-navy',
     primaryColor: '#00081e',
-    badge: 'Civic Authority'
+    accentColor: '#C5A059',
+    category: 'Campaign & Leadership',
   },
-  { 
-    id: 'trades', 
-    label: 'Commercial Trades', 
-    icon: Briefcase, 
-    theme: 'dark' as const, 
-    accentColor: '#f97316', 
+  {
+    id: 'bento',
+    name: 'Kinetic Bento Grid',
+    badge: 'High-Density',
+    icon: LayoutGrid,
+    description: 'Asymmetric modular cards, live metric counters, and dynamic proof highlights.',
+    heroVariant: 'bento',
+    recommendedTheme: 'dark',
     primaryColor: '#0c0a09',
-    badge: 'High Conversion'
+    accentColor: '#f97316',
+    category: 'Commercial Trades',
   },
-  { 
-    id: 'beauty', 
-    label: 'Luxury Beauty & Spa', 
-    icon: Heart, 
-    theme: 'luxury' as const, 
-    accentColor: '#d97706', 
+  {
+    id: 'editorial',
+    name: 'Editorial Luxury',
+    badge: 'Chic Aesthetic',
+    icon: Sparkles,
+    description: 'Generous whitespace, metallic champagne accents, and curated lookbook drawers.',
+    heroVariant: 'centered',
+    recommendedTheme: 'luxury',
     primaryColor: '#1c1917',
-    badge: 'Editorial Chic'
+    accentColor: '#d97706',
+    category: 'Luxury Beauty & Spa',
   },
-  { 
-    id: 'bbq', 
-    label: 'BBQ & Smokehouse', 
-    icon: UtensilsCrossed, 
-    theme: 'crimson-bold' as const, 
-    accentColor: '#dc2626', 
+  {
+    id: 'bold-craft',
+    name: 'Bold Texas Craft',
+    badge: 'High-Impact',
+    icon: Flame,
+    description: 'Rich dark textures, fiery crimson accents, and bold authentic narrative storytelling.',
+    heroVariant: 'split',
+    recommendedTheme: 'crimson-bold',
     primaryColor: '#2b0c0d',
-    badge: 'Bold Flavor'
+    accentColor: '#dc2626',
+    category: 'BBQ & Smokehouse',
+  }
+];
+
+// ── Signature Interactive Features ──────────────────────────────────────────
+export interface SignatureFeature {
+  id: string;
+  name: string;
+  tag: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+}
+
+export const SIGNATURE_FEATURES: SignatureFeature[] = [
+  {
+    id: 'voting-guide',
+    name: 'Interactive Voting Machine Simulator',
+    tag: 'Civic Superpower',
+    icon: Vote,
+    description: 'Step-by-step touch screen simulator, sample ballot review, and precinct finder.',
   },
-] as const;
+  {
+    id: 'appointment-drawer',
+    name: 'Live Appointment & Booking Drawer',
+    tag: 'Client Conversion',
+    icon: CalendarCheck,
+    description: 'Frictionless service picker, time slot selector, and automated lead capture.',
+  },
+  {
+    id: 'quote-calculator',
+    name: 'Instant Scope & Estimate Calculator',
+    tag: 'Trades & B2B',
+    icon: Calculator,
+    description: 'Interactive tier selection with real-time budget ranges and project specs.',
+  },
+  {
+    id: 'proof-wall',
+    name: 'Verified Authority & Proof Wall',
+    tag: 'Reputation',
+    icon: Award,
+    description: 'Verified badges, video quotes, and authenticated community endorsements.',
+  }
+];
 
 // ── Exported types ────────────────────────────────────────────────────────────
 export interface InstantFormData {
@@ -66,6 +132,8 @@ export interface InstantFormData {
   accentColor: string;
   treasurerName: string;
   heroVariant: 'split' | 'bento' | 'centered';
+  selectedArchetype: string;
+  selectedFeature: string;
   pillar1title: string; pillar1desc: string;
   pillar2title: string; pillar2desc: string;
   pillar3title: string; pillar3desc: string;
@@ -84,6 +152,8 @@ const DEFAULT_FORM: InstantFormData = {
   heroImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80',
   theme: 'campaign-navy', primaryColor: '#00081e', accentColor: '#C5A059',
   treasurerName: 'Joseph S. Boyle, CPA', heroVariant: 'split',
+  selectedArchetype: 'civic',
+  selectedFeature: 'voting-guide',
   pillar1title: 'Violent Crime Interdiction', pillar1desc: 'Expanding rapid patrol response times and specialized narcotics task force units across rural county highways.',
   pillar2title: 'Landowner Rights & Anti-Poaching', pillar2desc: 'Direct deputy coordination with local ranch managers to safeguard property borders and agricultural livestock.',
   pillar3title: 'Fiscal Responsibility & Grants', pillar3desc: 'Securing state & federal law enforcement equipment grants without burdening local county taxpayers.',
@@ -112,6 +182,8 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     accentColor: snap.profile.accentColor || '#C5A059',
     treasurerName: snap.profile.treasurerName || '',
     heroVariant: snap.heroVariant || 'split',
+    selectedArchetype: snap.theme === 'dark' ? 'bento' : snap.theme === 'luxury' ? 'editorial' : snap.theme === 'crimson-bold' ? 'bold-craft' : 'civic',
+    selectedFeature: snap.theme === 'campaign-navy' || snap.theme === 'campaign-judicial' ? 'voting-guide' : 'appointment-drawer',
     pillar1title: snap.services?.[0]?.title || '',
     pillar1desc: snap.services?.[0]?.description || '',
     pillar2title: snap.services?.[1]?.title || '',
@@ -192,7 +264,7 @@ interface BlueprintFormPanelProps {
   onSelectModel?: (modelId: string) => void;
 }
 
-type TabKey = 'brand' | 'pillars' | 'badges' | 'endorsements' | 'theme' | 'all';
+type TabKey = 'archetype' | 'brand' | 'pillars' | 'badges' | 'feature' | 'theme' | 'all';
 
 export default function BlueprintFormPanel({
   activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy,
@@ -202,7 +274,7 @@ export default function BlueprintFormPanel({
     return activeSnapshot ? snapshotToForm(activeSnapshot) : DEFAULT_FORM;
   });
 
-  const [activeTab, setActiveTab] = useState<TabKey>('brand');
+  const [activeTab, setActiveTab] = useState<TabKey>('archetype');
 
   // Synchronize when the user switches snapshots/presets in the Studio
   useEffect(() => {
@@ -214,13 +286,15 @@ export default function BlueprintFormPanel({
   const set = (key: keyof InstantFormData, val: string) =>
     setForm(prev => ({ ...prev, [key]: val }));
 
-  const applyVertical = (v: typeof VERTICALS[number]) => {
+  const applyArchetype = (arch: ArchetypeOption) => {
     setForm(prev => ({
       ...prev,
-      theme: v.theme,
-      primaryColor: v.primaryColor,
-      accentColor: v.accentColor,
-      category: v.label,
+      selectedArchetype: arch.id,
+      theme: arch.recommendedTheme,
+      heroVariant: arch.heroVariant,
+      primaryColor: arch.primaryColor,
+      accentColor: arch.accentColor,
+      category: arch.category,
     }));
   };
 
@@ -231,7 +305,7 @@ export default function BlueprintFormPanel({
 
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
 
-  // ── Stitch Component Primitives ────────────────────────────────────────────
+  // ── UI Card Primitive ──────────────────────────────────────────────────────
   const FormCard = ({ title, icon: Icon, badge, children }: { title: string; icon: React.ComponentType<{ className?: string }>; badge?: string; children: React.ReactNode }) => (
     <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-4 space-y-3.5 shadow-md backdrop-blur-sm">
       <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
@@ -254,7 +328,7 @@ export default function BlueprintFormPanel({
   );
 
   const InputField = ({ label, id, placeholder, value, onChange, icon: Icon, type = 'text' }: {
-    label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; icon?: React.ComponentType<{ className?: string }>; type?: string; key?: React.Key;
+    label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; icon?: React.ComponentType<{ className?: string }>; type?: string;
   }) => (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
@@ -309,110 +383,166 @@ export default function BlueprintFormPanel({
   return (
     <div className="w-full space-y-4 px-3.5 py-3 pb-32">
 
-      {/* ── Stitch Vertical Presets ──────────────────────────────────────── */}
-      <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-3.5 shadow-md">
-        <div className="flex items-center justify-between mb-2.5">
-          <p className="text-[11px] font-bold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-orange-500" /> Vertical Presets
-          </p>
-          <span className="text-[10px] text-orange-400 font-semibold">1-Click Layouts</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {VERTICALS.map(v => {
-            const active = form.theme === v.theme;
-            return (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => applyVertical(v)}
-                className={`flex flex-col text-left p-2.5 rounded-xl border transition-all relative overflow-hidden ${
-                  active
-                    ? 'border-orange-500 bg-orange-500/10 text-white shadow-sm shadow-orange-500/20 ring-1 ring-orange-500/40'
-                    : 'border-stone-800 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center">
-                    <v.icon className={`w-3.5 h-3.5 ${active ? 'text-orange-400' : 'text-stone-400'}`} />
-                  </div>
-                  {active && <Check className="w-3.5 h-3.5 text-orange-400" />}
-                </div>
-                <span className="text-xs font-bold truncate text-stone-100">{v.label}</span>
-                <span className="text-[9px] text-stone-500 mt-0.5">{v.badge}</span>
-              </button>
-            );
-          })}
+      {/* ── Brand DNA & Experience Director Header ───────────────────────── */}
+      <div className="flex items-center justify-between px-1">
+        <div>
+          <h2 className="text-xs font-black uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+            <span>Brand DNA & Experience Director</span>
+          </h2>
+          <p className="text-[10px] text-stone-500">Generative Layouts · Signature Features · Motion</p>
         </div>
       </div>
 
       {/* ── Segmented Navigation Tabs ────────────────────────────────────── */}
-      <div className="flex items-center gap-1 p-1 bg-stone-950 rounded-xl border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md">
+      <div className="flex items-center gap-1 p-1 bg-stone-950 rounded-xl border border-stone-800 sticky top-0 z-20 shadow-lg backdrop-blur-md overflow-x-auto no-scrollbar">
+        <button
+          type="button"
+          onClick={() => setActiveTab('archetype')}
+          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+            activeTab === 'archetype' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          }`}
+        >
+          <LayoutGrid className="w-3 h-3" />
+          <span>Archetype</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('feature')}
+          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
+            activeTab === 'feature' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+          }`}
+        >
+          <Zap className="w-3 h-3" />
+          <span>Feature</span>
+        </button>
         <button
           type="button"
           onClick={() => setActiveTab('brand')}
-          className={`flex-1 py-2 px-1.5 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'brand' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
         >
-          <Building2 className="w-3.5 h-3.5" />
-          <span>Brand</span>
+          <Building2 className="w-3 h-3" />
+          <span>Identity</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('pillars')}
-          className={`flex-1 py-2 px-1.5 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'pillars' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
         >
-          <ShieldCheck className="w-3.5 h-3.5" />
+          <ShieldCheck className="w-3 h-3" />
           <span>Pillars</span>
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('badges')}
-          className={`flex-1 py-2 px-1.5 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
-            activeTab === 'badges' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
-          }`}
-        >
-          <Award className="w-3.5 h-3.5" />
-          <span>Badges</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('endorsements')}
-          className={`flex-1 py-2 px-1.5 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
-            activeTab === 'endorsements' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
-          }`}
-        >
-          <MessageSquareQuote className="w-3.5 h-3.5" />
-          <span>Quotes</span>
-        </button>
-        <button
-          type="button"
           onClick={() => setActiveTab('theme')}
-          className={`flex-1 py-2 px-1.5 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'theme' ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/30' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
         >
-          <Palette className="w-3.5 h-3.5" />
+          <Palette className="w-3 h-3" />
           <span>Style</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('all')}
-          className={`py-2 px-2 rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all ${
+          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
             activeTab === 'all' ? 'bg-stone-800 text-orange-400 border border-stone-700' : 'text-stone-500 hover:text-stone-300'
           }`}
           title="Show all sections"
         >
-          <Sliders className="w-3.5 h-3.5" />
-          <span>All</span>
+          <Sliders className="w-3 h-3" />
         </button>
       </div>
 
-      {/* ── SECTION 1: Brand & Bio ────────────────────────────────────────── */}
+      {/* ── TAB 1: Layout Archetype & Visual Grammar ───────────────────────── */}
+      {(activeTab === 'archetype' || activeTab === 'all') && (
+        <FormCard title="Visual Layout Archetype" icon={LayoutGrid} badge="Spatial Grammar">
+          <p className="text-[11px] text-stone-400 leading-relaxed">
+            Select a custom design grammar tailored to your client's industry energy.
+          </p>
+          <div className="grid grid-cols-1 gap-2.5">
+            {ARCHETYPES.map(arch => {
+              const active = form.selectedArchetype === arch.id || form.theme === arch.recommendedTheme;
+              return (
+                <div
+                  key={arch.id}
+                  onClick={() => applyArchetype(arch)}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
+                    active
+                      ? 'border-orange-500 bg-orange-500/10 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      : 'border-stone-800 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center">
+                        <arch.icon className={`w-4 h-4 ${active ? 'text-orange-400' : 'text-stone-400'}`} />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-white">{arch.name}</span>
+                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">
+                          {arch.badge}
+                        </span>
+                      </div>
+                    </div>
+                    {active && <Check className="w-4 h-4 text-orange-400" />}
+                  </div>
+                  <p className="text-[11px] text-stone-400 mt-1.5 pl-9 leading-relaxed">{arch.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </FormCard>
+      )}
+
+      {/* ── TAB 2: Signature Interactive Superpower ────────────────────────── */}
+      {(activeTab === 'feature' || activeTab === 'all') && (
+        <FormCard title="Signature Interactive Feature" icon={Zap} badge="Client Superpower">
+          <p className="text-[11px] text-stone-400 leading-relaxed">
+            Give this client site a signature interactive feature that converts visitors instantly.
+          </p>
+          <div className="grid grid-cols-1 gap-2.5">
+            {SIGNATURE_FEATURES.map(feat => {
+              const active = form.selectedFeature === feat.id;
+              return (
+                <div
+                  key={feat.id}
+                  onClick={() => set('selectedFeature', feat.id)}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
+                    active
+                      ? 'border-orange-500 bg-orange-500/10 text-white shadow-md shadow-orange-500/20 ring-1 ring-orange-500/40'
+                      : 'border-stone-800 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center">
+                        <feat.icon className={`w-4 h-4 ${active ? 'text-orange-400' : 'text-stone-400'}`} />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-white">{feat.name}</span>
+                        <span className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">
+                          {feat.tag}
+                        </span>
+                      </div>
+                    </div>
+                    {active && <Check className="w-4 h-4 text-orange-400" />}
+                  </div>
+                  <p className="text-[11px] text-stone-400 mt-1.5 pl-9 leading-relaxed">{feat.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </FormCard>
+      )}
+
+      {/* ── TAB 3: Identity & Story ────────────────────────────────────────── */}
       {(activeTab === 'brand' || activeTab === 'all') && (
-        <FormCard title="Candidate / Business Identity" icon={Building2} badge="Primary Info">
+        <FormCard title="Candidate / Business Identity" icon={Building2} badge="Primary Bio">
           <InputField 
             label="Candidate or Business Name" 
             id="name" 
@@ -430,7 +560,7 @@ export default function BlueprintFormPanel({
             icon={Sparkles}
           />
           <TextareaField 
-            label="Executive Bio / About Overview" 
+            label="Executive Bio / Story Narrative" 
             id="description" 
             placeholder="Provide a compelling 2-3 sentence overview..." 
             value={form.description} 
@@ -449,7 +579,7 @@ export default function BlueprintFormPanel({
             <InputField 
               label="Official Email" 
               id="email" 
-              placeholder="campaign@example.com" 
+              placeholder="campaign@domain.com" 
               value={form.email} 
               onChange={v => set('email', v)} 
               icon={Mail}
@@ -457,7 +587,7 @@ export default function BlueprintFormPanel({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <InputField 
-              label="HQ Location / City" 
+              label="HQ Address / County" 
               id="address" 
               placeholder="Jourdanton, TX 78026" 
               value={form.address} 
@@ -465,7 +595,7 @@ export default function BlueprintFormPanel({
               icon={MapPin}
             />
             <InputField 
-              label="Office Hours" 
+              label="Operating / Campaign Hours" 
               id="hours" 
               placeholder="Mon – Sat: 8AM – 6PM" 
               value={form.hours} 
@@ -474,182 +604,173 @@ export default function BlueprintFormPanel({
             />
           </div>
           <InputField 
-            label="Hero Portrait Image URL" 
+            label="Hero Image URL" 
             id="heroImage" 
-            placeholder="https://images.unsplash.com/..." 
+            placeholder="https://..." 
             value={form.heroImage} 
             onChange={v => set('heroImage', v)} 
             icon={ImageIcon}
           />
           {isCampaign && (
-            <div className="p-3 bg-stone-950 rounded-xl border border-stone-800 space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-stone-200">
-                <Scale className="w-3.5 h-3.5 text-orange-400" />
-                <span>Campaign Legal Treasurer Disclosure</span>
-              </div>
-              <InputField 
-                label="Treasurer Name" 
-                id="treasurerName" 
-                placeholder="Joseph S. Boyle, CPA" 
-                value={form.treasurerName} 
-                onChange={v => set('treasurerName', v)} 
-              />
-              <p className="text-[10px] text-stone-500">Auto-injected into legal disclaimers and write-in voting guidelines.</p>
-            </div>
+            <InputField 
+              label="Campaign Treasurer Name" 
+              id="treasurerName" 
+              placeholder="Joseph S. Boyle, CPA" 
+              value={form.treasurerName} 
+              onChange={v => set('treasurerName', v)} 
+              icon={Scale}
+            />
           )}
         </FormCard>
       )}
 
-      {/* ── SECTION 2: Platform Pillars / Services ─────────────────────────── */}
+      {/* ── TAB 4: Core Pillars & Platform ─────────────────────────────────── */}
       {(activeTab === 'pillars' || activeTab === 'all') && (
-        <FormCard title="Platform Pillars & Core Services" icon={ShieldCheck} badge="3 Pillars">
+        <FormCard title={isCampaign ? "3 Campaign Pillars" : "3 Core Services"} icon={ShieldCheck} badge="Key Focus">
           <div className="space-y-3">
-            {([
-              ['pillar1title', 'pillar1desc', 'Pillar #1 (Primary)'],
-              ['pillar2title', 'pillar2desc', 'Pillar #2'],
-              ['pillar3title', 'pillar3desc', 'Pillar #3'],
-            ] as const).map(([tk, dk, label]) => (
-              <div key={tk} className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-                <InputField 
-                  label={`${label} Headline`} 
-                  id={tk} 
-                  placeholder="e.g. Violent Crime Interdiction" 
-                  value={form[tk]} 
-                  onChange={v => set(tk, v)} 
-                />
-                <TextareaField 
-                  label="Detailed Platform Narrative" 
-                  id={dk} 
-                  placeholder="What this initiative accomplishes for Texas voters..." 
-                  value={form[dk]} 
-                  onChange={v => set(dk, v)} 
-                  rows={2}
-                />
-              </div>
-            ))}
-          </div>
-        </FormCard>
-      )}
-
-      {/* ── SECTION 3: Proof Badges & Credentials ─────────────────────────── */}
-      {(activeTab === 'badges' || activeTab === 'all') && (
-        <FormCard title="Proof Badges & Verification" icon={Award} badge="4 Credentials">
-          <InputField 
-            label="Proof Banner Highlight Text" 
-            id="proofBadgeText" 
-            placeholder="Official 2026 Endorsements · Law Enforcement Verified" 
-            value={form.proofBadgeText} 
-            onChange={v => set('proofBadgeText', v)} 
-            icon={Sparkles}
-          />
-          <div className="grid grid-cols-2 gap-2">
-            {([
-              ['badge1', 'Badge #1'],
-              ['badge2', 'Badge #2'],
-              ['badge3', 'Badge #3'],
-              ['badge4', 'Badge #4']
-            ] as const).map(([bk, label]) => (
+            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
+              <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
               <InputField 
-                key={bk}
-                label={label} 
-                id={bk} 
-                placeholder={`e.g. 28+ Years Experience`} 
-                value={form[bk]} 
-                onChange={v => set(bk, v)} 
+                label="Pillar 1 Title" 
+                id="p1title" 
+                placeholder="Violent Crime Interdiction" 
+                value={form.pillar1title} 
+                onChange={v => set('pillar1title', v)} 
               />
-            ))}
+              <TextareaField 
+                label="Pillar 1 Action Plan" 
+                id="p1desc" 
+                placeholder="Describe specific actions and promises..." 
+                value={form.pillar1desc} 
+                onChange={v => set('pillar1desc', v)} 
+                rows={2}
+              />
+            </div>
+
+            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Priority #2</span>
+              <InputField 
+                label="Pillar 2 Title" 
+                id="p2title" 
+                placeholder="Landowner Rights & Anti-Poaching" 
+                value={form.pillar2title} 
+                onChange={v => set('pillar2title', v)} 
+              />
+              <TextareaField 
+                label="Pillar 2 Action Plan" 
+                id="p2desc" 
+                placeholder="Describe specific actions and promises..." 
+                value={form.pillar2desc} 
+                onChange={v => set('pillar2desc', v)} 
+                rows={2}
+              />
+            </div>
+
+            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Priority #3</span>
+              <InputField 
+                label="Pillar 3 Title" 
+                id="p3title" 
+                placeholder="Fiscal Responsibility & Grants" 
+                value={form.pillar3title} 
+                onChange={v => set('pillar3title', v)} 
+              />
+              <TextareaField 
+                label="Pillar 3 Action Plan" 
+                id="p3desc" 
+                placeholder="Describe specific actions and promises..." 
+                value={form.pillar3desc} 
+                onChange={v => set('pillar3desc', v)} 
+                rows={2}
+              />
+            </div>
           </div>
         </FormCard>
       )}
 
-      {/* ── SECTION 4: Endorsements & Quotes ───────────────────────────────── */}
-      {(activeTab === 'endorsements' || activeTab === 'all') && (
-        <FormCard title="Endorsements & Testimonials" icon={MessageSquareQuote} badge="3 Quotes">
-          <div className="space-y-3.5">
-            {([
-              ['endorsement1quote', 'endorsement1author', 'endorsement1role', 'Quote #1'],
-              ['endorsement2quote', 'endorsement2author', 'endorsement2role', 'Quote #2'],
-              ['endorsement3quote', 'endorsement3author', 'endorsement3role', 'Quote #3'],
-            ] as const).map(([qk, ak, rk, label], idx) => (
-              <div key={qk} className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-                <TextareaField 
-                  label={`${label} Testimonial`} 
-                  id={qk} 
-                  placeholder={`"A leader of unmatched integrity and decisive action..."`} 
-                  value={form[qk]} 
-                  onChange={v => set(qk, v)} 
-                  rows={2}
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <InputField 
-                    label="Author / Endorser" 
-                    id={ak} 
-                    placeholder="Judge Ronald Sterling" 
-                    value={form[ak]} 
-                    onChange={v => set(ak, v)} 
-                  />
-                  <InputField 
-                    label="Official Title / Role" 
-                    id={rk} 
-                    placeholder="Presiding County Magistrate" 
-                    value={form[rk]} 
-                    onChange={v => set(rk, v)} 
-                  />
-                </div>
+      {/* ── TAB 5: Authority Proof & Endorsements ───────────────────────────── */}
+      {(activeTab === 'badges' || activeTab === 'all') && (
+        <div className="space-y-4">
+          <FormCard title="Authority Badges" icon={Award} badge="4 Badges">
+            <InputField 
+              label="Proof Pill Subtitle / Organization Verification" 
+              id="proofBadgeText" 
+              placeholder="Official 2026 Endorsements · Certified" 
+              value={form.proofBadgeText} 
+              onChange={v => set('proofBadgeText', v)} 
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <InputField label="Badge 1" id="b1" placeholder="28+ Yrs Experience" value={form.badge1} onChange={v => set('badge1', v)} />
+              <InputField label="Badge 2" id="b2" placeholder="Master Peace Officer" value={form.badge2} onChange={v => set('badge2', v)} />
+              <InputField label="Badge 3" id="b3" placeholder="Deputies Backing" value={form.badge3} onChange={v => set('badge3', v)} />
+              <InputField label="Badge 4" id="b4" placeholder="Lifelong Resident" value={form.badge4} onChange={v => set('badge4', v)} />
+            </div>
+          </FormCard>
+
+          <FormCard title="Verified Quotes & Endorsements" icon={MessageSquareQuote} badge="Social Proof">
+            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
+              <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">Endorsement #1</span>
+              <TextareaField label="Quote" id="e1q" placeholder="Enter endorsement quote..." value={form.endorsement1quote} onChange={v => set('endorsement1quote', v)} rows={2} />
+              <div className="grid grid-cols-2 gap-2">
+                <InputField label="Author Name" id="e1a" placeholder="Judge Ronald Sterling" value={form.endorsement1author} onChange={v => set('endorsement1author', v)} />
+                <InputField label="Role / Title" id="e1r" placeholder="Presiding Magistrate" value={form.endorsement1role} onChange={v => set('endorsement1role', v)} />
               </div>
-            ))}
-          </div>
-        </FormCard>
+            </div>
+
+            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Endorsement #2</span>
+              <TextareaField label="Quote" id="e2q" placeholder="Enter endorsement quote..." value={form.endorsement2quote} onChange={v => set('endorsement2quote', v)} rows={2} />
+              <div className="grid grid-cols-2 gap-2">
+                <InputField label="Author Name" id="e2a" placeholder="Captain Marcus Vance" value={form.endorsement2author} onChange={v => set('endorsement2author', v)} />
+                <InputField label="Role / Title" id="e2r" placeholder="Patrol Commander" value={form.endorsement2role} onChange={v => set('endorsement2role', v)} />
+              </div>
+            </div>
+          </FormCard>
+        </div>
       )}
 
-      {/* ── SECTION 5: Theme & Palette ────────────────────────────────────── */}
+      {/* ── TAB 6: Color Palette & Materials ──────────────────────────────── */}
       {(activeTab === 'theme' || activeTab === 'all') && (
-        <FormCard title="Design System & Theme Tokens" icon={Palette} badge="Stitch Tokens">
+        <FormCard title="Color Palette & Material Physics" icon={Palette} badge="Design Tokens">
           <div className="space-y-3">
             <div>
-              <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider mb-1.5">
-                Design Theme Architecture
-              </label>
+              <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Theme System Preset</label>
               <select
                 value={form.theme}
-                onChange={e => set('theme', e.target.value as InstantFormData['theme'])}
-                className="w-full h-10 px-3.5 rounded-xl bg-stone-950 border border-stone-700 text-xs font-semibold text-white focus:outline-none focus:border-orange-500"
+                onChange={e => set('theme', e.target.value as any)}
+                className="w-full h-10 px-3 rounded-xl bg-stone-950 border border-stone-700/80 text-xs font-semibold text-white focus:outline-none focus:border-orange-500"
               >
-                <option value="campaign-navy">Campaign Navy (Civic Blue & Heritage Gold)</option>
-                <option value="campaign-judicial">Campaign Judicial (Courtroom White & Gold)</option>
-                <option value="luxury">Luxury Dark Gold (Boutique Salon & Spa)</option>
-                <option value="crimson-bold">Crimson Bold (Smokehouse & Bold Flavor)</option>
-                <option value="emerald-gold">Emerald Gold (Texas Energy & Prestige)</option>
-                <option value="dark">Dark Obsidian (Commercial Trades & Construction)</option>
-                <option value="light">Light Clean (Professional Consulting)</option>
+                <option value="campaign-navy">🏛️ Civic Navy & Texas Gold (Authoritative)</option>
+                <option value="campaign-judicial">⚖️ Courtroom Slate & Integrity Bronze</option>
+                <option value="dark">⚡ Texas Sons Obsidian & Flame Orange</option>
+                <option value="luxury">✨ Editorial Luxury Noir & Champagne</option>
+                <option value="crimson-bold">🔥 Smokehouse Crimson & Charcoal</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider mb-1.5">
-                Hero Section Wireframe
-              </label>
+              <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Hero Layout Variant</label>
               <div className="grid grid-cols-3 gap-2">
-                {(['split', 'bento', 'centered'] as const).map(hv => (
-                  <button 
-                    key={hv} 
-                    type="button" 
-                    onClick={() => set('heroVariant', hv)}
-                    className={`py-2 rounded-xl text-xs font-bold border transition-all capitalize ${
-                      form.heroVariant === hv 
-                        ? 'bg-orange-600 border-orange-500 text-white shadow-sm shadow-orange-600/30' 
-                        : 'border-stone-800 bg-stone-950 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                {(['split', 'bento', 'centered'] as const).map(v => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => set('heroVariant', v)}
+                    className={`py-2 px-2 rounded-xl border text-[11px] font-bold capitalize transition-all cursor-pointer ${
+                      form.heroVariant === v 
+                        ? 'border-orange-500 bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30' 
+                        : 'border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200'
                     }`}
                   >
-                    {hv}
+                    {v} Hero
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 p-3 bg-stone-950 rounded-xl border border-stone-800">
+            <div className="grid grid-cols-2 gap-3 pt-1">
               <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Primary Tone</label>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Primary Background</label>
                 <div className="flex items-center gap-2">
                   <input 
                     type="color" 
@@ -661,7 +782,7 @@ export default function BlueprintFormPanel({
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Accent Gold/Flame</label>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Accent Color</label>
                 <div className="flex items-center gap-2">
                   <input 
                     type="color" 
@@ -683,13 +804,13 @@ export default function BlueprintFormPanel({
         <div className="flex items-center justify-between px-1 text-xs">
           <span className="font-semibold text-stone-400 flex items-center gap-1.5">
             <Cpu className="w-3.5 h-3.5 text-orange-400" />
-            <span className="text-[11px]">AI Model:</span>
+            <span className="text-[11px]">AI Synthesis Engine:</span>
           </span>
           <select
             value={selectedModel}
             onChange={(e) => onSelectModel?.(e.target.value)}
             className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-lg px-2 py-1 focus:outline-none focus:border-orange-500 cursor-pointer max-w-[190px]"
-            title="Choose AI Model for Blueprint Synthesis"
+            title="Choose AI Model for Experience Synthesis"
           >
             {SUPPORTED_MODELS.map(m => (
               <option key={m.id} value={m.id} className="bg-stone-900 text-stone-200">
@@ -707,7 +828,7 @@ export default function BlueprintFormPanel({
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-100 cursor-pointer"
         >
           <Zap className="w-4 h-4 fill-current" />
-          <span>⚡ Build Instant Preview</span>
+          <span>⚡ Generate Custom Experience</span>
         </button>
 
         {/* Secondary Quick Tools */}
@@ -753,4 +874,3 @@ export default function BlueprintFormPanel({
     </div>
   );
 }
-
