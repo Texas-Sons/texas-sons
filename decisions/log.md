@@ -29,3 +29,15 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Alternatives considered:** Ad-hoc manual prompts and fragmented task tracking across notes.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-25 — 1-Click Custom Domains & Live Deployment Edge Hub
+
+**Decision:** Implemented automated Cloudflare Pages custom domain provisioning with Namecheap DNS copy-paste helpers and live deployment history tracking in Texas Sons Studio.
+
+**Why:** Enables seamless connection of client domains (bought on Namecheap or client-owned) with automated SSL certification and real-time DNS status checks directly from the Studio interface.
+
+**Alternatives considered:** Manual Cloudflare dashboard administration for every client domain attachment.
+
+**Owner:** Morgan Valdez
