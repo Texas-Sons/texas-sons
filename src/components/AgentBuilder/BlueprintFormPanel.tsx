@@ -3,9 +3,10 @@ import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
   Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon,
-  Award, MessageSquareQuote, Palette, Sliders, Scale, FileText
+  Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
+import { SUPPORTED_MODELS } from './aiModelConfig';
 import type { BusinessProfile, ServiceItem, TestimonialItem } from '../../templates/blocks';
 
 // ── Vertical preset config ────────────────────────────────────────────────────
@@ -187,12 +188,15 @@ interface BlueprintFormPanelProps {
   onOpenAudit: () => void;
   onOpenProposal: () => void;
   isBusy: boolean;
+  selectedModel?: string;
+  onSelectModel?: (modelId: string) => void;
 }
 
 type TabKey = 'brand' | 'pillars' | 'badges' | 'endorsements' | 'theme' | 'all';
 
 export default function BlueprintFormPanel({
-  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy
+  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy,
+  selectedModel = 'claude-3-7-sonnet', onSelectModel
 }: BlueprintFormPanelProps) {
   const [form, setForm] = useState<InstantFormData>(() => {
     return activeSnapshot ? snapshotToForm(activeSnapshot) : DEFAULT_FORM;
@@ -675,12 +679,32 @@ export default function BlueprintFormPanel({
 
       {/* ── Action Buttons & Quick Tools ──────────────────────────────────── */}
       <div className="space-y-2.5 pt-2 pb-4">
+        {/* Model Selection Chip */}
+        <div className="flex items-center justify-between px-1 text-xs">
+          <span className="font-semibold text-stone-400 flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5 text-orange-400" />
+            <span className="text-[11px]">AI Model:</span>
+          </span>
+          <select
+            value={selectedModel}
+            onChange={(e) => onSelectModel?.(e.target.value)}
+            className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-lg px-2 py-1 focus:outline-none focus:border-orange-500 cursor-pointer max-w-[190px]"
+            title="Choose AI Model for Blueprint Synthesis"
+          >
+            {SUPPORTED_MODELS.map(m => (
+              <option key={m.id} value={m.id} className="bg-stone-900 text-stone-200">
+                {m.name} ({m.badge})
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Primary Build Button */}
         <button
           type="button"
           onClick={handleBuild}
           disabled={isBusy || !form.name.trim()}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-100 cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-orange-600/30 transition-all hover:scale-[1.01] active:scale-100 cursor-pointer"
         >
           <Zap className="w-4 h-4 fill-current" />
           <span>⚡ Build Instant Preview</span>
@@ -691,7 +715,7 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenAudit}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Auto-QC</span>
@@ -699,7 +723,7 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenProposal}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
           >
             <Layers className="w-4 h-4 text-blue-400" />
             <span>Proposal</span>
@@ -707,21 +731,22 @@ export default function BlueprintFormPanel({
           <button 
             type="button" 
             onClick={onOpenScanner}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm"
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-stone-800 bg-stone-900/70 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer"
           >
             <Camera className="w-4 h-4 text-orange-400" />
             <span>Scan Flyer</span>
           </button>
         </div>
 
-        {/* AI Plan Export */}
+        {/* Antigravity AI Prompt / Master Plan Export */}
         <button 
           type="button" 
           onClick={onOpenHandoff}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-800 bg-stone-900/40 hover:bg-stone-800/80 text-stone-400 hover:text-stone-200 text-xs font-semibold transition-all"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 text-xs font-bold transition-all cursor-pointer shadow-sm"
+          title="Get AI Master Plan prompt to give directly to Antigravity"
         >
-          <Wand2 className="w-3.5 h-3.5 text-orange-400" />
-          <span>AI Master Plan & AGY Export</span>
+          <Terminal className="w-4 h-4 text-orange-400" />
+          <span>⚡ Antigravity AI Blueprint Prompt</span>
         </button>
       </div>
 

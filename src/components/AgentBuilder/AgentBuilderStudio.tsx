@@ -917,10 +917,10 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
       isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : 'h-full flex-1 overflow-hidden'
     }`}>
       {/* Top Studio Master Action Bar */}
-      <header className="h-16 border-b border-stone-800/80 px-3 sm:px-5 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-3">
+      <header className="h-16 border-b border-stone-800/80 px-3 sm:px-4 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
         
         {/* Left Section: Sidebar Toggle, Active Blueprint Dropdown Pill, Quick Tools */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           <button
             onClick={() => setIsChatCollapsed(!isChatCollapsed)}
             className="p-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-900 border border-transparent hover:border-stone-800 transition-colors flex-shrink-0 cursor-pointer"
@@ -930,21 +930,21 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </button>
 
           {/* Active Blueprint Preset Switcher Pill */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[160px] sm:max-w-[200px]"
               title="Click to Switch Candidate or Business Blueprint"
             >
               <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold flex-shrink-0">
                 <Zap className="w-3.5 h-3.5" />
               </div>
-              <div className="min-w-0 max-w-[140px] sm:max-w-[190px]">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-white truncate group-hover:text-orange-400">
                   {currentBlueprintObj?.title || project.profile.name}
                 </p>
                 <p className="text-[10px] text-stone-400 truncate">
-                  {currentBlueprintObj?.category || 'Blueprint'} · <span className="uppercase text-orange-400/90 font-semibold">{project.theme}</span>
+                  {currentBlueprintObj?.category || 'Blueprint'}
                 </p>
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
@@ -1016,7 +1016,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           </div>
 
           {/* Quick Studio Tools */}
-          <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800">
+          <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={handleSaveToProjects}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
@@ -1024,6 +1024,14 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
             >
               <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Save</span>
+            </button>
+            <button
+              onClick={() => setIsHandoffOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 transition-all cursor-pointer"
+              title="Get Antigravity AI Master Plan Prompt"
+            >
+              <Terminal className="w-3.5 h-3.5 text-orange-400" />
+              <span>AGY Prompt</span>
             </button>
             <button
               onClick={() => setIsScannerOpen(true)}
@@ -1053,34 +1061,36 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
         </div>
 
         {/* Center: Main Workspace View Switcher */}
-        <div className="flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner">
+        <div className="flex items-center p-1 bg-stone-900/90 rounded-2xl border border-stone-800 shadow-inner flex-shrink-0 mx-1 sm:mx-2">
           <button
             onClick={() => setActiveTab('preview')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'preview'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>Live Website</span>
+            <span className="hidden sm:inline">Live Website</span>
+            <span className="sm:hidden">Live</span>
           </button>
 
           <button
             onClick={() => setActiveTab('admin')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'admin'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>Client Admin</span>
+            <span className="hidden sm:inline">Client Admin</span>
+            <span className="sm:hidden">Admin</span>
           </button>
 
           <button
             onClick={() => setActiveTab('code')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'code'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'text-stone-400 hover:text-stone-200'
@@ -1092,7 +1102,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
 
           <button
             onClick={() => setActiveTab('blueprint')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'blueprint'
                 ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
                 : 'text-stone-400 hover:text-stone-200'
@@ -1104,10 +1114,10 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
         </div>
 
         {/* Right Section: Devices, Live Status Badge, Custom Domain, Deploy, Model */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           
           {/* Viewport Device Controls */}
-          <div className="hidden lg:flex items-center bg-stone-900 rounded-xl p-1 border border-stone-800">
+          <div className="hidden lg:flex items-center bg-stone-900 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={() => setDevice('desktop')}
               className={`p-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
@@ -1141,24 +1151,35 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           <button
             type="button"
             onClick={() => setIsDeploymentHistoryOpen(true)}
-            className="hidden xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group"
+            className="hidden xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 px-3 py-1.5 rounded-xl cursor-pointer transition-all group flex-shrink-0"
             title="View Live Deployment Status & History"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[130px] 2xl:max-w-[180px]">
+            <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[120px] 2xl:max-w-[160px]">
               {activeDeployedUrl.replace(/^https?:\/\//, '') || `${project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
             </span>
             <History className="w-3 h-3 text-stone-500 group-hover:text-orange-400 transition-colors" />
+          </button>
+
+          {/* AGY Prompt Shortcut (Visible on medium/large screens) */}
+          <button
+            type="button"
+            onClick={() => setIsHandoffOpen(true)}
+            className="hidden md:flex 2xl:hidden items-center gap-1 px-2.5 py-1.5 rounded-xl border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-xs font-bold transition-all cursor-pointer flex-shrink-0"
+            title="Get Antigravity AI Master Plan Prompt"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline">AGY Prompt</span>
           </button>
 
           {/* Custom Domain Shortcut */}
           <button
             type="button"
             onClick={() => setIsCustomDomainOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer flex-shrink-0"
             title="Connect Namecheap or Custom Domain"
           >
             <Globe className="w-3.5 h-3.5 text-orange-400" />
@@ -1169,7 +1190,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black shadow-lg shadow-orange-600/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer"
+            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black shadow-lg shadow-orange-600/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer flex-shrink-0"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? 'Deploying...' : 'Deploy'}</span>
@@ -1178,14 +1199,14 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           {/* Model Selector Card */}
           <div
             onClick={() => setIsModelSettingsOpen(true)}
-            className="hidden 2xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-xl px-2.5 py-1 border border-stone-800 cursor-pointer transition-colors"
+            className="hidden 2xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-xl px-2.5 py-1 border border-stone-800 cursor-pointer transition-colors flex-shrink-0"
             title="Click to change AI Model"
           >
             <Cpu className="w-3.5 h-3.5 text-orange-400" />
             <div className="flex flex-col text-left">
               <span className="text-[8px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
               <span className="text-[11px] font-semibold text-white leading-tight">
-                {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Gemini'}
+                {SUPPORTED_MODELS.find(m => m.id === selectedModel)?.name || 'Claude 3.7'}
               </span>
             </div>
           </div>
@@ -1193,7 +1214,7 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
           {/* Fullscreen Toggle */}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-xl hidden sm:block cursor-pointer"
+            className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-xl hidden sm:block cursor-pointer flex-shrink-0"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4 text-orange-400" /> : <Maximize2 className="w-4 h-4" />}
@@ -1212,6 +1233,8 @@ export default function AgentBuilderStudio({ initialSnapshot }: AgentBuilderStud
               <BlueprintFormPanel
                 activeSnapshot={project}
                 isBusy={agentState.step !== 'ready'}
+                selectedModel={selectedModel}
+                onSelectModel={handleSelectModel}
                 onOpenScanner={() => setIsScannerOpen(true)}
                 onOpenHandoff={() => setIsHandoffOpen(true)}
                 onOpenAudit={() => setIsAuditOpen(true)}
@@ -1942,6 +1965,7 @@ export default function ClientSite() {
         selectedModel={selectedModel}
         onOpenHandoff={() => setIsHandoffOpen(true)}
         onApplyFixes={(updated) => setProject(updated)}
+        onSelectModel={handleSelectModel}
       />
 
       <PhotoScannerModal 

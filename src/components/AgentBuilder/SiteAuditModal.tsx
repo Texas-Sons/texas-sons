@@ -25,7 +25,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
-import { recordUsage } from './aiModelConfig';
+import { recordUsage, SUPPORTED_MODELS } from './aiModelConfig';
 
 interface SiteAuditModalProps {
   isOpen: boolean;
@@ -34,6 +34,7 @@ interface SiteAuditModalProps {
   selectedModel: string;
   onOpenHandoff: () => void;
   onApplyFixes?: (updatedProject: ProjectSnapshot) => void;
+  onSelectModel?: (modelId: string) => void;
 }
 
 export type AuditCategory = 
@@ -61,6 +62,7 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
   selectedModel,
   onOpenHandoff,
   onApplyFixes,
+  onSelectModel,
 }) => {
   if (!isOpen) return null;
 
@@ -433,9 +435,22 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
                   Gap & Fact Checker
                 </span>
               </div>
-              <p className="text-xs text-stone-400">
-                Engine: <strong className="text-orange-400">{selectedModel.toUpperCase()}</strong> · {lastScanTime ? `Last scanned at ${lastScanTime}` : 'Ready for Pre-Flight Scan'}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-stone-400">Engine:</span>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => onSelectModel?.(e.target.value)}
+                  className="bg-stone-900 border border-stone-700 text-orange-400 text-xs font-bold rounded-lg px-2 py-0.5 focus:outline-none focus:border-orange-500 cursor-pointer"
+                  title="Choose QA & PM Audit AI Engine"
+                >
+                  {SUPPORTED_MODELS.map(m => (
+                    <option key={m.id} value={m.id} className="bg-stone-900 text-stone-200">
+                      {m.name} ({m.badge})
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[11px] text-stone-500 hidden sm:inline">· {lastScanTime ? `Last scanned at ${lastScanTime}` : 'Ready for Pre-Flight Scan'}</span>
+              </div>
             </div>
           </div>
           
