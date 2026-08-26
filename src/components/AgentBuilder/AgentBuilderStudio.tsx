@@ -938,8 +938,74 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     <div className={`w-full flex flex-col bg-stone-950 text-stone-100 ${
       isFullscreen ? 'fixed inset-0 z-50 h-screen w-screen' : 'h-full flex-1 overflow-hidden'
     }`}>
-      {/* Top Studio Master Action Bar */}
-      <header className="h-16 border-b border-stone-800/80 px-3 sm:px-4 flex items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
+      {/* ── MOBILE: Stitch-Style Gold Header ────────────────────────── */}
+      <header className="md:hidden h-14 border-b border-stone-800/80 px-4 flex items-center justify-between bg-stone-950 flex-shrink-0 z-30">
+        {/* Hamburger */}
+        {onOpenAppNav && (
+          <button
+            onClick={onOpenAppNav}
+            className="p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer active:scale-95 transition-all"
+          >
+            <Menu className="w-4 h-4 text-[#C5A059]" />
+          </button>
+        )}
+
+        {/* Center: TEXAS SONS + Project Switcher */}
+        <button
+          onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
+          className="flex items-center gap-2 cursor-pointer group"
+          title="Switch client"
+        >
+          <span className="text-sm font-black text-[#C5A059] uppercase tracking-widest font-mono">TEXAS SONS</span>
+          <div className="flex items-center gap-1 bg-stone-900 border border-stone-800 rounded-lg px-2 py-0.5">
+            <span className="text-[10px] font-mono text-stone-400">Project:</span>
+            <span className="text-[10px] font-bold text-stone-200 truncate max-w-[60px]">
+              {(currentBlueprintObj?.title || project.profile.name).split(' ')[0]}
+            </span>
+            <ChevronDown className={`w-3 h-3 text-stone-500 transition-transform ${isBlueprintDropdownOpen ? 'rotate-180' : ''}`} />
+          </div>
+        </button>
+
+        {/* Right: Status dot */}
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-stone-900 border border-stone-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[9px] font-mono text-stone-400">LIVE</span>
+        </div>
+
+        {/* Blueprint dropdown (mobile) */}
+        {isBlueprintDropdownOpen && (
+          <div className="absolute top-14 left-0 right-0 z-50 mx-3 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150" ref={dropdownRef}>
+            <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1">Select Client Experience</div>
+            {allBlueprints.map((preset) => {
+              const isSelected = project.profile.name === preset.profile.name;
+              return (
+                <div
+                  key={preset.id}
+                  onClick={() => { handleApplyPreset(preset); setIsBlueprintDropdownOpen(false); }}
+                  className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                    isSelected ? 'border-[#C5A059]/60 bg-[#C5A059]/10 text-white' : 'border-transparent hover:bg-stone-800 text-stone-300'
+                  }`}
+                >
+                  <div className="min-w-0 flex-1 pr-2">
+                    <p className="text-xs font-bold truncate">{preset.title}</p>
+                    <p className="text-[10px] text-stone-500 mt-0.5">{preset.category}</p>
+                  </div>
+                  {isSelected && <Check className="w-4 h-4 text-[#C5A059]" />}
+                </div>
+              );
+            })}
+            <div className="pt-2 border-t border-stone-800">
+              <button onClick={() => { setIsBlueprintDropdownOpen(false); setIntakeModalOpen(true); }}
+                className="w-full py-2 px-3 rounded-xl bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                <Plus className="w-3.5 h-3.5" />New Client Experience
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* ── DESKTOP: Full Master Action Bar ─────────────────────────── */}
+      <header className="hidden md:flex h-16 border-b border-stone-800/80 px-3 sm:px-4 items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
         
         {/* Left Section: Mobile App Navigation Hamburger, Director / Sidebar Toggle, Active Experience Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -2095,117 +2161,269 @@ export default function ClientSite() {
         isDeploying={agentState.step === 'building'}
       />
 
-      {/* ── MOBILE TACTILE FLOATING DOCK (Squiggly Icon Pods & Color-Blocked) ─── */}
-      <div className="fixed bottom-3 inset-x-3 z-40 md:hidden flex flex-col items-center select-none">
-        {/* Floating Quick-Action Radial Popover */}
+      {/* ── MOBILE STITCH-STYLE 5-TAB BOTTOM DOCK ───────────────────── */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden">
+        {/* ── Tools Slide-Up Sheet (shown when Tools tab active on mobile) ── */}
         {isMobileQuickMenuOpen && (
-          <div className="w-full mb-2 p-3 bg-stone-950/95 border border-stone-800 rounded-[24px_12px_22px_14px/14px_22px_12px_24px] shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-3 fade-in duration-150 grid grid-cols-4 gap-2 text-center text-[10px] font-bold text-stone-200">
-            <button
-              onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
-            >
-              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                <Camera className="w-3.5 h-3.5 text-orange-400" />
+          <div className="fixed inset-0 z-50 md:hidden bg-black/70 backdrop-blur-lg flex flex-col justify-end animate-in fade-in duration-150">
+            <div className="bg-stone-950 border-t border-stone-800 rounded-t-3xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden">
+              {/* Sheet Header */}
+              <div className="pt-2.5 pb-3 px-5 border-b border-stone-800/80 flex-shrink-0">
+                <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-3" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-black text-[#C5A059] uppercase tracking-widest font-mono">STUDIO TOOLS</h3>
+                  </div>
+                  <button onClick={() => setIsMobileQuickMenuOpen(false)} className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer active:scale-95">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                {/* Tool tabs */}
+                <div className="flex gap-5 mt-3">
+                  <button className="flex items-center gap-1.5 text-[11px] font-bold text-[#C5A059] border-b-2 border-[#C5A059] pb-1">
+                    <Layers className="w-3.5 h-3.5" />ARCHETYPES
+                  </button>
+                  <button className="flex items-center gap-1.5 text-[11px] font-bold text-stone-500 pb-1 border-b-2 border-transparent">
+                    <Sliders className="w-3.5 h-3.5" />FEATURES
+                  </button>
+                </div>
               </div>
-              <span className="text-[10px]">Scan Flyer</span>
-            </button>
-            <button
-              onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
-            >
-              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              {/* Sheet Content */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 pb-8 space-y-3">
+                {/* Quick Actions Row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
+                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                      <Camera className="w-4 h-4 text-[#C5A059]" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[11px] font-black text-stone-200">Scan Flyer</div>
+                      <div className="text-[9px] text-stone-500">Photo intake</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => { setIsAuditOpen(true); setIsMobileQuickMenuOpen(false); }}
+                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-emerald-400 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[11px] font-black text-stone-200">QA Audit</div>
+                      <div className="text-[9px] text-stone-500">PM review</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
+                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                      <Globe className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[11px] font-black text-stone-200">Domain</div>
+                      <div className="text-[9px] text-stone-500">Custom URL</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
+                    className="p-3 rounded-2xl bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                      <Terminal className="w-4 h-4 text-[#C5A059]" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[11px] font-black text-stone-200">AGY Spec</div>
+                      <div className="text-[9px] text-stone-500">AI prompt</div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Archetype Cards */}
+                <div className="text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2 px-0.5">Archetypes</div>
+                {[
+                  { id: 'ID-01', name: 'The Outlaw', desc: 'High risk, high reward behavioral matrix. Prioritizes aggressive problem solving and unconventional paths.', icon: Flame, traits: [{label:'Aggression', val:90},{label:'Stealth',val:40}] },
+                  { id: 'ID-02', name: 'The Sheriff', desc: 'Disciplined, authoritative framework. Enforces standards and maintains system stability under stress.', icon: ShieldCheck, traits: [{label:'Authority', val:95},{label:'Precision',val:80}], active: true },
+                ].map(arch => (
+                  <div key={arch.id} className={`p-4 rounded-2xl border flex flex-col gap-3 ${arch.active ? 'border-[#C5A059]/40 bg-stone-900' : 'border-stone-800 bg-stone-900/60'}`}>
+                    <div className="flex items-start justify-between">
+                      <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                        <arch.icon className="w-4.5 h-4.5 text-[#C5A059]" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {arch.active && <span className="text-[9px] font-black text-[#C5A059] border border-[#C5A059]/40 rounded-full px-2 py-0.5">● ACTIVE</span>}
+                        <span className="text-[9px] font-mono text-stone-600 border border-stone-800 rounded px-1.5 py-0.5">{arch.id}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold text-stone-100 mb-1">{arch.name}</h4>
+                      <p className="text-[11px] text-stone-400 leading-relaxed">{arch.desc}</p>
+                    </div>
+                    <div className="space-y-2">
+                      {arch.traits.map(t => (
+                        <div key={t.label} className="flex items-center gap-2">
+                          <span className="text-[10px] text-stone-500 w-16 flex-shrink-0">{t.label}</span>
+                          <div className="flex-1 h-1 bg-stone-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#C5A059] rounded-full" style={{width:`${t.val}%`}} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="w-full py-2.5 rounded-xl border border-stone-700 text-[11px] font-black text-stone-300 hover:border-[#C5A059]/60 hover:text-[#C5A059] transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-1.5">
+                      CONFIGURE <Sliders className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
               </div>
-              <span className="text-[10px]">QA Audit</span>
-            </button>
-            <button
-              onClick={() => { setIsCustomDomainOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-blue-400 cursor-pointer active:scale-95 transition-all"
-            >
-              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                <Globe className="w-3.5 h-3.5 text-blue-400" />
-              </div>
-              <span className="text-[10px]">Domain</span>
-            </button>
-            <button
-              onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
-              className="p-2 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] bg-stone-900/80 hover:bg-stone-900 border border-stone-800/80 flex flex-col items-center gap-1.5 text-stone-300 hover:text-orange-400 cursor-pointer active:scale-95 transition-all"
-            >
-              <div className="w-7 h-7 rounded-[12px_5px_14px_6px/6px_14px_5px_12px] bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                <Terminal className="w-3.5 h-3.5 text-orange-400" />
-              </div>
-              <span className="text-[10px]">AGY Spec</span>
-            </button>
+            </div>
+            <div className="flex-1" onClick={() => setIsMobileQuickMenuOpen(false)} />
           </div>
         )}
 
-        {/* Curved Floating Action Bar */}
-        <div className="w-full h-16 bg-stone-950/95 border border-stone-800/90 rounded-[28px_14px_26px_14px/14px_26px_14px_28px] shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl px-2.5 py-1.5 flex items-center justify-between gap-1">
-          <button
-            onClick={() => setIsMobileDirectorOpen(true)}
-            className="flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold text-stone-300 hover:text-white flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer group"
-          >
-            <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:rotate-6 transition-all shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
+        {/* ── Deploy Tab Overlay (shown when Deploy tapped) ────── */}
+        {activeTab === 'blueprint' && (
+          <div className="fixed inset-0 z-50 md:hidden bg-stone-950 flex flex-col overflow-y-auto pb-20">
+            {/* Deploy Header */}
+            <div className="px-5 pt-5 pb-4 flex items-center justify-between flex-shrink-0 border-b border-stone-800/60">
+              <div>
+                <h2 className="text-lg font-bold text-stone-100">Deploy</h2>
+                <p className="text-[11px] text-stone-500 font-mono">Push live to production</p>
+              </div>
+              <button onClick={() => setActiveTab('preview')} className="p-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <span>Director</span>
-          </button>
+            <div className="flex-1 px-4 py-4 space-y-4">
+              {/* System Status */}
+              <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+                <h3 className="text-sm font-bold text-stone-100 mb-3">System Status</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Environment', val: 'Production', highlight: true },
+                    { label: 'Target Node', val: 'us-west-frontier' },
+                    { label: 'Build Cache', val: 'Optimized', highlight: true },
+                    { label: 'Latency', val: '24ms' },
+                  ].map(s => (
+                    <div key={s.label} className="p-2.5 rounded-xl bg-stone-950 border border-stone-800">
+                      <div className="text-[9px] font-mono text-stone-500 uppercase tracking-wider mb-1">{s.label}</div>
+                      <div className={`text-xs font-bold ${s.highlight ? 'text-[#C5A059]' : 'text-stone-200'}`}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          <button
-            onClick={() => { setActiveTab('preview'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'preview' && !isMobileDirectorOpen ? 'text-orange-400' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <div className={`w-7 h-7 rounded-[8px_16px_6px_14px/14px_6px_16px_8px] border flex items-center justify-center transition-all ${
-              activeTab === 'preview' && !isMobileDirectorOpen
-                ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
-                : 'bg-stone-900/80 border-stone-800 text-stone-400'
-            }`}>
-              <Eye className="w-3.5 h-3.5" />
+              {/* Deployment Logs */}
+              <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-stone-100">Deployment Logs</h3>
+                  <span className="text-[9px] font-mono text-stone-500 border border-stone-700 rounded-lg px-2 py-0.5">
+                    {agentState.step === 'building' ? 'BUILDING...' : 'Awaiting Command'}
+                  </span>
+                </div>
+                <div className="bg-stone-950 rounded-xl p-3 font-mono text-[11px] space-y-1.5">
+                  <div><span className="text-stone-500">[SYS]</span><span className="text-stone-300 ml-2">Initializing deployment sequence...</span></div>
+                  <div><span className="text-blue-400">[CHK]</span><span className="text-stone-300 ml-2">Verifying frontier nodes...</span></div>
+                  <div><span className="text-emerald-400">[OK]</span><span className="text-stone-300 ml-2">All systems nominal. Ready for launch.</span></div>
+                  {agentState.step === 'building' && (
+                    <div><span className="text-[#C5A059]">[LIVE]</span><span className="text-stone-300 ml-2 animate-pulse">Deploying...</span></div>
+                  )}
+                  <div className="text-stone-600">...</div>
+                </div>
+              </div>
+
+              {/* Initiate Launch */}
+              <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center text-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center">
+                  <UploadCloud className="w-7 h-7 text-[#C5A059]" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-stone-100">Initiate Launch</h4>
+                  <p className="text-[11px] text-stone-500 mt-0.5">Deploy current build to production servers.</p>
+                </div>
+                <button
+                  onClick={handleDeploySite}
+                  disabled={agentState.step === 'building'}
+                  className="w-full py-3 rounded-xl bg-[#C5A059]/80 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 text-xs font-black uppercase tracking-widest transition-all cursor-pointer active:scale-98 shadow-lg shadow-[#C5A059]/20 flex items-center justify-center gap-2"
+                >
+                  {agentState.step === 'building' ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> DEPLOYING...</> : 'DEPLOY SITE'}
+                </button>
+              </div>
+
+              {/* Custom Domain + History */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setIsCustomDomainOpen(true)}
+                  className="p-3.5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                >
+                  <Globe className="w-5 h-5" />
+                  <span className="text-[10px] font-black">Custom Domain</span>
+                </button>
+                <button
+                  onClick={() => setIsDeploymentHistoryOpen(true)}
+                  className="p-3.5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                >
+                  <History className="w-5 h-5" />
+                  <span className="text-[10px] font-black">History</span>
+                </button>
+              </div>
             </div>
-            <span>Live</span>
-          </button>
+          </div>
+        )}
 
-          <button
-            onClick={() => { setActiveTab('admin'); setIsMobileDirectorOpen(false); }}
-            className={`flex-1 py-1 px-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] text-[10px] font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all cursor-pointer ${
-              activeTab === 'admin' && !isMobileDirectorOpen ? 'text-orange-400' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            <div className={`w-7 h-7 rounded-[16px_8px_14px_6px/6px_14px_8px_16px] border flex items-center justify-center transition-all ${
-              activeTab === 'admin' && !isMobileDirectorOpen
-                ? 'bg-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
-                : 'bg-stone-900/80 border-stone-800 text-stone-400'
-            }`}>
-              <LayoutDashboard className="w-3.5 h-3.5" />
-            </div>
-            <span>Admin</span>
-          </button>
+        {/* ── The Actual Flat Tab Bar ─────────────────────────────────── */}
+        <div
+          className="bg-stone-950/98 border-t border-stone-800/80 backdrop-blur-xl px-2 pt-2 pb-safe flex items-center justify-around"
+          style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
+        >
+          {([
+            { id: 'preview' as const, label: 'Live', Icon: Eye },
+            { id: 'admin' as const, label: 'Admin', Icon: LayoutDashboard },
+            { id: 'director' as const, label: 'Director', Icon: Sparkles },
+            { id: 'tools' as const, label: 'Tools', Icon: Sliders },
+            { id: 'deploy' as const, label: 'Deploy', Icon: UploadCloud },
+          ] as {id: 'preview'|'admin'|'director'|'tools'|'deploy', label: string, Icon: React.ComponentType<{className?: string}>}[]).map(({ id, label, Icon }) => {
+            const isActive = id === 'director'
+              ? isMobileDirectorOpen
+              : id === 'tools'
+              ? isMobileQuickMenuOpen
+              : id === 'deploy'
+              ? activeTab === 'blueprint'
+              : (activeTab === id && !isMobileDirectorOpen && !isMobileQuickMenuOpen && activeTab !== 'blueprint');
 
-          <button
-            onClick={() => setIsMobileQuickMenuOpen(!isMobileQuickMenuOpen)}
-            className="p-1 rounded-[16px_8px_14px_8px/8px_14px_8px_16px] transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-stone-400"
-            title="Studio Tools"
-          >
-            <div className={`w-7 h-7 rounded-[6px_14px_8px_16px/16px_8px_14px_6px] border flex items-center justify-center transition-all ${
-              isMobileQuickMenuOpen
-                ? 'bg-orange-500/20 border-orange-500/50 text-orange-400 shadow-sm'
-                : 'bg-stone-900/80 border-stone-800 text-stone-400 hover:text-stone-200'
-            }`}>
-              <Sliders className="w-3.5 h-3.5" />
-            </div>
-            <span>Tools</span>
-          </button>
-
-          <button
-            onClick={handleDeploySite}
-            disabled={agentState.step === 'building'}
-            className="ml-0.5 px-3.5 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black shadow-lg shadow-orange-600/30 flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-          >
-            <UploadCloud className="w-3.5 h-3.5" />
-            <span>{agentState.step === 'building' ? '...' : 'Deploy'}</span>
-          </button>
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  if (id === 'director') {
+                    setIsMobileDirectorOpen(true);
+                    setIsMobileQuickMenuOpen(false);
+                    setActiveTab('preview');
+                  } else if (id === 'tools') {
+                    setIsMobileQuickMenuOpen(true);
+                    setIsMobileDirectorOpen(false);
+                    setActiveTab('preview');
+                  } else if (id === 'deploy') {
+                    setActiveTab('blueprint');
+                    setIsMobileDirectorOpen(false);
+                    setIsMobileQuickMenuOpen(false);
+                  } else {
+                    setActiveTab(id as 'preview' | 'admin');
+                    setIsMobileDirectorOpen(false);
+                    setIsMobileQuickMenuOpen(false);
+                  }
+                }}
+                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95 min-w-[52px] ${
+                  isActive ? 'text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className={`text-[10px] font-bold ${isActive ? 'text-[#C5A059]' : ''}`}>{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
