@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../api';
 import {
   Globe, X, Check, Copy, ExternalLink, ShieldCheck,
   AlertCircle, RefreshCw, Trash2, ArrowRight, Lock, Server, Sparkles, Cloud
@@ -42,7 +43,7 @@ export default function CustomDomainModal({
     if (!projectName) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/domains/list?project=${encodeURIComponent(projectName)}`);
+      const res = await apiFetch(`/api/domains/list?project=${encodeURIComponent(projectName)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.domains)) {
         setDomains(data.domains);
@@ -73,7 +74,7 @@ export default function CustomDomainModal({
     const clean = domainInput.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
     try {
-      const res = await fetch('/api/domains/add', {
+      const res = await apiFetch('/api/domains/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectName, domainName: clean })
@@ -102,7 +103,7 @@ export default function CustomDomainModal({
     setIsVerifying(true);
     setFeedback(null);
     try {
-      const res = await fetch(`/api/domains/verify?project=${encodeURIComponent(projectName)}&domain=${encodeURIComponent(domainName)}`);
+      const res = await apiFetch(`/api/domains/verify?project=${encodeURIComponent(projectName)}&domain=${encodeURIComponent(domainName)}`);
       const data = await res.json();
       if (data.success && data.domain) {
         const isLive = data.isLive;
@@ -127,7 +128,7 @@ export default function CustomDomainModal({
     if (!confirm(`Are you sure you want to remove ${domainName}?`)) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/domains/remove?project=${encodeURIComponent(projectName)}&domain=${encodeURIComponent(domainName)}`, {
+      const res = await apiFetch(`/api/domains/remove?project=${encodeURIComponent(projectName)}&domain=${encodeURIComponent(domainName)}`, {
         method: 'DELETE'
       });
       const data = await res.json();

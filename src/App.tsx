@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from './api';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import DashboardOverview from './components/DashboardOverview';
@@ -160,7 +161,7 @@ export default function App() {
     
     try {
       // 1. Hit the backend to process Stripe invoice
-      const response = await fetch('/api/invoice', {
+      const response = await apiFetch('/api/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

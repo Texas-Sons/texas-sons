@@ -12,6 +12,8 @@ import Stripe from "stripe";
 import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
+import { requireAdmin } from './lib/auth';
+import { safeFetchText } from './lib/safeFetch';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
 
@@ -580,6 +582,21 @@ async function startServer() {
 
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+  // -------------------------------------------------------------------------
+  // Admin gate — every /api route requires a valid Supabase session whose email
+  // is on the allowlist, except the two that are public by design:
+  //   /api/health  liveness probe
+  //   /api/lead    form submissions from DEPLOYED client sites (cross-origin,
+  //                no session available). TODO: rate-limit + captcha this one.
+  // Mounted before the route definitions so nothing can be added behind its back.
+  // -------------------------------------------------------------------------
+  const PUBLIC_API_PATHS = new Set(['/health', '/lead']);
+  app.use('/api', (req, res, next) => {
+    if (req.method === 'OPTIONS') return next();
+    if (PUBLIC_API_PATHS.has(req.path)) return next();
+    return requireAdmin(req, res, next);
+  });
 
   // Initialize Octokit (GitHub API) lazily
   let octokitClient: Octokit | null = null;
@@ -1472,24 +1489,18 @@ Draft a short, persuasive email proposal recommending we build them a modern web
   app.post("/api/scrape-site", async (req, res) => {
     try {
       const { url } = req.body;
-      if (!url) return res.status(400).json({ success: false, error: "URL is required" });
-
-      console.log(`[Scraper] Fetching URL: ${url}`);
-      
-      // Ensure url has protocol
-      const targetUrl = url.startsWith('http') ? url : `https://${url}`;
-      
-      const response = await fetch(targetUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch website: ${response.statusText}`);
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ success: false, error: "URL is required" });
       }
 
-      const htmlText = await response.text();
+      console.log(`[Scraper] Fetching URL: ${url}`);
+
+      // safeFetchText enforces http(s)-only, blocks private/reserved addresses on
+      // every redirect hop, and caps both time and response size. Do not swap this
+      // back for a bare fetch() — the URL comes straight from the client.
+      const { text: htmlText, finalUrl } = await safeFetchText(url);
+      if (finalUrl !== url) console.log(`[Scraper] Resolved to: ${finalUrl}`);
+
       // Simple HTML cleanup to save tokens: remove script and style tags, then remove all tags, then collapse whitespace
       const cleanHtml = htmlText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
                                 .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')

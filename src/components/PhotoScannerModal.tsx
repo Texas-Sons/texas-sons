@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { apiFetch } from '../api';
 import { 
   Camera, 
   Upload, 
@@ -216,7 +217,7 @@ export default function PhotoScannerModal({ isOpen, onClose, onApplyDossier, exi
         contextHint: contextHint.trim() || undefined
       };
 
-      const res = await fetch('/api/extract-dossier', {
+      const res = await apiFetch('/api/extract-dossier', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

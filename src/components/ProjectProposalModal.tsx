@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../api';
 import { 
   X, 
   Sparkles, 
@@ -425,7 +426,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         snapshot: snapshot || project?.blueprint
       };
 
-      const res = await fetch('/api/draft-proposal', {
+      const res = await apiFetch('/api/draft-proposal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -461,7 +462,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         snapshot: snapshot || project?.blueprint
       };
 
-      const res = await fetch('/api/draft-contract', {
+      const res = await apiFetch('/api/draft-contract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

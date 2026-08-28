@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../api';
 import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck, Building2 } from 'lucide-react';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 
@@ -294,7 +295,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     incrementUsage('ai');
     
     try {
-      const response = await fetch('/api/proposal', {
+      const response = await apiFetch('/api/proposal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

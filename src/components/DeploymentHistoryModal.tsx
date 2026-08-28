@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../api';
 import {
   UploadCloud, X, Check, Copy, ExternalLink, ShieldCheck,
   RefreshCw, History, Globe, Zap, ArrowUpRight, Clock, AlertTriangle
@@ -44,7 +45,7 @@ export default function DeploymentHistoryModal({
     if (!projectName) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/deployments/history?project=${encodeURIComponent(projectName)}`);
+      const res = await apiFetch(`/api/deployments/history?project=${encodeURIComponent(projectName)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.deployments)) {
         setDeployments(data.deployments);

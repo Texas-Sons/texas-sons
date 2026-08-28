@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../../api';
 import { 
   Users, 
   Plus, 
@@ -460,7 +461,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     if (!scanUrl) return;
     setIsScanningUrl(true);
     try {
-      const res = await fetch('/api/scrape-site', {
+      const res = await apiFetch('/api/scrape-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: scanUrl })

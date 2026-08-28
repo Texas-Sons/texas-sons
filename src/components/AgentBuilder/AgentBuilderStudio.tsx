@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../../api';
 import { 
   Bot, 
   Sparkles, 
@@ -747,7 +748,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     });
 
     try {
-      const res = await fetch('/api/studio-chat', {
+      const res = await apiFetch('/api/studio-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -847,7 +848,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     });
 
     try {
-      const res = await fetch('/api/deploy', {
+      const res = await apiFetch('/api/deploy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
