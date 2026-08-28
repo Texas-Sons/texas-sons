@@ -30,7 +30,15 @@ Cross-lane edits are allowed but must be announced on the board first.
 - Node/Express + Vite 6 + React 19 + Tailwind v4 + TypeScript (ESM). Admin entry `index.html`, deployed client-site entry `client.html`.
 - Scripts: `npm run dev` (tsx server.ts), `npm run build`, `npm run start` (prod, serves `dist/`), `npm run lint` (tsc --noEmit), `npm test` (SSR smoke test of ClientApp), `npm run verify` (lint+test+build).
 - `dist/` is gitignored but required by `npm start`; rebuild with `npm run build`.
-- Secrets live in `.env.local` (gitignored). Env vars: GEMINI_API_KEY, APP_URL, VITE_GOOGLE_MAPS_PLATFORM_KEY, STRIPE_SECRET_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, GITHUB_ACCESS_TOKEN.
+- Secrets live in `.env.local` (gitignored). See `.env.example` for the full list and what each one powers. Env vars: GEMINI_API_KEY, APP_URL, ADMIN_EMAILS, VITE_GOOGLE_MAPS_PLATFORM_KEY, STRIPE_SECRET_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, GITHUB_ACCESS_TOKEN.
+
+## API auth contract (do not regress this)
+
+- **Every `/api` route requires a valid Supabase session** whose email is on the `ADMIN_EMAILS` allowlist. Enforced by `requireAdmin` in `lib/auth.ts`, mounted in `server.ts` before any route is defined.
+- **Two public exceptions**, both deliberate: `/api/health` (liveness) and `/api/lead` (form posts from deployed client sites, which have no session). Adding a third requires a decision log entry.
+- **Frontend must call `apiFetch`/`apiJson` from `src/api.ts`**, never bare `fetch`, for admin routes — the helper attaches the Bearer token and signs out on 401. `ClientApp.tsx` uses bare `fetch` for `/api/lead` on purpose.
+- The email allowlist in `src/App.tsx` / Settings is **cosmetic only** (localStorage, user-editable). It is not a security boundary.
+- **Never fetch a user-supplied URL with bare `fetch`.** Use `safeFetchText` from `lib/safeFetch.ts`, which blocks private/reserved addresses (incl. cloud metadata) on every redirect hop and caps time + response size. `scripts/smoke-security.ts` enforces this in CI.
 - Supabase `leads` table is required for `/api/lead` (client-site form submissions). SQL: id uuid pk, business_name, site_slug, name, phone, email, service, notes, address, created_at. RLS: anon insert + authenticated select.
 - Client sites render via `window.__TXSONS_BLUEPRINT__` injected by `/api/deploy`; design tokens are CSS vars `--ts-*` applied on the `data-ts-site` root by `ClientApp`.
 

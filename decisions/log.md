@@ -41,3 +41,19 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Alternatives considered:** Manual Cloudflare dashboard administration for every client domain attachment.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Server-side auth gate + SSRF hardening on the API
+
+**Decision:** All `/api` routes now require a verified Supabase session on the server (`lib/auth.ts`, `requireAdmin`), with `/api/health` and `/api/lead` as the only deliberate public exceptions. User-supplied URLs are fetched through `lib/safeFetch.ts`, which refuses private/reserved addresses on every redirect hop and caps time and response size. Frontend admin calls go through `apiFetch` in `src/api.ts`.
+
+**Why:** The API was fully unauthenticated. The only access control was an email allowlist in `localStorage`, which is client-side and editable from devtools — anyone who found the deployed URL could deploy sites to the Cloudflare account, generate Stripe invoices, and burn Gemini and Maps quota. Separately, `/api/scrape-site` fetched arbitrary user-supplied URLs server-side, so it could be pointed at cloud metadata (`169.254.169.254`) or internal services. Both are pre-revenue blockers: they must be closed before the API is exposed to real client money or client data.
+
+**What would change my mind:** If the Studio ever needs to serve non-admin users (e.g. clients logging in to manage their own site), `requireAdmin` needs to become role-aware rather than a flat allowlist. That's a schema change, not a patch.
+
+**Alternatives considered:** (a) Network-level restriction such as Cloudflare Access in front of the whole app — fewer code changes, but it doesn't protect local dev, doesn't give per-request identity, and couples auth to a specific deploy topology. (b) A shared static API key — simpler, but no identity, no revocation, and it would end up committed somewhere.
+
+**Verification:** `npm run verify` green. Runtime-confirmed: no token → 401, bogus token → 401 (rejected by Supabase, not just shape-checked), `/api/health` → 200. `scripts/smoke-security.ts` added to `npm test` and CI to prevent regression.
+
+**Owner:** Morgan Valdez
