@@ -84,7 +84,14 @@ every new intake.
 ### 4. Verify like an attacker
 
 Do not test through the app — the app has a session, so it proves nothing.
-Test with the raw anon key, exactly as an attacker would:
+Test with the raw anon key, exactly as an attacker would.
+
+**If you have Supabase MCP**, use it for steps 1, 2 and this step directly:
+run the `pg_class` / `pg_policies` audit queries, apply the migration, and
+re-query to confirm. Still perform the anon-key check below as well — MCP
+connects with elevated privileges, so it can report "policy exists" while the
+actual anon path is still wide open. The anon-key result is the one that counts.
+Do not ask Morgan to run these by hand if you can execute them yourself.
 
 ```bash
 # Each of these MUST return an empty array or a permission error.
