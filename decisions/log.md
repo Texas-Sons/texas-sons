@@ -105,3 +105,31 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Alternatives considered:** Modifying \equireAdmin\ to be more granular. However, the true vulnerability was direct database access via the public anon key. RLS is the proper defense against client-side key abuse.
 
 **Owner:** Antigravity
+
+---
+
+## 2026-08-28 — Kernel tables shipped without RLS (migration ordering bug)
+
+**What happened:** `20260828000000_kernel_tables.sql` created `blueprints`, `prospects`, `studio_snapshots` and `user_settings`, then ran `create index ... on public.client_intakes` before the block that enables RLS on those four tables. `client_intakes` did not exist — the app had only ever cached intakes in localStorage, which the RLS audit uncovered. `create index if not exists` still errors on a missing table, so the migration aborted before reaching the RLS block.
+
+**Impact:** Depending on whether the runner used a transaction, either the four tables do not exist (store layer silently serving cache), or they exist with RLS disabled — exposing the blueprint library, prospect pipeline, Studio state and settings to anyone with the public anon key. State still to be confirmed; see `.agent-messages/rls-followup-kernel-tables.md`.
+
+**Fix:** Guarded the pre-existing-table work in `to_regclass` blocks so it cannot abort the file, and added `20260828010000_assert_kernel_rls.sql`, which is safe in either state and raises an exception if RLS is still off at the end rather than reporting success over an open table.
+
+**Lesson:** A migration that creates tables and then secures them has a window in between. Anything that can throw inside that window ships unsecured tables. Enable RLS immediately after each `create table`, not in a batch at the end — and make migrations assert their end state rather than assume it.
+
+**Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Removed fabricated usage metrics from Settings
+
+**Decision:** The AI and Maps usage panels now show only real measured data. Added `getDailyUsage()` in `aiModelConfig.ts` — a genuine per-day counter that rolls over at midnight — and pointed Settings at it.
+
+**Why:** The panels opened at invented values (48 requests / 18,500 tokens / 142 Maps searches) and the AI panel read `txsons_ai_daily_*`, a key nothing in the codebase has ever written, so it always fell through to a hardcoded seed commented "Seed realistic starting usage". Real AI usage was being recorded the whole time in `txsons_ai_usage`; Settings just was not reading it. An OS that fabricates its own telemetry cannot be trusted for the decisions it exists to inform — and Phase 2 was about to build alerting on top of it.
+
+**Why a daily counter rather than relabelling:** the panel renders against `maxDailyRequests` (Gemini's free-tier RPD cap). The cumulative session counter would creep to 100% and stay pinned, so accurate labelling alone would have left a useless panel.
+
+**Known limitation:** both counters are per-browser, so they undercount across devices. Server-side usage tracking is the correct home since quota is per-account; deferred to Phase 2 rather than expanding database surface during an RLS incident.
+
+**Owner:** Morgan Valdez

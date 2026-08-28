@@ -8,19 +8,31 @@
 -- order relative to the RLS hardening work in .agent-messages/rls-hardening-task.md.
 
 -- ---------------------------------------------------------------------------
--- Ownership columns on existing tables
+-- Ownership columns on pre-existing tables
+--
+-- These are guarded on table existence rather than using `alter table if exists`
+-- alone, because the accompanying index further down would still fail hard on a
+-- missing table. client_intakes in particular did not exist at all when this was
+-- first written — the app had only ever cached it in localStorage.
 -- ---------------------------------------------------------------------------
 
--- client_intakes was created without an owner column, so owner-scoped RLS had
--- nothing to match on. See .agent-messages/rls-hardening-task.md step 3.
-alter table if exists public.client_intakes
-  add column if not exists owner_id uuid references auth.users(id);
+do $$
+begin
+  if to_regclass('public.client_intakes') is not null then
+    alter table public.client_intakes add column if not exists owner_id uuid references auth.users(id);
+    create index if not exists client_intakes_owner_idx on public.client_intakes (owner_id);
+  end if;
 
-alter table if exists public.projects
-  add column if not exists owner_id uuid references auth.users(id);
+  if to_regclass('public.projects') is not null then
+    alter table public.projects add column if not exists owner_id uuid references auth.users(id);
+    create index if not exists projects_owner_idx on public.projects (owner_id);
+  end if;
 
-alter table if exists public.invoices
-  add column if not exists owner_id uuid references auth.users(id);
+  if to_regclass('public.invoices') is not null then
+    alter table public.invoices add column if not exists owner_id uuid references auth.users(id);
+    create index if not exists invoices_owner_idx on public.invoices (owner_id);
+  end if;
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- New tables
@@ -67,12 +79,11 @@ create table if not exists public.user_settings (
 -- Indexes
 -- ---------------------------------------------------------------------------
 
+-- Indexes for the tables this migration creates. Indexes for pre-existing
+-- tables are handled in the guarded block above.
 create index if not exists blueprints_owner_idx        on public.blueprints (owner_id);
 create index if not exists prospects_owner_status_idx  on public.prospects (owner_id, status);
 create index if not exists studio_snapshots_owner_idx  on public.studio_snapshots (owner_id, kind);
-create index if not exists client_intakes_owner_idx    on public.client_intakes (owner_id);
-create index if not exists projects_owner_idx          on public.projects (owner_id);
-create index if not exists invoices_owner_idx          on public.invoices (owner_id);
 
 -- ---------------------------------------------------------------------------
 -- RLS on the new tables

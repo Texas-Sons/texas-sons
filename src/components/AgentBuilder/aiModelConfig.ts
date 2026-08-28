@@ -114,6 +114,50 @@ export interface SessionUsageStats {
 
 const STORAGE_KEY_USAGE = 'txsons_ai_usage';
 const STORAGE_KEY_MODEL = 'txsons_selected_model';
+const STORAGE_KEY_DAILY = 'txsons_ai_daily';
+
+/** Requests and tokens used today, for the free-tier RPD panel in Settings. */
+export interface DailyUsageStats {
+  date: string; // YYYY-MM-DD
+  requests: number;
+  tokens: number;
+}
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Reads today's usage, rolling over automatically at the date boundary.
+ *
+ * Settings needs a genuinely daily number because it renders against
+ * `maxDailyRequests` (Gemini's free-tier requests-per-day cap). The cumulative
+ * session counter would creep to 100% and stay pinned there, which is why the
+ * panel previously fell back to an invented figure instead.
+ */
+export function getDailyUsage(): DailyUsageStats {
+  const fresh: DailyUsageStats = { date: today(), requests: 0, tokens: 0 };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_DAILY);
+    if (!raw) return fresh;
+    const parsed = JSON.parse(raw) as DailyUsageStats;
+    return parsed.date === fresh.date ? parsed : fresh;
+  } catch {
+    return fresh;
+  }
+}
+
+function recordDailyUsage(tokens: number): void {
+  const current = getDailyUsage();
+  const updated: DailyUsageStats = {
+    date: current.date,
+    requests: current.requests + 1,
+    tokens: current.tokens + tokens,
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(updated));
+  } catch {}
+}
 
 export function getStoredModel(): string {
   try {
@@ -161,6 +205,9 @@ export function recordUsage(modelId: string, promptTokens: number = 800, outputT
   try {
     localStorage.setItem(STORAGE_KEY_USAGE, JSON.stringify(updated));
   } catch {}
+
+  // Keep the daily bucket in step — Settings reads it for the RPD panel.
+  recordDailyUsage(promptTokens + outputTokens);
 
   return updated;
 }

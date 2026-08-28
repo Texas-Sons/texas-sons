@@ -3,6 +3,7 @@ import {
   loadSettings, saveSettings, cachedSettings,
   listIntakes, saveIntake, listBlueprints, saveBlueprint, restoreDismissed,
 } from '../store';
+import { getDailyUsage } from './AgentBuilder/aiModelConfig';
 import {
   Settings, 
   Cpu, 
@@ -107,27 +108,34 @@ export default function SettingsView() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [newEmailInput, setNewEmailInput] = useState('');
 
-  // Live Usage Stats loaded from localStorage
-  const [aiUsageCount, setAiUsageCount] = useState({ requests: 48, tokens: 18500 });
-  const [mapsUsageCount, setMapsUsageCount] = useState({ searches: 142, autocomplete: 85, assets: 24 });
+  /**
+   * Real usage only. These panels previously opened at invented values
+   * (48 requests / 18,500 tokens, 142 Maps searches) and the AI panel read
+   * `txsons_ai_daily_*` — a key nothing in the codebase has ever written — so it
+   * always fell through to a hardcoded "realistic" seed. A dashboard that
+   * fabricates its own numbers is worse than no dashboard.
+   *
+   * Both counters are per-browser. Server-side usage tracking is the correct
+   * long-term home, since quota is per-account not per-device.
+   */
+  const [aiUsageCount, setAiUsageCount] = useState({ requests: 0, tokens: 0 });
+  const [mapsUsageCount, setMapsUsageCount] = useState({ searches: 0, autocomplete: 0, assets: 0 });
 
   useEffect(() => {
     const d = new Date();
+
+    // Maps usage is genuinely tracked by ProspectsView on each search.
     const monthKey = `txsons_api_usage_${d.getFullYear()}_${d.getMonth() + 1}`;
     const storedMaps = localStorage.getItem(monthKey);
     if (storedMaps) {
-      try { setMapsUsageCount(JSON.parse(storedMaps)); } catch (e) {}
+      try { setMapsUsageCount(JSON.parse(storedMaps)); } catch {}
     }
 
-    // Daily AI usage tracking
-    const todayKey = `txsons_ai_daily_${d.toISOString().slice(0, 10)}`;
-    const storedAi = localStorage.getItem(todayKey);
-    if (storedAi) {
-      try { setAiUsageCount(JSON.parse(storedAi)); } catch (e) {}
-    } else {
-      // Seed realistic starting usage
-      setAiUsageCount({ requests: 42, tokens: 16400 });
-    }
+    // AI usage comes from recordUsage() in aiModelConfig, which the Studio
+    // writes on every model call. getDailyUsage rolls over at midnight, so this
+    // matches the "requests remaining today" framing the panel renders.
+    const usage = getDailyUsage();
+    setAiUsageCount({ requests: usage.requests, tokens: usage.tokens });
   }, []);
 
   const handleSaveSettings = async () => {
