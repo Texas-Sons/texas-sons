@@ -56,6 +56,8 @@ export type IntakeStatus = 'New Intake' | 'Assets Pending' | 'Studio Ready' | 'D
 export interface ClientIntake {
   id: string;
   businessName: string;
+  share_token?: string;
+  share_token_revoked?: boolean;
   clientContact: string;
   email: string;
   phone: string;
