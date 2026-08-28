@@ -57,3 +57,41 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Verification:** `npm run verify` green. Runtime-confirmed: no token → 401, bogus token → 401 (rejected by Supabase, not just shape-checked), `/api/health` → 200. `scripts/smoke-security.ts` added to `npm test` and CI to prevent regression.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Texas Sons OS: kernel + shells architecture
+
+**Decision:** The OS is not the React app and not Claude Code — it is a kernel (Supabase + the gated `/api`) with multiple shells on top. The Studio is shell #1. Claude Code skills become shell #2 later, calling the same API rather than reimplementing logic. Phone and any future client portal are further shells.
+
+**Why:** The question was framed as "is the React app the OS, or is Claude Code the OS." Both are wrong. Claude Code-as-OS makes the business a personal power-tool that only works at one desk, cannot be delegated, and cannot be sold. App-as-OS means every capability is hand-built UI. Kernel + shells is the same work sequenced so it compounds: build a capability once in the API, expose it in whichever shell needs it.
+
+**The blocker this exposed:** business data lived in the operator's browser `localStorage`, which meant no other shell could ever exist — not a phone, not an agent, not a cron job. The migration was therefore a prerequisite, not a parallel nice-to-have.
+
+**Phasing:** 0) RLS hardening (blocker, delegated to Antigravity). 1) Kernel — all business state into Supabase behind `src/store/`. 2) Automation — lead alerts, client asset-submission portal, deploy health checks, follow-up nudges. This is what makes it *feel* like an OS, and it targets the manual asset-gathering bottleneck named in `aios-intake.md` Q7. 3) Second shell — `CLAUDE.md` + `.claude/skills/` calling the API, with the existing `context/`, `references/`, and `voice.md` as its context layer.
+
+**Phase 2 before Phase 3 is deliberate:** automation is what creates the OS feel; a second shell is leverage for building more. They are independent once Phase 1 lands.
+
+**Alternatives considered:** (a) Claude Code as the operating layer — rejected, see above. (b) App-as-OS with markdown as pure docs — viable but every capability stays hand-built UI and agents can never drive it.
+
+**What would change my mind:** If the Studio ever needs to serve clients directly (not just Morgan), the flat owner-scoped model becomes a role model, and that is a schema change rather than a patch.
+
+**Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Phase 1: repository layer, Supabase as source of truth
+
+**Decision:** Added `src/store/` — one repo per entity — and moved all 8 business-data `localStorage` keys behind it. Supabase is authoritative; `localStorage` is demoted to a write-through cache. UI preferences (current view, form prefill, last search terms, model selection) stay local by design.
+
+**Why:** 61 `localStorage` call sites across 8 files, with `projects` and `client_intakes` written to *both* Supabase and `localStorage` in parallel and free to diverge. Blueprints — the core artifact of the whole product — existed only in one browser profile.
+
+**Why a repository layer rather than editing components directly:** `AgentBuilderStudio.tsx` is ~2,400 lines and `ClientIntakeView.tsx` ~1,500. Swapping call sites to a repo is mechanical and reviewable; rewriting those components is a week of regression-chasing. It also means a future backing-store change is one file per entity.
+
+**Design notes:** Reads fall back to cache on failure, because RLS failures and dropped connections both surface as empty result sets and a blank "no clients" screen is worse than stale data. Writes never fall back — a swallowed write is data loss, and several `catch {}` blocks were hiding exactly that. Studio state saves are debounced 1.5s; without it, a colour-picker drag fired a write per frame. Backfill never deletes local data, skips entities that already have server rows, and records progress per entity so a partial failure resumes.
+
+**Verification:** `npm run verify` green. Audited: zero `supabase.from(` calls and zero business-data `localStorage` keys outside `src/store/`. Dev server boots, admin page 200s, all modules resolve.
+
+**Still to confirm with real data:** the backfill has not yet run against Morgan's actual browser profile — see the checklist in the handoff.
+
+**Owner:** Morgan Valdez

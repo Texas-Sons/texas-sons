@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../../api';
+import {
+  listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject,
+  loadCurrentProject, loadHistory, saveCurrentProject, saveHistory, cachedHistory,
+  cachedCurrentProject,
+} from '../../store';
 import { 
   Bot, 
   Sparkles, 
@@ -78,7 +83,7 @@ import {
   EventItem 
 } from '../../templates/blocks';
 import { buildThemeVars } from '../../templates/blocks/theme';
-import { supabase } from '../../supabase';
+
 import { ModelSettingsModal } from './ModelSettingsModal';
 import { PlanHandoffModal } from './PlanHandoffModal';
 import { SiteAuditModal } from './SiteAuditModal';
@@ -93,7 +98,7 @@ import {
   SessionUsageStats 
 } from './aiModelConfig';
 import PhotoScannerModal from '../PhotoScannerModal';
-import { ClientIntake } from '../../types';
+import { ClientIntake, Project } from '../../types';
 import BlueprintFormPanel from './BlueprintFormPanel';
 import CustomDomainModal from '../CustomDomainModal';
 import DeploymentHistoryModal from '../DeploymentHistoryModal';
@@ -423,14 +428,17 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
   // Custom Intake Modal State
   const [intakeModalOpen, setIntakeModalOpen] = useState(false);
-  const [customBlueprints, setCustomBlueprints] = useState<PresetBlueprint[]>(() => {
-    try {
-      const saved = localStorage.getItem('txsons_custom_blueprints');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Cache first so the Studio paints instantly; Supabase reconciles below.
+  const [customBlueprints, setCustomBlueprints] = useState<PresetBlueprint[]>(
+    () => cachedBlueprints() as PresetBlueprint[]
+  );
+
+  useEffect(() => {
+    (async () => {
+      const stored = await listBlueprints();
+      if (stored.length) setCustomBlueprints(stored as PresetBlueprint[]);
+    })();
+  }, []);
 
   // Custom Intake Form Fields
   const [intakeForm, setIntakeForm] = useState({
@@ -455,9 +463,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   // Active Project Data
   const [project, setProject] = useState<ProjectSnapshot>(() => {
     try {
-      const saved = localStorage.getItem('txsons_studio_project');
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      const parsed = cachedCurrentProject();
+      if (parsed) {
         if (parsed.profile?.name?.toLowerCase().includes('waylon')) {
           if (!parsed.profile.heroImage || parsed.profile.heroImage.includes('unsplash.com/photo-1589829545856')) {
             parsed.profile.heroImage = '/images/candidates/waylon-rogers.png';
@@ -507,19 +514,31 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   };
 
   const [history, setHistory] = useState<ProjectSnapshot[]>(() => {
-    try {
-      const saved = localStorage.getItem('txsons_studio_history');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return [project]; // Note: references the initialized project above
+    const cached = cachedHistory();
+    return cached.length ? (cached as ProjectSnapshot[]) : [project];
   });
 
+  // Reconcile both from Supabase once on mount, so the Studio picks up work
+  // started on another device.
   useEffect(() => {
-    localStorage.setItem('txsons_studio_project', JSON.stringify(project));
+    (async () => {
+      const [storedProject, storedHistory] = await Promise.all([
+        loadCurrentProject(),
+        loadHistory(),
+      ]);
+      if (storedProject) setProject(storedProject as ProjectSnapshot);
+      if (storedHistory.length) setHistory(storedHistory as ProjectSnapshot[]);
+    })();
+  }, []);
+
+  // These write to cache synchronously and debounce the database write, so
+  // dragging a color picker doesn't fire a round-trip per frame.
+  useEffect(() => {
+    saveCurrentProject(project);
   }, [project]);
 
   useEffect(() => {
-    localStorage.setItem('txsons_studio_history', JSON.stringify(history));
+    saveHistory(history);
   }, [history]);
   const [agentState, setAgentState] = useState<AgentState>({
     step: 'ready',
@@ -697,23 +716,51 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       isCustom: true
     };
 
-    const updated = [newBlueprint, ...customBlueprints];
-    setCustomBlueprints(updated);
-    try {
-      localStorage.setItem('txsons_custom_blueprints', JSON.stringify(updated));
-    } catch {}
+    setCustomBlueprints([newBlueprint, ...customBlueprints]);
+    saveBlueprint(newBlueprint).catch(err => {
+      console.error('Failed to save blueprint:', err);
+      alert(err instanceof Error ? err.message : 'Blueprint saved locally but not synced.');
+    });
 
     handleApplyPreset(newBlueprint);
     setIntakeModalOpen(false);
   };
 
+  /**
+   * Writes the current Studio project into the Projects table. Shared by the
+   * "save" and "deploy" paths, which previously carried two near-identical
+   * copies of this id-normalisation and tier logic.
+   */
+  const persistProject = async (status: Project['status'], domain: string) => {
+    let projectId = project.id;
+    if (projectId.startsWith('prj-')) {
+      projectId = projectId.slice(4);
+    } else if (projectId.startsWith('bp-')) {
+      projectId = `prj_${Date.now()}`;
+    }
+
+    await saveProject({
+      id: projectId,
+      clientName: project.profile.name,
+      companyName: project.profile.name,
+      tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
+      status,
+      updatedAt: new Date().toISOString(),
+      domain,
+      ownerId: '',
+      blueprint: project,
+    });
+  };
+
   const handleDeleteCustomBlueprint = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const updated = customBlueprints.filter(b => b.id !== id);
-    setCustomBlueprints(updated);
-    try {
-      localStorage.setItem('txsons_custom_blueprints', JSON.stringify(updated));
-    } catch {}
+    const previous = customBlueprints;
+    setCustomBlueprints(previous.filter(b => b.id !== id));
+    removeBlueprint(id).catch(err => {
+      console.error('Failed to delete blueprint:', err);
+      setCustomBlueprints(previous);
+      alert(err instanceof Error ? err.message : 'Could not delete the blueprint.');
+    });
   };
 
   const handleGenerate = async (customTextPrompt?: string) => {
@@ -803,27 +850,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         tokensUsed: agentState.tokensUsed
       });
 
-      let projectId = project.id;
-      if (projectId.startsWith('prj-')) {
-        projectId = projectId.slice(4);
-      } else if (projectId.startsWith('bp-')) {
-        projectId = `prj_${Date.now()}`;
-      }
-
       const slug = project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-
-      const { error } = await supabase.from('projects').upsert({
-        id: projectId,
-        client_name: project.profile.name,
-        company_name: project.profile.name,
-        tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
-        status: 'Theme Assembly',
-        updated_at: new Date().toISOString(),
-        domain: `https://${slug}.pages.dev`,
-        blueprint: project
-      });
-
-      if (error) throw error;
+      await persistProject('Theme Assembly', `https://${slug}.pages.dev`);
 
       setAgentState({
         step: 'ready',
@@ -862,25 +890,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         throw new Error(data.error || 'Deployment failed');
       }
 
-      // Auto-save to Supabase Projects
+      // Auto-save the now-live project
       try {
-        let projectId = project.id;
-        if (projectId.startsWith('prj-')) {
-          projectId = projectId.slice(4);
-        } else if (projectId.startsWith('bp-')) {
-          projectId = `prj_${Date.now()}`;
-        }
-        
-        await supabase.from('projects').upsert({
-          id: projectId,
-          client_name: project.profile.name,
-          company_name: project.profile.name,
-          tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
-          status: 'Live',
-          updated_at: new Date().toISOString(),
-          domain: data.url,
-          blueprint: project
-        });
+        await persistProject('Live', data.url);
       } catch (dbErr) {
         console.warn('Auto-save to projects failed:', dbErr);
       }

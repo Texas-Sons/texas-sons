@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../api';
+import {
+  listSavedProspects, listDismissedIds, saveProspect, unsaveProspect,
+  dismissProspect, cachedSavedProspects, cachedDismissedIds,
+} from '../store';
 import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck, Building2 } from 'lucide-react';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 
@@ -65,16 +69,19 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
 
   const handleToggleSave = (prospect: any) => {
     if (!prospect || !prospect.id) return;
-    setSavedProspects(prev => {
-      const isSaved = prev.some(p => p.id === prospect.id);
-      let updated: any[];
-      if (isSaved) {
-        updated = prev.filter(p => p.id !== prospect.id);
-      } else {
-        updated = [prospect, ...prev];
-      }
-      localStorage.setItem('txsons_saved_leads', JSON.stringify(updated));
-      return updated;
+    const isSaved = savedProspects.some(p => p.id === prospect.id);
+
+    setSavedProspects(prev =>
+      isSaved ? prev.filter(p => p.id !== prospect.id) : [prospect, ...prev]
+    );
+
+    const action = isSaved ? unsaveProspect(prospect.id) : saveProspect(prospect);
+    action.catch(err => {
+      console.error('Failed to update saved prospect:', err);
+      // Put it back the way it was rather than leaving the UI lying.
+      setSavedProspects(prev =>
+        isSaved ? [prospect, ...prev] : prev.filter(p => p.id !== prospect.id)
+      );
     });
   };
 
@@ -91,17 +98,18 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
       }
     }
 
-    // Load dismissed places
-    const storedDismissed = localStorage.getItem('txsons_dismissed_places');
-    if (storedDismissed) {
-      try { setDismissedPlaceIds(JSON.parse(storedDismissed)); } catch (e) {}
-    }
+    // Paint from cache, then reconcile with Supabase.
+    setDismissedPlaceIds(cachedDismissedIds());
+    setSavedProspects(cachedSavedProspects());
 
-    // Load saved leads
-    const storedSaved = localStorage.getItem('txsons_saved_leads');
-    if (storedSaved) {
-      try { setSavedProspects(JSON.parse(storedSaved)); } catch (e) {}
-    }
+    (async () => {
+      const [saved, dismissed] = await Promise.all([
+        listSavedProspects(),
+        listDismissedIds(),
+      ]);
+      setSavedProspects(saved);
+      setDismissedPlaceIds(dismissed);
+    })();
 
     // Load cached search state
     const cachedCity = localStorage.getItem('txsons_last_search_city');
@@ -176,16 +184,21 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
 
   const handleDismiss = (placeId: string) => {
     if (!placeId) return;
-    const newList = [...dismissedPlaceIds, placeId];
-    setDismissedPlaceIds(newList);
-    localStorage.setItem('txsons_dismissed_places', JSON.stringify(newList));
+    setDismissedPlaceIds(prev => [...prev, placeId]);
+    const snapshot = prospects.find(p => p.id === placeId) || null;
+    dismissProspect(placeId, snapshot).catch(err => {
+      console.error('Failed to dismiss prospect:', err);
+      setDismissedPlaceIds(prev => prev.filter(id => id !== placeId));
+    });
   };
 
   const handleRestore = (placeId: string) => {
     if (!placeId) return;
-    const newList = dismissedPlaceIds.filter(id => id !== placeId);
-    setDismissedPlaceIds(newList);
-    localStorage.setItem('txsons_dismissed_places', JSON.stringify(newList));
+    setDismissedPlaceIds(prev => prev.filter(id => id !== placeId));
+    unsaveProspect(placeId).catch(err => {
+      console.error('Failed to restore prospect:', err);
+      setDismissedPlaceIds(prev => [...prev, placeId]);
+    });
   };
 
   const handleGatherAssets = async (prospect: any) => {
@@ -213,14 +226,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
       setProspects(updatedProspects);
       localStorage.setItem('txsons_last_search_results', JSON.stringify(updatedProspects));
 
-      setSavedProspects(prev => {
-        if (prev.some(p => p.id === prospect.id)) {
-          const updatedSaved = prev.map(p => p.id === prospect.id ? enrichedProspect : p);
-          localStorage.setItem('txsons_saved_leads', JSON.stringify(updatedSaved));
-          return updatedSaved;
-        }
-        return prev;
-      });
+      // If this prospect is saved, persist the enriched version too.
+      if (savedProspects.some(p => p.id === prospect.id)) {
+        setSavedProspects(prev => prev.map(p => (p.id === prospect.id ? enrichedProspect : p)));
+        saveProspect(enrichedProspect).catch(err =>
+          console.error('Failed to persist enriched prospect:', err)
+        );
+      }
       
       setSelectedProspect(enrichedProspect);
       incrementUsage('assets');

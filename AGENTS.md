@@ -42,6 +42,26 @@ Cross-lane edits are allowed but must be announced on the board first.
 - Supabase `leads` table is required for `/api/lead` (client-site form submissions). SQL: id uuid pk, business_name, site_slug, name, phone, email, service, notes, address, created_at. RLS: anon insert + authenticated select.
 - Client sites render via `window.__TXSONS_BLUEPRINT__` injected by `/api/deploy`; design tokens are CSS vars `--ts-*` applied on the `data-ts-site` root by `ClientApp`.
 
+## Data access contract (do not regress this)
+
+- **All business data goes through `src/store/`.** Components must not call
+  `supabase.from(...)` directly and must not read/write business data in
+  `localStorage`. Import a repo: `listBlueprints`, `saveIntake`, `saveProject`, etc.
+- **Supabase is the source of truth; `localStorage` is a write-through cache.**
+  Repos serve cached data when a read fails — RLS failures and dropped connections
+  both look like empty result sets, and silently rendering "you have no clients" is
+  worse than rendering slightly stale ones.
+- **`localStorage` is still correct for UI preference**: current view, form prefill,
+  last search terms, selected model. Those are per-browser by design. The rule is
+  about business data only.
+- **Never swallow a write failure.** A failed read can fall back to cache; a failed
+  write is data loss and must surface to the user. Several `catch {}` blocks used to
+  hide exactly this.
+- Studio state (`saveCurrentProject` / `saveHistory`) is debounced 1.5s. Do not
+  replace it with a direct write — it fires on every keystroke and colour drag.
+- Schema lives in `supabase/migrations/`. Dashboard-only changes get lost; commit
+  the SQL.
+
 ## Gotchas
 
 - The dev server WebSocket prints "Port 24678 is already in use" during tests — harmless.

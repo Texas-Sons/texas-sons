@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, Clock, CheckCircle2, Zap, Folders, Users, TrendingUp, ExternalLink } from 'lucide-react';
 import { Project, ViewState } from '../types';
-import { supabase } from '../supabase';
+import { countLeads } from '../store';
 
 interface DashboardOverviewProps {
   projects: Project[];
@@ -16,10 +16,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
   const [leadCount, setLeadCount] = useState<number>(0);
 
   useEffect(() => {
-    // Fetch exact count of intake forms
-    supabase.from('leads').select('*', { count: 'exact', head: true }).then(({ count }) => {
-      if (count !== null) setLeadCount(count);
-    });
+    countLeads().then(setLeadCount);
   }, []);
 
   // Calculate actual average turnaround time

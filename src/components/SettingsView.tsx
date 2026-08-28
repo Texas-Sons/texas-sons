@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
+  loadSettings, saveSettings, cachedSettings,
+  listIntakes, saveIntake, listBlueprints, saveBlueprint, restoreDismissed,
+} from '../store';
+import {
   Settings, 
   Cpu, 
   MapPin, 
@@ -92,14 +96,13 @@ const DEFAULT_SETTINGS: StudioSettingsData = {
 export default function SettingsView() {
   const [activeTab, setActiveTab] = useState<'ai' | 'maps' | 'pricing' | 'infra' | 'access' | 'backup'>('ai');
   
-  const [settings, setSettings] = useState<StudioSettingsData>(() => {
-    try {
-      const saved = localStorage.getItem('txsons_studio_settings');
-      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
-    } catch {
-      return DEFAULT_SETTINGS;
-    }
-  });
+  const [settings, setSettings] = useState<StudioSettingsData>(() =>
+    cachedSettings(DEFAULT_SETTINGS)
+  );
+
+  useEffect(() => {
+    loadSettings(DEFAULT_SETTINGS).then(setSettings);
+  }, []);
 
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [newEmailInput, setNewEmailInput] = useState('');
@@ -127,13 +130,14 @@ export default function SettingsView() {
     }
   }, []);
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     try {
-      localStorage.setItem('txsons_studio_settings', JSON.stringify(settings));
+      await saveSettings(settings);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 2500);
     } catch (e) {
       console.error('Failed to save settings', e);
+      alert(e instanceof Error ? e.message : 'Could not save settings.');
     }
   };
 
@@ -162,13 +166,16 @@ export default function SettingsView() {
   };
 
   // Full Database Backup Export
-  const handleExportBackup = () => {
+  const handleExportBackup = async () => {
+    // Export from the source of truth, not the local cache, so a backup taken on
+    // a fresh device still contains everything.
+    const [clients, customBlueprints] = await Promise.all([listIntakes(), listBlueprints()]);
     const backup = {
       timestamp: new Date().toISOString(),
       version: '1.2.0',
       settings,
-      clients: JSON.parse(localStorage.getItem('txsons_client_intakes') || '[]'),
-      customBlueprints: JSON.parse(localStorage.getItem('txsons_custom_blueprints') || '[]')
+      clients,
+      customBlueprints
     };
 
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -185,36 +192,59 @@ export default function SettingsView() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const backup = JSON.parse(event.target?.result as string);
+
         if (backup.settings) {
           setSettings(backup.settings);
-          localStorage.setItem('txsons_studio_settings', JSON.stringify(backup.settings));
+          await saveSettings(backup.settings);
         }
-        if (backup.clients) {
-          localStorage.setItem('txsons_client_intakes', JSON.stringify(backup.clients));
+        // Restore row by row so a single malformed entry doesn't sink the whole
+        // import, and so the user is told exactly how much landed.
+        let restored = 0;
+        const failures: string[] = [];
+
+        for (const client of backup.clients || []) {
+          try { await saveIntake(client); restored++; }
+          catch (e) { failures.push(client?.businessName || client?.id || 'unknown client'); }
         }
-        if (backup.customBlueprints) {
-          localStorage.setItem('txsons_custom_blueprints', JSON.stringify(backup.customBlueprints));
+        for (const blueprint of backup.customBlueprints || []) {
+          try { await saveBlueprint(blueprint); restored++; }
+          catch (e) { failures.push(blueprint?.profile?.name || blueprint?.id || 'unknown blueprint'); }
         }
-        alert('Studio Backup restored successfully! Refreshing view.');
+
+        if (failures.length) {
+          alert(`Restored ${restored} records. ${failures.length} could not be saved:\n\n${failures.slice(0, 10).join('\n')}`);
+        } else {
+          alert(`Studio backup restored successfully — ${restored} records. Refreshing view.`);
+        }
         window.location.reload();
       } catch (err) {
+        console.error('Backup restore failed:', err);
         alert('Invalid backup file format.');
       }
     };
     reader.readAsText(file);
   };
 
-  const handlePurgeCache = () => {
-    if (confirm('Are you sure you want to clear search history and temporary cached assets? Your saved client dossiers and settings will NOT be deleted.')) {
-      localStorage.removeItem('txsons_last_search_city');
-      localStorage.removeItem('txsons_last_search_state');
-      localStorage.removeItem('txsons_last_search_industry');
-      localStorage.removeItem('txsons_last_search_results');
-      localStorage.removeItem('txsons_dismissed_places');
-      alert('Local temporary caches cleared.');
+  const handlePurgeCache = async () => {
+    if (!confirm('Clear search history and restore dismissed prospects? Your saved client dossiers, blueprints, and settings will NOT be deleted.')) return;
+
+    // Search terms are per-browser UI state and stay local.
+    localStorage.removeItem('txsons_last_search_city');
+    localStorage.removeItem('txsons_last_search_state');
+    localStorage.removeItem('txsons_last_search_industry');
+    localStorage.removeItem('txsons_last_search_results');
+
+    // Dismissals are real pipeline data now, so clearing them is a database
+    // write, not a cache wipe.
+    try {
+      await restoreDismissed();
+      alert('Search history cleared and dismissed prospects restored.');
+    } catch (e) {
+      console.error('Failed to restore dismissed prospects:', e);
+      alert('Search history cleared, but dismissed prospects could not be restored.');
     }
   };
 

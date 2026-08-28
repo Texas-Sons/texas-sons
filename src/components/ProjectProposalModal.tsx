@@ -35,7 +35,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { Project, Status, Tier, ProjectContract } from '../types';
-import { supabase } from '../supabase';
+import { saveProject } from '../store';
 
 export interface ProjectProposalModalProps {
   isOpen: boolean;
@@ -656,29 +656,14 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     if (onSaveProject) onSaveProject(updatedProject);
     if (onApplySnapshot) onApplySnapshot(updatedBlueprint);
 
-    // Save to LocalStorage
+    // One write, through the repo. This used to write localStorage and Supabase
+    // separately with both failures swallowed, so the two could silently diverge.
     try {
-      const savedProjects = localStorage.getItem('txsons_projects');
-      let parsedProjects: Project[] = savedProjects ? JSON.parse(savedProjects) : [];
-      const pIdx = parsedProjects.findIndex(p => p.id === updatedProject.id);
-      if (pIdx >= 0) parsedProjects[pIdx] = updatedProject;
-      else parsedProjects = [updatedProject, ...parsedProjects];
-      localStorage.setItem('txsons_projects', JSON.stringify(parsedProjects));
-    } catch {}
-
-    // Save to Supabase
-    try {
-      await supabase.from('projects').upsert({
-        id: targetProjectId,
-        company_name: editForm.companyName,
-        client_name: editForm.clientName,
-        status: editForm.status,
-        tier: editForm.tier,
-        domain: editForm.domain,
-        updated_at: new Date().toISOString(),
-        blueprint: updatedBlueprint
-      });
-    } catch {}
+      await saveProject({ ...updatedProject, id: targetProjectId });
+    } catch (err) {
+      console.error('Failed to save project:', err);
+      alert(err instanceof Error ? err.message : 'Could not save this project.');
+    }
   };
 
   const handleSaveDetails = async (e: React.FormEvent) => {

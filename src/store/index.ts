@@ -18,4 +18,5 @@ export * from './settings';
 export * from './studio';
 export * from './intakes';
 export * from './projects';
+export * from './leads';
 export { runBackfill, resetBackfillMarker } from './backfill';

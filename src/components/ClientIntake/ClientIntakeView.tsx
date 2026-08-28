@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
-import { supabase } from '../../supabase';
+import { listIntakes, saveIntake, cachedIntakes } from '../../store';
 import { extractPaletteFromImage, ExtractedColorPalette } from '../../utils/colorExtractor';
 
 interface ClientIntakeViewProps {
@@ -240,13 +240,10 @@ const PRESET_TEMPLATES = [
 ];
 
 export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill }: ClientIntakeViewProps) {
+  // Paint from cache immediately, then reconcile with Supabase.
   const [clients, setClients] = useState<ClientIntake[]>(() => {
-    try {
-      const saved = localStorage.getItem('txsons_client_intakes');
-      return saved ? JSON.parse(saved) : DEFAULT_SAMPLE_CLIENTS;
-    } catch {
-      return DEFAULT_SAMPLE_CLIENTS;
-    }
+    const cached = cachedIntakes();
+    return cached.length ? cached : DEFAULT_SAMPLE_CLIENTS;
   });
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -318,13 +315,13 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }
   }, [intakePrefill]);
 
+  // Source of truth is Supabase; the repo caches on the way through.
   useEffect(() => {
-    try {
-      localStorage.setItem('txsons_client_intakes', JSON.stringify(clients));
-    } catch (e) {
-      console.error('Failed to save client intakes', e);
-    }
-  }, [clients]);
+    (async () => {
+      const stored = await listIntakes();
+      if (stored.length) setClients(stored);
+    })();
+  }, []);
 
   const handleOpenNewModal = (preset?: typeof PRESET_TEMPLATES[0]) => {
     if (preset) {
@@ -399,11 +396,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         ...(form as ClientIntake),
         updatedAt: new Date().toISOString()
       };
-      setClients(prev => {
-        const next = prev.map(c => c.id === editingClient.id ? savedClient : c);
-        try { localStorage.setItem('txsons_client_intakes', JSON.stringify(next)); } catch {}
-        return next;
-      });
+      setClients(prev => prev.map(c => (c.id === editingClient.id ? savedClient : c)));
     } else {
       savedClient = {
         ...(form as ClientIntake),
@@ -412,32 +405,18 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      setClients(prev => {
-        const next = [savedClient, ...prev];
-        try { localStorage.setItem('txsons_client_intakes', JSON.stringify(next)); } catch {}
-        return next;
-      });
+      setClients(prev => [savedClient, ...prev]);
     }
 
+    // This used to be `catch {}` — a failed save looked identical to a
+    // successful one, so a client could silently never persist.
     try {
-      await supabase.from('client_intakes').upsert({
-        id: savedClient.id,
-        business_name: savedClient.businessName,
-        client_contact: savedClient.clientContact,
-        email: savedClient.email,
-        phone: savedClient.phone,
-        address: savedClient.address,
-        domain: savedClient.domain,
-        category: savedClient.category,
-        tier: savedClient.tier,
-        status: savedClient.status,
-        theme: savedClient.theme,
-        tagline: savedClient.tagline,
-        description: savedClient.description,
-        data: savedClient,
-        updated_at: new Date().toISOString()
-      });
-    } catch {}
+      await saveIntake(savedClient);
+    } catch (err) {
+      console.error('Failed to save client intake:', err);
+      alert(err instanceof Error ? err.message : 'Could not save this client. Your changes are cached locally but not yet synced.');
+      return;
+    }
 
     setIsNewModalOpen(false);
 

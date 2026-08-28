@@ -14,7 +14,17 @@ import SettingsView from './components/SettingsView';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { User } from '@supabase/supabase-js';
+import {
+  listProjects, listInvoices, saveProject, removeProject, saveInvoice,
+  saveBlueprint, runBackfill,
+} from './store';
 
+/**
+ * Cosmetic pre-flight check only — it reads the settings cache to fail fast on an
+ * obviously wrong account. The real gate is ADMIN_EMAILS on the server
+ * (lib/auth.ts). This has to read the cache rather than the store because it runs
+ * before a session exists.
+ */
 const getAuthorizedEmails = (): string[] => {
   try {
     const saved = localStorage.getItem('txsons_studio_settings');
@@ -92,47 +102,23 @@ export default function App() {
 
   const fetchData = async () => {
     if (!user) return;
-    try {
-      const { data: pData, error: pError } = await supabase.from('projects').select('*');
-      if (pError) throw pError;
-      
-      const { data: iData, error: iError } = await supabase.from('invoices').select('*');
-      if (iError) throw iError;
-      
-      // Map DB snake_case columns back to camelCase for the frontend
-      setProjects(pData.map((d: any) => ({
-        id: d.id,
-        clientName: d.client_name,
-        companyName: d.company_name,
-        tier: d.tier,
-        status: d.status,
-        updatedAt: d.updated_at,
-        domain: d.domain,
-        ownerId: d.owner_id,
-        blueprint: d.blueprint
-      })));
-      
-      setInvoices(iData.map((d: any) => ({
-        id: d.id,
-        projectId: d.project_id,
-        clientName: d.client_name,
-        amount: d.amount,
-        status: d.status,
-        issueDate: d.issue_date,
-        dueDate: d.due_date,
-        ownerId: d.owner_id
-      })));
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // Repos handle the column mapping and fall back to cache if the read fails.
+    setProjects(await listProjects());
+    setInvoices(await listInvoices());
   };
 
   useEffect(() => {
-    if (user) fetchData();
-    else {
+    if (!user) {
       setProjects([]);
       setInvoices([]);
+      return;
     }
+    // Push any browser-only data up before the first read, so a freshly
+    // migrated account sees its existing work instead of an empty dashboard.
+    (async () => {
+      await runBackfill();
+      await fetchData();
+    })();
   }, [user]);
 
   const handleLogin = async () => {
@@ -174,19 +160,8 @@ export default function App() {
         throw new Error('Failed to generate invoice via Stripe API.');
       }
 
-      // 2. Save the generated invoice locally to Supabase
-      const { error } = await supabase.from('invoices').insert({
-        id: invoiceId,
-        project_id: newInvoiceData.projectId,
-        client_name: newInvoiceData.clientName,
-        amount: newInvoiceData.amount,
-        status: newInvoiceData.status,
-        issue_date: newInvoiceData.issueDate,
-        due_date: newInvoiceData.dueDate,
-        owner_id: user.id
-      });
-      
-      if (error) throw error;
+      // 2. Record the invoice
+      await saveInvoice({ ...newInvoiceData, id: invoiceId, ownerId: user.id });
 
       await fetchData(); // Refresh local state
       setIsGeneratingInvoice(false);
@@ -270,52 +245,36 @@ export default function App() {
   const handleDeleteProject = async (projectId: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      const { error } = await supabase.from('projects').delete().eq('id', projectId);
-      if (error) throw error;
-      setProjects(projects.filter(p => p.id !== projectId));
+      await removeProject(projectId);
+      setProjects(prev => prev.filter(p => p.id !== projectId));
     } catch (err) {
       console.error('Failed to delete project:', err);
-      alert('Failed to delete project. Check console for details.');
+      alert(err instanceof Error ? err.message : 'Failed to delete project.');
     }
   };
 
   const handleSaveProjectFromModal = async (updatedProject: Project) => {
+    // Optimistic: reflect the edit immediately, reconcile if the write fails.
+    const previous = projects;
+    setProjects(prev => {
+      const exists = prev.some(p => p.id === updatedProject.id);
+      return exists
+        ? prev.map(p => (p.id === updatedProject.id ? updatedProject : p))
+        : [updatedProject, ...prev];
+    });
+
     try {
-      setProjects(prev => {
-        const exists = prev.some(p => p.id === updatedProject.id);
-        const next = exists ? prev.map(p => p.id === updatedProject.id ? updatedProject : p) : [updatedProject, ...prev];
-        try {
-          localStorage.setItem('txsons_projects', JSON.stringify(next));
-        } catch {}
-        return next;
-      });
+      await saveProject(updatedProject);
 
-      if (updatedProject.blueprint) {
-        try {
-          const savedCustom = localStorage.getItem('txsons_custom_blueprints');
-          if (savedCustom) {
-            let parsed = JSON.parse(savedCustom);
-            parsed = parsed.map((b: any) => b.id === updatedProject.blueprint.id || b.profile?.name === updatedProject.blueprint.profile?.name ? updatedProject.blueprint : b);
-            localStorage.setItem('txsons_custom_blueprints', JSON.stringify(parsed));
-          }
-        } catch {}
-      }
-
-      if (user) {
-        const { error } = await supabase.from('projects').upsert({
-          id: updatedProject.id,
-          company_name: updatedProject.companyName,
-          client_name: updatedProject.clientName,
-          status: updatedProject.status,
-          tier: updatedProject.tier,
-          domain: updatedProject.domain,
-          updated_at: new Date().toISOString(),
-          blueprint: updatedProject.blueprint
-        });
-        if (error) console.warn('Supabase upsert warning:', error);
+      // A project's blueprint is also a library entry — keep the two in step so
+      // editing a project doesn't leave a stale copy in the blueprint library.
+      if (updatedProject.blueprint?.id) {
+        await saveBlueprint(updatedProject.blueprint);
       }
     } catch (err) {
-      console.warn('Error saving project to Supabase:', err);
+      console.error('Failed to save project:', err);
+      setProjects(previous);
+      alert(err instanceof Error ? err.message : 'Failed to save project.');
     }
   };
 
