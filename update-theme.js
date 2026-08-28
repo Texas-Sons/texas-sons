@@ -46,7 +46,5 @@ const rootReplacements = {
   'Motive': 'Texas Sons'
 };
 
-replaceInFile('firestore.rules', rootReplacements);
-replaceInFile('firebase-blueprint.json', rootReplacements);
 replaceInFile('index.html', rootReplacements);
 replaceInFile('metadata.json', rootReplacements);
