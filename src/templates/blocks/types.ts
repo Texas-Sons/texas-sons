@@ -51,6 +51,12 @@ export interface BusinessProfile {
   hours?: string | string[];
   logoUrl?: string;
   heroImage?: string;
+  /**
+   * Additional real photos of the business, from Google Places or a client
+   * upload. Carried on the blueprint so the data survives; no block renders a
+   * gallery yet.
+   */
+  galleryImages?: string[];
   category?: string;
   primaryColor?: string;
   accentColor?: string;

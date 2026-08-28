@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx scripts/smoke-client.ts && tsx scripts/smoke-security.ts",
+    "test": "tsx scripts/smoke-client.ts && tsx scripts/smoke-security.ts && tsx scripts/smoke-mapping.ts",
     "verify": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
@@ -42,6 +42,7 @@
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.28.2",
+    "puppeteer": "^25.9.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",

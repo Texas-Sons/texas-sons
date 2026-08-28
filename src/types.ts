@@ -73,6 +73,8 @@ export interface ClientIntake {
   tagline?: string;
   description?: string;
   heroImage?: string;
+  /** Additional real photos of the business (Google Places, or client upload). */
+  galleryImages?: string[];
   logoUrl?: string;
   badges?: string[];
   proofBadgeText?: string;

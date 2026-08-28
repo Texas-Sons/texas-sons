@@ -165,3 +165,23 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Known gap:** the portal routes are not yet rate-limited. A known token can be submitted to repeatedly. Same gap as `/api/lead`.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Demos were generic because the real business data was being discarded
+
+**Decision:** Added `src/utils/prospectToIntake.ts`, a tested pure mapper that carries a Google Places prospect's real photos, reviews, hours, phone, address and rating into the client intake — and removed the placeholder fallbacks that were standing in for them.
+
+**Why:** Morgan's complaint was that every demo looked the same and he blamed templates. The actual cause was two-fold and neither was the template system:
+
+1. `App.tsx` `onConvert` copied four fields (`businessName`, `email`, `phone`, `clientContact`) and dropped the rest. Two of those four read properties Google Places does not return — it returns `phoneNumber`, and has no concept of an email — so even the phone was silently lost. Meanwhile `handleGatherAssets` in `ProspectsView` was already fetching the business's real storefront photos, real Google reviews with real reviewer names, real hours and real phone. All of it was thrown away at the conversion step.
+
+2. `handleLaunchStudioFromClient` then filled the gaps with hardcoded placeholders: the same Unsplash photo in every demo, an invented testimonial ("Exceptional service and unmatched attention to detail — Verified Client"), a judicial-campaign tagline ("Courtroom Integrity. Dedicated Leadership.") applied to every vertical, and **Texas Sons' own phone and email presented as the client's**. A barbecue restaurant's demo could open with a line about the rule of law and list our contact details as theirs.
+
+**What changed:** real photo in the hero, real Google reviews as testimonials with real names and a "4.8★ · 127 Google Reviews" proof badge, real hours and phone. Absent data now yields `undefined` so each block applies its own default, rather than a placeholder that is confidently wrong.
+
+**Why a separate tested module:** silent data loss in a mapping is invisible — the app kept working and simply produced generic output. `scripts/smoke-mapping.ts` asserts every enriched field survives the conversion, plus the defensive shapes Places actually returns (`displayName` as `{text}`, review text as `{text}`).
+
+**Still open (the structural half):** `ClientApp.tsx` hardcodes section order, so every non-campaign site is Navbar → Hero → Services → Testimonials → Booking → Footer. Real content makes demos feel researched; data-driven composition is what will make them feel structurally different. That is the next piece.
+
+**Owner:** Morgan Valdez

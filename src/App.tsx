@@ -13,6 +13,7 @@ import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
 import SettingsView from './components/SettingsView';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
+import { prospectToIntakePrefill } from './utils/prospectToIntake';
 import { User } from '@supabase/supabase-js';
 import {
   listProjects, listInvoices, saveProject, removeProject, saveInvoice,
@@ -178,13 +179,23 @@ export default function App() {
       timestamp: new Date().toLocaleTimeString(),
       profile: {
         name: client.businessName,
-        tagline: client.tagline || 'Courtroom Integrity. Dedicated Leadership.',
+        // Fallbacks are deliberately neutral. They used to be judicial-campaign
+        // copy ("Courtroom Integrity. Dedicated Leadership.") and Texas Sons' own
+        // contact details, which meant a BBQ joint's demo could open with a line
+        // about the rule of law and list our phone number as theirs.
+        tagline: client.tagline || `${client.businessName} — Proudly Serving Texas`,
         description: client.description || 'Dedicated Texas business delivering premier quality and service.',
-        phone: client.phone || '(512) 555-TXSONS',
-        email: client.email || 'contact@txsons.com',
-        address: client.address || 'Austin, TX',
-        hours: 'Mon - Fri: 8:00 AM - 6:00 PM',
-        heroImage: client.heroImage || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+        // undefined rather than '' so each block applies its own default; an
+        // empty string would slip past a default parameter and render blank.
+        phone: client.phone || undefined,
+        email: client.email || undefined,
+        address: client.address || undefined,
+        // Real opening hours from Google Places when we have them.
+        hours: client.hours || undefined,
+        // Their actual storefront photo. The old hardcoded Unsplash fallback here
+        // was the single biggest reason every demo looked like every other demo.
+        heroImage: client.heroImage || undefined,
+        galleryImages: client.galleryImages || undefined,
         category: client.category,
         theme: client.theme,
         primaryColor: client.primaryColor || '#00081e',
@@ -374,14 +385,13 @@ export default function App() {
               )}
 
               {currentView === 'prospects' && (
-                <ProspectsView 
+                <ProspectsView
                   onConvert={(prospect) => {
-                    setIntakePrefill({ 
-                      businessName: prospect.displayName || prospect.name || '',
-                      email: prospect.email || '',
-                      phone: prospect.phone || '',
-                      clientContact: prospect.name || ''
-                    });
+                    // Carries the business's real photos, Google reviews, hours
+                    // and phone into the intake. This used to copy four fields
+                    // and drop the rest, which is why every demo fell back to
+                    // the same stock hero image and invented testimonial.
+                    setIntakePrefill(prospectToIntakePrefill(prospect));
                     setCurrentView('clients');
                   }}
                 />
