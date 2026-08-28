@@ -44,6 +44,20 @@ Cross-lane edits are allowed but must be announced on the board first.
   - `leads`: RLS enabled. `anon` can ONLY `INSERT` (needed for `/api/lead` client-site form submissions). `authenticated` can `SELECT`.
 - Client sites render via `window.__TXSONS_BLUEPRINT__` injected by `/api/deploy`; design tokens are CSS vars `--ts-*` applied on the `data-ts-site` root by `ClientApp`.
 
+## Server-side Supabase clients
+
+- `getSupabase()` uses the **anon key** and is subject to RLS, exactly like a browser.
+- `getSupabaseAdmin()` uses `SUPABASE_SERVICE_ROLE_KEY` and **bypasses RLS**. Use it
+  for trusted server paths that have no user session — `/api/lead` (form posts from
+  deployed client sites) and the client intake portal.
+- Why: the server was writing with the anon key, so server-side writes were hostage
+  to whatever policy the table happened to have. That is how lead capture broke
+  silently. Granting `anon` write policies instead would hand the same access to
+  anyone who reads the key out of the browser bundle.
+- **The service-role key must never carry a `VITE_` prefix** — Vite inlines `VITE_*`
+  into the client bundle. `scripts/smoke-security.ts` fails the build if a
+  service-role env var is VITE_-prefixed, or if the key value appears in `dist/`.
+
 ## Data access contract (do not regress this)
 
 - **All business data goes through `src/store/`.** Components must not call

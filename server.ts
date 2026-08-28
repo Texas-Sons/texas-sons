@@ -304,7 +304,7 @@ async function generateGeminiWithRetry(options: { model?: string; contents: any 
   throw lastError;
 }
 
-// Lazy-initialized Supabase client for lead capture
+// Lazy-initialized Supabase client (anon key — subject to RLS)
 let supabaseClient: SupabaseClient | null = null;
 function getSupabase(): SupabaseClient {
   if (!supabaseClient) {
@@ -316,6 +316,51 @@ function getSupabase(): SupabaseClient {
     supabaseClient = createSupabaseClient(url, anonKey);
   }
   return supabaseClient;
+}
+
+/**
+ * Server-side admin client. Uses the service-role key, which BYPASSES RLS.
+ *
+ * Why this exists: the server is a trusted context, but it was talking to
+ * Supabase with the public anon key. That meant server-side writes were subject
+ * to the same row-level policies as an anonymous browser — which is why
+ * /api/lead broke the moment `leads` was locked down, and why a public intake
+ * portal could not write anything at all. Working around it by granting `anon`
+ * write policies also hands that same write access to anyone who reads the key
+ * out of the browser bundle.
+ *
+ * NEVER expose this key to the client. It must not carry a VITE_ prefix (Vite
+ * inlines those into the browser bundle) and must never be returned in a
+ * response.
+ *
+ * Falls back to the anon client when unset, so the app still boots — but logs
+ * loudly, because the public write paths will fail under RLS.
+ */
+let supabaseAdminClient: SupabaseClient | null = null;
+let warnedAboutMissingServiceRole = false;
+function getSupabaseAdmin(): SupabaseClient {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!serviceKey) {
+    if (!warnedAboutMissingServiceRole) {
+      console.warn(
+        '[supabase] SUPABASE_SERVICE_ROLE_KEY is not set — falling back to the anon key. ' +
+        'Public write paths (/api/lead, intake portal) will fail if RLS denies anon. ' +
+        'Add it to .env.local; see .env.example.'
+      );
+      warnedAboutMissingServiceRole = true;
+    }
+    return getSupabase();
+  }
+
+  if (!supabaseAdminClient) {
+    const url = process.env.VITE_SUPABASE_URL;
+    if (!url) throw new Error('VITE_SUPABASE_URL is required in .env.local');
+    supabaseAdminClient = createSupabaseClient(url, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+  }
+  return supabaseAdminClient;
 }
 
 async function cfFetch(url: string, init?: RequestInit): Promise<any> {
@@ -1717,7 +1762,11 @@ ${prompt}`;
         return res.status(400).json({ success: false, error: "name and phone are required" });
       }
 
-      const supabase = getSupabase();
+      // Admin client: this is a trusted server path handling submissions from
+      // deployed client sites, which have no session. Using the anon key here
+      // made lead capture hostage to whatever RLS policy `leads` happened to
+      // have — and it silently broke.
+      const supabase = getSupabaseAdmin();
       const { data, error } = await supabase.from('leads').insert({
         business_name: businessName || '',
         site_slug: siteSlug || '',

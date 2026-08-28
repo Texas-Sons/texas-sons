@@ -81,6 +81,32 @@ check('whitespace-only falls back to defaults', getAdminEmails().length > 0, tru
 if (originalAdmins === undefined) delete process.env.ADMIN_EMAILS;
 else process.env.ADMIN_EMAILS = originalAdmins;
 
+// --- Service-role key must never reach the browser -------------------------
+
+// Vite inlines any VITE_-prefixed var into the client bundle. A service-role key
+// there would hand every visitor full read/write on the database, bypassing RLS.
+const leakyEnvNames = Object.keys(process.env).filter(
+  name => name.startsWith('VITE_') && /service[_-]?role/i.test(name)
+);
+check('no VITE_-prefixed service-role env var', leakyEnvNames, []);
+
+// If a build exists, confirm the key value itself is not baked into it.
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (serviceKey && serviceKey.length > 20) {
+  const { existsSync, readdirSync, readFileSync } = await import('fs');
+  const { join } = await import('path');
+  const assetsDir = join(process.cwd(), 'dist', 'assets');
+
+  if (existsSync(assetsDir)) {
+    const leaked = readdirSync(assetsDir)
+      .filter(f => f.endsWith('.js'))
+      .filter(f => readFileSync(join(assetsDir, f), 'utf8').includes(serviceKey));
+    check('service-role key absent from built client bundle', leaked, []);
+  } else {
+    console.log('  (skipped bundle scan — dist/assets not built yet)');
+  }
+}
+
 // --- Result ----------------------------------------------------------------
 
 if (failures > 0) {
