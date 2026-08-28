@@ -1,0 +1,70 @@
+-- Hardening RLS policies
+
+-- 1. Projects: Drop permissive policies that allow public access
+drop policy if exists "Allow anon all on projects" on public.projects;
+drop policy if exists "Authenticated admins can manage all projects" on public.projects;
+
+-- Backfill existing projects with null owner_id
+update public.projects
+set owner_id = '1da64083-d453-490e-8b3b-dc0e9196b560'
+where owner_id is null;
+
+-- Make owner_id NOT NULL on projects
+alter table public.projects alter column owner_id set not null;
+
+-- 2. Create client_intakes table
+create table if not exists public.client_intakes (
+  id              text primary key,
+  owner_id        uuid references auth.users(id) on delete cascade,
+  business_name   text,
+  client_contact  text,
+  email           text,
+  phone           text,
+  address         text,
+  domain          text,
+  category        text,
+  tier            text,
+  status          text,
+  theme           text,
+  tagline         text,
+  description     text,
+  data            jsonb not null default '{}'::jsonb,
+  updated_at      timestamptz not null default now()
+);
+
+-- Backfill client_intakes (in case it existed and had rows)
+update public.client_intakes
+set owner_id = '1da64083-d453-490e-8b3b-dc0e9196b560'
+where owner_id is null;
+
+alter table public.client_intakes alter column owner_id set not null;
+
+-- Enable RLS on client_intakes
+alter table public.client_intakes enable row level security;
+drop policy if exists "Users can manage their own client_intakes." on public.client_intakes;
+create policy "Users can manage their own client_intakes." on public.client_intakes
+    for all to authenticated
+    using (auth.uid() = owner_id)
+    with check (auth.uid() = owner_id);
+
+
+-- 3. Invoices: Ensure owner_id is not null
+update public.invoices
+set owner_id = '1da64083-d453-490e-8b3b-dc0e9196b560'
+where owner_id is null;
+
+alter table public.invoices alter column owner_id set not null;
+
+-- Ensure invoices uses authenticated role for its policy (if it was public, change it to authenticated)
+drop policy if exists "Users can manage their own invoices." on public.invoices;
+create policy "Users can manage their own invoices." on public.invoices
+    for all to authenticated
+    using (auth.uid() = owner_id)
+    with check (auth.uid() = owner_id);
+
+-- Fix projects policy to use authenticated role
+drop policy if exists "Users can manage their own projects." on public.projects;
+create policy "Users can manage their own projects." on public.projects
+    for all to authenticated
+    using (auth.uid() = owner_id)
+    with check (auth.uid() = owner_id);

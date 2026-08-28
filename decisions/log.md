@@ -95,3 +95,13 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Still to confirm with real data:** the backfill has not yet run against Morgan's actual browser profile — see the checklist in the handoff.
 
 **Owner:** Morgan Valdez
+
+## 2026-08-28 ?" Row Level Security (RLS) hardening
+
+**Decision:** Enforced strict Row Level Security (RLS) on all core tables (\projects\, \invoices\, \client_intakes\, and \leads\). Removed permissive \USING (true)\ policies. Bound data exclusively to \uth.uid() = owner_id\ for authenticated users, completely cutting off \non\ access to sensitive tables. Allowed \non\ to perform INSERT-only operations on \leads\ to support deployed client sites' forms.
+
+**Why:** The \VITE_SUPABASE_ANON_KEY\ is embedded in the frontend bundle. While API routes were secured by \equireAdmin\, without robust RLS policies, an attacker could directly query Supabase REST endpoints using the anon key to dump all tables (blueprints, leads, invoices). Hardening RLS ensures the database boundary matches the API boundary.
+
+**Alternatives considered:** Modifying \equireAdmin\ to be more granular. However, the true vulnerability was direct database access via the public anon key. RLS is the proper defense against client-side key abuse.
+
+**Owner:** Antigravity

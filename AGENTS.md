@@ -39,7 +39,9 @@ Cross-lane edits are allowed but must be announced on the board first.
 - **Frontend must call `apiFetch`/`apiJson` from `src/api.ts`**, never bare `fetch`, for admin routes — the helper attaches the Bearer token and signs out on 401. `ClientApp.tsx` uses bare `fetch` for `/api/lead` on purpose.
 - The email allowlist in `src/App.tsx` / Settings is **cosmetic only** (localStorage, user-editable). It is not a security boundary.
 - **Never fetch a user-supplied URL with bare `fetch`.** Use `safeFetchText` from `lib/safeFetch.ts`, which blocks private/reserved addresses (incl. cloud metadata) on every redirect hop and caps time + response size. `scripts/smoke-security.ts` enforces this in CI.
-- Supabase `leads` table is required for `/api/lead` (client-site form submissions). SQL: id uuid pk, business_name, site_slug, name, phone, email, service, notes, address, created_at. RLS: anon insert + authenticated select.
+- **Supabase Schema & RLS Policies**:
+  - `projects`, `invoices`, `client_intakes`: RLS enabled. Policies restrict ALL operations (SELECT, INSERT, UPDATE, DELETE) to `authenticated` users where `auth.uid() = owner_id`. `anon` access is fully denied.
+  - `leads`: RLS enabled. `anon` can ONLY `INSERT` (needed for `/api/lead` client-site form submissions). `authenticated` can `SELECT`.
 - Client sites render via `window.__TXSONS_BLUEPRINT__` injected by `/api/deploy`; design tokens are CSS vars `--ts-*` applied on the `data-ts-site` root by `ClientApp`.
 
 ## Data access contract (do not regress this)
