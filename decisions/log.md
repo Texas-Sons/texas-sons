@@ -133,3 +133,35 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Known limitation:** both counters are per-browser, so they undercount across devices. Server-side usage tracking is the correct home since quota is per-account; deferred to Phase 2 rather than expanding database surface during an RLS incident.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Server uses a service-role key for trusted write paths
+
+**Decision:** The server now has `getSupabaseAdmin()` (service-role, bypasses RLS) alongside `getSupabase()` (anon, subject to RLS). `/api/lead` and the client intake portal use the admin client.
+
+**Why:** `/api/lead` was returning HTTP 500 on every submission from every deployed client site — yard sign requests, volunteer signups, quote forms, all silently lost. Root cause: the server built its Supabase client from the public anon key, so server-side writes were subject to the same row-level policies as an anonymous browser. The server is a trusted context and should never have been asking permission that way.
+
+**Why not just add an anon INSERT policy:** that grants the same write access to anyone who reads the anon key out of the browser bundle — an open spam vector on the lead pipeline. Three attempts at policy-level fixes also failed for reasons never fully explained (correct policy present, insert still rejected with 42501, same project ref, valid anon-role JWT). Fixing the architecture removed the dependency on solving that puzzle.
+
+**Verification:** `POST /api/lead` → 200 with a real lead id. anon `SELECT` on `leads` returns `[]` while rows demonstrably exist — the first unambiguous proof reads are denied, since earlier empty results could not be distinguished from an empty table.
+
+**Guardrails:** the service-role key must never carry a `VITE_` prefix (Vite inlines those into the browser bundle). `scripts/smoke-security.ts` fails the build if such an env var exists, or if the key value appears in a built `dist/` asset.
+
+**Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Client intake portal replaces email asset collection
+
+**Decision:** Clients get a tokenised link (`/intake/<token>`) where they submit their own business details and photos, instead of being emailed a list of things to reply with. Submissions land in a new `intake_submissions` table for review, never overwriting the curated `client_intakes` record.
+
+**Why:** `aios-intake.md` Q7 names manual asset gathering and back-and-forth as the single biggest time sink. The existing "solution" in `ClientIntakeView` was a copy-paste email asking the client to reply with their logo, services and photos — which *is* the back-and-forth. This finishes by software what was already being done by hand.
+
+**Access model:** the two `/api/intake/:token` routes are public because clients have no account. They are protected by an unguessable revocable token, and read/write through the service-role client — so `anon` needs no database policies at all. That is stricter than the `leads` model and closes the spam vector an anon INSERT policy would open.
+
+**Why submissions are a separate table:** a public form must never be able to overwrite a live client record. Morgan reviews and merges.
+
+**Known gap:** the portal routes are not yet rate-limited. A known token can be submitted to repeatedly. Same gap as `/api/lead`.
+
+**Owner:** Morgan Valdez

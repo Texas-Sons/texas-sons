@@ -7,7 +7,7 @@
  */
 
 import { isBlockedAddress, safeFetchText } from '../lib/safeFetch';
-import { getAdminEmails } from '../lib/auth';
+import { getAdminEmails, isPublicApiPath } from '../lib/auth';
 
 let failures = 0;
 
@@ -81,6 +81,26 @@ check('whitespace-only falls back to defaults', getAdminEmails().length > 0, tru
 if (originalAdmins === undefined) delete process.env.ADMIN_EMAILS;
 else process.env.ADMIN_EMAILS = originalAdmins;
 
+// --- Auth: which /api paths are public -------------------------------------
+
+// Prefix matching is the easiest way to accidentally expose an admin endpoint.
+// The negative cases matter more than the positive ones here.
+const mustBePublic = ['/health', '/lead', '/intake/abc123', '/intake/'];
+const mustBeGuarded = [
+  '/intake-link',      // admin: mints share tokens. Must NOT match '/intake/'.
+  '/intake',           // no trailing slash — not a portal route
+  '/deploy',           // would let anyone publish to the Cloudflare account
+  '/invoice',          // would let anyone generate Stripe invoices
+  '/templates',
+  '/studio-chat',      // would burn Gemini quota
+  '/domains/add',
+  '/healthz',          // near-miss on '/health'
+  '/leads',            // near-miss on '/lead'
+];
+
+for (const p of mustBePublic) check(`public: ${p}`, isPublicApiPath(p), true);
+for (const p of mustBeGuarded) check(`guarded: ${p}`, isPublicApiPath(p), false);
+
 // --- Service-role key must never reach the browser -------------------------
 
 // Vite inlines any VITE_-prefixed var into the client bundle. A service-role key
@@ -113,4 +133,4 @@ if (failures > 0) {
   console.error(`\nSECURITY SMOKE FAIL: ${failures} check(s) failed`);
   process.exit(1);
 }
-console.log(`SECURITY SMOKE PASS: ${mustBlock.length + mustAllow.length} address checks, 4 fetch refusals, 3 allowlist checks`);
+console.log(`SECURITY SMOKE PASS: ${mustBlock.length + mustAllow.length} address checks, 4 fetch refusals, 3 allowlist checks, ${mustBePublic.length + mustBeGuarded.length} route-gate checks`);

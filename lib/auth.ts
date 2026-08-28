@@ -30,6 +30,30 @@ export function getAdminEmails(): string[] {
   return parsed.length ? parsed : DEFAULT_ADMIN_EMAILS;
 }
 
+/**
+ * Routes under /api that are reachable without a session, by design.
+ *   /health   liveness probe
+ *   /lead     form posts from deployed client sites (no session exists)
+ * Adding a third requires a decision log entry.
+ */
+export const PUBLIC_API_PATHS = new Set(['/health', '/lead']);
+
+/**
+ * Public routes carrying a path parameter, matched by prefix.
+ *
+ * The trailing slash is load-bearing: '/intake/' must match '/intake/<token>'
+ * but must NOT match the admin route '/intake-link'. Prefixes here are the
+ * easiest way to accidentally expose an admin endpoint, so every entry needs a
+ * corresponding negative case in scripts/smoke-security.ts.
+ */
+export const PUBLIC_API_PREFIXES = ['/intake/'];
+
+/** True when a path (relative to the /api mount) needs no authentication. */
+export function isPublicApiPath(pathname: string): boolean {
+  if (PUBLIC_API_PATHS.has(pathname)) return true;
+  return PUBLIC_API_PREFIXES.some(prefix => pathname.startsWith(prefix));
+}
+
 let authClient: SupabaseClient | null = null;
 function getAuthClient(): SupabaseClient {
   if (!authClient) {

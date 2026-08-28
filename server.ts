@@ -3,6 +3,7 @@ dotenv.config({ path: '.env.local' });
 
 import express from "express";
 import helmet from "helmet";
+import crypto from "crypto";
 import path from "path";
 import fs from "fs/promises";
 import JSZip from "jszip";
@@ -12,7 +13,7 @@ import Stripe from "stripe";
 import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { requireAdmin } from './lib/auth';
+import { requireAdmin, isPublicApiPath } from './lib/auth';
 import { safeFetchText } from './lib/safeFetch';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
@@ -636,10 +637,11 @@ async function startServer() {
   //                no session available). TODO: rate-limit + captcha this one.
   // Mounted before the route definitions so nothing can be added behind its back.
   // -------------------------------------------------------------------------
-  const PUBLIC_API_PATHS = new Set(['/health', '/lead']);
+  // isPublicApiPath lives in lib/auth.ts so scripts/smoke-security.ts can assert
+  // it in CI — notably that '/intake/' does not also open '/intake-link'.
   app.use('/api', (req, res, next) => {
     if (req.method === 'OPTIONS') return next();
-    if (PUBLIC_API_PATHS.has(req.path)) return next();
+    if (isPublicApiPath(req.path)) return next();
     return requireAdmin(req, res, next);
   });
 
@@ -1755,6 +1757,130 @@ ${prompt}`;
   });
 
   // Public lead capture from deployed client sites
+  // -------------------------------------------------------------------------
+  // Client intake portal
+  //
+  // Replaces the copy-paste "reply to this email with your logo and photos"
+  // flow. The client opens /intake/<token> and fills it in themselves.
+  //
+  // The two /api/intake/:token routes are PUBLIC by design — clients have no
+  // account. They are guarded by the token being unguessable and revocable, and
+  // they read/write through the service-role client, so `anon` needs no database
+  // policies at all.
+  //
+  // TODO: rate-limit these, same as /api/lead. A known token is currently
+  // submittable an unlimited number of times.
+  // -------------------------------------------------------------------------
+
+  const MAX_SUBMISSION_BYTES = 8 * 1024 * 1024; // generous for a few photos
+
+  /** Looks up a live intake by share token. Null when missing or revoked. */
+  async function findIntakeByToken(token: string) {
+    const safeToken = String(token || '').trim();
+    // Tokens are hex from randomBytes; reject anything else before querying.
+    if (!/^[a-f0-9]{32,64}$/i.test(safeToken)) return null;
+
+    const { data, error } = await getSupabaseAdmin()
+      .from('client_intakes')
+      .select('id, business_name, client_contact, category, share_token_revoked')
+      .eq('share_token', safeToken)
+      .maybeSingle();
+
+    if (error) {
+      console.error('[intake] Token lookup failed:', error);
+      return null;
+    }
+    if (!data || data.share_token_revoked) return null;
+    return data;
+  }
+
+  // Public: what the portal page needs to render. Deliberately returns only the
+  // business name and contact — never the full dossier, pricing, or notes.
+  app.get("/api/intake/:token", async (req, res) => {
+    try {
+      const intake = await findIntakeByToken(req.params.token);
+      if (!intake) {
+        return res.status(404).json({ success: false, error: "This link is no longer active. Please ask for a new one." });
+      }
+      res.json({
+        success: true,
+        businessName: intake.business_name,
+        contactName: intake.client_contact,
+        category: intake.category,
+      });
+    } catch (error: any) {
+      console.error('[intake] Lookup error:', error);
+      res.status(500).json({ success: false, error: "Could not load this form." });
+    }
+  });
+
+  // Public: accept a client's submission.
+  app.post("/api/intake/:token", async (req, res) => {
+    try {
+      const intake = await findIntakeByToken(req.params.token);
+      if (!intake) {
+        return res.status(404).json({ success: false, error: "This link is no longer active. Please ask for a new one." });
+      }
+
+      const payload = req.body?.payload;
+      if (!payload || typeof payload !== 'object') {
+        return res.status(400).json({ success: false, error: "Nothing was submitted." });
+      }
+
+      const size = Buffer.byteLength(JSON.stringify(payload), 'utf8');
+      if (size > MAX_SUBMISSION_BYTES) {
+        return res.status(413).json({
+          success: false,
+          error: `That's too large to submit (${Math.round(size / 1024 / 1024)}MB). Please send fewer or smaller photos.`,
+        });
+      }
+
+      // Stored as a new row rather than merged into the intake: a public form
+      // must never overwrite a curated client record. Morgan reviews and merges.
+      const { error } = await getSupabaseAdmin().from('intake_submissions').insert({
+        intake_id: intake.id,
+        payload,
+      });
+      if (error) throw error;
+
+      console.log(`[intake] Submission received for "${intake.business_name}" (${Math.round(size / 1024)}KB)`);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('[intake] Submission error:', error);
+      res.status(500).json({ success: false, error: "Could not save your submission. Please try again." });
+    }
+  });
+
+  // Admin: mint (or rotate) a share link for a client.
+  app.post("/api/intake-link", async (req, res) => {
+    try {
+      const { intakeId, revoke } = req.body || {};
+      if (!intakeId) return res.status(400).json({ success: false, error: "intakeId is required" });
+
+      if (revoke) {
+        const { error } = await getSupabaseAdmin()
+          .from('client_intakes')
+          .update({ share_token_revoked: true })
+          .eq('id', intakeId);
+        if (error) throw error;
+        return res.json({ success: true, revoked: true });
+      }
+
+      const token = crypto.randomBytes(24).toString('hex');
+      const { error } = await getSupabaseAdmin()
+        .from('client_intakes')
+        .update({ share_token: token, share_token_revoked: false })
+        .eq('id', intakeId);
+      if (error) throw error;
+
+      const base = process.env.APP_URL?.replace(/\/+$/, '') || `http://localhost:${PORT}`;
+      res.json({ success: true, token, url: `${base}/intake/${token}` });
+    } catch (error: any) {
+      console.error('[intake] Link generation error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   app.post("/api/lead", async (req, res) => {
     try {
       const { businessName, siteSlug, name, phone, email, service, notes, address } = req.body || {};
