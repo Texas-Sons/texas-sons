@@ -185,3 +185,21 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Still open (the structural half):** `ClientApp.tsx` hardcodes section order, so every non-campaign site is Navbar → Hero → Services → Testimonials → Booking → Footer. Real content makes demos feel researched; data-driven composition is what will make them feel structurally different. That is the next piece.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Site composition became data instead of a hardcoded tree
+
+**Decision:** A blueprint can now carry `sections: SiteSection[]`. `ClientApp` renders that array instead of a fixed JSX tree. When a blueprint has no `sections` — true of every site already deployed — `resolveSections` falls back to an archetype picked by vertical.
+
+**Why:** Morgan's complaint that demos "all look the same" had two causes. The first (real business data being discarded on conversion) was fixed earlier today. This is the second: `ClientApp` hardcoded one order, so every non-campaign site was Navbar → Hero → Services → Testimonials → Booking → Footer regardless of the business. Colours and copy varied; structure never did, and structure is what makes a page read as "the same template again".
+
+**Archetypes:** campaign and uncategorised reproduce the previous order exactly. Food leads with the menu before proof — someone choosing where to eat wants the food first. Home & trade puts contact directly under the hero, because a burst pipe is an emergency and nobody scrolls three sections to find a phone number. Beauty is booking-led with pricing high. Professional is credibility-first.
+
+**Backward compatibility was the hard constraint.** Deployed sites inject an older blueprint shape via `window.__TXSONS_BLUEPRINT__`; if archetype order drifted, live client sites would silently change layout on their next redeploy. `scripts/smoke-mapping.ts` pins the campaign, write-in and uncategorised orders as exact-match assertions so that drift fails CI rather than shipping.
+
+**Unknown section kinds are skipped with a warning** rather than throwing, so a newer blueprint cannot break an older deployed client bundle.
+
+**Still open:** no Studio UI for editing composition — archetypes are inferred, not chosen. And no gallery block, so `galleryImages` is carried but unrendered. Both are natural next steps.
+
+**Owner:** Morgan Valdez

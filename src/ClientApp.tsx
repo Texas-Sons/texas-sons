@@ -10,6 +10,7 @@ import { TestimonialsBlock } from "./templates/blocks/TestimonialsBlock";
 import { BookingBlock } from "./templates/blocks/BookingBlock";
 import { FooterBlock } from "./templates/blocks/FooterBlock";
 import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
+import { resolveSections, SiteSection } from "./templates/sections";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
@@ -100,6 +101,151 @@ export function ClientApp() {
     }
   };
 
+  // Composition comes from the blueprint when it has one, otherwise from an
+  // archetype chosen by vertical. Blueprints deployed before sections existed
+  // take the archetype path and render exactly as they did before.
+  const officeTitle = project.profile.name.toLowerCase().includes('judge')
+    ? 'Atascosa County Judge'
+    : undefined;
+
+  const sections = resolveSections(project.sections, {
+    category: project.profile.category,
+    isCampaign,
+    isWriteIn,
+    officeTitle,
+  });
+
+  /** Maps one section descriptor to its block. Returns null when it has no data to show. */
+  const renderSection = (section: SiteSection, _index: number) => {
+    const p = section.props || {};
+    const accentColor = project.profile.accentColor;
+
+    switch (section.kind) {
+      case 'navbar':
+        return (
+          <NavbarBlock
+            businessName={project.profile.name}
+            phone={project.profile.phone}
+            theme={project.theme}
+            accentColor={accentColor}
+            ctaText={p.ctaText}
+            navItems={p.navItems}
+          />
+        );
+
+      case 'campaignHero':
+        return (
+          <CampaignHeroBlock
+            headline={project.profile.tagline || project.profile.name}
+            subheadline={project.profile.description || ''}
+            heroImage={project.profile.heroImage}
+            accentColor={accentColor}
+            badges={project.badges}
+            proofBadgeText={project.proofBadgeText}
+            ctaText={p.ctaText}
+            secondaryCtaText={p.secondaryCtaText}
+            theme={project.theme}
+            candidateName={project.profile.name}
+            officeTitle={officeTitle}
+          />
+        );
+
+      case 'hero':
+        return (
+          <HeroBlock
+            theme={project.theme}
+            variant={project.heroVariant}
+            headline={project.profile.tagline || project.profile.name}
+            subheadline={project.profile.description || ''}
+            heroImage={project.profile.heroImage}
+            badges={project.badges}
+            accentColor={accentColor}
+            proofBadgeText={project.proofBadgeText}
+            ctaText={p.ctaText}
+            secondaryCtaText={p.secondaryCtaText}
+          />
+        );
+
+      case 'writeInGuide':
+        return (
+          <WriteInGuideBlock
+            candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
+            officeTitle="Atascosa County Judge"
+            theme={project.theme}
+            accentColor={accentColor}
+          />
+        );
+
+      case 'votingBanner':
+        return (
+          <VotingBannerBlock
+            accentColor={accentColor}
+            candidateName={project.profile.name}
+            officeTitle={officeTitle ? `${officeTitle} Election` : undefined}
+            theme={project.theme}
+          />
+        );
+
+      case 'services':
+        return (
+          <ServicesBlock
+            theme={project.theme}
+            services={project.services}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+          />
+        );
+
+      case 'events':
+        return (
+          <EventsBlock
+            events={project.events}
+            theme={project.theme}
+            accentColor={accentColor}
+          />
+        );
+
+      case 'testimonials':
+        // Preserves the previous guard: no reviews, no empty section.
+        if (!project.testimonials?.length) return null;
+        return (
+          <TestimonialsBlock
+            theme={project.theme}
+            testimonials={project.testimonials}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+          />
+        );
+
+      case 'booking':
+        return (
+          <BookingBlock
+            theme={project.theme}
+            phone={project.profile.phone}
+            email={project.profile.email}
+            address={project.profile.address}
+            hours={project.profile.hours}
+            services={project.services}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+            onSubmit={handleLeadSubmit}
+          />
+        );
+
+      case 'footer':
+        return <FooterBlock business={project.profile} theme={project.theme} />;
+
+      default:
+        // An unknown kind from a newer blueprint must not break an older client
+        // bundle — skip it rather than crashing the whole site.
+        console.warn(`[ClientApp] Unknown section kind: ${(section as any).kind}`);
+        return null;
+    }
+  };
+
   return (
     <div
       data-ts-site=""
@@ -128,112 +274,10 @@ export function ClientApp() {
         </div>
       ) : viewMode === 'site' ? (
         <>
-          <NavbarBlock
-            businessName={project.profile.name}
-            phone={project.profile.phone}
-            theme={project.theme}
-            accentColor={project.profile.accentColor}
-            ctaText={isWriteIn ? "Vote Write-In" : (isCampaign ? "Join The Campaign" : "Book Free Estimate")}
-            navItems={isCampaign ? [
-              ...(isWriteIn ? [{ label: "How to Vote Write-In", href: "#write-in-guide" }] : []),
-              { label: "Platform", href: "#services" },
-              { label: "Events", href: "#events" },
-              { label: "Endorsements", href: "#reviews" },
-              { label: "Voting Info", href: "#voting" },
-              { label: "Volunteer", href: "#contact" }
-            ] : undefined}
-          />
-          {isCampaign ? (
-            <CampaignHeroBlock
-              headline={project.profile.tagline || project.profile.name}
-              subheadline={project.profile.description || ""}
-              heroImage={project.profile.heroImage}
-              accentColor={project.profile.accentColor}
-              badges={project.badges}
-              proofBadgeText={project.proofBadgeText}
-              ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
-              secondaryCtaText="Read Our Platform"
-              theme={project.theme}
-              candidateName={project.profile.name}
-              officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge' : undefined}
-            />
-          ) : (
-            <HeroBlock
-              theme={project.theme}
-              variant={project.heroVariant}
-              headline={project.profile.tagline || project.profile.name}
-              subheadline={project.profile.description || ""}
-              heroImage={project.profile.heroImage}
-              badges={project.badges}
-              accentColor={project.profile.accentColor}
-              proofBadgeText={project.proofBadgeText}
-              ctaText={
-                project.profile.category === 'Food & Beverage' ? 'View Menu' : 
-                project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
-                'Book Free Estimate'
-              }
-              secondaryCtaText={
-                project.profile.category === 'Food & Beverage' ? 'Catering Options' : 
-                'View Services'
-              }
-            />
-          )}
-          {isWriteIn && (
-            <WriteInGuideBlock
-              candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
-              officeTitle="Atascosa County Judge"
-              theme={project.theme}
-              accentColor={project.profile.accentColor}
-            />
-          )}
-          {isCampaign && (
-            <VotingBannerBlock
-              accentColor={project.profile.accentColor}
-              candidateName={project.profile.name}
-              officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge Election' : undefined}
-              theme={project.theme}
-            />
-          )}
-          <ServicesBlock
-            theme={project.theme}
-            services={project.services}
-            accentColor={project.profile.accentColor}
-            title={isCampaign ? 'Campaign Platform & Priorities' : 'Our Services'}
-            subtitle={isCampaign ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}
-          />
-          {isCampaign && (
-            <EventsBlock
-              events={project.events}
-              theme={project.theme}
-              accentColor={project.profile.accentColor}
-            />
-          )}
-          {project.testimonials.length > 0 && (
-            <TestimonialsBlock
-              theme={project.theme}
-              testimonials={project.testimonials}
-              accentColor={project.profile.accentColor}
-              title={isCampaign ? 'Endorsements & Community Support' : 'What Our Clients Say'}
-              subtitle={isCampaign ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}
-            />
-          )}
-          <BookingBlock
-            theme={project.theme}
-            phone={project.profile.phone}
-            email={project.profile.email}
-            address={project.profile.address}
-            hours={project.profile.hours}
-            services={project.services}
-            accentColor={project.profile.accentColor}
-            title={isCampaign ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}
-            subtitle={isCampaign ? 'Join today.' : 'Get in touch with us.'}
-            onSubmit={handleLeadSubmit}
-          />
-          <FooterBlock
-            business={project.profile}
-            theme={project.theme}
-          />
-          
+          {sections.map((section, i) => (
+            <React.Fragment key={`${section.kind}-${i}`}>{renderSection(section, i)}</React.Fragment>
+          ))}
+
           {/* Subtle client admin access badge */}
           <div className="fixed bottom-3 right-3 z-50">
             <button

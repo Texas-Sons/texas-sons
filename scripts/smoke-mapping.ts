@@ -16,6 +16,7 @@ import {
   ratingBadge,
   inferCategory,
 } from '../src/utils/prospectToIntake';
+import { resolveSections } from '../src/templates/sections';
 
 let failures = 0;
 
@@ -103,10 +104,56 @@ check('plumber -> Home & Trade Services', inferCategory('Plumber'), 'Home & Trad
 check('attorney -> Professional & Medical', inferCategory('Law Firm'), 'Professional & Medical');
 check('unknown type stays undefined so the form default applies', inferCategory('Miscellaneous Thing'), undefined);
 
+// --- Site composition -------------------------------------------------------
+
+// Every site already deployed carries a blueprint with no `sections`, so it
+// takes the archetype path. If these orders drift, live client sites silently
+// change layout on their next redeploy.
+
+const kinds = (s: { kind: string }[]) => s.map(x => x.kind);
+
+check('campaign order is unchanged from the previous hardcoded tree',
+  kinds(resolveSections(undefined, { isCampaign: true, isWriteIn: false })),
+  ['navbar', 'campaignHero', 'votingBanner', 'services', 'events', 'testimonials', 'booking', 'footer']);
+
+check('write-in campaigns insert the guide after the hero',
+  kinds(resolveSections(undefined, { isCampaign: true, isWriteIn: true })),
+  ['navbar', 'campaignHero', 'writeInGuide', 'votingBanner', 'services', 'events', 'testimonials', 'booking', 'footer']);
+
+check('uncategorised order is unchanged',
+  kinds(resolveSections(undefined, { isCampaign: false, isWriteIn: false })),
+  ['navbar', 'hero', 'services', 'testimonials', 'booking', 'footer']);
+
+// The whole point: verticals must not all produce the same skeleton.
+const food = kinds(resolveSections(undefined, { isCampaign: false, isWriteIn: false, category: 'Food & Beverage' }));
+const trades = kinds(resolveSections(undefined, { isCampaign: false, isWriteIn: false, category: 'Home & Trade Services' }));
+const beauty = kinds(resolveSections(undefined, { isCampaign: false, isWriteIn: false, category: 'Beauty & Wellness' }));
+
+checkTrue('trades leads with contact — booking before services',
+  trades.indexOf('booking') < trades.indexOf('services'));
+checkTrue('beauty shows the service menu before booking',
+  beauty.indexOf('services') < beauty.indexOf('booking'));
+checkTrue('food and trades are structurally different',
+  JSON.stringify(food) !== JSON.stringify(trades));
+checkTrue('beauty and trades are structurally different',
+  JSON.stringify(beauty) !== JSON.stringify(trades));
+
+// Vertical copy must actually differ, not just section order.
+const foodSections = resolveSections(undefined, { isCampaign: false, isWriteIn: false, category: 'Food & Beverage' });
+check('food calls the services block a menu',
+  foodSections.find(s => s.kind === 'services')?.props?.title, 'The Menu');
+
+// An explicit composition on the blueprint always wins.
+check('explicit sections override the archetype',
+  kinds(resolveSections([{ kind: 'hero' }, { kind: 'footer' }], { isCampaign: true, isWriteIn: true })),
+  ['hero', 'footer']);
+check('an empty sections array falls back rather than rendering nothing',
+  kinds(resolveSections([], { isCampaign: false, isWriteIn: false })).length > 0, true);
+
 // --- Result -----------------------------------------------------------------
 
 if (failures > 0) {
   console.error(`\nMAPPING SMOKE FAIL: ${failures} check(s) failed`);
   process.exit(1);
 }
-console.log('MAPPING SMOKE PASS: prospect -> intake carries photos, reviews, hours, phone and rating');
+console.log('MAPPING SMOKE PASS: prospect -> intake carries real data; archetypes preserve legacy order and differ per vertical');
