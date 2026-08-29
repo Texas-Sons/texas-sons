@@ -14,6 +14,7 @@ import { resolveSections, SiteSection } from "./templates/sections";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
+import { GalleryBlock } from "./templates/blocks/GalleryBlock";
 import { WriteInGuideBlock } from "./templates/blocks/WriteInGuideBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
@@ -203,6 +204,19 @@ export function ClientApp() {
             events={project.events}
             theme={project.theme}
             accentColor={accentColor}
+          />
+        );
+
+      case 'gallery':
+        // GalleryBlock renders nothing without photos, so archetypes can include
+        // it unconditionally.
+        return (
+          <GalleryBlock
+            images={project.profile.galleryImages}
+            theme={project.theme}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
           />
         );
 

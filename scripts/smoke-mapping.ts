@@ -143,6 +143,16 @@ const foodSections = resolveSections(undefined, { isCampaign: false, isWriteIn: 
 check('food calls the services block a menu',
   foodSections.find(s => s.kind === 'services')?.props?.title, 'The Menu');
 
+// The gallery renders the photos prospectToIntake now carries. It must appear
+// where photos sell the business, and never in a campaign layout.
+checkTrue('food layout includes a gallery', food.includes('gallery'));
+checkTrue('trades layout includes a gallery', trades.includes('gallery'));
+checkTrue('beauty layout includes a gallery', beauty.includes('gallery'));
+checkTrue('campaigns do not get a photo gallery',
+  !kinds(resolveSections(undefined, { isCampaign: true, isWriteIn: false })).includes('gallery'));
+checkTrue('food shows the food before the written menu',
+  food.indexOf('gallery') < food.indexOf('services'));
+
 // An explicit composition on the blueprint always wins.
 check('explicit sections override the archetype',
   kinds(resolveSections([{ kind: 'hero' }, { kind: 'footer' }], { isCampaign: true, isWriteIn: true })),

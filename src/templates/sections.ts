@@ -20,6 +20,7 @@ export type SectionKind =
   | 'votingBanner'
   | 'services'
   | 'events'
+  | 'gallery'
   | 'testimonials'
   | 'booking'
   | 'footer';
@@ -105,6 +106,10 @@ function foodArchetype(): SiteSection[] {
       props: { ctaText: 'View Menu', secondaryCtaText: 'Catering Options' },
     },
     {
+      kind: 'gallery',
+      props: { title: 'The Food', subtitle: 'Straight from the pit.' },
+    },
+    {
       kind: 'services',
       props: { title: 'The Menu', subtitle: 'Made fresh, served generously.' },
     },
@@ -140,6 +145,10 @@ function tradesArchetype(): SiteSection[] {
       props: { title: 'What We Do', subtitle: 'Upfront pricing on every job.' },
     },
     {
+      kind: 'gallery',
+      props: { title: 'Recent Jobs', subtitle: 'Work we have finished nearby.' },
+    },
+    {
       kind: 'testimonials',
       props: { title: 'Trusted by Your Neighbours', subtitle: 'Verified reviews from customers nearby.' },
     },
@@ -158,6 +167,10 @@ function beautyArchetype(): SiteSection[] {
     {
       kind: 'services',
       props: { title: 'Services & Pricing', subtitle: 'Everything we offer, with no hidden costs.' },
+    },
+    {
+      kind: 'gallery',
+      props: { title: 'Our Work', subtitle: 'Recent results from the chair.' },
     },
     {
       kind: 'booking',
