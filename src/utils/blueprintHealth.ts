@@ -1,0 +1,154 @@
+/**
+ * Detects blueprint content that is still running on defaults.
+ *
+ * Why this exists: on 2026-08-29 a spec was generated for a real client that
+ * read `undefined | N/A` for contact details, listed one service called "Core
+ * Platform Solution", and carried an invented testimonial attributed to the
+ * wrong city. Nothing was broken — every fallback did exactly what it was
+ * written to do. The problem is that a blueprint on defaults looks finished, and
+ * the only way to notice is to read it carefully.
+ *
+ * So the app should say so. Placeholders are fine while building; they are not
+ * fine in something a client sees.
+ *
+ * Pure and dependency-free so it can be tested in plain Node.
+ */
+
+export type IssueSeverity = 'placeholder' | 'missing';
+
+export interface BlueprintIssue {
+  field: string;
+  severity: IssueSeverity;
+  /** What the operator should do about it. */
+  message: string;
+}
+
+/**
+ * Every literal a fallback can produce, from App.tsx and ClientIntakeView.
+ * If a default string changes there, add it here — a placeholder the detector
+ * does not know about is a placeholder that ships.
+ */
+const PLACEHOLDER_STRINGS = [
+  // taglines / descriptions
+  'proudly serving texas',
+  'dedicated texas business delivering premier quality and service',
+  'courtroom integrity. dedicated leadership',
+  // services
+  'core platform solution',
+  'comprehensive execution tailored for your community and goals',
+  'primary offering',
+  'comprehensive premium service tailored for your specific needs',
+  // testimonials
+  'exceptional leadership and unmatched attention to detail',
+  'exceptional service and unmatched attention to detail',
+  'unmatched leadership and execution across all deliverables',
+  'verified partner',
+  'verified client',
+  'community leader',
+  // badges / proof
+  'top rated · 100% guaranteed',
+  '25+ years experience',
+  'satisfaction guaranteed',
+  'locally owned',
+  'locally owned & operated',
+  // contact
+  '(512) 555-txsons',
+  'contact@txsons.com',
+  '(512) 555-0100',
+  'contact@example.com',
+];
+
+function isPlaceholder(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const v = value.trim().toLowerCase();
+  if (!v) return false;
+  return PLACEHOLDER_STRINGS.some(p => v === p || v.includes(p));
+}
+
+/** Stock imagery that has stood in for a real photo. */
+function isStockImage(url: unknown): boolean {
+  return typeof url === 'string' && /images\.unsplash\.com/i.test(url);
+}
+
+export interface BlueprintLike {
+  profile?: Record<string, any>;
+  services?: Array<Record<string, any>>;
+  testimonials?: Array<Record<string, any>>;
+  badges?: string[];
+  proofBadgeText?: string;
+  [k: string]: any;
+}
+
+/**
+ * Returns everything about this blueprint that a client should not see.
+ * Empty array means it is built from real material.
+ */
+export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined): BlueprintIssue[] {
+  if (!blueprint) return [];
+  const p = blueprint.profile || {};
+  const issues: BlueprintIssue[] = [];
+
+  if (isPlaceholder(p.tagline)) {
+    issues.push({ field: 'tagline', severity: 'placeholder', message: 'Tagline is the generic fallback — write one in their voice.' });
+  }
+  if (isPlaceholder(p.description)) {
+    issues.push({ field: 'description', severity: 'placeholder', message: 'Description is the generic fallback.' });
+  }
+
+  if (!p.heroImage) {
+    issues.push({ field: 'heroImage', severity: 'missing', message: 'No hero image. Gather Assets, or have them upload through the intake portal.' });
+  } else if (isStockImage(p.heroImage)) {
+    issues.push({ field: 'heroImage', severity: 'placeholder', message: 'Hero is a stock photo — this is what makes every demo look alike.' });
+  }
+
+  if (!p.phone) issues.push({ field: 'phone', severity: 'missing', message: 'No phone number.' });
+  else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', message: 'Phone is a Texas Sons placeholder, not theirs.' });
+
+  if (isPlaceholder(p.email)) {
+    issues.push({ field: 'email', severity: 'placeholder', message: 'Email is a Texas Sons placeholder, not theirs.' });
+  }
+
+  const services = blueprint.services || [];
+  if (services.length === 0) {
+    issues.push({ field: 'services', severity: 'missing', message: 'No services listed.' });
+  } else if (services.some(s => isPlaceholder(s?.title) || isPlaceholder(s?.description))) {
+    issues.push({ field: 'services', severity: 'placeholder', message: 'Services are still the default filler — replace with their real menu.' });
+  }
+
+  const testimonials = blueprint.testimonials || [];
+  if (testimonials.some(t => isPlaceholder(t?.quote) || isPlaceholder(t?.author))) {
+    // The worst kind: a fabricated review is a claim about a real business.
+    issues.push({ field: 'testimonials', severity: 'placeholder', message: 'Testimonials are invented. Remove them or use real Google reviews.' });
+  }
+
+  if (isPlaceholder(blueprint.proofBadgeText)) {
+    issues.push({ field: 'proofBadgeText', severity: 'placeholder', message: 'Proof badge claims something they have not claimed.' });
+  }
+  if ((blueprint.badges || []).some(isPlaceholder)) {
+    issues.push({ field: 'badges', severity: 'placeholder', message: 'Badges are generic defaults.' });
+  }
+
+  return issues;
+}
+
+/** One-line summary for a status pill. Null when the blueprint is clean. */
+export function summariseIssues(issues: BlueprintIssue[]): string | null {
+  if (issues.length === 0) return null;
+  const placeholders = issues.filter(i => i.severity === 'placeholder').length;
+  const missing = issues.length - placeholders;
+  const parts: string[] = [];
+  if (placeholders) parts.push(`${placeholders} placeholder${placeholders === 1 ? '' : 's'}`);
+  if (missing) parts.push(`${missing} missing`);
+  return parts.join(' · ');
+}
+
+/**
+ * Whether a prospect carries the real material a good demo needs.
+ * Used to warn before converting one that has not been enriched.
+ */
+export function prospectHasRealAssets(prospect: any): boolean {
+  if (!prospect) return false;
+  const photos = Array.isArray(prospect.photos) ? prospect.photos.length : 0;
+  const reviews = Array.isArray(prospect.reviews) ? prospect.reviews.length : 0;
+  return photos > 0 || reviews > 0;
+}

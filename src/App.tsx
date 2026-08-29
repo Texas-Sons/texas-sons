@@ -16,6 +16,7 @@ import AssistantPanel from './components/AssistantPanel';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { prospectToIntakePrefill } from './utils/prospectToIntake';
+import { prospectHasRealAssets } from './utils/blueprintHealth';
 import { User } from '@supabase/supabase-js';
 import {
   listProjects, listInvoices, saveProject, removeProject, saveInvoice,
@@ -394,6 +395,29 @@ export default function App() {
                     // and phone into the intake. This used to copy four fields
                     // and drop the rest, which is why every demo fell back to
                     // the same stock hero image and invented testimonial.
+                    // Converting without gathering assets is how a demo ends up
+                    // on fallbacks: stock hero, invented testimonial, "Core
+                    // Platform Solution" as the only service. Say so before it
+                    // happens rather than letting it be discovered later.
+                    if (!prospectHasRealAssets(prospect)) {
+                      const name = prospect.displayName || prospect.name || 'This business';
+                      const proceed = confirm(
+                        `${name} has no gathered photos or reviews.
+
+` +
+                        `The demo will fall back to generic content — a stock hero image, ` +
+                        `placeholder services, and no real reviews.
+
+` +
+                        `Click Cancel to go back and press "Gather Assets" first, ` +
+                        `which pulls their real storefront photos and Google reviews.
+
+` +
+                        `Convert anyway?`
+                      );
+                      if (!proceed) return;
+                    }
+
                     const prefill = prospectToIntakePrefill(prospect);
                     recordEvent({
                       kind: 'intake_created',

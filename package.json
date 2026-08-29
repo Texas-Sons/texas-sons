@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx scripts/smoke-client.ts && tsx scripts/smoke-security.ts && tsx scripts/smoke-mapping.ts && tsx scripts/smoke-insights.ts",
+    "test": "tsx scripts/smoke-client.ts && tsx scripts/smoke-security.ts && tsx scripts/smoke-mapping.ts && tsx scripts/smoke-insights.ts && tsx scripts/smoke-health.ts",
     "verify": "npm run lint && npm test && npm run build",
     "smoke:live": "tsx scripts/smoke-live.ts"
   },
