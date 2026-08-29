@@ -1,5 +1,7 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useReveal, revealBlock } from './motion';
 import { ServiceItem } from './types';
 
 interface ServicesBlockProps {
@@ -46,12 +48,18 @@ export function ServicesBlock({
 
   const filteredServices = isCampaign ? (services || []).filter(s => !isVotingStep(s)) : (services || []);
 
+  const reveal = useReveal();
+
   return (
     <section id="services" className={`py-16 sm:py-24 relative bg-[color:var(--ts-surface)] text-[color:var(--ts-text)]`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <motion.div
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+          variants={reveal.props.initial ? revealBlock : undefined}
+          {...reveal.props}
+        >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-3 bg-[color:var(--ts-accent-soft)] text-[color:var(--ts-accent)] border border-[color:var(--ts-accent-border)]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{isCampaign ? 'Core Judicial & Policy Platform' : 'Featured Solutions'}</span>
@@ -62,13 +70,18 @@ export function ServicesBlock({
           <p className={`text-sm sm:text-base text-[color:var(--ts-muted)]`}>
             {displaySubtitle}
           </p>
-        </div>
+        </motion.div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
+        <motion.div
+          className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6"
+          variants={reveal.group}
+          {...reveal.props}
+        >
           {filteredServices.map((service, idx) => (
-            <div
+            <motion.div
               key={idx}
+              variants={reveal.item}
               className={`rounded-2xl p-6 sm:p-7 flex flex-col justify-between border transition-all duration-300 shadow-md hover:shadow-2xl hover:-translate-y-1 group ${
                 service.highlight
                   ? 'border-[color:var(--ts-accent-border)] bg-[color:var(--ts-accent-soft)]'
@@ -106,9 +119,9 @@ export function ServicesBlock({
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>

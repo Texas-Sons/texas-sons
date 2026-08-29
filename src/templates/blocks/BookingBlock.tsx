@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useReveal, revealBlock } from './motion';
 import { Send, CheckCircle, ShieldCheck, Vote, MapPin, Mail, Phone, AlertCircle } from 'lucide-react';
 import { ServiceItem } from './types';
 
@@ -87,12 +89,18 @@ export function BookingBlock({
 
   const inputClass = "w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[color:var(--ts-accent)] transition-all bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-text)] placeholder:text-[color:var(--ts-muted)]";
 
+  const reveal = useReveal();
+
   return (
     <section id="contact" className={`py-16 sm:py-24 relative bg-[color:var(--ts-bg)] text-[color:var(--ts-text)]`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center mb-10 sm:mb-14">
+        <motion.div
+          className="text-center mb-10 sm:mb-14"
+          variants={reveal.props.initial ? revealBlock : undefined}
+          {...reveal.props}
+        >
           {isCampaign && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[color:var(--ts-accent-soft)] text-[color:var(--ts-accent)] border border-[color:var(--ts-accent-border)] mb-3.5">
               <Vote className="w-3.5 h-3.5" aria-hidden="true" />
@@ -105,7 +113,7 @@ export function BookingBlock({
           <p className={`text-sm sm:text-base max-w-2xl mx-auto leading-relaxed text-[color:var(--ts-muted)]`}>
             {subtitle || defaultSubtitle}
           </p>
-        </div>
+        </motion.div>
 
         {/* Contact Info Strip */}
         {(phone || email || address) && (

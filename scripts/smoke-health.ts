@@ -96,6 +96,13 @@ checkTrue('an invented "Verified Client" testimonial is flagged',
 checkTrue('an empty testimonial list is NOT flagged — omitting is correct',
   !fields({ testimonials: [], profile: { phone: '1', heroImage: 'x' }, services: [{ title: 'Cut' }] }).includes('testimonials'));
 
+checkTrue('an all-stock gallery is flagged',
+  fields({ profile: { galleryImages: ['https://images.unsplash.com/photo-1', 'https://images.unsplash.com/photo-2'] } }).includes('galleryImages'));
+checkTrue('a gallery of real photos is not flagged',
+  !fields({ profile: { galleryImages: ['https://places.googleapis.com/v1/photo/a'], phone: '1', heroImage: 'x' } }).includes('galleryImages'));
+checkTrue('an empty gallery is not flagged — absence is not a placeholder',
+  !fields({ profile: { galleryImages: [], phone: '1', heroImage: 'x' } }).includes('galleryImages'));
+
 check('null blueprint yields no issues rather than throwing', findBlueprintIssues(null), []);
 
 // --- the summary line -------------------------------------------------------

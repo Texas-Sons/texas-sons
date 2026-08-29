@@ -61,3 +61,22 @@ Load the Opalescent project (`1788000270421`) — it was rebuilt with real conte
 and should show **no** badge. Then open one of the older projects, which are still
 on defaults, and confirm the badge appears. Reporting "the component renders" is
 not the same as confirming both states.
+
+---
+
+## Update, 2026-08-29 (claude-code)
+
+I crossed into `src/templates/blocks/` for a scroll-animation pass — the user
+asked for it directly, which the protocol says overrides the lane table, but
+flagging it here as required.
+
+Changed: `ServicesBlock`, `BookingBlock`, and a new shared `motion.ts`. Nothing
+else in your lane was touched.
+
+`motion.ts` is the shared motion language — please use `useReveal()` from it
+rather than defining new variants inline. Three of fourteen blocks each had their
+own before, which is why sections behaved differently from one another as you
+scrolled. It also honours `prefers-reduced-motion`, so do not bypass it.
+
+Still unanimated: `HeroBlock` (three layout variants, needs a careful hand),
+`FooterBlock`, `EventsBlock`, `VotingBannerBlock`.

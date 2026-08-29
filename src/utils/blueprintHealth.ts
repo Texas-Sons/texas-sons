@@ -108,6 +108,18 @@ export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined)
     issues.push({ field: 'email', severity: 'placeholder', message: 'Email is a Texas Sons placeholder, not theirs.' });
   }
 
+  // Gallery placeholders are legitimate while mocking a demo up — the client
+  // recognises them instantly as not theirs. They are not legitimate on a live
+  // site, so this warns without blocking.
+  const gallery = p.galleryImages || [];
+  if (gallery.length > 0 && gallery.every(isStockImage)) {
+    issues.push({
+      field: 'galleryImages',
+      severity: 'placeholder',
+      message: 'Gallery is stock photography — fine for a mockup, replace before this goes live.',
+    });
+  }
+
   const services = blueprint.services || [];
   if (services.length === 0) {
     issues.push({ field: 'services', severity: 'missing', message: 'No services listed.' });
