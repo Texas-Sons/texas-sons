@@ -80,6 +80,53 @@ const DEFAULT_TASK_MODELS: Record<TaskName, ModelConfig> = {
   },
 };
 
+/**
+ * Models the operator may pick between in the assistant UI.
+ *
+ * An allowlist rather than a free-text field: the route is admin-gated, so this
+ * is not a security boundary so much as a spend guard — a typo or a stale value
+ * from an old browser tab should not silently route a conversation onto a model
+ * costing twenty times more.
+ *
+ * Prices are per 1M tokens, checked against OpenRouter on 2026-08-29. They will
+ * drift; they are here to make the tradeoff visible at the point of choosing,
+ * not to be authoritative.
+ */
+export const ASSISTANT_MODEL_CHOICES = [
+  {
+    id: 'openrouter:deepseek/deepseek-v4-flash',
+    label: 'DeepSeek V4 Flash',
+    hint: '$0.08 / $0.17 · 1M context',
+    detail: 'Fast and cheap. The right default for talking through your pipeline.',
+  },
+  {
+    id: 'openrouter:deepseek/deepseek-v4-pro',
+    label: 'DeepSeek V4 Pro',
+    hint: '$0.68 / $1.36 · 1M context',
+    detail: 'Stronger reasoning, ~8x the cost. Worth it for a genuinely hard decision.',
+  },
+  {
+    id: 'gemini:gemini-3.6-flash',
+    label: 'Gemini Flash',
+    hint: 'Free tier · 1,500/day',
+    detail: 'Costs nothing. Falls back here if OpenRouter is unreachable.',
+  },
+] as const;
+
+export type AssistantModelId = (typeof ASSISTANT_MODEL_CHOICES)[number]['id'];
+
+export function isAllowedAssistantModel(id: unknown): id is AssistantModelId {
+  return typeof id === 'string' && ASSISTANT_MODEL_CHOICES.some(c => c.id === id);
+}
+
+/** Parses a `provider:model` string. Null when malformed or unknown provider. */
+export function parseModelSpec(spec: string): ModelConfig | null {
+  const [provider, ...rest] = spec.split(':');
+  const model = rest.join(':');
+  if ((provider !== 'gemini' && provider !== 'openrouter') || !model) return null;
+  return { provider, model, why: 'Chosen per request' };
+}
+
 function envKeyFor(task: TaskName): string {
   return `MODEL_${task.toUpperCase().replace(/-/g, '_')}`;
 }
@@ -126,12 +173,22 @@ export interface ModelResult {
   model: string;
   promptTokens?: number;
   completionTokens?: number;
+  /**
+   * Tokens the model spent thinking before answering. DeepSeek V4 reasons by
+   * default and can burn most of a small budget on it — verified 2026-08-29:
+   * a request capped at 10 tokens returned 18 reasoning tokens and empty
+   * content.
+   */
+  reasoningTokens?: number;
+  /** Actual cost in USD, reported by OpenRouter. Undefined for Gemini. */
+  costUsd?: number;
 }
 
 async function callOpenRouter(
   config: ModelConfig,
   messages: ChatMessage[],
-  timeoutMs: number
+  timeoutMs: number,
+  maxTokens: number
 ): Promise<ModelResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -154,7 +211,13 @@ async function callOpenRouter(
         'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
         'X-Title': 'Texas Sons Studio',
       },
-      body: JSON.stringify({ model: config.model, messages }),
+      body: JSON.stringify({
+        model: config.model,
+        messages,
+        // Reasoning models spend output budget before writing a word, so a
+        // small cap yields an empty reply rather than a short one.
+        max_tokens: maxTokens,
+      }),
     });
 
     if (!res.ok) {
@@ -163,17 +226,39 @@ async function callOpenRouter(
     }
 
     const data: any = await res.json();
-    const text = data?.choices?.[0]?.message?.content;
-    if (typeof text !== 'string') {
-      throw new Error(`OpenRouter returned no message content: ${JSON.stringify(data).slice(0, 300)}`);
+    const choice = data?.choices?.[0];
+    const text = choice?.message?.content;
+    const usage = data?.usage || {};
+    const reasoningTokens = usage?.completion_tokens_details?.reasoning_tokens;
+
+    // An empty answer from a reasoning model almost always means the token
+    // budget went on thinking. Say that, rather than "no message content".
+    if (typeof text !== 'string' || text.trim() === '') {
+      if (choice?.finish_reason === 'length') {
+        throw new Error(
+          `${config.model} used its entire ${maxTokens}-token budget on reasoning ` +
+          `(${reasoningTokens ?? 'unknown'} reasoning tokens) and returned nothing. ` +
+          `Raise maxTokens or pick a non-reasoning model.`
+        );
+      }
+      if (choice?.message?.refusal) {
+        throw new Error(`${config.model} declined: ${choice.message.refusal}`);
+      }
+      throw new Error(
+        `${config.model} returned no content (finish_reason: ${choice?.finish_reason ?? 'unknown'}).`
+      );
     }
 
     return {
       text,
       provider: 'openrouter',
       model: data?.model || config.model,
-      promptTokens: data?.usage?.prompt_tokens,
-      completionTokens: data?.usage?.completion_tokens,
+      promptTokens: usage.prompt_tokens,
+      completionTokens: usage.completion_tokens,
+      reasoningTokens,
+      // OpenRouter reports what the call actually cost. Real numbers beat an
+      // estimate from a price table that drifts.
+      costUsd: typeof usage.cost === 'number' ? usage.cost : undefined,
     };
   } catch (error: any) {
     if (error?.name === 'AbortError') {
@@ -197,6 +282,13 @@ export interface CallOptions {
   /** Gemini-only. Multimodal parts; presence forces the Gemini path. */
   parts?: any[];
   timeoutMs?: number;
+  /** `provider:model`, overriding both the default and any env var for this call. */
+  modelSpec?: string;
+  /**
+   * Output budget. Defaults to 4096, generous on purpose — reasoning models
+   * consume it before producing any visible text.
+   */
+  maxTokens?: number;
 }
 
 /**
@@ -207,7 +299,11 @@ export interface CallOptions {
  * invented answer, which is the worst possible failure here.
  */
 export async function callModel(options: CallOptions): Promise<ModelResult> {
-  const config = resolveModel(options.task);
+  const perRequest = options.modelSpec ? parseModelSpec(options.modelSpec) : null;
+  if (options.modelSpec && !perRequest) {
+    console.warn(`[models] Ignoring malformed modelSpec "${options.modelSpec}" — using the configured default.`);
+  }
+  const config = perRequest || resolveModel(options.task);
   const timeoutMs = options.timeoutMs ?? 60_000;
 
   const forcedGemini = Array.isArray(options.parts) && options.parts.length > 0;
@@ -246,7 +342,7 @@ export async function callModel(options: CallOptions): Promise<ModelResult> {
         { role: 'user' as const, content: options.prompt || '' },
       ];
 
-  return callOpenRouter(config, messages, timeoutMs);
+  return callOpenRouter(config, messages, timeoutMs, options.maxTokens ?? 4096);
 }
 
 /**

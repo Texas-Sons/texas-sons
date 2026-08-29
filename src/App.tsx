@@ -12,6 +12,7 @@ import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/A
 import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
 import SettingsView from './components/SettingsView';
 import InsightsView from './components/InsightsView';
+import AssistantPanel from './components/AssistantPanel';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { prospectToIntakePrefill } from './utils/prospectToIntake';
@@ -423,6 +424,10 @@ export default function App() {
           </main>
         )}
       </div>
+
+      {/* Business assistant — available from every view, since the point is
+          asking questions mid-work rather than navigating somewhere to ask. */}
+      <AssistantPanel />
 
       {/* Generating Invoice Modal Portal */}
       {isGeneratingInvoice && (

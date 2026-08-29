@@ -14,7 +14,10 @@ import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath } from './lib/auth';
-import { callModel, registerGeminiCaller, resolveModel, type ChatMessage } from './lib/models';
+import {
+  callModel, registerGeminiCaller, resolveModel, isAllowedAssistantModel,
+  ASSISTANT_MODEL_CHOICES, type ChatMessage,
+} from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
@@ -1924,9 +1927,19 @@ ${text.trim()}`);
     return cachedContext;
   }
 
+  app.get("/api/assistant/models", (_req, res) => {
+    res.json({
+      success: true,
+      choices: ASSISTANT_MODEL_CHOICES,
+      // What a request with no explicit choice would use.
+      default: `${resolveModel('assistant').provider}:${resolveModel('assistant').model}`,
+      openRouterConfigured: !!process.env.OPENROUTER_API_KEY,
+    });
+  });
+
   app.post("/api/assistant", async (req, res) => {
     try {
-      const { messages, stats } = req.body || {};
+      const { messages, stats, model: requestedModel } = req.body || {};
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ success: false, error: "messages array is required" });
       }
@@ -1955,8 +1968,15 @@ ${text.trim()}`);
           : '## Current pipeline\nNo event data supplied.',
       ].filter(Boolean).join('\n');
 
-      const config = resolveModel('assistant');
-      const result = await callModel({ task: 'assistant', messages: trimmed, system });
+      // An unrecognised choice falls back to the configured default rather than
+      // erroring — a stale value from an old browser tab should not break chat.
+      const modelSpec = isAllowedAssistantModel(requestedModel) ? requestedModel : undefined;
+      if (requestedModel && !modelSpec) {
+        console.warn(`[assistant] Ignoring unrecognised model "${requestedModel}".`);
+      }
+
+      const config = modelSpec ? { why: 'Chosen in the chat panel' } : resolveModel('assistant');
+      const result = await callModel({ task: 'assistant', messages: trimmed, system, modelSpec });
 
       res.json({
         success: true,
@@ -1966,6 +1986,9 @@ ${text.trim()}`);
         usage: {
           promptTokens: result.promptTokens,
           completionTokens: result.completionTokens,
+          reasoningTokens: result.reasoningTokens,
+          // Real cost from OpenRouter, not an estimate off a price table.
+          costUsd: result.costUsd,
         },
         configuredBy: config.why,
       });
