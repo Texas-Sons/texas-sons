@@ -57,6 +57,16 @@ export interface BusinessProfile {
    * gallery yet.
    */
   galleryImages?: string[];
+  /**
+   * External booking system (Square, Vagaro, Calendly…). When set, the primary
+   * CTAs link here instead of scrolling to the contact form.
+   *
+   * A business that already takes bookings somewhere has real availability and
+   * deposits there; sending visitors to a lead form instead adds a step and
+   * loses the sale. The form stays as a secondary path for anything the booking
+   * system does not cover — consultations, bridal enquiries, questions.
+   */
+  bookingUrl?: string;
   category?: string;
   primaryColor?: string;
   accentColor?: string;

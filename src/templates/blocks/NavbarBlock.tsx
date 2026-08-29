@@ -9,6 +9,7 @@ interface NavbarBlockProps {
   navItems?: NavItem[];
   phone?: string;
   ctaText?: string;
+  /** Where the CTA goes. External URLs open in a new tab. */
   ctaHref?: string;
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
@@ -29,6 +30,11 @@ export function NavbarBlock({
   theme = 'dark',
   accentColor
 }: NavbarBlockProps) {
+  // An external booking system opens in a new tab; an in-page anchor does not.
+  const isExternalCta = /^https?:\/\//i.test(ctaHref);
+  const ctaLinkProps = isExternalCta
+    ? { target: '_blank' as const, rel: 'noopener noreferrer' }
+    : {};
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('sheriff') || businessName.toLowerCase().includes('campaign') || businessName.toLowerCase().includes('waylon');
   const isJudicial = theme === 'campaign-judicial' || businessName.toLowerCase().includes('judge') || businessName.toLowerCase().includes('justice') || businessName.toLowerCase().includes('waylon');
@@ -123,6 +129,7 @@ export function NavbarBlock({
         <div className="hidden sm:flex items-center flex-shrink-0 whitespace-nowrap z-10">
           <a
             href={ctaHref}
+            {...ctaLinkProps}
             className="inline-flex items-center justify-center whitespace-nowrap px-4 xl:px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95 flex-shrink-0"
           >
             <span>{ctaText}</span>
@@ -167,6 +174,7 @@ export function NavbarBlock({
           <div className="pt-2">
             <a
               href={ctaHref}
+              {...ctaLinkProps}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-sm font-extrabold uppercase tracking-wider shadow-md bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95"
             >

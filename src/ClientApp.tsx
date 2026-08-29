@@ -116,6 +116,12 @@ export function ClientApp() {
     officeTitle,
   });
 
+  // When the business already takes bookings somewhere (Square, Vagaro,
+  // Calendly), the primary CTAs go there rather than to our lead form. They have
+  // real availability and deposits on that system; routing a ready-to-book
+  // visitor through a contact form instead adds a step and loses the booking.
+  const bookingUrl = project.profile.bookingUrl;
+
   /** Maps one section descriptor to its block. Returns null when it has no data to show. */
   const renderSection = (section: SiteSection, _index: number) => {
     const p = section.props || {};
@@ -130,6 +136,7 @@ export function ClientApp() {
             theme={project.theme}
             accentColor={accentColor}
             ctaText={p.ctaText}
+            ctaHref={bookingUrl || '#contact'}
             navItems={p.navItems}
           />
         );
@@ -163,6 +170,7 @@ export function ClientApp() {
             accentColor={accentColor}
             proofBadgeText={project.proofBadgeText}
             ctaText={p.ctaText}
+            ctaHref={bookingUrl || '#contact'}
             secondaryCtaText={p.secondaryCtaText}
           />
         );
@@ -245,6 +253,8 @@ export function ClientApp() {
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+            bookingUrl={bookingUrl}
+            bookingLabel={p.bookingLabel}
             onSubmit={handleLeadSubmit}
           />
         );

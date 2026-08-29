@@ -75,6 +75,8 @@ export interface ClientIntake {
   heroImage?: string;
   /** Additional real photos of the business (Google Places, or client upload). */
   galleryImages?: string[];
+  /** External booking system (Square, Vagaro, Calendly…) if they already use one. */
+  bookingUrl?: string;
   logoUrl?: string;
   badges?: string[];
   proofBadgeText?: string;

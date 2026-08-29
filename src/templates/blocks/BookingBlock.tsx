@@ -13,6 +13,14 @@ interface BookingBlockProps {
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   onSubmit?: (data: any) => void | Promise<void>;
+  /**
+   * External booking system. When present it becomes the primary action and the
+   * form drops to a secondary "or send a message" path — a business that already
+   * takes bookings somewhere has real availability and deposits there, so routing
+   * visitors through a lead form instead adds a step and loses the sale.
+   */
+  bookingUrl?: string;
+  bookingLabel?: string;
 }
 
 export function BookingBlock({
@@ -25,7 +33,9 @@ export function BookingBlock({
   hours,
   theme = 'dark',
   accentColor,
-  onSubmit
+  onSubmit,
+  bookingUrl,
+  bookingLabel = 'Book Online Now'
 }: BookingBlockProps) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -141,6 +151,29 @@ export function BookingBlock({
               )}
             </div>
           ) : (
+            <>
+            {bookingUrl && (
+              <div className="mb-8">
+                <a
+                  href={bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-base font-extrabold uppercase tracking-wider shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)]"
+                >
+                  {bookingLabel}
+                </a>
+                <p className="text-center text-xs text-[color:var(--ts-muted)] mt-3">
+                  See live availability and reserve your spot instantly.
+                </p>
+                <div className="flex items-center gap-3 mt-7">
+                  <div className="flex-1 h-px bg-[color:var(--ts-border)]" />
+                  <span className="text-[10px] uppercase tracking-widest text-[color:var(--ts-muted)]">
+                    or send a message
+                  </span>
+                  <div className="flex-1 h-px bg-[color:var(--ts-border)]" />
+                </div>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
 
               {/* Row 1: Name & Phone */}
@@ -267,6 +300,7 @@ export function BookingBlock({
                 )}
               </div>
             </form>
+            </>
           )}
         </div>
 
