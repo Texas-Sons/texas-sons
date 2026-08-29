@@ -198,6 +198,7 @@ export default function App() {
         // was the single biggest reason every demo looked like every other demo.
         heroImage: client.heroImage || undefined,
         galleryImages: client.galleryImages || undefined,
+        bookingUrl: client.bookingUrl || undefined,
         category: client.category,
         theme: client.theme,
         primaryColor: client.primaryColor || '#00081e',

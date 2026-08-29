@@ -1187,6 +1187,22 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono text-xs"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-stone-400 mb-1 font-medium">Existing Booking Link</label>
+                    <input
+                      type="url"
+                      value={form.bookingUrl || ''}
+                      onChange={(e) => setForm(prev => ({ ...prev, bookingUrl: e.target.value }))}
+                      placeholder="e.g. https://book.squareup.com/appointments/..."
+                      className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 font-mono text-xs"
+                    />
+                    <p className="text-[10px] text-stone-600 mt-1">
+                      Square, Vagaro, Calendly. When set, every &ldquo;Book&rdquo; button goes straight
+                      here and the contact form drops to a secondary path &mdash; they already have real
+                      availability and deposits there.
+                    </p>
+                  </div>
                 </div>
               </div>
 

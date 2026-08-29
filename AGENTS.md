@@ -4,26 +4,55 @@ Project instructions for ALL AI agents working in this repository (opencode, Goo
 
 ## Coordination protocol (read this first)
 
-Multiple agents may work here. Follow these rules so we never clobber each other.
+Several agents work in this repo, in **one shared working directory** — one
+filesystem, one git index, one `dist/`, one port 3000. That sharing, not "whose
+turn is it", is where the real collisions come from.
 
-1. **Lock before editing.** Read `.agent-lock`:
-   - empty → write your agent name, then start.
-   - your name → you hold the lock; proceed.
-   - someone else's name → STOP. Do not edit. Ask the user for a handoff.
-   Clear the file when you finish.
-2. **Post on the board.** When starting and finishing a task, leave a note in `.agent-messages/` (see `.agent-messages/README.md`).
-3. **Pull before you edit, push after.** Always `git pull` at the start of a session so you're working on the latest `main`.
-4. **Verify before you ship.** Run `npm run verify` (lint → test → build) before committing. Never commit or push a red build. CI enforces this on GitHub.
-5. **Never rewrite another agent's committed work** without the user's explicit approval.
-6. **Small conventional commits** pushed to `main` (`fix:`, `feat:`, `chore:`, `style:`, `docs:`).
+There is deliberately **no global lock**. A lock file serialises the agents while
+leaving every actual hazard untouched: it cannot stop `git add -A` sweeping up
+another agent's files, or one agent's build running over another's half-finished
+edit. Lanes and hygiene do.
 
-## Ownership lanes
+### Lanes — edit these freely, in parallel
 
-- **opencode**: client-site block system (`src/templates/blocks/`), deploy pipeline (`server.ts`, deploy scripts), verification infra (`npm run verify`, CI), SEO/perf work.
-- **Antigravity**: AI Studio UI (`src/components/AgentBuilder/`), photo scanner, voting/campaign features, admin UX.
-- **Either**: anything the user explicitly assigns.
+| Agent | Owns |
+|---|---|
+| **claude-code** | `server.ts`, `lib/`, `src/store/`, `scripts/`, `supabase/`, CI |
+| **Antigravity** | `src/components/**`, `src/templates/blocks/`, `src/templates/sections.ts` |
+| **opencode** | `public/templates/`, deploy pipeline, SEO/perf |
 
-Cross-lane edits are allowed but must be announced on the board first.
+**Announce on the board before touching** — these are shared and a silent edit
+here is how two agents disagree about a type: `src/types.ts`, `package.json`,
+`AGENTS.md`, `.env.example`, `src/App.tsx`.
+
+Anything the user explicitly assigns overrides the table.
+
+### Hard rules
+
+1. **Stage explicit paths. Never `git add -A` or `git add .`.**
+   The directory contains other agents' scratch files and half-finished work.
+   `git add -A` swept ten stray debug scripts into a commit on 2026-08-28.
+   Write `git add server.ts lib/ scripts/foo.ts` — name what you changed.
+2. **Leave the working tree clean.** Commit or stash before you stop. Uncommitted
+   changes broke `git pull --rebase` for another agent twice on 2026-08-28.
+3. **Pull with `git pull --rebase --autostash`.** Survives a dirty tree instead of
+   aborting.
+4. **One agent runs builds at a time.** `npm run verify`, `npm run build` and
+   `npm run dev` all write `dist/` or bind port 3000. Say on the board when you
+   start a long build; check the board before you start one.
+5. **Verify before you commit.** `npm run verify` (lint → test → build) must be
+   green. Never push red. CI enforces it.
+6. **Never rewrite another agent's committed work** without the user's approval.
+7. **Small conventional commits** pushed to `main` (`fix:`, `feat:`, `chore:`,
+   `style:`, `docs:`).
+
+### Report only what you verified
+
+Say what you actually checked, and how. Three reports on 2026-08-28 described
+work that did not match the tree — an RLS audit that confirmed a policy existed
+while the code path returned HTTP 500 on every request, and an import reported as
+including a file that was never written. Before reporting done: re-read the files
+you claim to have created, and exercise the path rather than the configuration.
 
 ## Project facts
 
