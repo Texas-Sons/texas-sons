@@ -15,6 +15,7 @@ import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
 import { GalleryBlock } from "./templates/blocks/GalleryBlock";
+import { ProductsBlock } from "./templates/blocks/ProductsBlock";
 import { WriteInGuideBlock } from "./templates/blocks/WriteInGuideBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
@@ -225,6 +226,19 @@ export function ClientApp() {
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+          />
+        );
+
+      case 'products':
+        // Renders null without products, so archetypes include it freely.
+        return (
+          <ProductsBlock
+            products={(project as any).products}
+            theme={project.theme}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+            shopUrl={bookingUrl}
           />
         );
 

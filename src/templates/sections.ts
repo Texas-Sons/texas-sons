@@ -21,6 +21,7 @@ export type SectionKind =
   | 'services'
   | 'events'
   | 'gallery'
+  | 'products'
   | 'testimonials'
   | 'booking'
   | 'footer';
@@ -114,6 +115,10 @@ function foodArchetype(): SiteSection[] {
       props: { title: 'The Menu', subtitle: 'Made fresh, served generously.' },
     },
     {
+      kind: 'products',
+      props: { title: 'Take Some Home', subtitle: 'Sauces, rubs and merch.' },
+    },
+    {
       kind: 'testimonials',
       props: { title: 'What Locals Are Saying', subtitle: 'Real reviews from people who eat here.' },
     },
@@ -171,6 +176,10 @@ function beautyArchetype(): SiteSection[] {
     {
       kind: 'gallery',
       props: { title: 'Our Work', subtitle: 'Recent results from the chair.' },
+    },
+    {
+      kind: 'products',
+      props: { title: 'Shop the Studio', subtitle: 'Take the salon home with you.' },
     },
     {
       kind: 'booking',

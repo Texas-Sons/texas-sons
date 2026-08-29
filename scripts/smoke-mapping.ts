@@ -153,6 +153,15 @@ checkTrue('campaigns do not get a photo gallery',
 checkTrue('food shows the food before the written menu',
   food.indexOf('gallery') < food.indexOf('services'));
 
+// Retail belongs to verticals that actually sell take-home product.
+checkTrue('beauty layout includes products', beauty.includes('products'));
+checkTrue('food layout includes products', food.includes('products'));
+checkTrue('trades layout has no products section', !trades.includes('products'));
+checkTrue('campaigns have no products section',
+  !kinds(resolveSections(undefined, { isCampaign: true, isWriteIn: false })).includes('products'));
+checkTrue('beauty shows the work before the shelf',
+  beauty.indexOf('gallery') < beauty.indexOf('products'));
+
 // An explicit composition on the blueprint always wins.
 check('explicit sections override the archetype',
   kinds(resolveSections([{ kind: 'hero' }, { kind: 'footer' }], { isCampaign: true, isWriteIn: true })),

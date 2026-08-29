@@ -41,6 +41,17 @@ export interface VolunteerItem {
   status: 'Active' | 'Pending' | 'Attending';
 }
 
+export interface ProductItem {
+  name: string;
+  description?: string;
+  price?: string;
+  image?: string;
+  /** External store link. Without one the card shows availability instead. */
+  url?: string;
+  availability?: string;
+  featured?: boolean;
+}
+
 export interface BusinessProfile {
   name: string;
   tagline?: string;

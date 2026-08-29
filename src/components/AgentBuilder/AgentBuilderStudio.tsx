@@ -125,6 +125,8 @@ export interface ProjectSnapshot {
   proofBadgeText?: string;
   seo?: { title: string; description: string };
   uploadedImages?: string[];
+  /** Retail products, for verticals that sell take-home items. */
+  products?: import('../../templates/blocks/types').ProductItem[];
   /**
    * Page composition. When absent, ClientApp falls back to an archetype chosen
    * by vertical — which is what every site deployed before this existed does,
