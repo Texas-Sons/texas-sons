@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../api';
 import {
   listSavedProspects, listDismissedIds, saveProspect, unsaveProspect,
-  dismissProspect, cachedSavedProspects, cachedDismissedIds,
+  dismissProspect, cachedSavedProspects, cachedDismissedIds, recordEvent,
 } from '../store';
 import { Search, Loader2, MapPin, Globe, Star, Mail, Plus, X, AlertTriangle, Image as ImageIcon, Phone, Clock, Activity, Bookmark, BookmarkCheck, Building2 } from 'lucide-react';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
@@ -74,6 +74,13 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     setSavedProspects(prev =>
       isSaved ? prev.filter(p => p.id !== prospect.id) : [prospect, ...prev]
     );
+
+    recordEvent({
+      kind: isSaved ? 'prospect_dismissed' : 'prospect_saved',
+      prospectId: prospect.id,
+      vertical: prospect.primaryTypeDisplayName || undefined,
+      data: { name: prospect.displayName, rating: prospect.rating },
+    });
 
     const action = isSaved ? unsaveProspect(prospect.id) : saveProspect(prospect);
     action.catch(err => {
@@ -186,6 +193,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
     if (!placeId) return;
     setDismissedPlaceIds(prev => [...prev, placeId]);
     const snapshot = prospects.find(p => p.id === placeId) || null;
+    recordEvent({ kind: 'prospect_dismissed', prospectId: placeId, vertical: snapshot?.primaryTypeDisplayName });
     dismissProspect(placeId, snapshot).catch(err => {
       console.error('Failed to dismiss prospect:', err);
       setDismissedPlaceIds(prev => prev.filter(id => id !== placeId));
@@ -221,6 +229,17 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
         reviews: place.reviews?.map((r: any) => ({ text: r.text, rating: r.rating, author: r.authorAttribution?.displayName })),
         photos: photosUrls
       };
+
+      recordEvent({
+        kind: 'assets_gathered',
+        prospectId: prospect.id,
+        vertical: prospect.primaryTypeDisplayName || undefined,
+        data: {
+          photos: photosUrls.length,
+          reviews: enrichedProspect.reviews?.length || 0,
+          hasPhone: !!place.nationalPhoneNumber,
+        },
+      });
 
       const updatedProspects = prospects.map(p => p.id === prospect.id ? enrichedProspect : p);
       setProspects(updatedProspects);
@@ -283,6 +302,11 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
         // If searching broadly by industry/location, filter to businesses without a website
         const leads = nameTerm ? response.places : response.places.filter(place => !place.websiteURI);
         setProspects(leads);
+        recordEvent({
+          kind: 'prospect_found',
+          vertical: industryTerm || undefined,
+          data: { query: textQuery, returned: response.places.length, withoutWebsite: leads.length },
+        });
         
         // Cache the results
         localStorage.setItem('txsons_last_search_city', locationTerm);

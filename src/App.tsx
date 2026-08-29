@@ -17,7 +17,7 @@ import { prospectToIntakePrefill } from './utils/prospectToIntake';
 import { User } from '@supabase/supabase-js';
 import {
   listProjects, listInvoices, saveProject, removeProject, saveInvoice,
-  saveBlueprint, runBackfill,
+  saveBlueprint, runBackfill, recordEvent,
 } from './store';
 
 /**
@@ -391,7 +391,20 @@ export default function App() {
                     // and phone into the intake. This used to copy four fields
                     // and drop the rest, which is why every demo fell back to
                     // the same stock hero image and invented testimonial.
-                    setIntakePrefill(prospectToIntakePrefill(prospect));
+                    const prefill = prospectToIntakePrefill(prospect);
+                    recordEvent({
+                      kind: 'intake_created',
+                      prospectId: prospect.id,
+                      vertical: prefill.category,
+                      data: {
+                        businessName: prefill.businessName,
+                        // Whether the demo will have real material to work with,
+                        // which is the thing that made demos generic before.
+                        hasRealPhoto: !!prefill.heroImage,
+                        realReviews: prefill.testimonials?.length || 0,
+                      },
+                    });
+                    setIntakePrefill(prefill);
                     setCurrentView('clients');
                   }}
                 />

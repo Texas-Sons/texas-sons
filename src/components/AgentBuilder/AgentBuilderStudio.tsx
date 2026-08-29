@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../../api';
 import type { SiteSection } from '../../templates/sections';
 import {
-  listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject,
+  listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
   loadCurrentProject, loadHistory, saveCurrentProject, saveHistory, cachedHistory,
   cachedCurrentProject,
 } from '../../store';
@@ -896,6 +896,13 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       if (!data.success) {
         throw new Error(data.error || 'Deployment failed');
       }
+
+      recordEvent({
+        kind: 'demo_deployed',
+        projectId: project.id,
+        vertical: project.profile.category,
+        data: { url: data.url, businessName: project.profile.name },
+      });
 
       // Auto-save the now-live project
       try {

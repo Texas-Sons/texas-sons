@@ -6,5 +6,6 @@ export * from './studio';
 export * from './intakes';
 export * from './projects';
 export * from './leads';
+export * from './events';
 export { runBackfill, resetBackfillMarker } from './backfill';
 export * from './submissions';

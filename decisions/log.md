@@ -203,3 +203,21 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Still open:** no Studio UI for editing composition — archetypes are inferred, not chosen. And no gallery block, so `galleryImages` is carried but unrendered. Both are natural next steps.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-28 — Event log: recording history, not just state
+
+**Decision:** Added an append-only `events` table plus `src/store/events.ts` (I/O) and `src/store/insights.ts` (pure derivations). Automatic events are recorded at the points the app already knows about: prospect found/saved/dismissed, assets gathered, intake created, demo deployed, outreach copied.
+
+**Why:** Morgan asked for an OS that tells him "what skills I'm using and not using, what benefited me most vs what I need to change". That is impossible against the current schema, which stores only *current state* — a project's `Status`, an intake's `IntakeStatus`. You cannot compute conversion rate by vertical, time from prospect to live, or where deals die from a status field. Those are questions about history, so history has to be recorded.
+
+**Append-only by design:** no UPDATE or DELETE policy exists on the table. A funnel computed from mutable rows is a funnel you cannot trust. The links (`intake_id`, `prospect_id`) are plain text with no foreign keys on purpose — an event about a since-deleted prospect is still a true fact, and the funnel would be wrong if it vanished. `vertical` is denormalised so segment queries need no joins and stay correct if a category is edited later.
+
+**The one sanctioned swallowed failure:** `recordEvent` is fire-and-forget and never throws, which contradicts the "never swallow a write failure" rule in AGENTS.md. That rule protects client data the user must know was lost. Telemetry is different: if recording "demo deployed" fails, the deploy still happened, and surfacing an error about it would be worse than a slightly wrong funnel. Failures queue locally (bounded to 50) and retry on the next successful write.
+
+**Honest limitation:** the funnel goes blind after `outreach_sent`. Reply, converted, and declined can only come from Morgan clicking something — no automatic signal exists. `outreach_sent` is itself a proxy (copying the email text, since the send happens in Gmail) and over-counts if he copies twice without sending. Flagged rather than hidden, because a funnel that silently guesses is the same failure as the fabricated usage stats removed earlier today.
+
+**Why the split into insights.ts:** the derivations are what decisions get made from, so they must be testable without a database or Vite environment. Writing that test immediately caught a real bug — `medianDaysToLive` assumed newest-first input because `listEvents` happens to return that, and would have produced nonsense for any other caller.
+
+**Owner:** Morgan Valdez

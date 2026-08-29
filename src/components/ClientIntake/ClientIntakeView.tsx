@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
-import { listIntakes, saveIntake, cachedIntakes } from '../../store';
+import { listIntakes, saveIntake, cachedIntakes, recordEvent } from '../../store';
 import { listSubmissions, IntakeSubmission, markSubmissionReviewed } from '../../store/submissions';
 import { extractPaletteFromImage, ExtractedColorPalette } from '../../utils/colorExtractor';
 
@@ -477,6 +477,20 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     navigator.clipboard.writeText(text);
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2500);
+
+    // Copying the outreach text is the closest automatic signal that a client
+    // was actually contacted — the send itself happens in Gmail or Messages,
+    // outside this app. It over-counts if you copy twice and never send, so the
+    // funnel treats it as "outreach prepared". Confirming a real send stays a
+    // manual step.
+    if (shareModalClient && (type === 'email' || type === 'sms')) {
+      recordEvent({
+        kind: 'outreach_sent',
+        intakeId: shareModalClient.id,
+        vertical: shareModalClient.category,
+        data: { channel: type, businessName: shareModalClient.businessName },
+      });
+    }
   };
 
   const filteredClients = clients.filter(c => {
