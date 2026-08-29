@@ -50,28 +50,40 @@ export default function AssistantPanel() {
     try { return localStorage.getItem(STORAGE_KEY_MODEL) || ''; } catch { return ''; }
   });
   const [openRouterReady, setOpenRouterReady] = useState(true);
+  const [configError, setConfigError] = useState<string | null>(null);
   const [showModels, setShowModels] = useState(false);
   const [lastUsed, setLastUsed] = useState<string | null>(null);
   const [spend, setSpend] = useState(0);
 
   const endRef = useRef<HTMLDivElement>(null);
 
+  // Refetch every time the panel opens rather than caching for the session.
+  // Server config is read once at boot, so restarting the server after editing
+  // .env.local must be enough to fix the picker — previously a stale first
+  // answer stuck until a full page reload, which is a confusing way to find out
+  // your key is fine and only the server was old.
   useEffect(() => {
-    if (!open || choices.length) return;
+    if (!open) return;
+    let cancelled = false;
     (async () => {
       try {
         const res = await apiFetch('/api/assistant/models');
         const data = await res.json();
-        if (data?.success) {
-          setChoices(data.choices || []);
-          setOpenRouterReady(!!data.openRouterConfigured);
-          if (!modelId && data.default) setModelId(data.default);
-        }
-      } catch {
-        // Non-fatal — the panel still works on the server's default model.
+        if (cancelled) return;
+        if (!data?.success) throw new Error(data?.error || 'Could not read model config');
+        setChoices(data.choices || []);
+        setOpenRouterReady(!!data.openRouterConfigured);
+        setConfigError(null);
+        if (!modelId && data.default) setModelId(data.default);
+      } catch (err: any) {
+        if (cancelled) return;
+        // Surfaced rather than swallowed — silently showing an empty or wrong
+        // picker is how this bug hid in the first place.
+        setConfigError(err?.message || 'Could not load the model list.');
       }
     })();
-  }, [open, choices.length, modelId]);
+    return () => { cancelled = true; };
+  }, [open]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -172,6 +184,11 @@ export default function AssistantPanel() {
       {/* Model picker */}
       {showModels && (
         <div className="border-b border-stone-800 bg-stone-900/50 p-2 space-y-1">
+          {configError && (
+            <p className="text-xs text-red-300 bg-red-950/40 border border-red-900 rounded-lg p-2 mb-1">
+              {configError}
+            </p>
+          )}
           {choices.map(c => {
             const unavailable = c.id.startsWith('openrouter:') && !openRouterReady;
             return (
@@ -190,7 +207,9 @@ export default function AssistantPanel() {
                   <span className="text-[10px] font-mono text-stone-500 shrink-0">{c.hint}</span>
                 </div>
                 <p className="text-xs text-stone-500 mt-0.5">
-                  {unavailable ? 'Needs OPENROUTER_API_KEY in .env.local' : c.detail}
+                  {unavailable
+                    ? 'Server reports no OPENROUTER_API_KEY. If it is in .env.local, restart the dev server — env is read once at boot.'
+                    : c.detail}
                 </p>
               </button>
             );
