@@ -16,7 +16,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath } from './lib/auth';
 import {
   callModel, registerGeminiCaller, resolveModel, isAllowedAssistantModel,
-  ASSISTANT_MODEL_CHOICES, logRoutingTable, type ChatMessage,
+  ASSISTANT_MODEL_CHOICES, logRoutingTable, parseModelJson, type ChatMessage,
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 
@@ -1565,7 +1565,6 @@ Draft a short, persuasive email proposal recommending we build them a modern web
                                 .trim()
                                 .substring(0, 30000); // cap at ~10k tokens
 
-      const ai = await getGemini();
       const prompt = `You are an expert data extraction AI. Read the following website text and extract a JSON dossier for a web agency client intake.
       
       Website Text:
@@ -1586,11 +1585,20 @@ Draft a short, persuasive email proposal recommending we build them a modern web
         ]
       }`;
       
-      const result = await ai.generateContent(prompt);
-      let text = result.response.text();
-      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      
-      const parsed = JSON.parse(text);
+      // Through the router, not a direct client call. The previous code called
+      // `ai.generateContent(prompt)` and read `result.response.text()` — the
+      // shape of the older @google/generative-ai package. On the installed
+      // @google/genai the method lives at `client.models.generateContent`, so
+      // this route threw "ai.generateContent is not a function" on every request
+      // and had never worked since it was added.
+      //
+      // Routing it means it also gets the retry logic, and becomes swappable to
+      // a cheaper model with MODEL_SCRAPE_EXTRACT — this is pure extraction, the
+      // best candidate in the app for that.
+      const result = await callModel({ task: 'scrape-extract', prompt });
+      const parsed = parseModelJson(result);
+
+      console.log(`[scrape] extracted via ${result.model} (${result.promptTokens ?? '?'} in / ${result.completionTokens ?? '?'} out)`);
       res.json({ success: true, data: parsed });
     } catch (error: any) {
       console.error("Scraping Error:", error);
