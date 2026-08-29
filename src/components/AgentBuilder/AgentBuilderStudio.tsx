@@ -532,6 +532,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   // started on another device.
   useEffect(() => {
     (async () => {
+      if (initialSnapshot) return;
       const [storedProject, storedHistory] = await Promise.all([
         loadCurrentProject(),
         loadHistory(),
@@ -539,7 +540,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       if (storedProject) setProject(storedProject as ProjectSnapshot);
       if (storedHistory.length) setHistory(storedHistory as ProjectSnapshot[]);
     })();
-  }, []);
+  }, [initialSnapshot]);
 
   // These write to cache synchronously and debounce the database write, so
   // dragging a color picker doesn't fire a round-trip per frame.
