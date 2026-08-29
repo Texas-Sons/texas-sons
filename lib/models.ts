@@ -367,3 +367,30 @@ export function parseModelJson<T = any>(result: ModelResult): T {
     );
   }
 }
+
+/**
+ * Prints the resolved routing table at boot.
+ *
+ * Added after a confusing session: the assistant's model picker greyed out the
+ * DeepSeek options because the server had not been restarted since the key was
+ * added to .env.local, and nothing anywhere said so. A process that reads config
+ * once at startup should report what it read.
+ */
+export function logRoutingTable(): void {
+  const openRouterReady = !!process.env.OPENROUTER_API_KEY;
+  const tasks = Object.keys(DEFAULT_TASK_MODELS) as TaskName[];
+
+  console.log('[models] task routing:');
+  for (const task of tasks) {
+    const c = resolveModel(task);
+    const overridden = c.why.startsWith('Overridden');
+    const needsKey = c.provider === 'openrouter' && !openRouterReady;
+    console.log(
+      `  ${task.padEnd(17)} ${`${c.provider}:${c.model}`.padEnd(42)}` +
+      `${overridden ? ' [env override]' : ''}${needsKey ? '  <-- NO OPENROUTER_API_KEY, calls will fail' : ''}`
+    );
+  }
+  console.log(
+    `[models] OpenRouter: ${openRouterReady ? 'configured' : 'NOT configured — DeepSeek options will be disabled in the assistant'}`
+  );
+}

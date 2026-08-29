@@ -16,7 +16,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath } from './lib/auth';
 import {
   callModel, registerGeminiCaller, resolveModel, isAllowedAssistantModel,
-  ASSISTANT_MODEL_CHOICES, type ChatMessage,
+  ASSISTANT_MODEL_CHOICES, logRoutingTable, type ChatMessage,
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 
@@ -371,6 +371,7 @@ function getSupabaseAdmin(): SupabaseClient {
 // The router delegates Gemini calls back here so the retry logic and client
 // setup are not duplicated in lib/models.ts.
 registerGeminiCaller(opts => generateGeminiWithRetry(opts));
+logRoutingTable();
 
 async function cfFetch(url: string, init?: RequestInit): Promise<any> {
   const res = await fetch(url, init);
