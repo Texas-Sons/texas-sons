@@ -51,6 +51,8 @@ export default function AssistantPanel() {
   });
   const [openRouterReady, setOpenRouterReady] = useState(true);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [configRaw, setConfigRaw] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
   const [showModels, setShowModels] = useState(false);
   const [lastUsed, setLastUsed] = useState<string | null>(null);
   const [spend, setSpend] = useState(0);
@@ -62,27 +64,34 @@ export default function AssistantPanel() {
   // .env.local must be enough to fix the picker — previously a stale first
   // answer stuck until a full page reload, which is a confusing way to find out
   // your key is fine and only the server was old.
+  const loadConfig = async () => {
+    setChecking(true);
+    try {
+      // Cache-bust: a 304 or a proxy cache would replay the stale answer that
+      // caused this in the first place.
+      const res = await apiFetch(`/api/assistant/models?t=${Date.now()}`);
+      const data = await res.json();
+      if (!data?.success) throw new Error(data?.error || `HTTP ${res.status}`);
+      setChoices(data.choices || []);
+      setOpenRouterReady(!!data.openRouterConfigured);
+      setConfigError(null);
+      // Record what the server literally said, so diagnosing this never again
+      // requires devtools or a guess.
+      setConfigRaw(
+        `server: openRouterConfigured=${data.openRouterConfigured} · default=${data.default}`
+      );
+      if (!modelId && data.default) setModelId(data.default);
+    } catch (err: any) {
+      setConfigError(err?.message || 'Could not load the model list.');
+      setConfigRaw(null);
+    } finally {
+      setChecking(false);
+    }
+  };
+
   useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await apiFetch('/api/assistant/models');
-        const data = await res.json();
-        if (cancelled) return;
-        if (!data?.success) throw new Error(data?.error || 'Could not read model config');
-        setChoices(data.choices || []);
-        setOpenRouterReady(!!data.openRouterConfigured);
-        setConfigError(null);
-        if (!modelId && data.default) setModelId(data.default);
-      } catch (err: any) {
-        if (cancelled) return;
-        // Surfaced rather than swallowed — silently showing an empty or wrong
-        // picker is how this bug hid in the first place.
-        setConfigError(err?.message || 'Could not load the model list.');
-      }
-    })();
-    return () => { cancelled = true; };
+    if (open) void loadConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
@@ -189,6 +198,18 @@ export default function AssistantPanel() {
               {configError}
             </p>
           )}
+          <div className="flex items-center justify-between gap-2 px-1 pb-1">
+            <span className="text-[10px] font-mono text-stone-600 truncate">
+              {configRaw || 'not checked yet'}
+            </span>
+            <button
+              onClick={() => void loadConfig()}
+              disabled={checking}
+              className="text-[10px] font-bold text-stone-500 hover:text-stone-300 disabled:opacity-50 shrink-0"
+            >
+              {checking ? 'checking…' : 'Re-check'}
+            </button>
+          </div>
           {choices.map(c => {
             const unavailable = c.id.startsWith('openrouter:') && !openRouterReady;
             return (
