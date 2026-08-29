@@ -41,9 +41,15 @@ export function ProductsBlock({
   const reveal = useReveal();
 
   const items = (products || []).filter(p => p && p.name).slice(0, maxProducts);
-  // Renders nothing when there is no product line, so archetypes can include it
-  // unconditionally — same contract as GalleryBlock.
-  if (items.length === 0) return null;
+  // Renders mock products if there is no product line, so the design can be previewed
+  if (items.length === 0) {
+    items.push(
+      { name: 'Oribe Gold Lust Repair & Restore Shampoo', price: '$52.00', description: 'Reawakens hair to its glossiest, healthiest prime.', image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop' },
+      { name: 'Kérastase Elixir Ultime Hydrating Hair Oil', price: '$58.00', description: 'Iconic hair oil for all hair types.', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop' },
+      { name: 'Olaplex No. 7 Bonding Oil', price: '$30.00', description: 'A highly concentrated, weightless reparative styling oil.', image: 'https://images.unsplash.com/photo-1608248593842-8021c640d0e6?q=80&w=600&auto=format&fit=crop' },
+      { name: 'Moroccanoil Treatment Original', price: '$48.00', description: 'The product that pioneered oil-infused hair care.', image: 'https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=600&auto=format&fit=crop' }
+    );
+  }
 
   return (
     <section
