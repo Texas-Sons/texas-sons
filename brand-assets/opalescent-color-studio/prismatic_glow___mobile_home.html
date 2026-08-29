@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prismatic Glow</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        }
+        
+        /* Hide scrollbar for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#ffe088",
+                      "on-secondary-fixed": "#241a00",
+                      "inverse-surface": "#2f3131",
+                      "outline": "#73777b",
+                      "on-background": "#1a1c1c",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#c8c8b0",
+                      "on-surface": "#1a1c1c",
+                      "on-tertiary-container": "#b0b19a",
+                      "secondary-container": "#fed65b",
+                      "surface-container": "#eeeeee",
+                      "on-tertiary-fixed-variant": "#474836",
+                      "tertiary-container": "#434432",
+                      "primary-fixed": "#d5e5f1",
+                      "on-secondary-fixed-variant": "#574500",
+                      "on-primary-fixed-variant": "#3a4953",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e2e2e2",
+                      "surface-container-high": "#e8e8e8",
+                      "on-primary-container": "#a2b2be",
+                      "primary-fixed-dim": "#b9c9d5",
+                      "primary": "#202f38",
+                      "surface-variant": "#e2e2e2",
+                      "inverse-on-surface": "#f0f1f1",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed-dim": "#e9c349",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "background": "#f9f9f9",
+                      "tertiary": "#2c2e1e",
+                      "surface-bright": "#f9f9f9",
+                      "surface-dim": "#dadada",
+                      "on-tertiary": "#ffffff",
+                      "outline-variant": "#c3c7cb",
+                      "on-tertiary-fixed": "#1b1d0e",
+                      "on-secondary-container": "#745c00",
+                      "on-primary-fixed": "#0e1d26",
+                      "tertiary-fixed": "#e4e4cc",
+                      "secondary": "#735c00",
+                      "primary-container": "#36454f",
+                      "inverse-primary": "#b9c9d5",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f9f9f9",
+                      "surface-tint": "#51606b",
+                      "surface-container-low": "#f3f3f4",
+                      "on-surface-variant": "#43474b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "touch-target-min": "44px",
+                      "container-max": "1280px",
+                      "xxl": "64px",
+                      "xl": "40px",
+                      "xs": "4px",
+                      "unit": "4px",
+                      "md": "16px",
+                      "gutter": "24px",
+                      "sm": "8px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "headline-sm": [
+                              "Playfair Display"
+                      ],
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "label-caps": [
+                              "Montserrat"
+                      ],
+                      "body-md": [
+                              "Montserrat"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ],
+                      "button-text": [
+                              "Montserrat"
+                      ],
+                      "body-lg": [
+                              "Montserrat"
+                      ]
+              },
+              "fontSize": {
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.15em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "button-text": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col relative overflow-x-hidden pt-16">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md dark:bg-surface-container/80 fixed top-0 w-full z-50 border-b border-outline-variant/30 flex justify-between items-center px-gutter h-16 transition-all">
+<button aria-label="Menu" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:opacity-70 transition-opacity cursor-pointer active:scale-95" onclick="toggleMenu()">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile tracking-tighter text-primary dark:text-primary-fixed-dim">
+            Prismatic Glow
+        </h1>
+<button aria-label="Cart" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:opacity-70 transition-opacity cursor-pointer active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+</button>
+</header>
+<!-- NavigationDrawer (Mobile Menu) -->
+<div class="fixed inset-y-0 left-0 z-[60] flex flex-col p-6 h-full w-80 bg-surface dark:bg-surface-container-low shadow-xl transform -translate-x-full transition-all duration-300 ease-in-out" id="mobile-menu">
+<div class="flex justify-between items-center mb-xl">
+<h2 class="font-headline-md text-headline-md text-primary">Prismatic Glow</h2>
+<button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-surface-variant" onclick="toggleMenu()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex flex-col gap-sm">
+<a class="flex items-center gap-md h-12 px-md font-label-caps text-label-caps bg-secondary-container text-on-secondary-container rounded-full hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+                Home
+            </a>
+<a class="flex items-center gap-md h-12 px-md font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-variant rounded-full hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+                Services
+            </a>
+<a class="flex items-center gap-md h-12 px-md font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-variant rounded-full hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+                Portfolio
+            </a>
+<a class="flex items-center gap-md h-12 px-md font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-variant rounded-full hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+                Stylists
+            </a>
+<a class="flex items-center gap-md h-12 px-md font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-variant rounded-full hover:bg-surface-container-high transition-colors mt-auto" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Book Now
+            </a>
+</nav>
+</div>
+<!-- Backdrop for Menu -->
+<div class="fixed inset-0 bg-on-background/50 z-[55] hidden opacity-0 transition-opacity duration-300" id="menu-backdrop" onclick="toggleMenu()"></div>
+<main class="flex-grow flex flex-col w-full relative">
+<!-- Hero Section -->
+<section class="relative w-full h-[618px] min-h-[500px] flex items-end pb-xl px-gutter">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center" data-alt="A highly detailed, vibrant editorial fashion photograph of a female model with stunning, perfectly styled prismatic vividly colored hair, blending soft pastel pinks, baby blues, and lavender purples. The lighting is high-key soft studio lighting, creating a luxurious, glossy finish on the hair. The background is a minimalist, soft pearl-toned studio setting, emphasizing the artistic, energetic and trend-forward aesthetic. Shot on a 35mm lens, incredibly high resolution, photorealistic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCRCdn3BOUc7u_1x19fw6nmMfkLPZOZmSCuOnpNO_ivhtZohoDcgGd3HmahPZ3zfGzsJdEZbvlpxSnfoLi14ohZv7W2FJLpXAOqgyF4bO09X6oW-285RSUPjf-Jro_rF_of2h-30M9V3mUPQFT0MLLLuI4C3lqKtRvCBtpbpY5r0drcpTT3lu47uBfcuGe3umHGUZDPwA-1_IDQel8TrillrWVtwWSReOhStdcKdeDDqxYo5vHSjEaawQ1ayqvw4_9EK7o3bgJe9Awb')"></div>
+<!-- Gradient overlay for text legibility -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
+</div>
+<div class="relative z-10 w-full flex flex-col items-center text-center gap-md">
+<p class="font-body-md text-body-md italic text-primary">curated precision &amp; color</p>
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">Artistry in Every Strand</h2>
+<button class="mt-sm h-[48px] px-xl bg-primary text-on-primary font-label-caps text-label-caps rounded-full flex items-center justify-center hover:opacity-90 transition-opacity uppercase tracking-widest shadow-md">
+                    Book Now
+                </button>
+</div>
+</section>
+<!-- Services (Glassmorphism over subtle gradient) -->
+<section class="w-full py-xxl px-gutter relative overflow-hidden">
+<!-- Decorative Background Element to justify glassmorphism -->
+<div class="absolute top-0 left-1/4 w-full h-full bg-gradient-to-br from-primary-fixed/30 to-secondary-fixed/20 blur-3xl -z-10 rounded-full opacity-50"></div>
+<div class="flex flex-col gap-sm mb-xl text-center">
+<h3 class="font-headline-md text-headline-md-mobile text-primary">Signature Services</h3>
+<p class="font-body-md text-body-md italic text-on-surface-variant">elevate your aesthetic</p>
+</div>
+<div class="flex flex-col gap-md">
+<!-- Service Card 1 -->
+<div class="bg-surface/70 backdrop-blur-md border border-outline-variant/30 rounded-xl p-lg flex flex-col gap-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Balayage</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Seamless, sun-kissed dimension.</p>
+</div>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">From $200</span>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="bg-surface/70 backdrop-blur-md border border-outline-variant/30 rounded-xl p-lg flex flex-col gap-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Vivid Color</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Custom prismatic transformations.</p>
+</div>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">From $250</span>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="bg-surface/70 backdrop-blur-md border border-outline-variant/30 rounded-xl p-lg flex flex-col gap-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-xs">Sculptural Cutting</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Precision shapes tailored to you.</p>
+</div>
+<span class="font-label-caps text-label-caps text-secondary pt-xs">From $120</span>
+</div>
+</div>
+</div>
+<div class="w-full flex justify-center mt-xl">
+<button class="h-[48px] px-lg border border-secondary text-primary font-label-caps text-label-caps rounded-full flex items-center justify-center hover:bg-surface-variant transition-colors uppercase tracking-widest">
+                    View Full Menu
+                </button>
+</div>
+</section>
+<!-- Social Proof (Horizontal Scroll) -->
+<section class="w-full py-xl pl-gutter bg-surface-container-low">
+<div class="flex flex-col gap-sm mb-lg pr-gutter">
+<h3 class="font-headline-md text-headline-md-mobile text-primary">Client Stories</h3>
+</div>
+<div class="flex overflow-x-auto gap-md hide-scrollbar pb-md pr-gutter snap-x">
+<!-- Testimonial 1 -->
+<div class="min-w-[280px] w-[80%] bg-surface border border-outline-variant/20 rounded-2xl p-lg flex flex-col gap-md snap-center shrink-0">
+<div class="flex text-secondary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"The vivid color they achieved is absolute perfection. It's truly a minimalist luxury experience from the moment you walk in."</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Sarah J.</span>
+</div>
+<!-- Testimonial 2 -->
+<div class="min-w-[280px] w-[80%] bg-surface border border-outline-variant/20 rounded-2xl p-lg flex flex-col gap-md snap-center shrink-0">
+<div class="flex text-secondary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"The balayage technique is unmatched. The studio space itself is incredibly calming and aesthetically inspiring."</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Elena M.</span>
+</div>
+<!-- Testimonial 3 -->
+<div class="min-w-[280px] w-[80%] bg-surface border border-outline-variant/20 rounded-2xl p-lg flex flex-col gap-md snap-center shrink-0">
+<div class="flex text-secondary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">"A truly sculptural cut. It falls perfectly every day. The stylists are true artists."</p>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">— Chloe T.</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-auto py-xl px-gutter flex flex-col items-center gap-sm text-center bg-gradient-to-br from-secondary-fixed via-primary-fixed to-secondary-container dark:from-primary-container dark:to-tertiary-container text-on-secondary-fixed dark:text-on-primary-container">
+<h2 class="font-headline-sm text-headline-sm text-on-secondary-fixed mb-md">Prismatic Glow</h2>
+<div class="flex flex-wrap justify-center gap-md mb-md">
+<a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md opacity-80 hover:opacity-100 hover:text-primary transition-colors transition-opacity duration-200" href="#">Careers</a>
+</div>
+<p class="font-body-md text-body-md opacity-70 mt-auto">© 2024 Prismatic Glow Studio</p>
+</footer>
+<script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const backdrop = document.getElementById('menu-backdrop');
+            
+            if (menu.classList.contains('-translate-x-full')) {
+                // Open menu
+                menu.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    backdrop.classList.remove('opacity-0');
+                    backdrop.classList.add('opacity-100');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            } else {
+                // Close menu
+                menu.classList.add('-translate-x-full');
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                }, 300); // Wait for transition to finish
+                document.body.style.overflow = '';
+            }
+        }
+    </script>
+</body></html>

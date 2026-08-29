@@ -70,7 +70,7 @@ export interface BusinessProfile {
   category?: string;
   primaryColor?: string;
   accentColor?: string;
-  fontFamily?: 'sans' | 'serif' | 'display';
+  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe';
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   treasurerName?: string;
   faviconUrl?: string;

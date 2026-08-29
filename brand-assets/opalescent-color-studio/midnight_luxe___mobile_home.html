@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midnight Luxe | Salon</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1a1c1c",
+                    "surface-container": "#eeeeee",
+                    "on-primary-fixed-variant": "#3a4953",
+                    "secondary-fixed": "#ffe088",
+                    "inverse-surface": "#2f3131",
+                    "tertiary-fixed": "#e4e4cc",
+                    "surface-container-high": "#e8e8e8",
+                    "on-secondary": "#ffffff",
+                    "outline-variant": "#c3c7cb",
+                    "on-primary-container": "#a2b2be",
+                    "tertiary-fixed-dim": "#c8c8b0",
+                    "primary-fixed-dim": "#b9c9d5",
+                    "surface-tint": "#51606b",
+                    "on-secondary-fixed-variant": "#574500",
+                    "on-secondary-container": "#745c00",
+                    "on-background": "#1a1c1c",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#43474b",
+                    "on-tertiary-fixed": "#1b1d0e",
+                    "on-tertiary-fixed-variant": "#474836",
+                    "inverse-primary": "#b9c9d5",
+                    "primary": "#202f38",
+                    "inverse-on-surface": "#f0f1f1",
+                    "on-tertiary-container": "#b0b19a",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-dim": "#dadada",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#fed65b",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e2e2e2",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#2c2e1e",
+                    "secondary": "#735c00",
+                    "tertiary-container": "#434432",
+                    "primary-container": "#36454f",
+                    "primary-fixed": "#d5e5f1",
+                    "on-primary-fixed": "#0e1d26",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#e9c349",
+                    "error": "#ba1a1a",
+                    "background": "#f9f9f9",
+                    "surface-container-low": "#f3f3f4",
+                    "surface-container-highest": "#e2e2e2",
+                    "outline": "#73777b",
+                    "surface": "#f9f9f9",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f9f9f9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xxl": "64px",
+                    "touch-target-min": "44px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "xl": "40px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": [
+                            "Playfair Display"
+                    ],
+                    "display-lg-mobile": [
+                            "Playfair Display"
+                    ],
+                    "body-lg": [
+                            "Montserrat"
+                    ],
+                    "headline-md": [
+                            "Playfair Display"
+                    ],
+                    "display-lg": [
+                            "Playfair Display"
+                    ],
+                    "label-caps": [
+                            "Montserrat"
+                    ],
+                    "button-text": [
+                            "Montserrat"
+                    ],
+                    "body-md": [
+                            "Montserrat"
+                    ]
+            },
+            "fontSize": {
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.15em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "button-text": [
+                            "14px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-primary text-on-primary font-body-md antialiased md:bg-surface md:text-on-surface">
+<!-- Mobile Top App Bar (Hidden on md and up based on responsive instructions for general layout, but requested for mobile home) -->
+<header class="fixed top-0 w-full z-50 bg-primary dark:bg-primary border-b border-outline-variant/20 flex justify-between items-center px-gutter h-16 md:hidden">
+<button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-primary dark:text-on-primary hover:text-secondary-fixed transition-colors scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm-mobile font-headline-md tracking-widest text-secondary dark:text-secondary-fixed">MIDNIGHT LUXE</h1>
+<button class="h-touch-target-min w-touch-target-min flex items-center justify-center text-on-primary dark:text-on-primary hover:text-secondary-fixed transition-colors scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-16 pb-24 min-h-screen md:hidden"> <!-- Padding top for TopAppBar, bottom for BottomNavBar -->
+<!-- Hero Section -->
+<section class="relative w-full h-[530px] flex items-end pb-xxl justify-center overflow-hidden">
+<!-- Background Image -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A cinematic, high-fashion portrait of a woman with stunning, perfectly styled balayage hair. The lighting is moody and dramatic, with deep charcoal shadows and warm champagne gold highlights reflecting off the glossy hair strands. The overall aesthetic is extremely expensive luxury salon style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBkDlcO1MaXnnIec5VXPlHuE9r7WwrigR9A88rrcgt-BqR29OTT99tCdFO5rUxI8L0JX0iuXKj4unuWC1yhxEuZ1xURuLEDBflh1pJqS8UmKzjJ4Z9mbB3BXwtqx5sYJfBnl8axpaVR9fj8ZuJuQvraiV4RL6fiGcjzoq9aTEjkPU8DdO-4tnv-RxAhdZih23Z1Jst6Uc0qayx-g98Sm-K1ir2wQepAZ3LgHQmpeFjHacCaghtvcj-xf6Z6VgB200DYn81HnEAbptWR')">
+<!-- Gradient Overlay for legibility and mood -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent"></div>
+</div>
+<!-- Hero Content -->
+<div class="relative z-10 flex flex-col items-center gap-lg px-md w-full max-w-sm">
+<button class="h-touch-target-min px-xl border border-secondary text-secondary font-label-caps text-label-caps uppercase tracking-[0.2em] bg-transparent backdrop-blur-sm hover:bg-secondary/10 transition-colors active:scale-95 duration-200 flex items-center justify-center">
+                    BOOK NOW
+                </button>
+</div>
+</section>
+<!-- Services Section -->
+<section class="px-md py-xxl bg-primary flex flex-col gap-xl">
+<div class="text-center">
+<h2 class="font-headline-sm text-headline-sm-mobile text-secondary mb-unit">CURATED SERVICES</h2>
+<div class="w-12 h-px bg-secondary mx-auto"></div>
+</div>
+<div class="flex flex-col gap-lg">
+<!-- Service Item 1 -->
+<div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Signature Balayage</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $250</span>
+</div>
+<!-- Service Item 2 -->
+<div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Color Correction</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $300</span>
+</div>
+<!-- Service Item 3 -->
+<div class="flex justify-between items-center group cursor-pointer h-touch-target-min py-sm border-b border-surface-tint/30 hover:border-secondary transition-colors">
+<span class="font-body-lg text-body-lg text-on-primary group-hover:text-secondary transition-colors">Gloss &amp; Tone</span>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">FROM $85</span>
+</div>
+</div>
+</section>
+<!-- Social Proof Testimonial -->
+<section class="px-lg py-xxl bg-primary-container relative overflow-hidden flex flex-col items-center text-center justify-center min-h-[300px]">
+<!-- Subtle background accent -->
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-secondary/5 rounded-full blur-2xl"></div>
+<div class="absolute -bottom-12 -left-12 w-40 h-40 bg-secondary/5 rounded-full blur-3xl"></div>
+<span class="material-symbols-outlined text-secondary-fixed-dim/40 mb-md" data-icon="format_quote" style="font-size: 48px;">format_quote</span>
+<p class="font-headline-sm text-headline-sm-mobile text-on-primary-container italic max-w-sm">
+                "The most transformative color experience I've ever had. Absolute perfection in every detail."
+            </p>
+</section>
+<!-- Footer -->
+<footer class="bg-primary py-xxl flex flex-col items-center gap-lg border-t border-surface-tint/20">
+<h3 class="font-headline-sm text-secondary tracking-widest text-center">MIDNIGHT LUXE</h3>
+<div class="flex flex-col items-center gap-xs text-on-primary-container font-label-caps text-label-caps opacity-70">
+<p>123 LUXURY BLVD</p>
+<p>SAN ANTONIO, TX 78205</p>
+</div>
+<a class="h-touch-target-min w-touch-target-min flex items-center justify-center text-secondary hover:text-secondary-fixed transition-colors mt-sm" href="#">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+</a>
+</footer>
+</main>
+<!-- Mobile Bottom Nav Bar (Home is Active) -->
+<nav class="fixed bottom-0 w-full z-50 bg-primary border-t border-outline-variant/10 shadow-xl flex justify-around items-center h-20 px-4 pb-safe md:hidden">
+<!-- HOME (Active) -->
+<a class="flex flex-col items-center justify-center text-secondary-fixed-dim bg-primary-container rounded-full px-4 py-2 hover:bg-primary-container/50 active:scale-90 transition-transform h-touch-target-min min-w-[64px]" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill">home</span>
+<span class="font-label-caps text-label-caps mt-1 text-[10px]">HOME</span>
+</a>
+<!-- SERVICES (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-primary-container hover:bg-primary-container/50 active:scale-90 transition-transform h-touch-target-min min-w-[64px] px-2 py-2 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="content_cut">content_cut</span>
+<span class="font-label-caps text-label-caps mt-1 text-[10px]">SERVICES</span>
+</a>
+<!-- GALLERY (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-primary-container hover:bg-primary-container/50 active:scale-90 transition-transform h-touch-target-min min-w-[64px] px-2 py-2 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-caps text-label-caps mt-1 text-[10px]">GALLERY</span>
+</a>
+<!-- BOOK (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-primary-container hover:bg-primary-container/50 active:scale-90 transition-transform h-touch-target-min min-w-[64px] px-2 py-2 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-caps text-label-caps mt-1 text-[10px]">BOOK</span>
+</a>
+</nav>
+</body></html>

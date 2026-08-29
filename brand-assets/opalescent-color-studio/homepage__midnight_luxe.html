@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Opalescent Color Studio - Midnight Luxe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        charcoal: "#1A1A1A",
+                        gold: "#D4AF37",
+                        "gold-hover": "#E5C158",
+                        "warm-white": "#FDFBF7",
+                        "muted-white": "#D1CEC7",
+                    },
+                    fontFamily: {
+                        sans: ["Montserrat", "sans-serif"],
+                        serif: ["Playfair Display", "serif"],
+                    },
+                    letterSpacing: {
+                        widest: '.25em',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-charcoal text-warm-white font-sans antialiased pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-20 bg-charcoal/80 backdrop-blur-md flex justify-between items-center px-6 md:px-12 border-b border-white/5">
+<button aria-label="Menu" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-warm-white hover:text-gold transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="text-xs font-bold tracking-widest text-gold uppercase">
+            Opalescent
+        </div>
+<button aria-label="Book" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-warm-white hover:text-gold transition-colors">
+<span class="material-symbols-outlined" data-icon="spa">spa</span>
+</button>
+</header>
+<!-- Navigation Drawer -->
+<div class="fixed inset-y-0 left-0 z-[60] h-full w-4/5 max-w-sm bg-charcoal shadow-2xl border-r border-white/10 flex flex-col p-8 space-y-8 transform -translate-x-full transition-transform duration-500 ease-in-out" id="nav-drawer">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-2xl font-serif text-gold">Opalescent</h2>
+<button class="min-h-[44px] min-w-[44px] text-muted-white hover:text-gold transition-colors flex items-center justify-center" id="close-drawer">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex flex-col space-y-6">
+<a class="flex items-center space-x-4 text-warm-white hover:text-gold transition-colors p-2 rounded-lg text-lg tracking-wide" href="#">
+                Our Services
+            </a>
+<a class="flex items-center space-x-4 text-warm-white hover:text-gold transition-colors p-2 rounded-lg text-lg tracking-wide" href="#">
+                Gallery
+            </a>
+<a class="flex items-center space-x-4 text-warm-white hover:text-gold transition-colors p-2 rounded-lg text-lg tracking-wide" href="#">
+                Artists
+            </a>
+<a class="flex items-center space-x-4 text-gold font-bold hover:text-gold-hover transition-colors p-2 rounded-lg text-lg tracking-wide" href="#">
+                Booking
+            </a>
+<a class="flex items-center space-x-4 text-warm-white hover:text-gold transition-colors p-2 rounded-lg text-lg tracking-wide" href="#">
+                Contact
+            </a>
+</nav>
+</div>
+<!-- Drawer Overlay -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] hidden transition-opacity duration-300" id="drawer-overlay"></div>
+<main class="w-full mx-auto">
+<!-- Hero Section -->
+<section class="relative w-full h-screen flex items-center justify-center pt-20">
+<div class="absolute inset-0 z-0">
+<img alt="Luxury dark salon interior" class="w-full h-full object-cover object-center" data-alt="A dark, moody, and extremely expensive-looking luxury salon interior. Deep charcoal walls, dramatic ambient lighting, sleek black styling chairs, and subtle champagne gold architectural accents. The atmosphere is intimate, high-end, and exclusive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNg2zmZyeT38mpRjFXxBUKgU6ecQJDmk9NOYzo2nlF0m5j2BlMN2CY3MmLkUb64PSZ7widRseBOEknhPYfMq-bX4Mfy9zWIQwr1WFIWSR7gY8omUSTj3SFJe6Gjllis859jSpmJT53lrlNKBtLmKV-7eSYQ1239G0UfHJa0nyw02sX5WbFrDoA6tlQYXeJYYOeVgPyjBkQwFNdE6mv_1dyTHSth7hWMITg2wHBTglnEhLi0kBW45yvC4rhtOywQoejbQUtrSV74VVA"/>
+<div class="absolute inset-0 bg-charcoal/60 backdrop-blur-[1px]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center justify-center text-center px-6 w-full max-w-4xl mx-auto space-y-12">
+<div class="space-y-6">
+<p class="text-xs md:text-sm font-sans tracking-[0.3em] text-gold uppercase">The Art of Color</p>
+<h1 class="text-5xl md:text-7xl lg:text-8xl font-serif text-warm-white leading-tight drop-shadow-2xl">
+                        Elevate Your<br/><i class="text-muted-white">Canvas</i>
+</h1>
+</div>
+<button class="border border-gold text-gold hover:bg-gold hover:text-charcoal font-sans text-sm tracking-[0.2em] uppercase h-14 px-10 rounded-none flex items-center justify-center transition-all duration-300 min-h-[48px]">
+                    Book Appointment
+                </button>
+</div>
+</section>
+<!-- Services Minimalist List -->
+<section class="py-32 px-6 md:px-12 lg:px-24 bg-charcoal w-full">
+<div class="max-w-5xl mx-auto">
+<div class="mb-20 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-8">
+<h2 class="text-4xl md:text-5xl font-serif text-warm-white">Curated Services</h2>
+<p class="text-xs font-sans tracking-[0.2em] text-gold uppercase mt-6 md:mt-0">View Full Menu</p>
+</div>
+<div class="flex flex-col">
+<!-- Service Item -->
+<a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
+<div class="space-y-2">
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Signature Balayage</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">Seamless, hand-painted dimension tailored to your natural fall.</p>
+</div>
+<div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
+                            FROM $350
+                        </div>
+</a>
+<!-- Service Item -->
+<a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
+<div class="space-y-2">
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Color Correction</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">Transformative structural repair and tonal balancing.</p>
+</div>
+<div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
+                            BY CONSULTATION
+                        </div>
+</a>
+<!-- Service Item -->
+<a class="group py-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/5 hover:border-gold transition-colors duration-500 cursor-pointer" href="#">
+<div class="space-y-2">
+<h3 class="text-2xl md:text-3xl font-serif text-muted-white group-hover:text-gold transition-colors duration-300">Gloss &amp; Tone</h3>
+<p class="text-sm font-sans text-muted-white/60 tracking-wide max-w-xl">High-shine refinement to restore vibrancy and depth.</p>
+</div>
+<div class="mt-4 md:mt-0 text-sm font-sans tracking-widest text-warm-white group-hover:text-gold transition-colors">
+                            FROM $120
+                        </div>
+</a>
+</div>
+</div>
+</section>
+<!-- High-Impact Testimonial -->
+<section class="py-32 px-6 bg-charcoal relative overflow-hidden flex items-center justify-center min-h-[60vh]">
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.03] via-charcoal to-charcoal pointer-events-none"></div>
+<div class="max-w-4xl mx-auto text-center relative z-10">
+<span class="text-gold text-6xl md:text-8xl font-serif opacity-50 block mb-6">"</span>
+<p class="text-3xl md:text-5xl lg:text-6xl font-serif italic text-warm-white leading-relaxed mb-12">
+                    A truly curated experience. The studio is calm, and the colorists are absolute artists with formulation.
+                </p>
+<div class="flex items-center justify-center space-x-4">
+<div class="w-12 h-[1px] bg-gold"></div>
+<span class="text-xs font-sans tracking-[0.2em] text-muted-white uppercase">Sarah M.</span>
+<div class="w-12 h-[1px] bg-gold"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-4 bg-charcoal/95 backdrop-blur-lg border-t border-white/10 z-50">
+<a class="flex flex-col items-center justify-center text-muted-white hover:text-gold transition-colors min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="content_cut">content_cut</span>
+<span class="text-[10px] font-sans tracking-widest uppercase mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-muted-white hover:text-gold transition-colors min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-[10px] font-sans tracking-widest uppercase mt-1">Gallery</span>
+</a>
+<a class="flex flex-col items-center justify-center text-muted-white hover:text-gold transition-colors min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="face">face</span>
+<span class="text-[10px] font-sans tracking-widest uppercase mt-1">About</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gold hover:text-warm-white transition-colors min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="event_available">event_available</span>
+<span class="text-[10px] font-sans tracking-widest uppercase mt-1">Book</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full bg-charcoal border-t border-white/10 flex flex-col items-center py-24 px-6 space-y-12 text-center">
+<div class="text-sm font-sans font-semibold tracking-[0.3em] text-gold uppercase">
+            Opalescent
+        </div>
+<div class="flex flex-col md:flex-row md:space-x-16 space-y-6 md:space-y-0">
+<a class="text-sm font-sans tracking-widest text-muted-white hover:text-gold transition-colors uppercase min-h-[44px] flex items-center justify-center" href="#">Contact</a>
+<a class="text-sm font-sans tracking-widest text-muted-white hover:text-gold transition-colors uppercase min-h-[44px] flex items-center justify-center" href="#">Location</a>
+<a class="text-sm font-sans tracking-widest text-muted-white hover:text-gold transition-colors uppercase min-h-[44px] flex items-center justify-center" href="#">Instagram</a>
+</div>
+<p class="text-xs font-sans tracking-widest text-muted-white/50 uppercase">
+            © 2024 Opalescent. All Rights Reserved.
+        </p>
+</footer>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('header button[aria-label="Menu"]');
+            const drawer = document.getElementById('nav-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const closeBtn = document.getElementById('close-drawer');
+
+            function toggleDrawer() {
+                const isClosed = drawer.classList.contains('-translate-x-full');
+                if (isClosed) {
+                    drawer.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    drawer.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleDrawer);
+            closeBtn.addEventListener('click', toggleDrawer);
+            overlay.addEventListener('click', toggleDrawer);
+        });
+    </script>
+</body></html>

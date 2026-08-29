@@ -1,0 +1,39 @@
+# App Store Metadata: Opalescent Color Studio
+
+## App Name
+Opalescent Color Studio
+
+## Subtitle
+Luxury Hair & Color Artistry
+
+## Short Description
+Boutique hair color and transformations. Book your curated salon experience.
+
+## Long Description
+### Elevate Your Canvas.
+Welcome to **Opalescent Color Studio**, San Antonio’s premier destination for high-end hair transformations. Our app brings the boutique salon experience directly to your fingertips, allowing you to explore our artistry and secure your next session with ease.
+
+**Why Opalescent?**
+At Opalescent, we believe hair is a canvas. Our expert colorists specialize in balayage, precision highlights, and custom color corrections designed to elevate your natural beauty.
+
+**Key Features:**
+*   **Seamless Booking:** View real-time availability and book appointments in seconds.
+*   **Curated Portfolio:** Browse our gallery of signature transformations for inspiration.
+*   **Transparent Pricing:** Explore our full menu of coloring, styling, and extension services.
+*   **Artist Profiles:** Meet the experts behind the chair.
+*   **Direct Access:** Quick links for directions, calls, and Instagram updates.
+
+Experience the perfect blend of artistry and precision. Download the Opalescent app today and begin your journey toward a stunning new look. ✨
+
+## Keywords
+hair salon, balayage san antonio, hair colorist, luxury salon, hair extensions, salon booking app
+
+## Category Suggestion
+*   **Primary:** Lifestyle
+*   **Secondary:** Health & Fitness
+
+## What's New
+*   Initial Release: Introducing the Opalescent Color Studio mobile experience.
+*   New interactive portfolio gallery.
+*   Streamlined service menu with accordion-style pricing.
+*   One-tap booking for color consultations and styling.

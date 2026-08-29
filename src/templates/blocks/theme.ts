@@ -55,6 +55,13 @@ const FONTS: Record<string, { heading: string; body: string }> = {
     heading: "'Cinzel', ui-serif, Georgia, serif",
     body: "'Inter', ui-sans-serif, system-ui, sans-serif",
   },
+  // Editorial serif headline over a geometric sans body — the pairing the
+  // Opalescent Stitch designs use, and the right register for salons, spas and
+  // anything selling craft rather than speed.
+  luxe: {
+    heading: "'Playfair Display', ui-serif, Georgia, serif",
+    body: "'Montserrat', ui-sans-serif, system-ui, sans-serif",
+  },
 };
 
 const LIGHT_ACCENTS = ['#C5A059', '#fbbf24', '#facc15', '#eab308', '#d97706', '#f59e0b'];

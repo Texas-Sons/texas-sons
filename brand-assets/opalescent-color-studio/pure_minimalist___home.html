@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SALON MINIMAL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-container": "#eeeeee",
+                        "surface-dim": "#dadada",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-container": "#848484",
+                        "on-error-container": "#93000a",
+                        "background": "#f9f9f9",
+                        "outline-variant": "#cfc4c5",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "primary-container": "#1b1b1b",
+                        "on-secondary-container": "#5f6161",
+                        "on-primary-container": "#848484",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#1b1b1b",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-surface": "#1a1c1c",
+                        "tertiary": "#000000",
+                        "on-background": "#1a1c1c",
+                        "surface": "#f9f9f9",
+                        "outline": "#7e7576",
+                        "divider-line": "#EAEAEA",
+                        "primary-fixed": "#e2e2e2",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2f3131",
+                        "on-surface-variant": "#4c4546",
+                        "inverse-on-surface": "#f0f1f1",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "secondary-fixed": "#e2e2e2",
+                        "clinical-grey": "#D1D1D1",
+                        "secondary": "#5d5f5f",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#1b1b1b",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f3f3f4",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-fixed-variant": "#474747",
+                        "inverse-primary": "#c6c6c6",
+                        "primary": "#000000",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#5e5e5e",
+                        "secondary-container": "#dcdddd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "120px",
+                        "margin-desktop": "80px",
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "24px",
+                        "element-gap": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "headline-xl": ["Montserrat"],
+                        "body-md": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-lg": ["Montserrat"],
+                        "label-caps": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "label-sm": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-xl": ["64px", { "lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "32px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.2em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base clinical reset */
+        body {
+            background-color: theme('colors.surface');
+            color: theme('colors.primary');
+        }
+        /* Enforce sharp corners for clinical look */
+        * {
+            border-radius: 0 !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface text-primary w-full top-0 border-b border-primary flex justify-between items-center px-margin-mobile md:px-margin-desktop py-base w-full">
+<button aria-label="Menu" class="hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">SALON_MINIMAL</h1>
+<div class="w-6"></div> <!-- Spacer for balance -->
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="px-margin-mobile md:px-margin-desktop pt-[80px] pb-section-gap flex flex-col items-center text-center border-b border-divider-line">
+<!-- Framed Portrait -->
+<div class="border border-primary p-2 mb-element-gap">
+<div class="border border-primary p-1">
+<img class="w-[200px] h-[280px] object-cover grayscale" data-alt="A stark, high-fashion black and white portrait of an androgynous model with a precision geometric haircut. The lighting is harsh, clinical, and studio-quality, casting sharp shadows. The model stares directly into the camera with a neutral, authoritative expression. The background is a pure, sterile white, emphasizing the minimalist and architectural aesthetic of the hairstyle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8vgesgGnhLH8kO9c-l-Hj2YI0gkor18YXlOwJ_sGedddoFb8p1cQsH_nPo-IKVUaAVoHeVWgDoWfkAchVy1MlahSH_xNzpYCgABBbgIj4psLHVi4NAVRiqjkfsMOApRiP1RX2s5pWyAmD2XCHUy_vg1IQpRlsCy-ol7eiWuWtTMl7yif2KqKyDvf5UwgZ5gRZcJPHQkbxVKreG0MQHsTt7vecffJE6M47eqWUuqLH6pP5ls-QJB4KTq0nGbof4WLSdxz1Mkvs4lPE"/>
+</div>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl mb-base uppercase tracking-tighter">
+                The Art of Hair
+            </h2>
+<p class="font-body-md text-body-md text-secondary max-w-sm">
+                Precision styling in a clinical environment.
+            </p>
+</section>
+<!-- Services Section -->
+<section class="px-margin-mobile md:px-margin-desktop py-section-gap border-b border-divider-line bg-surface-container-lowest">
+<h3 class="font-label-caps text-label-caps text-secondary mb-element-gap">SERVICES_01</h3>
+<div class="flex flex-col">
+<a class="flex justify-between items-center py-6 border-b border-divider-line group hover:bg-surface-container-low transition-colors px-4 -mx-4" href="#">
+<span class="font-body-lg text-body-lg uppercase tracking-wide">Balayage</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="flex justify-between items-center py-6 border-b border-divider-line group hover:bg-surface-container-low transition-colors px-4 -mx-4" href="#">
+<span class="font-body-lg text-body-lg uppercase tracking-wide">Precision Cutting</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="flex justify-between items-center py-6 border-b border-divider-line group hover:bg-surface-container-low transition-colors px-4 -mx-4" href="#">
+<span class="font-body-lg text-body-lg uppercase tracking-wide">Extensions</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="flex justify-between items-center py-6 border-b border-divider-line group hover:bg-surface-container-low transition-colors px-4 -mx-4" href="#">
+<span class="font-body-lg text-body-lg uppercase tracking-wide">Color Correction</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</section>
+<!-- Client Stories Section -->
+<section class="px-margin-mobile md:px-margin-desktop py-section-gap bg-surface-container-low">
+<h3 class="font-label-caps text-label-caps text-secondary mb-element-gap">CLIENT_STORIES</h3>
+<div class="flex flex-col gap-element-gap">
+<article class="border-l-2 border-primary pl-gutter">
+<p class="font-body-lg text-body-lg text-primary italic mb-base">
+                        "A completely transformative experience. The level of detail and understanding of facial geometry is unparalleled."
+                    </p>
+<span class="font-label-caps text-label-caps text-secondary">— E. V.</span>
+</article>
+<article class="border-l-2 border-primary pl-gutter">
+<p class="font-body-lg text-body-lg text-primary italic mb-base">
+                        "Clinical precision meets high art. I leave feeling like a walking sculptural piece every single time."
+                    </p>
+<span class="font-label-caps text-label-caps text-secondary">— M. R.</span>
+</article>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface text-primary w-full border-t border-primary flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop py-element-gap gap-base">
+<h2 class="font-headline-md text-headline-md text-primary font-bold tracking-tighter">SALON_MINIMAL</h2>
+<nav class="flex flex-wrap justify-center gap-gutter">
+<a class="font-label-caps text-label-caps text-primary hover:underline transition-all" href="#">SERVICES</a>
+<a class="font-label-caps text-label-caps text-primary hover:underline transition-all" href="#">ARTISTS</a>
+<a class="font-label-caps text-label-caps text-primary hover:underline transition-all" href="#">BOOKING</a>
+<a class="font-label-caps text-label-caps text-primary hover:underline transition-all" href="#">LEGAL</a>
+</nav>
+<p class="font-label-caps text-label-caps text-secondary">
+            © 2024 SALON MINIMAL. ALL RIGHTS RESERVED.
+        </p>
+</footer>
+</body></html>

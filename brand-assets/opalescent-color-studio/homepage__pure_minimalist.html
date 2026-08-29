@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Opalescent Color Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#474836",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-container": "#745c00",
+                        "surface-container": "#eeeeee",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#e9c349",
+                        "background": "#ffffff",
+                        "surface-bright": "#ffffff",
+                        "outline": "#73777b",
+                        "on-tertiary-fixed": "#1b1d0e",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-container-low": "#f9f9f9",
+                        "tertiary-fixed": "#e4e4cc",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#3a4953",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2f3131",
+                        "outline-variant": "#e5e7eb",
+                        "surface-dim": "#dadada",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-surface": "#000000",
+                        "secondary-container": "#fed65b",
+                        "primary-fixed": "#d5e5f1",
+                        "secondary-fixed": "#ffe088",
+                        "primary-fixed-dim": "#b9c9d5",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-tint": "#51606b",
+                        "on-background": "#000000",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#6b7280",
+                        "on-primary-fixed": "#0e1d26",
+                        "tertiary-container": "#434432",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#b0b19a",
+                        "inverse-primary": "#b9c9d5",
+                        "surface": "#ffffff",
+                        "on-primary-container": "#a2b2be",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#36454f",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#c8c8b0",
+                        "secondary": "#000000",
+                        "tertiary": "#2c2e1e",
+                        "on-secondary-fixed-variant": "#574500"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "0px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "touch-target-min": "44px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "sm": "8px",
+                        "gutter": "32px",
+                        "xxl": "96px",
+                        "lg": "32px",
+                        "xl": "64px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Montserrat"],
+                        "body-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Montserrat"],
+                        "headline-sm": ["Montserrat"],
+                        "button-text": ["Montserrat"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "headline-md": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.15em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-sm": ["24px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "button-text": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased pt-24 pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 h-24 bg-background flex justify-between items-center px-gutter border-b border-outline-variant">
+<button aria-label="Menu" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-primary hover:opacity-50 transition-opacity">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="text-label-caps font-label-caps font-bold tracking-widest text-primary">
+            OPALESCENT
+        </div>
+<button aria-label="Book" class="flex items-center justify-center min-h-[44px] min-w-[44px] text-primary hover:opacity-50 transition-opacity">
+<span class="material-symbols-outlined" data-icon="spa">spa</span>
+</button>
+</header>
+<!-- Navigation Drawer (Hidden by default, structure for interactivity) -->
+<div class="fixed inset-y-0 left-0 z-[60] h-full w-4/5 max-w-sm bg-background border-r border-outline-variant flex flex-col p-gutter space-y-xl transform -translate-x-full transition-transform duration-300 ease-in-out" id="nav-drawer">
+<div class="flex justify-between items-center mb-xl">
+<h2 class="text-headline-sm font-headline-sm text-primary">OPALESCENT</h2>
+<button class="min-h-[44px] min-w-[44px] text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors" id="close-drawer">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex flex-col space-y-md">
+<a class="flex items-center space-x-md text-on-surface hover:text-on-surface-variant transition-colors py-sm min-h-[44px]" href="#">
+<span class="text-headline-sm font-headline-sm">Services</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface hover:text-on-surface-variant transition-colors py-sm min-h-[44px]" href="#">
+<span class="text-headline-sm font-headline-sm">Gallery</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface hover:text-on-surface-variant transition-colors py-sm min-h-[44px]" href="#">
+<span class="text-headline-sm font-headline-sm">Artists</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface hover:text-on-surface-variant transition-colors py-sm min-h-[44px]" href="#">
+<span class="text-headline-sm font-headline-sm">Booking</span>
+</a>
+<a class="flex items-center space-x-md text-on-surface hover:text-on-surface-variant transition-colors py-sm min-h-[44px]" href="#">
+<span class="text-headline-sm font-headline-sm">Contact</span>
+</a>
+</nav>
+</div>
+<!-- Drawer Overlay -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-[55] hidden transition-opacity" id="drawer-overlay"></div>
+<main class="w-full">
+<!-- Hero Section -->
+<section class="w-full max-w-container-max mx-auto px-gutter py-xxl md:py-32 flex flex-col md:flex-row items-center justify-between gap-xl">
+<div class="flex-1 w-full flex flex-col items-start justify-center text-left space-y-xl">
+<h1 class="text-display-lg-mobile md:text-display-lg font-display-lg text-primary leading-tight">
+                    The Art<br/>of Hair.
+                </h1>
+<button class="bg-primary text-on-primary font-button-text text-button-text h-12 px-12 flex items-center justify-center hover:bg-gray-800 transition-colors min-h-[48px] uppercase tracking-widest">
+                    BOOK APPOINTMENT
+                </button>
+</div>
+<div class="flex-1 w-full flex justify-center md:justify-end">
+<div class="w-full max-w-[320px] aspect-[4/5] bg-surface-container-low border border-outline-variant p-4">
+<img alt="Stunning hair transformation" class="w-full h-full object-cover object-center grayscale" data-alt="A stunning high-fashion photograph of a woman with perfectly styled, dimensional balayage hair. The lighting is soft and natural, emphasizing the subtle gold and beige tones in her hair. She is set against a minimalist, bright, and airy salon background with neutral white and soft beige tones. The overall aesthetic is luxurious, professional, and elegant, reflecting a premium boutique salon experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApaFtzvKk8js9Rg_Sgtoz4foPuH5X2n4eMHWCYRNvnB-npQZrFJ-nZ-1hEz77PDl9okQ58nMWLTrka-OpxQFtKLZN8N1rXzdt-eMTLnwmSWpoH-x1dGE5BJSsaUK_90mN7gucawZrtahJe1ItINxNvx9ldUy-2JdkppSFnhioDl3TRxZA15WQXjmTvnWXGzdPYQc0j7YBJtJGTy_iJH3e3sX9q-JA073FrRBozNQ3P0PM_EZx5as83fWt4jNlgald4yYCo1Cm0eKcp"/>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-xxl px-gutter border-t border-outline-variant">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+<div>
+<h2 class="text-headline-md font-headline-md text-primary mb-lg">Services</h2>
+</div>
+<div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-y-lg gap-x-xl">
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Balayage &amp; Dimension</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Color Correction</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Precision Cutting</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Gloss &amp; Tone</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Extensions</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between text-body-lg font-body-lg text-primary hover:text-on-surface-variant transition-colors border-b border-outline-variant pb-sm" href="#">
+<span>Treatment &amp; Scalp Care</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-xxl px-gutter bg-surface-container-low border-t border-outline-variant">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+<!-- Testimonial 1 -->
+<div class="flex flex-col space-y-lg">
+<p class="text-body-lg font-body-lg text-primary">
+                            "The balayage technique here is unmatched. It grew out seamlessly over six months, still looking flawless."
+                        </p>
+<span class="text-label-caps font-label-caps text-on-surface-variant tracking-widest">ELENA R.</span>
+</div>
+<!-- Testimonial 2 -->
+<div class="flex flex-col space-y-lg">
+<p class="text-body-lg font-body-lg text-primary">
+                            "A truly curated experience. The studio is calm, and the colorists are absolute artists with formulation."
+                        </p>
+<span class="text-label-caps font-label-caps text-on-surface-variant tracking-widest">SARAH M.</span>
+</div>
+<!-- Testimonial 3 -->
+<div class="flex flex-col space-y-lg">
+<p class="text-body-lg font-body-lg text-primary">
+                            "They understood exactly the subtle copper tone I wanted. The consultation was thorough and the result is stunning."
+                        </p>
+<span class="text-label-caps font-label-caps text-on-surface-variant tracking-widest">JESSICA T.</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-md pt-sm bg-background border-t border-outline-variant z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors py-sm min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined" data-icon="content_cut">content_cut</span>
+<span class="text-label-caps font-label-caps mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors py-sm min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-label-caps font-label-caps mt-1">Portfolio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors py-sm min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="text-label-caps font-label-caps mt-1">About</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary py-sm transition-transform duration-200 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="text-label-caps font-label-caps mt-1">Book</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full mb-xxl md:mb-0 bg-background border-t border-outline-variant flex flex-col md:flex-row items-center justify-between py-xl px-gutter md:px-xxl max-w-container-max mx-auto">
+<div class="text-label-caps font-label-caps text-primary tracking-widest mb-lg md:mb-0">
+            OPALESCENT
+        </div>
+<div class="flex space-x-gutter mb-lg md:mb-0">
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors min-h-[44px] flex items-center" href="#">Call Us</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors min-h-[44px] flex items-center" href="#">Get Directions</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors min-h-[44px] flex items-center" href="#">Instagram</a>
+</div>
+<p class="text-label-caps font-label-caps text-outline">
+            © 2024 OPALESCENT.
+        </p>
+</footer>
+<script>
+        // Simple drawer toggle logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('header button[aria-label="Menu"]');
+            const drawer = document.getElementById('nav-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const closeBtn = document.getElementById('close-drawer');
+
+            function toggleDrawer() {
+                const isClosed = drawer.classList.contains('-translate-x-full');
+                if (isClosed) {
+                    drawer.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    drawer.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleDrawer);
+            closeBtn.addEventListener('click', toggleDrawer);
+            overlay.addEventListener('click', toggleDrawer);
+        });
+    </script>
+</body></html>
