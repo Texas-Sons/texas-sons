@@ -11,6 +11,7 @@ import ProspectsView from './components/ProspectsView';
 import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/AgentBuilderStudio';
 import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
 import SettingsView from './components/SettingsView';
+import InsightsView from './components/InsightsView';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { prospectToIntakePrefill } from './utils/prospectToIntake';
@@ -409,6 +410,8 @@ export default function App() {
                   }}
                 />
               )}
+
+              {currentView === 'insights' && <InsightsView />}
 
               {currentView === 'billing' && (
                 <BillingView 

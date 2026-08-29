@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { 
+import {
+  TrendingUp, 
   LayoutDashboard, 
   Folders, 
   Users, 
@@ -43,6 +44,7 @@ export default function Sidebar({
   const navItems: NavItemConfig[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'agent-builder', label: '1-Click Studio', icon: Zap, highlight: true },
+    { id: 'insights', label: 'Insights', icon: TrendingUp },
     { id: 'projects', label: 'Projects', icon: Folders },
     { id: 'prospects', label: 'Lead Finder', icon: Target },
     { id: 'clients', label: 'Client Intake', icon: Users },

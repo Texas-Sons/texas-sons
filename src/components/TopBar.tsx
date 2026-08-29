@@ -13,6 +13,7 @@ export default function TopBar({ currentView, onLogout, onOpenMobileNav }: TopBa
     projects: 'Projects',
     clients: 'Client Intake',
     prospects: 'Lead Finder',
+    insights: 'Insights',
     'agent-builder': '1-Click Studio',
     billing: 'Billing',
     settings: 'Settings'
@@ -23,6 +24,7 @@ export default function TopBar({ currentView, onLogout, onOpenMobileNav }: TopBa
     projects: 'Active deployments',
     clients: 'Intake vault',
     prospects: 'Lead discovery',
+    insights: 'What is working, from your event log',
     'agent-builder': 'AI website studio',
     billing: 'Invoices & revenue',
     settings: 'Configuration'

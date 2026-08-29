@@ -99,4 +99,4 @@ export interface ClientIntake {
   updatedAt: string;
 }
 
-export type ViewState = 'dashboard' | 'projects' | 'clients' | 'agent-builder' | 'billing' | 'settings' | 'prospects';
+export type ViewState = 'dashboard' | 'projects' | 'clients' | 'agent-builder' | 'billing' | 'settings' | 'prospects' | 'insights';
