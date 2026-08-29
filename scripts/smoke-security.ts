@@ -8,6 +8,7 @@
 
 import { isBlockedAddress, safeFetchText } from '../lib/safeFetch';
 import { getAdminEmails, isPublicApiPath } from '../lib/auth';
+import { resolveModel } from '../lib/models';
 
 let failures = 0;
 
@@ -100,6 +101,36 @@ const mustBeGuarded = [
 
 for (const p of mustBePublic) check(`public: ${p}`, isPublicApiPath(p), true);
 for (const p of mustBeGuarded) check(`guarded: ${p}`, isPublicApiPath(p), false);
+
+// --- Model routing config ---------------------------------------------------
+
+// A malformed override must fall back to the default, not silently route a task
+// to a model that does not exist and fail at call time.
+const originalOverride = process.env.MODEL_ASSISTANT;
+
+delete process.env.MODEL_ASSISTANT;
+check('assistant defaults to gemini', resolveModel('assistant').provider, 'gemini');
+
+process.env.MODEL_ASSISTANT = 'openrouter:deepseek/deepseek-chat';
+check('override switches provider', resolveModel('assistant').provider, 'openrouter');
+check('override keeps the full model id including the slash',
+  resolveModel('assistant').model, 'deepseek/deepseek-chat');
+
+process.env.MODEL_ASSISTANT = 'deepseek/deepseek-chat';  // missing provider prefix
+check('override without a provider falls back', resolveModel('assistant').provider, 'gemini');
+
+process.env.MODEL_ASSISTANT = 'notaprovider:some-model';
+check('unknown provider falls back', resolveModel('assistant').provider, 'gemini');
+
+process.env.MODEL_ASSISTANT = 'openrouter:';
+check('provider with no model falls back', resolveModel('assistant').provider, 'gemini');
+
+if (originalOverride === undefined) delete process.env.MODEL_ASSISTANT;
+else process.env.MODEL_ASSISTANT = originalOverride;
+
+// extract-dossier is multimodal; its default must stay on Gemini.
+check('dossier extraction defaults to gemini (multimodal)',
+  resolveModel('extract-dossier').provider, 'gemini');
 
 // --- Service-role key must never reach the browser -------------------------
 

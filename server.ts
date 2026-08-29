@@ -14,6 +14,7 @@ import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath } from './lib/auth';
+import { callModel, registerGeminiCaller, resolveModel, type ChatMessage } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
@@ -363,6 +364,10 @@ function getSupabaseAdmin(): SupabaseClient {
   }
   return supabaseAdminClient;
 }
+
+// The router delegates Gemini calls back here so the retry logic and client
+// setup are not duplicated in lib/models.ts.
+registerGeminiCaller(opts => generateGeminiWithRetry(opts));
 
 async function cfFetch(url: string, init?: RequestInit): Promise<any> {
   const res = await fetch(url, init);
@@ -1877,6 +1882,95 @@ ${prompt}`;
       res.json({ success: true, token, url: `${base}/intake/${token}` });
     } catch (error: any) {
       console.error('[intake] Link generation error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Business assistant
+  //
+  // A real conversation, unlike /api/studio-chat which is a one-shot JSON
+  // transformer for blueprints. Grounded in the operating-manual files under
+  // context/ and references/, plus a summary of the event log, so it can answer
+  // "what should I focus on" with actual numbers rather than generic advice.
+  //
+  // A model knows nothing about this business on its own — everything it can
+  // reason about has to be in the prompt. That is what these files are for.
+  // -------------------------------------------------------------------------
+
+  const CONTEXT_FILES = [
+    'context/about-business.md',
+    'context/priorities.md',
+    'context/about-me.md',
+    'references/voice.md',
+    'connections.md',
+  ];
+
+  let cachedContext: string | null = null;
+  async function loadBusinessContext(): Promise<string> {
+    if (cachedContext !== null) return cachedContext;
+    const parts: string[] = [];
+    for (const rel of CONTEXT_FILES) {
+      try {
+        const text = await fs.readFile(safeResolvePath(process.cwd(), ...rel.split('/')), 'utf8');
+        parts.push(`--- ${rel} ---
+${text.trim()}`);
+      } catch {
+        // A missing context file is not an error — the operator may not have
+        // written it yet. The assistant just knows less.
+      }
+    }
+    cachedContext = parts.join('\n\n');
+    return cachedContext;
+  }
+
+  app.post("/api/assistant", async (req, res) => {
+    try {
+      const { messages, stats } = req.body || {};
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ success: false, error: "messages array is required" });
+      }
+
+      // Keep the window bounded; long chats otherwise grow cost without bound.
+      const trimmed: ChatMessage[] = messages
+        .slice(-20)
+        .filter((m: any) => m && typeof m.content === 'string' && ['user', 'assistant'].includes(m.role))
+        .map((m: any) => ({ role: m.role, content: String(m.content).slice(0, 8000) }));
+
+      const businessContext = await loadBusinessContext();
+
+      const system = [
+        'You are the operating assistant for Texas Sons, a one-person web agency run by Morgan Valdez.',
+        'You help him decide what to work on, review how the business is going, and think through his website-building pipeline.',
+        '',
+        'Rules:',
+        '- Be direct and specific. He is technical and busy. No filler, no motivational padding.',
+        '- Ground every claim about his business in the numbers provided below. If the data does not support an answer, say what is missing rather than guessing.',
+        '- If the pipeline stats are empty or thin, say so plainly instead of inventing trends.',
+        '- When you recommend something, say what it would cost him in time and what it would change.',
+        '',
+        businessContext ? `## His operating manual\n${businessContext}` : '',
+        stats
+          ? `## Current pipeline (from his event log)\n${JSON.stringify(stats, null, 2)}`
+          : '## Current pipeline\nNo event data supplied.',
+      ].filter(Boolean).join('\n');
+
+      const config = resolveModel('assistant');
+      const result = await callModel({ task: 'assistant', messages: trimmed, system });
+
+      res.json({
+        success: true,
+        reply: result.text,
+        model: result.model,
+        provider: result.provider,
+        usage: {
+          promptTokens: result.promptTokens,
+          completionTokens: result.completionTokens,
+        },
+        configuredBy: config.why,
+      });
+    } catch (error: any) {
+      console.error('[assistant] error:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
