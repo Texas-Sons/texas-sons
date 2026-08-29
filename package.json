@@ -11,7 +11,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test": "tsx scripts/smoke-client.ts && tsx scripts/smoke-security.ts && tsx scripts/smoke-mapping.ts && tsx scripts/smoke-insights.ts",
-    "verify": "npm run lint && npm test && npm run build"
+    "verify": "npm run lint && npm test && npm run build",
+    "smoke:live": "tsx scripts/smoke-live.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

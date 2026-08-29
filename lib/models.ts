@@ -23,6 +23,7 @@ export type TaskName =
   | 'draft-proposal'
   | 'draft-contract'
   | 'studio-edit'       // natural language -> blueprint edit
+  | 'draft-outreach'    // cold email to a prospect
   | 'assistant';        // conversational; knows your business context
 
 export interface ModelConfig {
@@ -72,6 +73,11 @@ const DEFAULT_TASK_MODELS: Record<TaskName, ModelConfig> = {
     provider: 'gemini',
     model: 'gemini-3.6-flash',
     why: 'Must return strict JSON. Watch the parse-failure rate before switching.',
+  },
+  'draft-outreach': {
+    provider: 'gemini',
+    model: 'gemini-3.6-flash',
+    why: 'Cold email in the operator voice. High volume, and the first thing a prospect reads.',
   },
   assistant: {
     provider: 'gemini',
@@ -354,18 +360,36 @@ export async function callModel(options: CallOptions): Promise<ModelResult> {
  * SyntaxError.
  */
 export function parseModelJson<T = any>(result: ModelResult): T {
-  const cleaned = result.text
-    .replace(/^\s*```(?:json)?/i, '')
+  const fenced = (result.text || '')
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
     .replace(/```\s*$/, '')
     .trim();
 
-  try {
-    return JSON.parse(cleaned) as T;
-  } catch {
-    throw new Error(
-      `${result.model} did not return valid JSON. First 200 chars: ${cleaned.slice(0, 200)}`
-    );
+  // Slice between the outermost braces (or brackets) rather than parsing the
+  // whole string. Models — cheaper ones especially — like to wrap JSON in a
+  // sentence of explanation, and a strict parse throws on the prose instead of
+  // the data. Adapted from the parseJsonResponse helper this replaces.
+  const candidates = [
+    [fenced.indexOf('{'), fenced.lastIndexOf('}')],
+    [fenced.indexOf('['), fenced.lastIndexOf(']')],
+  ].filter(([a, b]) => a !== -1 && b > a);
+
+  // Prefer whichever structure starts first, so an object containing an array
+  // is not mistaken for a bare array.
+  candidates.sort((a, b) => a[0] - b[0]);
+
+  for (const [start, end] of candidates) {
+    try {
+      return JSON.parse(fenced.slice(start, end + 1)) as T;
+    } catch {
+      // try the next shape
+    }
   }
+
+  throw new Error(
+    `${result.model} did not return valid JSON. First 200 chars: ${fenced.slice(0, 200)}`
+  );
 }
 
 /**

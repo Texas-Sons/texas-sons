@@ -795,14 +795,11 @@ Return ONLY a JSON object in exactly this shape (no markdown, no commentary):
   "seo": { "title": "Page <title> for the site", "description": "A 1-2 sentence SEO meta description" }
 }`;
 
-      const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
-        contents: prompt,
-      });
+      const response = await callModel({ task: 'generate-config', prompt });
 
       let aiConfig: any = {};
       try {
-        aiConfig = parseJsonResponse(response.text || '');
+        aiConfig = parseModelJson(response);
       } catch (err) {
         console.warn('Failed to parse AI config, falling back to defaults:', err);
       }
@@ -906,16 +903,14 @@ REQUIREMENTS:
 }`;
 
       try {
-        const response = await generateGeminiWithRetry({
-          model: "gemini-3.6-flash",
-          contents: prompt,
-        });
+        const response = await callModel({ task: 'draft-proposal', prompt });
 
+        // Kept tolerant on purpose: both these routes fall back to a
+        // hand-written template when the model does not produce usable JSON,
+        // so a parse failure must not throw past this block.
         let parsed: any = null;
         try {
-          const raw = response.text || '';
-          const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-          parsed = JSON.parse(cleaned);
+          parsed = parseModelJson(response);
         } catch {
           parsed = null;
         }
@@ -1066,16 +1061,14 @@ Return ONLY a JSON object in this format (no markdown blocks, no intro text):
 }`;
 
       try {
-        const response = await generateGeminiWithRetry({
-          model: "gemini-3.6-flash",
-          contents: prompt,
-        });
+        const response = await callModel({ task: 'draft-contract', prompt });
 
+        // Kept tolerant on purpose: both these routes fall back to a
+        // hand-written template when the model does not produce usable JSON,
+        // so a parse failure must not throw past this block.
         let parsed: any = null;
         try {
-          const raw = response.text || '';
-          const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-          parsed = JSON.parse(cleaned);
+          parsed = parseModelJson(response);
         } catch {
           parsed = null;
         }
@@ -1529,10 +1522,7 @@ We are Texas Sons, a premium digital agency. We offer three tiers:
 
 Draft a short, persuasive email proposal recommending we build them a modern website to capture more local traffic and elevate their brand. Keep it professional, not overly salesy, and highlight that we noticed they do not currently have a website listed on Google. Make it around 3-4 paragraphs.`;
 
-      const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
-        contents: prompt,
-      });
+      const response = await callModel({ task: 'draft-outreach', prompt });
 
       res.json({ success: true, proposal: response.text });
     } catch (error: any) {
@@ -1680,10 +1670,9 @@ Rules:
 
       parts.push({ text: extractionPrompt });
 
-      const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
-        contents: parts
-      });
+      // parts carry images, so callModel forces Gemini regardless of config —
+      // a text model would silently ignore the photos and invent a dossier.
+      const response = await callModel({ task: 'extract-dossier', parts });
 
       const rawText = response.text || "{}";
       const cleanJsonText = rawText
@@ -1748,13 +1737,9 @@ ${JSON.stringify(sanitizedSnapshot, null, 2)}
 User Instruction:
 ${prompt}`;
 
-      const response = await generateGeminiWithRetry({
-        model: "gemini-3.6-flash",
-        contents: systemInstruction
-      });
+      const response = await callModel({ task: 'studio-edit', prompt: systemInstruction });
 
-      const rawText = response.text || "{}";
-      const updatedSnapshot = parseJsonResponse(rawText);
+      const updatedSnapshot = parseModelJson(response);
 
       // Restore preserved image assets
       if (originalHeroImage && (!updatedSnapshot.profile?.heroImage || updatedSnapshot.profile.heroImage === '[PRESERVED_CLIENT_HERO_IMAGE]')) {
