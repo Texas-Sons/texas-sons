@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../../api';
+import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealth';
 import type { SiteSection } from '../../templates/sections';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
@@ -875,7 +876,19 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     }
   };
 
+
+  const [isHealthDropdownOpen, setIsHealthDropdownOpen] = useState(false);
+  const healthIssues = findBlueprintIssues(project);
+  const healthSummary = summariseIssues(healthIssues);
+
   const handleDeploySite = async () => {
+    if (healthIssues.length > 0) {
+      const msg = "This site has placeholders that a client should not see:\n\n" + 
+        healthIssues.map(i => "- " + i.message).join('\n') + 
+        "\n\nDeploy anyway?";
+      if (!window.confirm(msg)) return;
+    }
+
     setAgentState({
       step: 'building',
       message: 'Compiling React blocks and pushing to Cloudflare Pages...',
