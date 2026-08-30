@@ -24,6 +24,7 @@ export type SectionKind =
   | 'beforeAfter'
   | 'products'
   | 'testimonials'
+  | 'squareBooking'
   | 'booking'
   | 'footer';
 
@@ -196,6 +197,10 @@ function beautyArchetype(): SiteSection[] {
     {
       kind: 'products',
       props: { title: 'Shop the Studio', subtitle: 'Take the salon home with you.' },
+    },
+    {
+      kind: 'squareBooking',
+      props: { title: 'Book Your Appointment', subtitle: 'Schedule your next visit.' },
     },
     {
       kind: 'booking',

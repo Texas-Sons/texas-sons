@@ -12,6 +12,7 @@ import { GalleryBlock } from './blocks/GalleryBlock';
 import { ProductsBlock } from './blocks/ProductsBlock';
 import { BeforeAfterBlock } from './blocks/BeforeAfterBlock';
 import { WriteInGuideBlock } from './blocks/WriteInGuideBlock';
+import { SquareBookingBlock } from './blocks/SquareBookingBlock';
 import { resolveSections, SiteSection } from './sections';
 import { BookingFab } from './blocks/BookingFab';
 
@@ -206,6 +207,18 @@ export function SiteRenderer({
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+          />
+        );
+
+      case 'squareBooking':
+        return (
+          <SquareBookingBlock
+            theme={project.theme}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+            bookingUrl={bookingUrl}
+            variant={!!onSelectBlock ? 'preview' : 'live'}
           />
         );
 
