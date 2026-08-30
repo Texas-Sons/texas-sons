@@ -221,3 +221,25 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 **Why the split into insights.ts:** the derivations are what decisions get made from, so they must be testable without a database or Vite environment. Writing that test immediately caught a real bug — `medianDaysToLive` assumed newest-first input because `listEvents` happens to return that, and would have produced nonsense for any other caller.
 
 **Owner:** Morgan Valdez
+
+---
+
+## 2026-08-30 — Client content: separate table, auto-redeploy on save
+
+**Decision:** Client-managed media lives in its own `client_media` table, never on the blueprint. Saving through the client portal schedules a redeploy of their static site rather than the site fetching content at runtime.
+
+**Why a separate table:** on 2026-08-30 the Studio silently overwrote a server-side blueprint edit — it holds a cached copy and saves the whole object, so anything changed elsewhere while it is open is clobbered. If a client's portfolio lived on the blueprint, the same mechanism would delete her photos every time the Studio saved. Separate ownership sidesteps the conflict instead of trying to manage it: she writes `client_media`, the operator writes `projects`, and the two are combined only at deploy.
+
+**Why auto-redeploy rather than runtime fetch:** runtime fetch would make every client site depend on this server staying up. Today a deployed site is static on Cloudflare's edge — it survives our outages, paints instantly, and indexes properly, which matters for a local business competing on organic search. Auto-redeploy keeps all of that and still lets the client self-serve; the cost is a ~20 second lag between saving and publishing.
+
+**Merge precedence:** client media wins over placeholders. She is the authority on which photos of her own work are public, and a stock stand-in from a mockup must not survive once she has uploaded the real thing. It does *not* override a hero the operator deliberately chose — only an absent or stock one.
+
+**Debounced 20s per project.** A client uploading eight photos should produce one deploy, not eight; Cloudflare has deploy rate limits.
+
+**Failure posture:** a media read failure deploys without client media rather than failing the deploy — the operator's blueprint is a complete site on its own. A failed redeploy does not lose the upload; the media is already saved and the next save or a manual deploy publishes it.
+
+**Also extracted `publishBlueprint`** so the manual deploy and the auto-redeploy produce byte-identical output. Two copies would drift, and the drift would only surface on a client's live site.
+
+**Still to build:** the portal UI itself. The routes and merge are done and tested; nothing renders yet.
+
+**Owner:** Morgan Valdez

@@ -19,6 +19,7 @@ import {
   ASSISTANT_MODEL_CHOICES, logRoutingTable, parseModelJson, type ChatMessage,
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
+import { blueprintWithClientMedia, type MediaKind } from './lib/clientMedia';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
 
@@ -1196,89 +1197,101 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
   });
 
   // Deploy compiled React client to Cloudflare Pages
+  /**
+   * Builds and uploads a site from a finished blueprint.
+   *
+   * Shared by /api/deploy and the portal's auto-redeploy so a client saving a
+   * photo produces exactly the same output as the operator pressing Deploy.
+   * Two copies of this would drift, and the drift would only show up on a
+   * client's live site.
+   */
+  async function publishBlueprint(siteName: string, blueprint: any): Promise<{ siteUrl: string; deploymentUrl: string; slug: string }> {
+    const { accountId, apiToken } = getCloudflareCredentials();
+    const slug = sanitizeProjectName(siteName || blueprint?.profile?.name);
+
+    let project = await findPagesProject(accountId, apiToken, slug);
+    if (!project) project = await createPagesProject(accountId, apiToken, slug);
+
+    const clientHtmlPath = path.join(process.cwd(), 'dist', 'client.html');
+    let clientHtml = '';
+    try {
+      clientHtml = await fs.readFile(clientHtmlPath, 'utf8');
+    } catch {
+      throw new Error("client.html not found. Did you run 'npm run build'?");
+    }
+
+    const siteUrl = `https://${slug}.pages.dev`;
+    clientHtml = clientHtml.replace(/<title>[\s\S]*?<\/title>/i, '');
+
+    const blueprintJson = JSON.stringify(blueprint).replace(/</g, '\\u003c');
+    const injection = `${buildSeoTags(blueprint, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};</script></head>`;
+    const finalHtml = clientHtml.replace('</head>', injection);
+
+    const files: Record<string, string | Buffer> = {
+      'index.html': finalHtml,
+      'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`,
+      'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n`,
+    };
+
+    const PUBLIC_DIR = safeResolvePath(process.cwd(), 'public');
+    for (const iconFile of ['favicon.png', 'sheriff-badge-favicon.svg', 'justice-scales-favicon.svg', 'smokehouse-flame-favicon.svg']) {
+      try {
+        files[iconFile] = await fs.readFile(safeResolvePath(PUBLIC_DIR, path.basename(iconFile)));
+      } catch {}
+    }
+
+    const DIST_DIR = safeResolvePath(process.cwd(), 'dist');
+    async function gatherFiles(dir: string, baseRoute: string = '') {
+      try {
+        const safeDirPath = safeResolvePath(dir);
+        const entries = await fs.readdir(safeDirPath, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = safeResolvePath(safeDirPath, path.basename(entry.name));
+          const routePath = baseRoute ? `${baseRoute}/${entry.name}` : entry.name;
+          if (entry.isDirectory()) {
+            await gatherFiles(fullPath, routePath);
+          } else {
+            if (routePath === 'client.html' || routePath === 'index.html' || routePath === 'server.cjs' || routePath.endsWith('.map')) continue;
+            files[routePath] = await fs.readFile(fullPath);
+          }
+        }
+      } catch (e) {
+        console.log(`Error reading directory ${dir}:`, e);
+      }
+    }
+    await gatherFiles(DIST_DIR);
+
+    const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
+    return { siteUrl, deploymentUrl, slug };
+  }
+
   app.post("/api/deploy", async (req, res) => {
     try {
-      const { projectName, currentSnapshot } = req.body;
+      const { projectName, currentSnapshot, projectId } = req.body;
       if (!currentSnapshot) {
         return res.status(400).json({ success: false, error: "currentSnapshot is required" });
       }
 
-      const { accountId, apiToken } = getCloudflareCredentials();
-      const slug = sanitizeProjectName(projectName || currentSnapshot.profile.name);
-
-      let project = await findPagesProject(accountId, apiToken, slug);
-      if (!project) {
-        project = await createPagesProject(accountId, apiToken, slug);
-      }
-
-      // Read client.html template
-      const clientHtmlPath = path.join(process.cwd(), 'dist', 'client.html');
-      let clientHtml = '';
-      try {
-        clientHtml = await fs.readFile(clientHtmlPath, 'utf8');
-      } catch (err) {
-        throw new Error("client.html not found. Did you run 'npm run build'?");
-      }
-
-      const siteUrl = `https://${slug}.pages.dev`;
-
-      // Remove the boilerplate title (replaced by per-client SEO tags)
-      clientHtml = clientHtml.replace(/<title>[\s\S]*?<\/title>/i, '');
-
-      // Inject per-client SEO + the blueprint snapshot
-      const blueprintJson = JSON.stringify(currentSnapshot).replace(/</g, '\\u003c');
-      const injection = `${buildSeoTags(currentSnapshot, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};</script></head>`;
-      const finalHtml = clientHtml.replace('</head>', injection);
-
-      const files: Record<string, string | Buffer> = {
-        'index.html': finalHtml,
-        'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`,
-        'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n`,
-      };
-
-      // Favicon bundle
-      const PUBLIC_DIR = safeResolvePath(process.cwd(), 'public');
-      for (const iconFile of ['favicon.png', 'sheriff-badge-favicon.svg', 'justice-scales-favicon.svg', 'smokehouse-flame-favicon.svg']) {
-        try {
-          const iconBuffer = await fs.readFile(safeResolvePath(PUBLIC_DIR, path.basename(iconFile)));
-          files[iconFile] = iconBuffer;
-        } catch {}
-      }
-
-      // Gather all compiled assets and public files copied to dist
-      const DIST_DIR = safeResolvePath(process.cwd(), 'dist');
-      async function gatherFiles(dir: string, baseRoute: string = '') {
-        try {
-          const safeDirPath = safeResolvePath(dir);
-          const entries = await fs.readdir(safeDirPath, { withFileTypes: true });
-          for (const entry of entries) {
-            const fullPath = safeResolvePath(safeDirPath, path.basename(entry.name));
-            const routePath = baseRoute ? `${baseRoute}/${entry.name}` : entry.name;
-            
-            if (entry.isDirectory()) {
-              await gatherFiles(fullPath, routePath);
-            } else {
-              // skip client.html / index.html / server.cjs as they are handled manually or not needed
-              if (routePath === 'client.html' || routePath === 'index.html' || routePath === 'server.cjs' || routePath.endsWith('.map')) continue;
-              const content = await fs.readFile(fullPath);
-              files[routePath] = content;
-            }
-          }
-        } catch (e) {
-          console.log(`Error reading directory ${dir}:`, e);
+      // Fold in anything the client uploaded through their portal. Their media
+      // lives in its own table so the Studio cannot overwrite it; this is the
+      // only place the two are combined.
+      let snapshot = currentSnapshot;
+      if (projectId) {
+        const { blueprint, applied } = await blueprintWithClientMedia(
+          getSupabaseAdmin(), String(projectId), currentSnapshot
+        );
+        snapshot = blueprint;
+        const total = applied.portfolio + applied.beforeAfter + applied.product;
+        if (total > 0) {
+          console.log(`[deploy] merged client media: ${applied.portfolio} photos, ${applied.beforeAfter} pairs, ${applied.product} products`);
         }
       }
-      
-      await gatherFiles(DIST_DIR);
 
-      const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
+      const { siteUrl, deploymentUrl, slug } = await publishBlueprint(
+        projectName || currentSnapshot.profile?.name, snapshot
+      );
 
-      res.json({
-        success: true,
-        url: siteUrl,
-        deploymentUrl,
-        projectName: slug,
-      });
+      res.json({ success: true, url: siteUrl, deploymentUrl, projectName: slug });
     } catch (error: any) {
       console.error('Deploy error:', error);
       res.status(500).json({ success: false, error: error.message });
@@ -1988,6 +2001,194 @@ ${text.trim()}`);
       });
     } catch (error: any) {
       console.error('[assistant] error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Client content portal
+  //
+  // The client manages their own portfolio, transformations and product shelf.
+  // Their media lives in client_media, never on the blueprint, so the Studio
+  // cannot overwrite their work and they cannot overwrite the operator's design.
+  //
+  // Saving triggers a redeploy rather than the site fetching content at runtime.
+  // A deployed site stays static on Cloudflare's edge: fast, indexable, and still
+  // up if this server is down. Runtime fetch would have made every client site
+  // depend on this process staying alive.
+  //
+  // Public by design — clients have no account. Guarded by an unguessable,
+  // revocable token and served through the service-role client, so `anon` needs
+  // no database policy at all.
+  // -------------------------------------------------------------------------
+
+  const MAX_MEDIA_BYTES = 8 * 1024 * 1024;
+
+  async function findProjectByPortalToken(token: string) {
+    const safe = String(token || '').trim();
+    if (!/^[a-f0-9]{32,64}$/i.test(safe)) return null;
+
+    const { data, error } = await getSupabaseAdmin()
+      .from('projects')
+      .select('id, owner_id, company_name, portal_token_revoked')
+      .eq('portal_token', safe)
+      .maybeSingle();
+
+    if (error) {
+      console.error('[portal] token lookup failed:', error.message);
+      return null;
+    }
+    if (!data || data.portal_token_revoked) return null;
+    return data;
+  }
+
+  // Debounced per project: a client uploading eight photos should produce one
+  // deploy, not eight. Cloudflare has deploy rate limits worth respecting.
+  const pendingDeploys = new Map<string, ReturnType<typeof setTimeout>>();
+  const REDEPLOY_DEBOUNCE_MS = 20_000;
+
+  function scheduleRedeploy(projectId: string, siteName: string) {
+    const existing = pendingDeploys.get(projectId);
+    if (existing) clearTimeout(existing);
+
+    pendingDeploys.set(projectId, setTimeout(async () => {
+      pendingDeploys.delete(projectId);
+      try {
+        const db = getSupabaseAdmin();
+        const { data: proj } = await db
+          .from('projects').select('blueprint').eq('id', projectId).maybeSingle();
+        if (!proj?.blueprint) {
+          console.warn('[portal] redeploy skipped for ' + projectId + ': no blueprint');
+          return;
+        }
+
+        const { blueprint } = await blueprintWithClientMedia(db, projectId, proj.blueprint);
+        await publishBlueprint(siteName || blueprint?.profile?.name, blueprint);
+        console.log('[portal] redeployed after a content change: ' + projectId);
+      } catch (err: any) {
+        // A failed redeploy must not lose her upload. The media is already
+        // saved; the next save or a manual deploy will publish it.
+        console.error('[portal] redeploy failed for ' + projectId + ':', err.message);
+      }
+    }, REDEPLOY_DEBOUNCE_MS));
+  }
+
+  // Public: what the portal page needs. Returns the client's own media and their
+  // business name only — never the blueprint, pricing, or operator notes.
+  app.get("/api/portal/:token", async (req, res) => {
+    try {
+      const project = await findProjectByPortalToken(req.params.token);
+      if (!project) {
+        return res.status(404).json({ success: false, error: "This link is no longer active. Please ask for a new one." });
+      }
+
+      const { data: media } = await getSupabaseAdmin()
+        .from('client_media')
+        .select('id, kind, data, sort_order')
+        .eq('project_id', project.id)
+        .eq('hidden', false)
+        .order('sort_order', { ascending: true });
+
+      res.json({ success: true, businessName: project.company_name, media: media || [] });
+    } catch (error: any) {
+      console.error('[portal] read error:', error);
+      res.status(500).json({ success: false, error: "Could not load your content." });
+    }
+  });
+
+  app.post("/api/portal/:token/media", async (req, res) => {
+    try {
+      const project = await findProjectByPortalToken(req.params.token);
+      if (!project) {
+        return res.status(404).json({ success: false, error: "This link is no longer active." });
+      }
+
+      const { kind, data } = req.body || {};
+      const kinds: MediaKind[] = ['portfolio', 'beforeAfter', 'product'];
+      if (!kinds.includes(kind)) {
+        return res.status(400).json({ success: false, error: "kind must be one of: " + kinds.join(', ') });
+      }
+      if (!data || typeof data !== 'object') {
+        return res.status(400).json({ success: false, error: "Nothing was submitted." });
+      }
+
+      const size = Buffer.byteLength(JSON.stringify(data), 'utf8');
+      if (size > MAX_MEDIA_BYTES) {
+        return res.status(413).json({
+          success: false,
+          error: "That is too large (" + Math.round(size / 1024 / 1024) + "MB). Please use a smaller image.",
+        });
+      }
+
+      const { data: inserted, error } = await getSupabaseAdmin()
+        .from('client_media')
+        .insert({
+          project_id: project.id,
+          owner_id: project.owner_id,
+          kind,
+          data,
+          sort_order: Number(req.body.sortOrder) || 0,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+
+      scheduleRedeploy(project.id, project.company_name);
+      res.json({ success: true, id: inserted?.id, publishing: true });
+    } catch (error: any) {
+      console.error('[portal] save error:', error);
+      res.status(500).json({ success: false, error: "Could not save. Please try again." });
+    }
+  });
+
+  // Soft delete: hidden rather than removed, so a mis-tap is recoverable and the
+  // operator keeps a record of what was published when.
+  app.delete("/api/portal/:token/media/:id", async (req, res) => {
+    try {
+      const project = await findProjectByPortalToken(req.params.token);
+      if (!project) {
+        return res.status(404).json({ success: false, error: "This link is no longer active." });
+      }
+
+      const { error } = await getSupabaseAdmin()
+        .from('client_media')
+        .update({ hidden: true })
+        .eq('id', req.params.id)
+        .eq('project_id', project.id);
+      if (error) throw error;
+
+      scheduleRedeploy(project.id, project.company_name);
+      res.json({ success: true, publishing: true });
+    } catch (error: any) {
+      console.error('[portal] delete error:', error);
+      res.status(500).json({ success: false, error: "Could not remove that item." });
+    }
+  });
+
+  // Admin: mint or revoke a client's portal link.
+  app.post("/api/portal-link", async (req, res) => {
+    try {
+      const { projectId, revoke } = req.body || {};
+      if (!projectId) return res.status(400).json({ success: false, error: "projectId is required" });
+
+      if (revoke) {
+        const { error } = await getSupabaseAdmin()
+          .from('projects').update({ portal_token_revoked: true }).eq('id', projectId);
+        if (error) throw error;
+        return res.json({ success: true, revoked: true });
+      }
+
+      const token = crypto.randomBytes(24).toString('hex');
+      const { error } = await getSupabaseAdmin()
+        .from('projects')
+        .update({ portal_token: token, portal_token_revoked: false })
+        .eq('id', projectId);
+      if (error) throw error;
+
+      const base = (process.env.APP_URL || '').replace(/\/+$/, '') || ('http://localhost:' + PORT);
+      res.json({ success: true, token, url: base + '/portal/' + token });
+    } catch (error: any) {
+      console.error('[portal] link error:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   });

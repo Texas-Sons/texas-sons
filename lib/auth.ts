@@ -46,7 +46,7 @@ export const PUBLIC_API_PATHS = new Set(['/health', '/lead']);
  * easiest way to accidentally expose an admin endpoint, so every entry needs a
  * corresponding negative case in scripts/smoke-security.ts.
  */
-export const PUBLIC_API_PREFIXES = ['/intake/'];
+export const PUBLIC_API_PREFIXES = ['/intake/', '/portal/'];
 
 /** True when a path (relative to the /api mount) needs no authentication. */
 export function isPublicApiPath(pathname: string): boolean {

@@ -86,9 +86,11 @@ else process.env.ADMIN_EMAILS = originalAdmins;
 
 // Prefix matching is the easiest way to accidentally expose an admin endpoint.
 // The negative cases matter more than the positive ones here.
-const mustBePublic = ['/health', '/lead', '/intake/abc123', '/intake/'];
+const mustBePublic = ['/health', '/lead', '/intake/abc123', '/intake/', '/portal/abc123', '/portal/'];
 const mustBeGuarded = [
   '/intake-link',      // admin: mints share tokens. Must NOT match '/intake/'.
+  '/portal-link',      // admin: mints portal tokens. Must NOT match '/portal/'.
+  '/portal',           // no trailing slash — not a portal route
   '/intake',           // no trailing slash — not a portal route
   '/deploy',           // would let anyone publish to the Cloudflare account
   '/invoice',          // would let anyone generate Stripe invoices
