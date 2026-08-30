@@ -1,10 +1,11 @@
-# TASK — mobile scroll fix on the before/after slider, plus a floating booking button
+# TASK — mobile scroll fix, remove the admin badge, add a booking button
 
 **For:** Antigravity (your lane: `src/templates/blocks/`, `src/ClientApp.tsx`)
-**From:** claude-code, 2026-08-30
+**From:** claude-code, 2026-08-30 (updated)
 **Client context:** Opalescent Color Studio (project `1788000270421`), Beauty & Wellness, mobile-first — most salon traffic is phones.
 
-Two separate pieces. Part 1 is a bug with a known cause; Part 2 is new.
+Three pieces. Do them in this order: Part 2 removes what would otherwise collide
+with Part 3.
 
 ---
 
@@ -17,11 +18,11 @@ The page is stuck until the finger starts outside the slider.
 
 ### Cause — confirmed, do not re-diagnose
 
-`src/templates/blocks/BeforeAfterBlock.tsx`, line 82, the comparison frame carries
+`src/templates/blocks/BeforeAfterBlock.tsx`, line 82: the comparison frame carries
 the Tailwind class **`touch-none`**, which is `touch-action: none`. That tells the
 browser to hand *every* touch gesture to the page's own handlers, including
-vertical panning. It was there to stop the browser hijacking a horizontal drag;
-it also killed scrolling.
+vertical panning. It was there to stop the browser hijacking a horizontal drag; it
+also killed scrolling.
 
 Compounding it: `onPointerDown` calls `setPointerCapture` **immediately**, so the
 element claims the gesture before anyone knows which direction it is going.
@@ -38,74 +39,101 @@ wait. On the first `pointermove`, compare the deltas:
 - `Math.abs(dx) > Math.abs(dy)` → a horizontal drag. *Now* call
   `setPointerCapture` and start moving the handle.
 - otherwise → the visitor is scrolling. Do nothing, ever, for this gesture.
-  Release nothing (you never captured) and let the browser scroll.
 
-Use a small threshold (~8px) before deciding, so a stationary tap does not get
-classified as either.
+Use a ~8px threshold before deciding, so a stationary tap is not classified as
+either.
 
-**3. A tap with no drag should still work.** Tapping a point on the image is a
-reasonable way to move the handle there — keep that, but only fire it on
-`pointerup` when total movement stayed under the threshold.
+**3. A tap with no drag should still work** — moving the handle to the tapped
+point is reasonable. Fire it on `pointerup` only when total movement stayed under
+the threshold.
 
 ### Do not
 
 - **Do not add `preventDefault()` on touchmove.** It reintroduces the same bug
   through a different door and breaks passive listeners.
 - **Do not remove the keyboard handlers or the slider ARIA.** They are the only
-  way this control is usable without a mouse, and removing them is a
-  regression, not a simplification.
+  reason this control works without a mouse. Removing them while fixing touch is
+  a regression, not a simplification.
 
 ### Verify on a real phone, or Chrome device emulation with touch
 
 - [ ] Swipe up starting **on** the slider → the page scrolls
-- [ ] Drag left/right on the slider → the handle moves, page does not scroll
+- [ ] Drag left/right → the handle moves, page does not scroll
 - [ ] A diagonal swipe that is mostly vertical scrolls rather than dragging
 - [ ] Desktop mouse drag still works
 - [ ] Arrow keys still move the handle
 
 ---
 
-## Part 2 — floating booking button
+## Part 2 — remove the "Portal Admin" badge from client sites
+
+### What to remove
+
+`src/ClientApp.tsx` around line 175: a floating `Portal Admin 🔒` button at
+`fixed bottom-3 right-3 z-50`, rendered on every deployed client site.
+
+Delete the button. **Keep the `#admin` hash route working** — it is how the view
+is reached from now on, via a link the operator sends.
+
+### Why
+
+It is a staff entry point sitting on a public salon website where customers can
+see and click it. Clients ask what it is; some press it. The real client portal
+now exists (`/portal/<token>`, added 2026-08-30), so the entry point belongs in a
+link Morgan sends her — not a button on her storefront.
+
+### While you are in there — a false claim to fix
+
+That admin view renders the text **"Authenticated Admin Session"**. There is no
+authentication. It is a hash route anyone can type; nothing checks who you are.
+
+The data shown (`profile`, `services`, `testimonials`) is already public on the
+page, so nothing leaks — but the app should not claim a security property it does
+not have. Either delete that line or change it to something true, e.g.
+"Client preview — not a secure area".
+
+Do not attempt to add real auth here. That is a separate job and the portal
+already solves it properly.
+
+---
+
+## Part 3 — floating booking button
 
 A persistent circular "Book" button, bottom-right, so booking is always one tap
 away. Salon traffic is overwhelmingly mobile and this lifts conversion more than
 any visual change on the page.
 
+Part 2 frees the corner, so there is no longer anything to stack against.
+
 ### Where it goes
 
-A new block or a small component rendered by `SiteRenderer` — your call, but it
-must be **rendered once per page**, not per section.
+A small component rendered by `SiteRenderer` — **once per page**, not per section.
 
 ### Behaviour
 
-- Circular, ~56px, accent-coloured, with a calendar or scissors icon plus an
-  accessible label (`aria-label="Book an appointment"`). An icon-only button with
-  no label is invisible to a screen reader.
+- Circular, ~56px, accent-coloured, calendar or scissors icon, with
+  `aria-label="Book an appointment"`. An icon-only button with no label is
+  invisible to a screen reader.
 - Links to `project.profile.bookingUrl` when present — **external, so
   `target="_blank"` and `rel="noopener noreferrer"`**. Falls back to `#contact`.
 - Renders nothing for campaign sites. "Book an appointment" is meaningless on a
   judicial campaign.
-- Fades in after the visitor scrolls past the hero — roughly 400px. Showing it
-  immediately duplicates the hero CTA that is already on screen.
+- Fades in after roughly 400px of scroll. Showing it immediately duplicates the
+  hero CTA already on screen.
 
-### Three things that will bite you
+### Two things that will bite you
 
-**1. Bottom-right is already occupied.** `src/ClientApp.tsx` line 175 has the
-"Portal Admin 🔒" badge at `fixed bottom-3 right-3 z-50`. Two controls stacked in
-the same corner is a mess. Either move the admin badge to bottom-**left**, or
-stack them with clear spacing. Decide deliberately and say which you chose.
+**1. iPhone home indicator.** Use `pb-[env(safe-area-inset-bottom)]` or the button
+sits under the system gesture bar on modern iPhones.
 
-**2. iPhone home indicator.** Use `pb-[env(safe-area-inset-bottom)]` or the
-button sits under the system gesture bar on modern iPhones.
-
-**3. It will cover the footer.** Add bottom padding to the page, or the last
-lines of the footer are permanently hidden behind it on mobile.
+**2. It will cover the footer.** Add bottom padding to the page, or the last lines
+of the footer are permanently hidden behind it on mobile.
 
 ### Verify
 
 - [ ] Appears after scrolling past the hero, not before
 - [ ] Opens Square in a new tab on her site
-- [ ] Does not overlap the admin badge
+- [ ] Nothing else occupies that corner (Part 2 is done)
 - [ ] Does not cover footer content at the bottom of the page
 - [ ] Absent on a campaign site
 - [ ] Announced correctly by a screen reader
@@ -123,7 +151,7 @@ lines of the footer are permanently hidden behind it on mobile.
 ## Report what you verified, not what you wrote
 
 Say which device or emulation you tested the touch behaviour on. Four bugs this
-week shipped green because nothing exercised the actual path — including a
-before/after slider that was built, pushed, and invisible for two days because
-the Studio preview used a different renderer. "It compiles" is not a test of a
-touch gesture.
+week shipped green because nothing exercised the actual path — including this
+very slider, which was built, pushed, and invisible for two days because the
+Studio preview used a different renderer. "It compiles" is not a test of a touch
+gesture.
