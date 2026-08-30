@@ -54,10 +54,34 @@ while the code path returned HTTP 500 on every request, and an import reported a
 including a file that was never written. Before reporting done: re-read the files
 you claim to have created, and exercise the path rather than the configuration.
 
+### Name every consumer of every file you touch
+
+Before you report done, list who else renders or imports what you changed, and
+check each one. Not the feature you built — the *file* you edited.
+
+The booking FAB on 2026-08-30 was tested with a genuinely rigorous Puppeteer
+harness on emulated iPhone touch, and still shipped two bugs, because the harness
+tested what was built (a button on a deployed site) rather than what was changed
+(`SiteRenderer`, which the Studio renders too). `position: fixed` escaped the
+Studio's preview panel and floated over the editor's own chrome, where clicking
+it opened the client's live booking page.
+
+`SiteRenderer` and the blocks under `src/templates/` have **two** consumers —
+`ClientApp` (deployed sites) and `AgentBuilderStudio` (the preview). They are
+never both covered by one test. The same applies to any modal in
+`src/components/`: some are mounted conditionally by their parent and some are
+mounted unconditionally with an `isOpen` prop, and those two behave differently
+enough that a component can be correct from one caller and broken from the other.
+
 ## Project facts
 
 - Node/Express + Vite 6 + React 19 + Tailwind v4 + TypeScript (ESM). Admin entry `index.html`, deployed client-site entry `client.html`.
-- Scripts: `npm run dev` (tsx server.ts), `npm run build`, `npm run start` (prod, serves `dist/`), `npm run lint` (tsc --noEmit), `npm test` (SSR smoke test of ClientApp), `npm run verify` (lint+test+build).
+- Scripts: `npm run dev` (tsx server.ts), `npm run build`, `npm run start` (prod, serves `dist/`), `npm run lint` (`tsc --noEmit && eslint .`), `npm test` (six smoke suites), `npm run verify` (lint+test+build).
+- **`react-hooks/rules-of-hooks` is an error and blocks the build.** A hook below
+  an early return is type-correct, so the typecheck never saw it and the fault
+  shipped four times — twice into modals mounted unconditionally by the Studio,
+  where it throws on open. Do not disable the rule to get a commit through; move
+  the early return below the hooks. Config and history: `eslint.config.js`.
 - `dist/` is gitignored but required by `npm start`; rebuild with `npm run build`.
 - Secrets live in `.env.local` (gitignored). See `.env.example` for the full list and what each one powers. Env vars: GEMINI_API_KEY, APP_URL, ADMIN_EMAILS, VITE_GOOGLE_MAPS_PLATFORM_KEY, STRIPE_SECRET_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, GITHUB_ACCESS_TOKEN.
 
