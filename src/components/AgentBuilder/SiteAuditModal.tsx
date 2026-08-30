@@ -65,13 +65,25 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
   onApplyFixes,
   onSelectModel,
 }) => {
-  if (!isOpen) return null;
-
   const [isScanning, setIsScanning] = useState(false);
   const [scanStep, setScanStep] = useState<string>('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'issues' | AuditCategory>('all');
   const [lastScanTime, setLastScanTime] = useState<string | null>(null);
   const [fixedNotice, setFixedNotice] = useState<string | null>(null);
+
+  // Guard goes here — below every hook, above the audit engine.
+  //
+  // It used to sit above those five useStates, so this component rendered 0
+  // hooks while closed and 5 once opened. AgentBuilderStudio mounts it
+  // unconditionally (`isOpen={isAuditOpen}`), which means opening the audit
+  // changed the hook count between two renders and React throws.
+  //
+  // Placed here rather than immediately above the JSX because everything below
+  // is the pre-flight audit engine, and there is no reason to run a full site
+  // audit on every Studio keystroke while the modal is shut.
+  //
+  // Found by eslint-plugin-react-hooks, 2026-08-30. See eslint.config.js.
+  if (!isOpen) return null;
 
   const isCampaign = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy';
 

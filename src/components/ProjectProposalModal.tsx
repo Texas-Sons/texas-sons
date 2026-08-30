@@ -56,7 +56,19 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   onApplySnapshot,
   onLaunchStudio
 }) => {
-  if (!isOpen) return null;
+  // The `isOpen` guard lives at the bottom, immediately above the JSX — NOT here.
+  //
+  // It used to sit above these 26 hooks, which meant this component rendered 0
+  // hooks while closed and 26 once opened. AgentBuilderStudio mounts this modal
+  // unconditionally (`isOpen={isProposalModalOpen}`), so opening it from the
+  // Studio changed the hook count between two renders of the same component and
+  // React throws. ProjectList happened to be safe only because it wraps the
+  // modal in `{selectedProjectForModal && ...}`, so `isOpen` is never false
+  // there — the same component was fine from one caller and broken from the
+  // other, which is why this survived so long.
+  //
+  // Found by eslint-plugin-react-hooks on the run that introduced it, 2026-08-30.
+  // Fourth instance of this fault in the repo; see eslint.config.js.
 
   const [activeTab, setActiveTab] = useState<'proposal' | 'contract' | 'edit'>('proposal');
   const [tone, setTone] = useState<'campaign-presentation' | 'agency-proposal' | 'launch-handoff' | 'donor-outreach'>('agency-proposal');
@@ -692,6 +704,10 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     const mailtoUrl = `mailto:${encodeURIComponent(recipientEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoUrl, '_blank');
   };
+
+  // Every hook above has now run. Bailing out here is safe; bailing out earlier
+  // is not. See the note at the top of the component.
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
