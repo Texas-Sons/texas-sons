@@ -159,7 +159,7 @@ export function ClientApp() {
             >
               ← Return to Live Public Website
             </button>
-            <span className="text-xs text-stone-500 font-mono">Authenticated Admin Session</span>
+            <span className="text-xs text-stone-500 font-mono">Client preview � not a secure area</span>
           </div>
           <IndustryAdminBlock
             business={project.profile}
@@ -171,20 +171,7 @@ export function ClientApp() {
         <>
           {page(sections)}
 
-          {/* Subtle client admin access badge */}
-          <div className="fixed bottom-3 right-3 z-50">
-            <button
-              onClick={() => {
-                window.location.hash = 'admin';
-                setViewMode('admin');
-              }}
-              className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-stone-950/80 text-stone-400 hover:text-white border border-stone-800 shadow-xl backdrop-blur-md transition-all hover:scale-105"
-              title="Open Client Admin Portal"
-            >
-              Portal Admin 🔒
-            </button>
-          </div>
-        </>
+          </>
       ) : viewMode === "voting" ? (
         <>
           <NavbarBlock businessName={project.profile.name} phone={project.profile.phone} theme={project.theme} accentColor={project.profile.accentColor} ctaText="Join The Campaign" navItems={[{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }]} />

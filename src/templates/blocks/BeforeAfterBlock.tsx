@@ -39,20 +39,51 @@ function Comparison({ item }: { item: BeforeAfterItem }) {
     setPosition(Math.min(100, Math.max(0, pct)));
   }, []);
 
-  // Pointer events cover mouse, touch and pen in one path. Capture means a drag
-  // that leaves the element still tracks, instead of sticking mid-swipe.
+  // Pointer events track drag distance to preserve vertical mobile scrolling.
+  // We capture only when a horizontal gesture is confirmed.
+  const ptrStart = useRef<{x: number, y: number, captured: boolean} | null>(null);
+
   const onPointerDown = (e: React.PointerEvent) => {
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    setDragging(true);
-    setFromClientX(e.clientX);
+    ptrStart.current = { x: e.clientX, y: e.clientY, captured: false };
   };
+  
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging) return;
-    setFromClientX(e.clientX);
+    if (!ptrStart.current) return;
+    const start = ptrStart.current;
+
+    if (!start.captured) {
+      const dx = Math.abs(e.clientX - start.x);
+      const dy = Math.abs(e.clientY - start.y);
+      if (dx > 8 || dy > 8) {
+        if (dx > dy) {
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+          start.captured = true;
+          setDragging(true);
+          setFromClientX(e.clientX);
+        } else {
+          ptrStart.current = null; // vertical scroll, ignore
+        }
+      }
+    } else {
+      setFromClientX(e.clientX);
+    }
   };
+
   const stop = (e: React.PointerEvent) => {
-    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
-    setDragging(false);
+    if (ptrStart.current) {
+      const start = ptrStart.current;
+      if (start.captured) {
+        try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+        setDragging(false);
+      } else {
+        const dx = Math.abs(e.clientX - start.x);
+        const dy = Math.abs(e.clientY - start.y);
+        if (dx <= 8 && dy <= 8) {
+          setFromClientX(e.clientX);
+        }
+      }
+      ptrStart.current = null;
+    }
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -79,7 +110,7 @@ function Comparison({ item }: { item: BeforeAfterItem }) {
         aria-valuemax={100}
         aria-valuenow={Math.round(position)}
         aria-valuetext={`${Math.round(position)} percent after`}
-        className={`relative w-full aspect-[4/5] sm:aspect-[4/3] overflow-hidden rounded-2xl border border-[color:var(--ts-border)] bg-[color:var(--ts-surface)] select-none touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ts-accent)] ${
+        className={`relative w-full aspect-[4/5] sm:aspect-[4/3] overflow-hidden rounded-2xl border border-[color:var(--ts-border)] bg-[color:var(--ts-surface)] select-none touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ts-accent)] ${
           dragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >

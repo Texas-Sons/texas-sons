@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavbarBlock } from './blocks/NavbarBlock';
 import { HeroBlock } from './blocks/HeroBlock';
 import { CampaignHeroBlock } from './blocks/CampaignHeroBlock';
@@ -13,6 +13,7 @@ import { ProductsBlock } from './blocks/ProductsBlock';
 import { BeforeAfterBlock } from './blocks/BeforeAfterBlock';
 import { WriteInGuideBlock } from './blocks/WriteInGuideBlock';
 import { resolveSections, SiteSection } from './sections';
+import { Calendar } from 'lucide-react';
 
 /**
  * The single renderer for a client site.
@@ -237,8 +238,17 @@ export function SiteRenderer({
     }
   };
 
+
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (isCampaign) return;
+    const handleScroll = () => setScrolled(window.scrollY > 400);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isCampaign]);
+
   return (
-    <>
+    <div className={!isCampaign ? "pb-24" : ""}>
       {sections.map((section, i) => {
         const rendered = renderOne(section);
         if (!rendered) return null;
@@ -263,6 +273,23 @@ export function SiteRenderer({
 
         return <React.Fragment key={key}>{rendered}</React.Fragment>;
       })}
-    </>
+      
+      {!isCampaign && (
+        <div 
+          className="fixed bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] pointer-events-none transition-opacity duration-300"
+          style={{ opacity: scrolled ? 1 : 0 }}
+        >
+          <a
+            href={bookingUrl || '#contact'}
+            target={bookingUrl ? '_blank' : undefined}
+            rel={bookingUrl ? 'noopener noreferrer' : undefined}
+            className="pointer-events-auto flex items-center justify-center w-14 h-14 rounded-full shadow-xl hover:scale-105 transition-transform bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)]"
+            aria-label="Book an appointment"
+          >
+            <Calendar className="w-6 h-6" />
+          </a>
+        </div>
+      )}
+    </div>
   );
 }
