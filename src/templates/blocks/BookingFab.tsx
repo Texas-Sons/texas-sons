@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
 
 /**
- * Persistent booking button, bottom-right.
+ * Persistent booking button, bottom-right, phones only.
  *
  * Salon traffic is overwhelmingly mobile, and a visitor three screens deep into
- * a portfolio should never have to scroll back up to book.
+ * a portfolio should never have to scroll back up to book. On desktop that is
+ * already handled — the navbar's own booking CTA stays in view the whole way
+ * down — so this would be a second control for the same job, sitting on top of
+ * the client's content. On a phone the navbar CTA is folded into the hamburger
+ * menu, which is two taps and a decision, and that is the gap this fills.
  *
  * This lives in its own component for two reasons, both of which were bugs:
  *
@@ -31,6 +35,14 @@ export interface BookingFabProps {
    *             to react to.
    */
   variant?: 'fixed' | 'preview';
+  /**
+   * Visible text, and therefore the accessible name. Kept short — this button
+   * sits over the page content.
+   *
+   * One label, not a visible one plus a longer aria-label. A voice-control user
+   * says the words they can see, and WCAG 2.5.3 requires the accessible name to
+   * contain the visible text; "Book an appointment" does not contain "Book Now".
+   */
   label?: string;
 }
 
@@ -40,7 +52,7 @@ const REVEAL_AFTER_PX = 400;
 export function BookingFab({
   bookingUrl,
   variant = 'fixed',
-  label = 'Book an appointment',
+  label = 'Book Now',
 }: BookingFabProps) {
   const isPreview = variant === 'preview';
   const [scrolled, setScrolled] = useState(false);
@@ -65,6 +77,17 @@ export function BookingFab({
     <div
       className={`${
         isPreview ? 'absolute' : 'fixed'
+      } ${
+        // Mobile only. On desktop the navbar's own "Book" button is pinned in
+        // view the whole way down the page, so a second floating one is a
+        // duplicate control covering the content. On a phone that navbar CTA is
+        // folded into the hamburger menu — two taps and a decision — which is
+        // exactly where a persistent button earns its place.
+        //
+        // Kept visible in the Studio at every width on purpose: that panel is a
+        // phone frame, and hiding the button there would mean the one preview
+        // meant to show mobile is the one place you cannot see the mobile UI.
+        isPreview ? '' : 'sm:hidden'
       } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] transition-opacity duration-300 ${
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
@@ -77,10 +100,10 @@ export function BookingFab({
         target={isExternal ? '_blank' : undefined}
         rel={isExternal ? 'noopener noreferrer' : undefined}
         tabIndex={visible ? 0 : -1}
-        aria-label={label}
-        className="flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-transform hover:scale-105 active:scale-95 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--ts-accent)]"
+        className="inline-flex items-center gap-2 h-12 pl-4 pr-5 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--ts-accent)]"
       >
-        <Calendar className="w-6 h-6" aria-hidden="true" />
+        <Calendar className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+        <span className="text-sm font-bold whitespace-nowrap">{label}</span>
       </a>
     </div>
   );
