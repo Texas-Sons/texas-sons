@@ -54,7 +54,12 @@ export function BookingFab({
   }, [isPreview]);
 
   const visible = isPreview || scrolled;
-  const isExternal = !!bookingUrl;
+
+  // Test the protocol, not merely presence. Since the Square embed landed, this
+  // prop is often an in-page anchor like '#book', and `!!bookingUrl` treated
+  // that as external — target="_blank" on a fragment link opens an empty tab.
+  // Same check NavbarBlock and ProductsBlock already use.
+  const isExternal = /^https?:\/\//i.test(bookingUrl || '');
 
   return (
     <div

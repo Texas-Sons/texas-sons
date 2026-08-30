@@ -78,6 +78,18 @@ export function SiteRenderer({
   const bookingUrl = project.profile.bookingUrl;
   const accentColor = project.profile.accentColor;
 
+  // ...unless the booking system is embedded on this page, in which case sending
+  // the visitor off-site is exactly what the embed exists to prevent. Every
+  // primary CTA scrolls to it instead.
+  //
+  // This also stops the page stacking three booking CTAs in a row: the embed
+  // carries its own "Book on Square" fallback link, and BookingBlock renders a
+  // second external button of its own whenever it is handed a bookingUrl. Give
+  // it none and it degrades to what we actually want next to an embed — a plain
+  // contact form for the visitor who has a question before they commit.
+  const hasSquareEmbed = !!bookingUrl && sections.some(s => s.kind === 'squareBooking');
+  const primaryCtaHref = hasSquareEmbed ? '#book' : (bookingUrl || '#contact');
+
   const renderOne = (section: SiteSection) => {
     const p = section.props || {};
 
@@ -91,7 +103,7 @@ export function SiteRenderer({
             theme={project.theme}
             accentColor={accentColor}
             ctaText={p.ctaText}
-            ctaHref={bookingUrl || '#contact'}
+            ctaHref={primaryCtaHref}
             navItems={p.navItems}
           />
         );
@@ -125,7 +137,7 @@ export function SiteRenderer({
             accentColor={accentColor}
             proofBadgeText={project.proofBadgeText}
             ctaText={p.ctaText}
-            ctaHref={bookingUrl || '#contact'}
+            ctaHref={primaryCtaHref}
             secondaryCtaText={p.secondaryCtaText}
           />
         );
@@ -234,7 +246,7 @@ export function SiteRenderer({
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
-            bookingUrl={bookingUrl}
+            bookingUrl={hasSquareEmbed ? undefined : bookingUrl}
             bookingLabel={p.bookingLabel}
             onSubmit={onLeadSubmit}
           />
@@ -285,7 +297,7 @@ export function SiteRenderer({
       })}
 
       {showBookingFab && (
-        <BookingFab bookingUrl={bookingUrl} variant={inStudio ? 'preview' : 'fixed'} />
+        <BookingFab bookingUrl={primaryCtaHref} variant={inStudio ? 'preview' : 'fixed'} />
       )}
     </div>
   );

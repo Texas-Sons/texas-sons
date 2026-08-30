@@ -39,7 +39,7 @@ export function SquareBookingBlock({
         <div className="mb-8 rounded-xl overflow-hidden shadow-xl border border-[color:var(--ts-border)] bg-[color:var(--ts-surface)]">
           {variant === 'preview' ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-[color:var(--ts-muted)] bg-[color:var(--ts-bg)]">
-              <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <p className="text-lg font-medium text-[color:var(--ts-text)]">Square booking embed</p>
@@ -55,15 +55,28 @@ export function SquareBookingBlock({
           )}
         </div>
 
+        {/*
+          Permanent, not a fallback rendered on failure — a refused iframe cannot
+          be detected. X-Frame-Options blocks the load without firing onError, so
+          the visitor would get a blank rectangle and the tests would still pass.
+          Checked 2026-08-30: Square serves this URL with no X-Frame-Options and
+          no frame-ancestors, so the embed does work today. It is not a promise,
+          and this link is what keeps the section functional if that changes.
+
+          Styled from accent tokens rather than literals. It was a hardcoded
+          black button, which ignored the client palette — Opalescent's accent is
+          a rose her own Square page already uses (`color=e8b4b8` on her booking
+          URL), so the primary CTA rendered black against a rose site.
+        */}
         <div className="text-center">
           <a
             href={bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base sm:text-lg font-medium rounded-md text-white bg-black hover:opacity-80 transition-opacity shadow-sm"
+            className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base sm:text-lg font-medium rounded-md bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-80 transition-opacity shadow-sm"
           >
             Book on Square
-            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </a>
