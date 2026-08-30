@@ -2252,7 +2252,25 @@ ${text.trim()}`);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*all', (req, res) => {
+
+    // SPA fallback.
+    //
+    // This was `app.get('*all', ...)`, which is Express 5 path syntax. On the
+    // Express 4 we actually depend on, '*all' is not a wildcard — it matches the
+    // single literal path /all. So the fallback never fired: '/' worked only
+    // because express.static serves index.html as the directory index, while
+    // every client-side route 404'd with a bare "Cannot GET". Both token portals
+    // were unreachable in production, and nothing caught it because the smoke
+    // suites test pure functions and the dev server uses Vite's own fallback.
+    //
+    // Written as middleware rather than a wildcard route so it means the same
+    // thing in Express 4 and 5, and cannot silently stop matching on upgrade.
+    app.use((req, res, next) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+      // An unknown /api path must stay a JSON 404. Serving it index.html would
+      // hand a fetch() a page of HTML and produce a JSON parse error instead of
+      // the actual problem.
+      if (req.path.startsWith('/api/')) return next();
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
