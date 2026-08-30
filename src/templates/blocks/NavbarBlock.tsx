@@ -62,7 +62,7 @@ export function NavbarBlock({
         {/* Brand Logo & Name */}
         <a href="#" className="flex items-center space-x-3 group flex-shrink-0">
           {logoUrl ? (
-            <img src={logoUrl} alt={businessName} className="h-10 w-auto rounded-lg object-cover flex-shrink-0" />
+            <img src={logoUrl} alt={businessName} className="h-10 w-auto object-contain flex-shrink-0" />
           ) : (
             <div
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] ${isCampaign ? 'font-serif' : ''}`}

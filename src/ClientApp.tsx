@@ -133,6 +133,7 @@ export function ClientApp() {
         return (
           <NavbarBlock
             businessName={project.profile.name}
+            logoUrl={project.profile.logoUrl}
             phone={project.profile.phone}
             theme={project.theme}
             accentColor={accentColor}
