@@ -70,6 +70,36 @@ function isStockImage(url: unknown): boolean {
   return typeof url === 'string' && /images\.unsplash\.com/i.test(url);
 }
 
+/**
+ * Unreachable contact details, matched by pattern rather than by name.
+ *
+ * The list above only catches strings someone thought to add to it, and the
+ * comment at the top of this file warned exactly what that costs: a placeholder
+ * the detector does not know about is a placeholder that ships. Opalescent went
+ * live with `(210) 555-0142` and an address at `.example` — both invented by the
+ * generator, neither on the list, both silently green.
+ *
+ * These two ranges are reserved by standards bodies precisely so they can never
+ * belong to anyone, which makes them decidable rather than a guess:
+ *   555-0100..555-0199  the NANP block set aside for fiction
+ *   RFC 2606            .example / .test / .invalid / .localhost, example.com
+ *
+ * A phone number nobody answers and an inbox nothing reaches are worse than
+ * blank fields. A blank field looks unfinished; these look finished.
+ */
+function isUnreachablePhone(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const digits = value.replace(/\D/g, '');
+  return /555 ?01\d\d$/.test(digits) || /55501\d\d$/.test(digits);
+}
+
+function isUnreachableEmail(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const v = value.trim().toLowerCase();
+  return /@(.+\.)?(example|test|invalid|localhost)$/.test(v)
+    || /@example\.(com|net|org)$/.test(v);
+}
+
 export interface BlueprintLike {
   profile?: Record<string, any>;
   services?: Array<Record<string, any>>;
@@ -102,9 +132,14 @@ export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined)
   }
 
   if (!p.phone) issues.push({ field: 'phone', severity: 'missing', message: 'No phone number.' });
+  else if (isUnreachablePhone(p.phone)) {
+    issues.push({ field: 'phone', severity: 'placeholder', message: 'This is a 555-01xx number, reserved for fiction — nobody can call them.' });
+  }
   else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', message: 'Phone is a Texas Sons placeholder, not theirs.' });
 
-  if (isPlaceholder(p.email)) {
+  if (isUnreachableEmail(p.email)) {
+    issues.push({ field: 'email', severity: 'placeholder', message: 'This domain is reserved and undeliverable — mail to it bounces.' });
+  } else if (isPlaceholder(p.email)) {
     issues.push({ field: 'email', severity: 'placeholder', message: 'Email is a Texas Sons placeholder, not theirs.' });
   }
 

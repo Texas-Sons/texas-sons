@@ -60,8 +60,11 @@ const realBlueprint = {
     tagline: 'Luxury Hair & Color Artistry',
     description: "San Antonio's destination for high-end hair transformations.",
     heroImage: 'https://places.googleapis.com/v1/photo/abc',
-    phone: '(210) 555-0142',
-    email: 'hello@opalescent.example',
+    // Was '(210) 555-0142' / 'hello@opalescent.example' — which is to say this
+    // fixture asserted that a number reserved for fiction and an undeliverable
+    // domain were a clean blueprint. Opalescent went live carrying both.
+    phone: '(210) 493-8811',
+    email: 'hello@opalescentcolorstudio.com',
   },
   services: [
     { title: 'Balayage', description: 'Full head · 180 min', price: '$350+' },
@@ -88,6 +91,25 @@ checkTrue('the Texas Sons placeholder phone is flagged',
   fields({ profile: { phone: '(512) 555-TXSONS' } }).includes('phone'));
 checkTrue('the Texas Sons placeholder email is flagged',
   fields({ profile: { email: 'contact@txsons.com', phone: '1' } }).includes('email'));
+
+// Reserved ranges, matched by pattern rather than by name. The enumerated list
+// only ever catches what someone remembered to add to it, and the generator
+// invents a fresh plausible-looking number for every client.
+checkTrue('a 555-01xx number is flagged whatever the area code',
+  fields({ profile: { phone: '(210) 555-0142' } }).includes('phone'));
+checkTrue('555-01xx is flagged unformatted too',
+  fields({ profile: { phone: '2105550199' } }).includes('phone'));
+checkTrue('an RFC 2606 reserved domain is flagged',
+  fields({ profile: { email: 'hello@opalescentstudio.example', phone: '1' } }).includes('email'));
+checkTrue('example.com is flagged',
+  fields({ profile: { email: 'owner@example.com', phone: '1' } }).includes('email'));
+
+// The point is to catch fiction, not to reject real businesses. 555 appearing
+// anywhere else in a number is ordinary — 555-0142 is reserved, 555-1234 is not.
+checkTrue('a real number containing 555 is not flagged',
+  !fields({ profile: { phone: '(210) 555-1234', heroImage: 'x' } }).includes('phone'));
+checkTrue('a real email is not flagged',
+  !fields({ profile: { email: 'hello@opalescentcolorstudio.com', phone: '1' } }).includes('email'));
 
 checkTrue('the ClientIntakeView service default is flagged',
   fields({ services: [{ title: 'Primary Offering', description: 'Comprehensive premium service tailored for your specific needs.' }] }).includes('services'));
