@@ -41,15 +41,17 @@ export function ProductsBlock({
   const reveal = useReveal();
 
   const items = (products || []).filter(p => p && p.name).slice(0, maxProducts);
-  // Renders mock products if there is no product line, so the design can be previewed
-  if (items.length === 0) {
-    items.push(
-      { name: 'Oribe Gold Lust Repair & Restore Shampoo', price: '$52.00', description: 'Reawakens hair to its glossiest, healthiest prime.', image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop' },
-      { name: 'Kérastase Elixir Ultime Hydrating Hair Oil', price: '$58.00', description: 'Iconic hair oil for all hair types.', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop' },
-      { name: 'Olaplex No. 7 Bonding Oil', price: '$30.00', description: 'A highly concentrated, weightless reparative styling oil.', image: 'https://images.unsplash.com/photo-1608248593842-8021c640d0e6?q=80&w=600&auto=format&fit=crop' },
-      { name: 'Moroccanoil Treatment Original', price: '$48.00', description: 'The product that pioneered oil-infused hair care.', image: 'https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=600&auto=format&fit=crop' }
-    );
-  }
+
+  // Renders nothing when the client has no product line, so archetypes can
+  // include it unconditionally — same contract as GalleryBlock.
+  //
+  // Do NOT hardcode sample products here. b2d099c injected four named brands
+  // (Oribe, Kerastase, Olaplex, Moroccanoil) as a preview fallback, which meant
+  // every deployed salon site without product data would claim to stock them.
+  // That is a factual claim about a real business published on their own site.
+  // Preview data belongs on the blueprint, where the health detector can see it
+  // and warn before it ships.
+  if (items.length === 0) return null;
 
   return (
     <section

@@ -78,3 +78,35 @@ export function useReveal() {
     } as Record<string, unknown>,
   };
 }
+
+/**
+ * Entrance for above-the-fold content.
+ *
+ * A hero is already in view on load, so a scroll trigger would never fire — it
+ * animates on mount instead. Slightly slower and with a longer stagger than the
+ * scroll reveals, because this is the first thing anyone sees and a hurried
+ * entrance reads as jitter.
+ */
+export function useEntrance() {
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return { group: {}, item: {}, props: {} as Record<string, unknown> };
+  }
+
+  return {
+    group: {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { staggerChildren: 0.11, delayChildren: 0.08 } },
+    },
+    item: {
+      hidden: { opacity: 0, y: 22 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.62, ease: [0.22, 1, 0.36, 1] as const },
+      },
+    },
+    props: { initial: 'hidden', animate: 'visible' } as Record<string, unknown>,
+  };
+}

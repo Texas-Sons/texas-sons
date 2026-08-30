@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { useReveal, revealBlock } from './motion';
 import { MapPin, Phone, Mail, Clock, Shield, Vote } from 'lucide-react';
 import { BusinessProfile } from './types';
 
@@ -8,6 +10,8 @@ interface FooterBlockProps {
 }
 
 export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
+  const reveal = useReveal();
+
   const isCampaign = business.name.toLowerCase().includes('campaign') ||
                      business.name.toLowerCase().includes('sheriff') ||
                      business.name.toLowerCase().includes('judge') ||
@@ -20,7 +24,9 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
   // Campaign Footer Layout
   if (isCampaign) {
     return (
-      <footer className={`border-t py-16 bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-muted)]`}>
+      <motion.footer
+      variants={reveal.props.initial ? revealBlock : undefined}
+      {...reveal.props} className={`border-t py-16 bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-muted)]`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-8 sm:gap-10 mb-12">
@@ -105,13 +111,15 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
           </div>
 
         </div>
-      </footer>
+      </motion.footer>
     );
   }
 
   // Standard Commercial / Business Footer
   return (
-    <footer className={`border-t py-16 bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-muted)]`}>
+    <motion.footer
+      variants={reveal.props.initial ? revealBlock : undefined}
+      {...reveal.props} className={`border-t py-16 bg-[color:var(--ts-bg)] border-[color:var(--ts-border)] text-[color:var(--ts-muted)]`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-8 sm:gap-10 mb-12">
 
@@ -200,6 +208,6 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
           </p>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

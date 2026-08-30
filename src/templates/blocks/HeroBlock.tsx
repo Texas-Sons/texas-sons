@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { useEntrance } from './motion';
 import { Star, ArrowRight, ShieldCheck, CheckCircle2, Award, Vote } from 'lucide-react';
 
 interface HeroBlockProps {
@@ -34,6 +36,9 @@ export function HeroBlock({
   accentColor,
   proofBadgeText
 }: HeroBlockProps) {
+  // Above the fold on load, so this animates on mount rather than on scroll.
+  const entrance = useEntrance();
+
   const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || (accentColor === '#C5A059') || headline.toLowerCase().includes('judge') || headline.toLowerCase().includes('sheriff') || headline.toLowerCase().includes('vote');
 
   const activeBadges = badges && badges.length > 0
@@ -50,7 +55,11 @@ export function HeroBlock({
   if (variant === 'centered') {
     return (
       <section className={`relative overflow-hidden py-14 sm:py-24 bg-[color:var(--ts-bg)] text-[color:var(--ts-text)]`}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <motion.div
+          className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10"
+          variants={entrance.group}
+          {...entrance.props}
+        >
 
           {/* Social Proof Pill */}
           {showSocialProof && (
@@ -68,14 +77,20 @@ export function HeroBlock({
             </div>
           )}
 
-          <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] mb-4 sm:mb-6 ${isCampaign ? 'font-serif' : ''}`}>
+          <motion.h1
+            variants={entrance.item}
+            className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] mb-4 sm:mb-6 ${isCampaign ? 'font-serif' : ''}`}
+          >
             {headline}
-          </h1>
-          <p className={`text-sm sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed text-[color:var(--ts-muted)]`}>
+          </motion.h1>
+          <motion.p
+            variants={entrance.item}
+            className={`text-sm sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed text-[color:var(--ts-muted)]`}
+          >
             {subheadline}
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <motion.div variants={entrance.item} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <a
               href={ctaHref}
               className={`w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold shadow-xl transition-all hover:scale-105 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
@@ -91,7 +106,7 @@ export function HeroBlock({
                 {secondaryCtaText}
               </a>
             )}
-          </div>
+          </motion.div>
 
           {/* Badges */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-[color:var(--ts-muted)]">
@@ -106,7 +121,7 @@ export function HeroBlock({
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
     );
   }
@@ -118,7 +133,11 @@ export function HeroBlock({
         <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-8 sm:gap-12 items-center">
 
           {/* Left Column Copy */}
-          <div className="space-y-4 sm:space-y-6">
+          <motion.div
+            className="space-y-4 sm:space-y-6"
+            variants={entrance.group}
+            {...entrance.props}
+          >
 
             {/* Social Proof Pill */}
             {showSocialProof && (
@@ -136,17 +155,23 @@ export function HeroBlock({
               </div>
             )}
 
-            <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12] ${
-              isCampaign ? 'font-serif' : ''
-            }`}>
+            <motion.h1
+              variants={entrance.item}
+              className={`text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12] ${
+                isCampaign ? 'font-serif' : ''
+              }`}
+            >
               {headline}
-            </h1>
+            </motion.h1>
 
-            <p className={`text-sm sm:text-base leading-relaxed text-[color:var(--ts-muted)]`}>
+            <motion.p
+              variants={entrance.item}
+              className={`text-sm sm:text-base leading-relaxed text-[color:var(--ts-muted)]`}
+            >
               {subheadline}
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+            <motion.div variants={entrance.item} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
               <a
                 href={ctaHref}
                 className={`inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
@@ -162,10 +187,10 @@ export function HeroBlock({
                   {secondaryCtaText}
                 </a>
               )}
-            </div>
+            </motion.div>
 
             {/* Badges List */}
-            <div className="pt-4 sm:pt-6 border-t border-[color:var(--ts-border)] flex flex-wrap gap-2.5 sm:gap-3">
+            <motion.div variants={entrance.item} className="pt-4 sm:pt-6 border-t border-[color:var(--ts-border)] flex flex-wrap gap-2.5 sm:gap-3">
               {activeBadges.map((badge, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 text-xs font-medium text-[color:var(--ts-muted)]">
                   {isCampaign ? (
@@ -176,8 +201,8 @@ export function HeroBlock({
                   <span>{badge}</span>
                 </div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Right Column Showcase Image */}
           <div className="relative">
