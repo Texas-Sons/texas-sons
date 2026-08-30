@@ -624,6 +624,14 @@ async function startServer() {
           frameSrc: [
             "'self'",
             "https://js.stripe.com",
+            // Square Appointments booking, embedded on client sites so the
+            // visitor never leaves the salon's own page to book. Frame-src only:
+            // this is an iframe of the seller's existing booking site, not the
+            // Web Payments SDK. Taking card details directly would additionally
+            // need Square's CDN in script-src and connect-src — do not add those
+            // until something actually uses them.
+            "https://*.squareup.com",
+            "https://*.square.site",
             "https://*.pages.dev",
             "http://localhost:*"
           ],
