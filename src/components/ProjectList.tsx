@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, ExternalLink, Wand2, Trash2, FileText, FileCheck, Search, Folders, Globe } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 import { ProjectProposalModal } from './ProjectProposalModal';
+import { PortalLinkButton } from './PortalLinkButton';
 
 interface ProjectListProps {
   projects: Project[];
@@ -166,6 +167,10 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
                     <Wand2 className="w-3.5 h-3.5" />Studio
                   </button>
                 )}
+                <PortalLinkButton
+                  projectId={project.id}
+                  token={(project as any).portalToken}
+                />
                 {project.domain && (
                   <a
                     href={project.domain}
