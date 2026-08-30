@@ -10,3 +10,10 @@ coverage/
 # Ad-hoc agent debug scripts belong in scratch, not the repo root.
 /*.cjs
 !remove_bg.cjs
+
+# The Obsidian vault is its own private repository (Texas-Sons/vault) that
+# happens to sit in this folder. It must never be committed here: `git add -A`
+# has swept stray files into this repo before, and the vault holds personal
+# notes rather than project source. Better still, move it outside this
+# directory — nesting one git repo inside another invites exactly that mistake.
+/vault/
