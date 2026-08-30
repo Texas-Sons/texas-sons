@@ -21,6 +21,7 @@ export type SectionKind =
   | 'services'
   | 'events'
   | 'gallery'
+  | 'beforeAfter'
   | 'products'
   | 'testimonials'
   | 'booking'
@@ -164,10 +165,25 @@ function tradesArchetype(): SiteSection[] {
 /** Beauty & wellness. Booking-led, with the service menu and its pricing high up. */
 function beautyArchetype(): SiteSection[] {
   return [
-    { kind: 'navbar', props: { ctaText: 'Book Appointment' } },
+    {
+      kind: 'navbar',
+      props: {
+        ctaText: 'Book Appointment',
+        navItems: [
+          { label: 'Portfolio', href: '#portfolio' },
+          { label: 'Services', href: '#services-page' },
+          { label: 'Shop', href: '#products' },
+          { label: 'Visit', href: '#contact' },
+        ],
+      },
+    },
     {
       kind: 'hero',
       props: { ctaText: 'Book Appointment', secondaryCtaText: 'See Services' },
+    },
+    {
+      kind: 'beforeAfter',
+      props: { title: 'The Transformation', subtitle: 'Drag to reveal.' },
     },
     {
       kind: 'services',

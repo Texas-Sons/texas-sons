@@ -13,5 +13,6 @@ export * from './VotingPageBlock';
 export * from './EventsBlock';
 export * from './GalleryBlock';
 export * from './ProductsBlock';
+export * from './BeforeAfterBlock';
 export * from './WriteInGuideBlock';
 

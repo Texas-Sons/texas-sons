@@ -162,6 +162,14 @@ checkTrue('campaigns have no products section',
 checkTrue('beauty shows the work before the shelf',
   beauty.indexOf('gallery') < beauty.indexOf('products'));
 
+// The transformation is the pitch for a colourist, so it must sit above the
+// price list rather than under it.
+checkTrue('beauty includes before/after', beauty.includes('beforeAfter'));
+checkTrue('before/after comes before services', beauty.indexOf('beforeAfter') < beauty.indexOf('services'));
+checkTrue('trades get no before/after', !trades.includes('beforeAfter'));
+checkTrue('campaigns get no before/after',
+  !kinds(resolveSections(undefined, { isCampaign: true, isWriteIn: false })).includes('beforeAfter'));
+
 // An explicit composition on the blueprint always wins.
 check('explicit sections override the archetype',
   kinds(resolveSections([{ kind: 'hero' }, { kind: 'footer' }], { isCampaign: true, isWriteIn: true })),

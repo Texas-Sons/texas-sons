@@ -125,6 +125,8 @@ export interface ProjectSnapshot {
   proofBadgeText?: string;
   seo?: { title: string; description: string };
   uploadedImages?: string[];
+  /** Paired before/after images, for transformation-led verticals. */
+  beforeAfter?: import('../../templates/blocks/types').BeforeAfterItem[];
   /** Retail products, for verticals that sell take-home items. */
   products?: import('../../templates/blocks/types').ProductItem[];
   /**

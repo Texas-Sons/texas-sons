@@ -41,6 +41,15 @@ export interface VolunteerItem {
   status: 'Active' | 'Pending' | 'Attending';
 }
 
+export interface BeforeAfterItem {
+  before: string;
+  after: string;
+  /** e.g. "Balayage correction" — shown under the slider. */
+  label?: string;
+  /** Which service produced it, for context. */
+  service?: string;
+}
+
 export interface ProductItem {
   name: string;
   description?: string;

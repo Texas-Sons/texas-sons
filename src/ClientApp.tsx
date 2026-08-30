@@ -16,6 +16,7 @@ import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
 import { GalleryBlock } from "./templates/blocks/GalleryBlock";
 import { ProductsBlock } from "./templates/blocks/ProductsBlock";
+import { BeforeAfterBlock } from "./templates/blocks/BeforeAfterBlock";
 import { WriteInGuideBlock } from "./templates/blocks/WriteInGuideBlock";
 import { buildThemeVars } from "./templates/blocks/theme";
 import type { ProjectSnapshot } from "./components/AgentBuilder/AgentBuilderStudio";
@@ -28,9 +29,11 @@ declare global {
 
 export function ClientApp() {
   const project = window.__TXSONS_BLUEPRINT__;
-  const [viewMode, setViewMode] = React.useState<'site' | 'admin' | 'voting'>(() => {
+  const [viewMode, setViewMode] = React.useState<'site' | 'admin' | 'voting' | 'portfolio' | 'services'>(() => {
     if (window.location.search.includes('admin=true') || window.location.hash === '#admin') return 'admin';
     if (window.location.hash === '#voting') return 'voting';
+    if (window.location.hash === '#portfolio') return 'portfolio';
+    if (window.location.hash === '#services-page') return 'services';
     return 'site';
   });
 
@@ -38,7 +41,12 @@ export function ClientApp() {
     const handleHash = () => {
       if (window.location.hash === '#admin') setViewMode('admin');
       else if (window.location.hash === '#voting') setViewMode('voting');
+      else if (window.location.hash === '#portfolio') setViewMode('portfolio');
+      else if (window.location.hash === '#services-page') setViewMode('services');
       else setViewMode('site');
+      // A hash route is a page change, so start at the top rather than wherever
+      // the previous page happened to be scrolled to.
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     };
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
@@ -122,6 +130,10 @@ export function ClientApp() {
   // real availability and deposits on that system; routing a ready-to-book
   // visitor through a contact form instead adds a step and loses the booking.
   const bookingUrl = project.profile.bookingUrl;
+
+  // One header definition for every page. A nav that differs page to page is the
+  // fastest way to make a multi-page site feel stitched together.
+  const navProps = sections.find(sec => sec.kind === 'navbar')?.props || {};
 
   /** Maps one section descriptor to its block. Returns null when it has no data to show. */
   const renderSection = (section: SiteSection, _index: number) => {
@@ -223,6 +235,18 @@ export function ClientApp() {
         return (
           <GalleryBlock
             images={project.profile.galleryImages}
+            theme={project.theme}
+            accentColor={accentColor}
+            title={p.title}
+            subtitle={p.subtitle}
+          />
+        );
+
+      case 'beforeAfter':
+        // Renders null without complete pairs, so archetypes include it freely.
+        return (
+          <BeforeAfterBlock
+            items={(project as any).beforeAfter}
             theme={project.theme}
             accentColor={accentColor}
             title={p.title}
@@ -336,6 +360,43 @@ export function ClientApp() {
           <NavbarBlock businessName={project.profile.name} phone={project.profile.phone} theme={project.theme} accentColor={project.profile.accentColor} ctaText="Join The Campaign" navItems={[{ label: "Platform", href: "#services" }, { label: "Endorsements", href: "#reviews" }, { label: "Voting Info", href: "#voting" }, { label: "Contact", href: "#contact" }]} />
           <VotingPageBlock theme={project.theme} accentColor={project.profile.accentColor} />
           <FooterBlock business={project.profile} theme={project.theme} />
+        </>
+      ) : viewMode === 'portfolio' ? (
+        // Dedicated portfolio page: the work, at length, with the comparisons
+        // above the grid. Reuses the same blocks as the home page rather than
+        // duplicating markup, so a fix to the gallery fixes both.
+        <>
+          {renderSection({ kind: 'navbar', props: navProps }, 0)}
+          {renderSection({
+            kind: 'beforeAfter',
+            props: { title: 'Transformations', subtitle: 'Drag any image to reveal the change.' },
+          }, 1)}
+          {renderSection({
+            kind: 'gallery',
+            props: { title: 'The Portfolio', subtitle: 'Recent work from the chair.' },
+          }, 2)}
+          {renderSection({
+            kind: 'booking',
+            props: { title: 'Book Your Transformation', subtitle: 'Tell us what you have in mind.' },
+          }, 3)}
+          {renderSection({ kind: 'footer' }, 4)}
+        </>
+      ) : viewMode === 'services' ? (
+        <>
+          {renderSection({ kind: 'navbar', props: navProps }, 0)}
+          {renderSection({
+            kind: 'services',
+            props: { title: 'Services & Pricing', subtitle: 'Everything we offer, with no hidden costs.' },
+          }, 1)}
+          {renderSection({
+            kind: 'products',
+            props: { title: 'Shop the Studio', subtitle: 'Take the salon home with you.' },
+          }, 2)}
+          {renderSection({
+            kind: 'booking',
+            props: { title: 'Book a Service', subtitle: 'Pick what you need and we will confirm your time.' },
+          }, 3)}
+          {renderSection({ kind: 'footer' }, 4)}
         </>
       ) : null}
     </div>
