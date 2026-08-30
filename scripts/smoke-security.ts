@@ -160,6 +160,42 @@ if (serviceKey && serviceKey.length > 20) {
   }
 }
 
+// --- .env.example must never carry a real credential -------------------------
+//
+// .gitignore excludes .env* but re-includes .env.example, so it is the one file
+// in the family that commits and pushes. On 2026-08-30 two live GitHub
+// fine-grained tokens were pasted into it — the template was mistaken for the
+// config. They were caught before any commit, but only because someone looked.
+//
+// Every value in that file should be empty or an obvious placeholder. This
+// matches on credential *shape*, so it catches tokens nobody has thought to
+// enumerate, and it fails the build rather than warning.
+{
+  const { readFileSync, existsSync } = await import('fs');
+  const { join } = await import('path');
+  const examplePath = join(process.cwd(), '.env.example');
+
+  const CREDENTIAL_SHAPES: Array<[string, RegExp]> = [
+    ['GitHub fine-grained token', /github_pat_[A-Za-z0-9_]{20,}/],
+    ['GitHub classic token', /gh[pousr]_[A-Za-z0-9]{20,}/],
+    ['Supabase / JWT', /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\./],
+    ['Stripe key', /sk_(live|test)_[A-Za-z0-9]{16,}/],
+    ['OpenAI-style key', /sk-[A-Za-z0-9]{32,}/],
+    ['OpenRouter key', /sk-or-v1-[A-Za-z0-9]{16,}/],
+    ['Google API key', /AIza[A-Za-z0-9_-]{30,}/],
+  ];
+
+  if (existsSync(examplePath)) {
+    const text = readFileSync(examplePath, 'utf8');
+    const found = CREDENTIAL_SHAPES.filter(([, pattern]) => pattern.test(text)).map(([name]) => name);
+    // Names only — printing the match would put the secret in CI logs, which is
+    // the problem this check exists to prevent.
+    check('.env.example carries no real credentials', found, []);
+  } else {
+    console.log('  (skipped .env.example scan — file not present)');
+  }
+}
+
 // --- Result ----------------------------------------------------------------
 
 if (failures > 0) {
