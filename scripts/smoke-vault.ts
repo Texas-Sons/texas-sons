@@ -13,6 +13,7 @@ import {
   scoreNote,
   selectNotes,
   formatNotes,
+  getVaultConfig,
   type VaultNote,
 } from '../lib/vault';
 
@@ -45,6 +46,43 @@ const VAULT: VaultNote[] = [
   ),
   note('daily/2026-08-14.md', 'Called three salons. Nobody answered. Wrote some notes about the weather.'),
 ];
+
+// --- configuration ----------------------------------------------------------
+
+{
+  const saved = {
+    repo: process.env.OBSIDIAN_VAULT_REPO,
+    vaultToken: process.env.VAULT_GITHUB_TOKEN,
+    sharedToken: process.env.GITHUB_ACCESS_TOKEN,
+  };
+  const set = (repo?: string, vaultToken?: string, sharedToken?: string) => {
+    if (repo === undefined) delete process.env.OBSIDIAN_VAULT_REPO;
+    else process.env.OBSIDIAN_VAULT_REPO = repo;
+    if (vaultToken === undefined) delete process.env.VAULT_GITHUB_TOKEN;
+    else process.env.VAULT_GITHUB_TOKEN = vaultToken;
+    if (sharedToken === undefined) delete process.env.GITHUB_ACCESS_TOKEN;
+    else process.env.GITHUB_ACCESS_TOKEN = sharedToken;
+  };
+
+  set(undefined, 'v', 's');
+  check('no repo means the vault is simply off', getVaultConfig() === null);
+
+  set('owner/repo', undefined, undefined);
+  check('no token means off, not a crash', getVaultConfig() === null);
+
+  // A malformed value must disable the vault rather than be pasted into a URL.
+  set('just-a-folder-name', 'v', undefined);
+  check('a value that is not owner/repo is rejected', getVaultConfig() === null);
+
+  set('Texas-Sons/vault', 'vault-token', 'shared-token');
+  check('the dedicated token wins over the shared one', getVaultConfig()?.token === 'vault-token');
+
+  set('Texas-Sons/vault', undefined, 'shared-token');
+  check('falls back to the shared token', getVaultConfig()?.token === 'shared-token');
+  check('branch defaults to main', getVaultConfig()?.branch === 'main');
+
+  set(saved.repo, saved.vaultToken, saved.sharedToken);
+}
 
 // --- query parsing ----------------------------------------------------------
 
@@ -127,5 +165,5 @@ if (failures > 0) {
   process.exit(1);
 }
 console.log(
-  'VAULT SMOKE PASS: stopwords dropped, titles outrank repetition, questions retrieve their own notes, budget and provenance hold'
+  'VAULT SMOKE PASS: config falls back and rejects malformed repos, stopwords dropped, titles outrank repetition, questions retrieve their own notes, budget and provenance hold'
 );

@@ -38,10 +38,18 @@ export interface VaultConfig {
   token: string;
 }
 
-/** Vault reading is off unless a repo is configured. Absence is not an error. */
+/**
+ * Vault reading is off unless a repo is configured. Absence is not an error.
+ *
+ * VAULT_GITHUB_TOKEN is preferred over the general GITHUB_ACCESS_TOKEN so the
+ * two jobs can hold different credentials. They want different powers: repo
+ * automation writes, while this only ever reads, and a read-only token scoped to
+ * one repository is the smaller blast radius if it leaks. Falls back to the
+ * shared token so an existing setup keeps working without a second variable.
+ */
 export function getVaultConfig(): VaultConfig | null {
   const repo = process.env.OBSIDIAN_VAULT_REPO;
-  const token = process.env.GITHUB_ACCESS_TOKEN;
+  const token = process.env.VAULT_GITHUB_TOKEN || process.env.GITHUB_ACCESS_TOKEN;
   if (!repo || !token) return null;
   if (!/^[^/\s]+\/[^/\s]+$/.test(repo)) {
     console.warn(
