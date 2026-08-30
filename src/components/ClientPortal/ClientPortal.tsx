@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { resizeImage } from '../IntakePortal/imageUtils';
+import { ImageCropper } from './ImageCropper';
 import TexasSonsLogo from '../TexasSonsLogo';
 import {
   Upload, Trash2, Loader2, AlertCircle, CheckCircle2, ImagePlus, Sparkles, ShoppingBag,
@@ -57,6 +58,11 @@ export default function ClientPortal() {
   const [pairBefore, setPairBefore] = useState('');
   const [pairAfter, setPairAfter] = useState('');
   const [pairLabel, setPairLabel] = useState('');
+
+  // A photo waiting to be framed. Both halves of a pair go through the cropper
+  // to the same fixed frame, because two shots taken from different distances
+  // make the slider jump rather than reveal.
+  const [cropping, setCropping] = useState<{ src: string; caption: string; slot: 'before' | 'after' } | null>(null);
 
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
@@ -215,6 +221,19 @@ export default function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200 pb-24">
+      {cropping && (
+        <ImageCropper
+          src={cropping.src}
+          caption={cropping.caption}
+          onCancel={() => setCropping(null)}
+          onDone={cropped => {
+            if (cropping.slot === 'before') setPairBefore(cropped);
+            else setPairAfter(cropped);
+            setCropping(null);
+          }}
+        />
+      )}
+
       <header className="border-b border-stone-800 px-4 sm:px-6 py-5">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <div>
@@ -351,12 +370,25 @@ export default function ClientPortal() {
                   onChange={e => {
                     const file = e.target.files?.[0];
                     e.target.value = '';
-                    pickImage(file, set);
+                    // Straight into the cropper rather than into state: framing
+                    // is the difference between a transformation that reads and
+                    // one that jumps.
+                    pickImage(file, src =>
+                      setCropping({
+                        src,
+                        caption,
+                        slot: caption === 'Before' ? 'before' : 'after',
+                      })
+                    );
                   }}
                 />
               </label>
             ))}
           </div>
+
+          <p className="text-xs text-stone-600">
+            Tap a photo to replace it. Both are framed to the same shape so they line up.
+          </p>
 
           <input
             type="text"
