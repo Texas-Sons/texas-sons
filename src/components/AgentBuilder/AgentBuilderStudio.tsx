@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../../api';
 import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealth';
 import type { SiteSection } from '../../templates/sections';
+import { SiteRenderer } from '../../templates/SiteRenderer';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
   loadCurrentProject, loadHistory, saveCurrentProject, saveHistory, cachedHistory,
@@ -1593,179 +1594,21 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                   <div className="w-10" />
                 </div>
 
-                {/* Rendered Live Modular Components with Inspector Interception */}
+                {/* One renderer, shared with ClientApp.
+                    This used to be a hardcoded list of nine blocks, so anything
+                    added to the deployed site — gallery, before/after, products —
+                    was invisible here and the preview lied about what the client
+                    would receive. */}
                 <div className="divide-y divide-transparent overflow-x-hidden">
-                  
-                  {/* Navbar Block */}
-                  <div
-                    onClick={() => inspectorActive && setSelectedBlock('NavbarBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'NavbarBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    <NavbarBlock
-                      businessName={project.profile.name}
-                      phone={project.profile.phone}
-                      theme={project.theme as any}
-                      accentColor={project.profile.accentColor}
-                      ctaText={isWriteIn ? 'Vote Write-In' : isCampaignSite ? 'Volunteer / Donate' : project.profile.category === 'Food & Beverage' ? 'Order Catering' : project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 'Book Appointment'}
-                      navItems={isCampaignSite ? [
-                        ...(isWriteIn ? [{ label: "How to Vote Write-In", href: "#write-in-guide" }] : []),
-                        { label: "Platform", href: "#services" },
-                        { label: "Events", href: "#events" },
-                        { label: "Endorsements", href: "#reviews" },
-                        { label: "Voting Info", href: "#voting" },
-                        { label: "Volunteer", href: "#contact" }
-                      ] : undefined}
-                    />
-                  </div>
-
-                  {/* Hero Block */}
-                  <div
-                    onClick={() => inspectorActive && setSelectedBlock('HeroBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'HeroBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    {isCampaignSite ? (
-                      <CampaignHeroBlock
-                        headline={project.profile.tagline || project.profile.name}
-                        subheadline={project.profile.description || ''}
-                        heroImage={project.profile.heroImage}
-                        accentColor={project.profile.accentColor}
-                        badges={project.badges}
-                        proofBadgeText={project.proofBadgeText}
-                        ctaText={isWriteIn ? "How to Vote Write-In" : "Join The Campaign"}
-                        secondaryCtaText="Read Our Platform"
-                        theme={project.theme}
-                        candidateName={project.profile.name}
-                        officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge' : undefined}
-                      />
-                    ) : (
-                      <HeroBlock
-                        headline={project.profile.tagline || project.profile.name}
-                        subheadline={project.profile.description || ''}
-                        heroImage={project.profile.heroImage}
-                        variant={project.heroVariant}
-                        theme={project.theme as any}
-                        accentColor={project.profile.accentColor}
-                        badges={project.badges}
-                        proofBadgeText={project.proofBadgeText}
-                        ctaText={
-                          project.profile.category === 'Food & Beverage' ? 'View Menu' : 
-                          project.profile.category === 'Beauty & Wellness' ? 'Book Appointment' : 
-                          'Book Free Estimate'
-                        }
-                        secondaryCtaText={
-                          project.profile.category === 'Food & Beverage' ? 'Catering Options' : 
-                          'View Services'
-                        }
-                      />
-                    )}
-                  </div>
-
-                  {/* Write-In Ballot Guide Block (When applicable) */}
-                  {isWriteIn && (
-                    <div
-                      onClick={() => inspectorActive && setSelectedBlock('WriteInGuideBlock')}
-                      className={`relative transition-all ${
-                        inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                      } ${selectedBlock === 'WriteInGuideBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                    >
-                      <WriteInGuideBlock
-                        candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
-                        officeTitle="Atascosa County Judge"
-                        theme={project.theme}
-                        accentColor={project.profile.accentColor}
-                      />
-                    </div>
-                  )}
-
-                  {/* Voting Info Banner Block (Campaigns) */}
-                  {isCampaignSite && (
-                    <div
-                      onClick={() => {
-                        if (inspectorActive) setSelectedBlock('VotingBannerBlock');
-                        else {
-                          window.location.hash = 'voting';
-                          setPreviewSubPage('voting');
-                        }
-                      }}
-                      className={`relative transition-all cursor-pointer ${
-                        inspectorActive ? 'hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                      } ${selectedBlock === 'VotingBannerBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                    >
-                      <VotingBannerBlock
-                        accentColor={project.profile.accentColor}
-                        candidateName={project.profile.name}
-                        officeTitle={project.profile.name.toLowerCase().includes('judge') ? 'Atascosa County Judge Election' : undefined}
-                        theme={project.theme}
-                      />
-                    </div>
-                  )}
-
-                  {/* Services / Platform Block */}
-                  <div
-                    onClick={() => inspectorActive && setSelectedBlock('ServicesBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'ServicesBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    <ServicesBlock
-                      title={
-                        isCampaignSite ? 'Key Platform & Policy Priorities' : 
-                        project.profile.category === 'Food & Beverage' ? 'Featured Menu & Catering' : 
-                        project.profile.category === 'Beauty & Wellness' ? 'Salon Services & Pricing' : 
-                        'Our Services & Solutions'
-                      }
-                      subtitle={
-                        isCampaignSite ? 'Clear priorities and decisive leadership for our community.' : 
-                        project.profile.category === 'Food & Beverage' ? 'Authentic Texas BBQ smoked fresh daily.' : 
-                        'Transparent pricing with premium craftsmanship.'
-                      }
-                      services={project.services}
-                      theme={project.theme as any}
-                      accentColor={project.profile.accentColor}
-                      ctaText={
-                        isCampaignSite ? 'Learn More' : 
-                        project.profile.category === 'Food & Beverage' ? 'Order Now' : 
-                        'Book Service'
-                      }
-                    />
-                  </div>
-
-                  {/* Testimonials / Endorsements Block */}
-                  <div
-                    onClick={() => inspectorActive && setSelectedBlock('TestimonialsBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'TestimonialsBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    <TestimonialsBlock
-                      title={isCampaignSite ? 'Endorsements & Community Support' : 'What Our Clients Say'}
-                      subtitle={isCampaignSite ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}
-                      testimonials={project.testimonials}
-                      theme={project.theme as any}
-                      accentColor={project.profile.accentColor}
-                    />
-                  </div>
-
-                  {/* Booking / Volunteer Block */}
-                  <div
-                    onClick={() => inspectorActive && setSelectedBlock('FooterBlock')}
-                    className={`relative transition-all ${
-                      inspectorActive ? 'cursor-crosshair hover:ring-2 hover:ring-blue-500 hover:z-20' : ''
-                    } ${selectedBlock === 'FooterBlock' ? 'ring-2 ring-blue-500 z-20' : ''}`}
-                  >
-                    <FooterBlock
-                      business={project.profile}
-                      theme={project.theme as any}
-                    />
-                  </div>
-
+                  <SiteRenderer
+                    project={project}
+                    onSelectBlock={kind => inspectorActive && setSelectedBlock(kind)}
+                    selectedBlock={selectedBlock}
+                  />
                 </div>
               </div>
             )}
+
 
             {/* TAB 2: Industry-Specific Client Admin Portal */}
             {activeTab === 'admin' && (

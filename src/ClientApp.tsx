@@ -11,6 +11,7 @@ import { BookingBlock } from "./templates/blocks/BookingBlock";
 import { FooterBlock } from "./templates/blocks/FooterBlock";
 import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
 import { resolveSections, SiteSection } from "./templates/sections";
+import { SiteRenderer } from "./templates/SiteRenderer";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
 import { EventsBlock } from "./templates/blocks/EventsBlock";
@@ -135,179 +136,10 @@ export function ClientApp() {
   // fastest way to make a multi-page site feel stitched together.
   const navProps = sections.find(sec => sec.kind === 'navbar')?.props || {};
 
-  /** Maps one section descriptor to its block. Returns null when it has no data to show. */
-  const renderSection = (section: SiteSection, _index: number) => {
-    const p = section.props || {};
-    const accentColor = project.profile.accentColor;
-
-    switch (section.kind) {
-      case 'navbar':
-        return (
-          <NavbarBlock
-            businessName={project.profile.name}
-            logoUrl={project.profile.logoUrl}
-            phone={project.profile.phone}
-            theme={project.theme}
-            accentColor={accentColor}
-            ctaText={p.ctaText}
-            ctaHref={bookingUrl || '#contact'}
-            navItems={p.navItems}
-          />
-        );
-
-      case 'campaignHero':
-        return (
-          <CampaignHeroBlock
-            headline={project.profile.tagline || project.profile.name}
-            subheadline={project.profile.description || ''}
-            heroImage={project.profile.heroImage}
-            accentColor={accentColor}
-            badges={project.badges}
-            proofBadgeText={project.proofBadgeText}
-            ctaText={p.ctaText}
-            secondaryCtaText={p.secondaryCtaText}
-            theme={project.theme}
-            candidateName={project.profile.name}
-            officeTitle={officeTitle}
-          />
-        );
-
-      case 'hero':
-        return (
-          <HeroBlock
-            theme={project.theme}
-            variant={project.heroVariant}
-            headline={project.profile.tagline || project.profile.name}
-            subheadline={project.profile.description || ''}
-            heroImage={project.profile.heroImage}
-            badges={project.badges}
-            accentColor={accentColor}
-            proofBadgeText={project.proofBadgeText}
-            ctaText={p.ctaText}
-            ctaHref={bookingUrl || '#contact'}
-            secondaryCtaText={p.secondaryCtaText}
-          />
-        );
-
-      case 'writeInGuide':
-        return (
-          <WriteInGuideBlock
-            candidateName={project.profile.name.replace(/campaign/i, '').replace(/for judge/i, '').trim()}
-            officeTitle="Atascosa County Judge"
-            theme={project.theme}
-            accentColor={accentColor}
-          />
-        );
-
-      case 'votingBanner':
-        return (
-          <VotingBannerBlock
-            accentColor={accentColor}
-            candidateName={project.profile.name}
-            officeTitle={officeTitle ? `${officeTitle} Election` : undefined}
-            theme={project.theme}
-          />
-        );
-
-      case 'services':
-        return (
-          <ServicesBlock
-            theme={project.theme}
-            services={project.services}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-          />
-        );
-
-      case 'events':
-        return (
-          <EventsBlock
-            events={project.events}
-            theme={project.theme}
-            accentColor={accentColor}
-          />
-        );
-
-      case 'gallery':
-        // GalleryBlock renders nothing without photos, so archetypes can include
-        // it unconditionally.
-        return (
-          <GalleryBlock
-            images={project.profile.galleryImages}
-            theme={project.theme}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-          />
-        );
-
-      case 'beforeAfter':
-        // Renders null without complete pairs, so archetypes include it freely.
-        return (
-          <BeforeAfterBlock
-            items={(project as any).beforeAfter}
-            theme={project.theme}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-          />
-        );
-
-      case 'products':
-        // Renders null without products, so archetypes include it freely.
-        return (
-          <ProductsBlock
-            products={(project as any).products}
-            theme={project.theme}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-            shopUrl={bookingUrl}
-          />
-        );
-
-      case 'testimonials':
-        // Preserves the previous guard: no reviews, no empty section.
-        if (!project.testimonials?.length) return null;
-        return (
-          <TestimonialsBlock
-            theme={project.theme}
-            testimonials={project.testimonials}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-          />
-        );
-
-      case 'booking':
-        return (
-          <BookingBlock
-            theme={project.theme}
-            phone={project.profile.phone}
-            email={project.profile.email}
-            address={project.profile.address}
-            hours={project.profile.hours}
-            services={project.services}
-            accentColor={accentColor}
-            title={p.title}
-            subtitle={p.subtitle}
-            bookingUrl={bookingUrl}
-            bookingLabel={p.bookingLabel}
-            onSubmit={handleLeadSubmit}
-          />
-        );
-
-      case 'footer':
-        return <FooterBlock business={project.profile} theme={project.theme} />;
-
-      default:
-        // An unknown kind from a newer blueprint must not break an older client
-        // bundle — skip it rather than crashing the whole site.
-        console.warn(`[ClientApp] Unknown section kind: ${(section as any).kind}`);
-        return null;
-    }
-  };
+  /** Renders a composition through the shared renderer the Studio also uses. */
+  const page = (secs: SiteSection[]) => (
+    <SiteRenderer project={project} sections={secs} onLeadSubmit={handleLeadSubmit} />
+  );
 
   return (
     <div
@@ -337,9 +169,7 @@ export function ClientApp() {
         </div>
       ) : viewMode === 'site' ? (
         <>
-          {sections.map((section, i) => (
-            <React.Fragment key={`${section.kind}-${i}`}>{renderSection(section, i)}</React.Fragment>
-          ))}
+          {page(sections)}
 
           {/* Subtle client admin access badge */}
           <div className="fixed bottom-3 right-3 z-50">
@@ -366,37 +196,41 @@ export function ClientApp() {
         // above the grid. Reuses the same blocks as the home page rather than
         // duplicating markup, so a fix to the gallery fixes both.
         <>
-          {renderSection({ kind: 'navbar', props: navProps }, 0)}
-          {renderSection({
+          {page([
+            { kind: 'navbar', props: navProps },
+                      {
             kind: 'beforeAfter',
             props: { title: 'Transformations', subtitle: 'Drag any image to reveal the change.' },
-          }, 1)}
-          {renderSection({
+          },
+                      {
             kind: 'gallery',
             props: { title: 'The Portfolio', subtitle: 'Recent work from the chair.' },
-          }, 2)}
-          {renderSection({
+          },
+                      {
             kind: 'booking',
             props: { title: 'Book Your Transformation', subtitle: 'Tell us what you have in mind.' },
-          }, 3)}
-          {renderSection({ kind: 'footer' }, 4)}
+          },
+                      { kind: 'footer' },
+          ])}
         </>
       ) : viewMode === 'services' ? (
         <>
-          {renderSection({ kind: 'navbar', props: navProps }, 0)}
-          {renderSection({
+          {page([
+            { kind: 'navbar', props: navProps },
+                      {
             kind: 'services',
             props: { title: 'Services & Pricing', subtitle: 'Everything we offer, with no hidden costs.' },
-          }, 1)}
-          {renderSection({
+          },
+                      {
             kind: 'products',
             props: { title: 'Shop the Studio', subtitle: 'Take the salon home with you.' },
-          }, 2)}
-          {renderSection({
+          },
+                      {
             kind: 'booking',
             props: { title: 'Book a Service', subtitle: 'Pick what you need and we will confirm your time.' },
-          }, 3)}
-          {renderSection({ kind: 'footer' }, 4)}
+          },
+                      { kind: 'footer' },
+          ])}
         </>
       ) : null}
     </div>
