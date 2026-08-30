@@ -20,6 +20,7 @@ import {
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 import { blueprintWithClientMedia, type MediaKind } from './lib/clientMedia';
+import { vaultContextFor } from './lib/vault';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
 
@@ -1967,6 +1968,12 @@ ${text.trim()}`);
 
       const businessContext = await loadBusinessContext();
 
+      // Vault retrieval keys off the latest question only. Scoring the whole
+      // conversation drags in terms from three topics ago and reliably retrieves
+      // notes about what he was asking before, not what he is asking now.
+      const lastUserMessage = [...trimmed].reverse().find(m => m.role === 'user')?.content || '';
+      const vaultContext = await vaultContextFor(lastUserMessage);
+
       const system = [
         'You are the operating assistant for Texas Sons, a one-person web agency run by Morgan Valdez.',
         'You help him decide what to work on, review how the business is going, and think through his website-building pipeline.',
@@ -1978,6 +1985,7 @@ ${text.trim()}`);
         '- When you recommend something, say what it would cost him in time and what it would change.',
         '',
         businessContext ? `## His operating manual\n${businessContext}` : '',
+        vaultContext,
         stats
           ? `## Current pipeline (from his event log)\n${JSON.stringify(stats, null, 2)}`
           : '## Current pipeline\nNo event data supplied.',
