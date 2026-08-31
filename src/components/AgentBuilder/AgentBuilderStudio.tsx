@@ -1072,13 +1072,16 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       </header>
 
       {/* ── DESKTOP: Full Master Action Bar ─────────────────────────── */}
-      {/* overflow-x-auto because every child here is flex-shrink-0 and the row
-          does not wrap. Below roughly 1500px the right-hand end — Deploy among
-          it — simply left the screen, with no scrollbar and nothing to drag,
-          which is why the only workaround was zooming the whole browser out.
-          Scrolling keeps every control reachable without reflowing a toolbar
-          whose order carries meaning. */}
-      <header className="hidden md:flex h-16 border-b border-stone-800/80 px-3 sm:px-4 items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3 overflow-x-auto overscroll-x-contain">
+      {/* Everything in this row is flex-shrink-0 and it does not wrap, so the
+          budget is fixed and each label has to earn its width. Below roughly
+          1500px the right-hand end — Deploy among it — used to leave the screen
+          entirely, with no scrollbar and nothing to drag.
+
+          Labels now drop to icons as space runs out, worst-earning first, and
+          every button keeps its title attribute so the icon is still
+          identifiable. Deploy never loses its label: it is the primary action
+          and the one that went missing. */}
+      <header className="hidden md:flex h-16 border-b border-stone-800/80 px-3 sm:px-4 items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
         
         {/* Left Section: Mobile App Navigation Hamburger, Director / Sidebar Toggle, Active Experience Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -1118,12 +1121,18 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 <Zap className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0 flex-1">
+                {/* One line. The old second line read "Client Experience" for
+                    anything without a category, which is true of every row in
+                    the app and therefore told you nothing, while costing the
+                    chip vertical space and the toolbar horizontal space. */}
                 <p className="text-xs font-bold text-white truncate group-hover:text-[#C5A059]">
                   {currentBlueprintObj?.title || project.profile.name}
                 </p>
-                <p className="text-[10px] text-stone-400 truncate">
-                  {currentBlueprintObj?.category || 'Client Experience'}
-                </p>
+                {currentBlueprintObj?.category && (
+                  <p className="text-[10px] text-stone-400 truncate">
+                    {currentBlueprintObj.category}
+                  </p>
+                )}
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
                 isBlueprintDropdownOpen ? 'rotate-180 text-[#C5A059]' : ''
@@ -1249,8 +1258,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Live Website</span>
-            <span className="sm:hidden">Live</span>
+            <span className="hidden 2xl:inline">Live Website</span>
+            <span className="2xl:hidden">Live</span>
           </button>
 
           <button
@@ -1262,8 +1271,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Client Admin</span>
-            <span className="sm:hidden">Admin</span>
+            <span className="hidden 2xl:inline">Client Admin</span>
+            <span className="2xl:hidden">Admin</span>
           </button>
 
           <button
@@ -1275,7 +1284,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             }`}
           >
             <Code2 className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">React Code</span>
+            <span className="hidden 2xl:inline">React Code</span>
+            <span className="2xl:hidden">Code</span>
           </button>
         </div>
 
@@ -1355,7 +1365,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             title="Connect Namecheap or Custom Domain"
           >
             <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
-            <span className="hidden md:inline">Custom Domain</span>
+            <span className="hidden 2xl:inline">Custom Domain</span>
           </button>
 
           {/* Deploy Button */}
