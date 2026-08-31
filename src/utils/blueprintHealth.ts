@@ -16,9 +16,28 @@
 
 export type IssueSeverity = 'placeholder' | 'missing';
 
+/**
+ * What kind of wrong this is. The two fail differently and are gated
+ * differently.
+ *
+ * 'data'  — something real is missing or still a stand-in: no phone, a stock
+ *           hero, a generic tagline. Perfectly fine in a demo, which is a
+ *           mockup and understood as one. Warning about it while pitching is
+ *           noise, and noise is how a warning stops being read.
+ *
+ * 'claim' — the site asserts something about the business that nobody checked:
+ *           a review count, an award, a licence, a testimonial that was
+ *           invented. Never acceptable, and WORSE in a demo than on a live
+ *           site — a demo goes to the owner, about her own business. She either
+ *           assumes it was verified or notices it was made up, and one of those
+ *           loses the job.
+ */
+export type IssueCategory = 'data' | 'claim';
+
 export interface BlueprintIssue {
   field: string;
   severity: IssueSeverity;
+  category: IssueCategory;
   /** What the operator should do about it. */
   message: string;
 }
@@ -119,28 +138,28 @@ export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined)
   const issues: BlueprintIssue[] = [];
 
   if (isPlaceholder(p.tagline)) {
-    issues.push({ field: 'tagline', severity: 'placeholder', message: 'Tagline is the generic fallback — write one in their voice.' });
+    issues.push({ field: 'tagline', severity: 'placeholder', category: 'data', message: 'Tagline is the generic fallback — write one in their voice.' });
   }
   if (isPlaceholder(p.description)) {
-    issues.push({ field: 'description', severity: 'placeholder', message: 'Description is the generic fallback.' });
+    issues.push({ field: 'description', severity: 'placeholder', category: 'data', message: 'Description is the generic fallback.' });
   }
 
   if (!p.heroImage) {
-    issues.push({ field: 'heroImage', severity: 'missing', message: 'No hero image. Gather Assets, or have them upload through the intake portal.' });
+    issues.push({ field: 'heroImage', severity: 'missing', category: 'data', message: 'No hero image. Gather Assets, or have them upload through the intake portal.' });
   } else if (isStockImage(p.heroImage)) {
-    issues.push({ field: 'heroImage', severity: 'placeholder', message: 'Hero is a stock photo — this is what makes every demo look alike.' });
+    issues.push({ field: 'heroImage', severity: 'placeholder', category: 'data', message: 'Hero is a stock photo — this is what makes every demo look alike.' });
   }
 
-  if (!p.phone) issues.push({ field: 'phone', severity: 'missing', message: 'No phone number.' });
+  if (!p.phone) issues.push({ field: 'phone', severity: 'missing', category: 'data', message: 'No phone number.' });
   else if (isUnreachablePhone(p.phone)) {
-    issues.push({ field: 'phone', severity: 'placeholder', message: 'This is a 555-01xx number, reserved for fiction — nobody can call them.' });
+    issues.push({ field: 'phone', severity: 'placeholder', category: 'data', message: 'This is a 555-01xx number, reserved for fiction — nobody can call them.' });
   }
-  else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', message: 'Phone is a Texas Sons placeholder, not theirs.' });
+  else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', category: 'data', message: 'Phone is a Texas Sons placeholder, not theirs.' });
 
   if (isUnreachableEmail(p.email)) {
-    issues.push({ field: 'email', severity: 'placeholder', message: 'This domain is reserved and undeliverable — mail to it bounces.' });
+    issues.push({ field: 'email', severity: 'placeholder', category: 'data', message: 'This domain is reserved and undeliverable — mail to it bounces.' });
   } else if (isPlaceholder(p.email)) {
-    issues.push({ field: 'email', severity: 'placeholder', message: 'Email is a Texas Sons placeholder, not theirs.' });
+    issues.push({ field: 'email', severity: 'placeholder', category: 'data', message: 'Email is a Texas Sons placeholder, not theirs.' });
   }
 
   // Gallery placeholders are legitimate while mocking a demo up — the client
@@ -151,28 +170,29 @@ export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined)
     issues.push({
       field: 'galleryImages',
       severity: 'placeholder',
+      category: 'data',
       message: 'Gallery is stock photography — fine for a mockup, replace before this goes live.',
     });
   }
 
   const services = blueprint.services || [];
   if (services.length === 0) {
-    issues.push({ field: 'services', severity: 'missing', message: 'No services listed.' });
+    issues.push({ field: 'services', severity: 'missing', category: 'data', message: 'No services listed.' });
   } else if (services.some(s => isPlaceholder(s?.title) || isPlaceholder(s?.description))) {
-    issues.push({ field: 'services', severity: 'placeholder', message: 'Services are still the default filler — replace with their real menu.' });
+    issues.push({ field: 'services', severity: 'placeholder', category: 'data', message: 'Services are still the default filler — replace with their real menu.' });
   }
 
   const testimonials = blueprint.testimonials || [];
   if (testimonials.some(t => isPlaceholder(t?.quote) || isPlaceholder(t?.author))) {
     // The worst kind: a fabricated review is a claim about a real business.
-    issues.push({ field: 'testimonials', severity: 'placeholder', message: 'Testimonials are invented. Remove them or use real Google reviews.' });
+    issues.push({ field: 'testimonials', severity: 'placeholder', category: 'claim', message: 'Testimonials are invented. Remove them or use real Google reviews.' });
   }
 
   if (isPlaceholder(blueprint.proofBadgeText)) {
-    issues.push({ field: 'proofBadgeText', severity: 'placeholder', message: 'Proof badge claims something they have not claimed.' });
+    issues.push({ field: 'proofBadgeText', severity: 'placeholder', category: 'claim', message: 'Proof badge claims something they have not claimed.' });
   }
   if ((blueprint.badges || []).some(isPlaceholder)) {
-    issues.push({ field: 'badges', severity: 'placeholder', message: 'Badges are generic defaults.' });
+    issues.push({ field: 'badges', severity: 'placeholder', category: 'claim', message: 'Badges are generic defaults.' });
   }
 
   return issues;
@@ -198,4 +218,32 @@ export function prospectHasRealAssets(prospect: any): boolean {
   const photos = Array.isArray(prospect.photos) ? prospect.photos.length : 0;
   const reviews = Array.isArray(prospect.reviews) ? prospect.reviews.length : 0;
   return photos > 0 || reviews > 0;
+}
+
+export type Engagement = 'demo' | 'commissioned';
+
+/**
+ * The issues worth showing for a given engagement.
+ *
+ * A demo is a mockup and understood as one, so missing data is not a problem
+ * worth interrupting for. An invented claim is a problem in both, and more of
+ * one in a demo: that goes to the owner, about her own business.
+ */
+export function issuesFor(
+  blueprint: BlueprintLike | null | undefined,
+  engagement: Engagement = 'demo'
+): BlueprintIssue[] {
+  const all = findBlueprintIssues(blueprint);
+  return engagement === 'commissioned' ? all : all.filter(i => i.category === 'claim');
+}
+
+/**
+ * True when this must not be published as a real client's site.
+ *
+ * Deliberately not a hard block anywhere — the operator can always override,
+ * and a tool that refuses to do what it is told gets worked around rather than
+ * heeded. This decides how loudly to say it.
+ */
+export function blocksCommissioning(blueprint: BlueprintLike | null | undefined): boolean {
+  return findBlueprintIssues(blueprint).some(i => i.category === 'claim' || i.field === 'phone' || i.field === 'email');
 }

@@ -24,6 +24,12 @@ function rowToProject(row: any): Project {
     domain: row.domain,
     ownerId: row.owner_id,
     blueprint: row.blueprint,
+    engagement: row.engagement === 'commissioned' ? 'commissioned' : 'demo',
+    // Null until something has been published through the recording path. The
+    // card uses it against updatedAt to say whether edits are live yet, which
+    // is the distinction that let a stale blueprint sit waiting to be
+    // republished over a client's site on 2026-08-31.
+    publishedAt: row.published_at || undefined,
   };
 }
 
@@ -37,7 +43,10 @@ function projectToRow(project: Project, ownerId: string) {
     tier: project.tier,
     domain: project.domain,
     blueprint: project.blueprint,
+    engagement: project.engagement || 'demo',
     updated_at: new Date().toISOString(),
+    // published_at and published_blueprint are deliberately NOT written here.
+    // They record what is live, and only a publish may say that.
   };
 }
 

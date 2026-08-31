@@ -38,6 +38,14 @@ export interface Project {
   ownerId: string;
   blueprint?: any;
   contracts?: ProjectContract[];
+  /**
+   * 'demo' — a mockup for a prospect. Stand-in data is expected and not warned
+   * about. 'commissioned' — a paying client, where the same stand-in data is a
+   * business nobody can contact.
+   */
+  engagement?: 'demo' | 'commissioned';
+  /** When this project was last published. Undefined means never. */
+  publishedAt?: string;
 }
 
 export interface Invoice {

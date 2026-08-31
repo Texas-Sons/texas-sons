@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { apiFetch } from '../../api';
 import { mergeClients, intakeFromProject, type LinkKind } from '../../utils/clientMerge';
+import { stageOf } from '../../utils/clientStage';
+import { ClientStatusStrip } from './ClientStatusStrip';
 import { 
   Users, 
   Plus, 
@@ -20,6 +22,7 @@ import {
   Mail, 
   MapPin, 
   Globe, 
+  UploadCloud, 
   ChevronRight, 
   FileText, 
   X,
@@ -61,6 +64,10 @@ interface ClientIntakeViewProps {
   onProjectProposal?: (project: any) => void;
   /** Delete the built site. Distinct from deleting the dossier. */
   onDeleteProject?: (projectId: string) => void;
+  /** Flip a project between demo and commissioned. */
+  onEngagementChange?: (project: any, engagement: 'demo' | 'commissioned') => void;
+  /** Jump to Lead Finder to search for a business. */
+  onFindBusiness?: () => void;
 }
 
 const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
@@ -258,7 +265,7 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings, onProjectProposal, onDeleteProject }: ClientIntakeViewProps) {
+export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings, onProjectProposal, onDeleteProject, onEngagementChange, onFindBusiness }: ClientIntakeViewProps) {
   // Paint from cache immediately, then reconcile with Supabase.
   const [submissions, setSubmissions] = useState<IntakeSubmission[]>([]);
   const [shareLinkLoading, setShareLinkLoading] = useState(false);
@@ -270,6 +277,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
   });
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
@@ -599,13 +607,49 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
               <span>Scan Photo / Menu</span>
             </button>
 
-            <button
-              onClick={() => handleOpenNewModal()}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs sm:text-sm shadow-lg shadow-[#C5A059]/20 transition-all active:scale-95"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Client Intake</span>
-            </button>
+            {/* Two ways in, presented as equals.
+              *
+              * Lead Finder is the obvious funnel and it is not the common one.
+              * A solo operator's early clients are friends and referrals — the
+              * one this app was built for came from a phone call, with every
+              * detail typed by hand. Making manual entry the fallback for when
+              * the map search fails would optimise for the path used least. */}
+            <div className="relative">
+              <button
+                onClick={() => setAddMenuOpen(v => !v)}
+                aria-expanded={addMenuOpen}
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs sm:text-sm shadow-lg shadow-[#C5A059]/20 transition-all active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Client</span>
+              </button>
+
+              {addMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-64 z-50 rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl overflow-hidden">
+                    <button
+                      onClick={() => { setAddMenuOpen(false); handleOpenNewModal(); }}
+                      className="w-full text-left px-4 py-3 hover:bg-stone-900 transition-colors"
+                    >
+                      <p className="text-xs font-bold text-stone-100">Enter their details</p>
+                      <p className="text-[10px] text-stone-500 mt-0.5">
+                        A referral, or someone with no Google listing.
+                      </p>
+                    </button>
+                    <button
+                      onClick={() => { setAddMenuOpen(false); onFindBusiness?.(); }}
+                      className="w-full text-left px-4 py-3 border-t border-stone-800/70 hover:bg-stone-900 transition-colors"
+                    >
+                      <p className="text-xs font-bold text-stone-100">Find a business</p>
+                      <p className="text-[10px] text-stone-500 mt-0.5">
+                        Search Lead Finder and pull their details in.
+                      </p>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -715,6 +759,8 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10">
           {filteredClients.map(({ key, client, project, link }) => {
             const Icon = getCategoryIcon(client.category);
+            const stage = stageOf({ project });
+            const engagement = project?.engagement === 'commissioned' ? 'commissioned' : 'demo';
             return (
               <div 
                 key={key}
@@ -788,6 +834,18 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 <div className="p-3.5 bg-stone-950 border-t border-stone-800 flex flex-col gap-2.5 mt-auto flex-shrink-0">
                   
                   {/* Primary Studio Bridge Button */}
+                  <div className="mb-3">
+                    <ClientStatusStrip
+                      state={stage}
+                      engagement={engagement}
+                      onEngagementChange={
+                        project && onEngagementChange
+                          ? (next) => onEngagementChange(project, next)
+                          : undefined
+                      }
+                    />
+                  </div>
+
                   {project ? (
                     <>
                       {/* This client has a built site. Everything below acts on
@@ -810,21 +868,44 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         )}
                       </div>
 
-                      <button
-                        onClick={() => onOpenProject?.(project)}
-                        className="w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-                      >
-                        <Wand2 className="w-3.5 h-3.5" />
-                        <span>Edit Site in Studio</span>
-                      </button>
+                      {/* The leading action follows the stage; everything else
+                          stays on the card, quieter. Hiding a control the
+                          operator wanted is how a tool gets worked around
+                          instead of trusted — this only changes emphasis. */}
+                      {(() => {
+                        const primary = 'w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95';
+                        const secondary = 'w-full mt-1.5 py-2 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 font-bold text-xs flex items-center justify-center gap-2 transition-colors';
 
-                      <button
-                        onClick={() => onProjectSettings?.(project)}
-                        className="w-full mt-1.5 py-2 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Users className="w-3.5 h-3.5" />
-                        <span>Client access &amp; publish</span>
-                      </button>
+                        const studio = (cls: string, label: string) => (
+                          <button key="studio" onClick={() => onOpenProject?.(project)} className={cls}>
+                            <Wand2 className="w-3.5 h-3.5" /><span>{label}</span>
+                          </button>
+                        );
+                        const publish = (cls: string) => (
+                          <button key="publish" onClick={() => onProjectSettings?.(project)} className={cls}>
+                            <UploadCloud className="w-3.5 h-3.5" />
+                            <span>{stage.publish === 'stale' ? 'Publish your changes' : 'Publish this site'}</span>
+                          </button>
+                        );
+                        const access = (cls: string) => (
+                          <button key="access" onClick={() => onProjectSettings?.(project)} className={cls}>
+                            <Users className="w-3.5 h-3.5" /><span>Client access &amp; publish</span>
+                          </button>
+                        );
+                        const proposal = (cls: string) => (
+                          <button key="proposal" onClick={() => onProjectProposal?.(project)} className={cls}>
+                            <FileText className="w-3.5 h-3.5" /><span>Send proposal &amp; contract</span>
+                          </button>
+                        );
+
+                        if (stage.primary === 'publish') {
+                          return <>{publish(primary)}{studio(secondary, 'Edit Site in Studio')}</>;
+                        }
+                        if (stage.primary === 'proposal') {
+                          return <>{proposal(primary)}{studio(secondary, 'Edit Site in Studio')}{access(secondary)}</>;
+                        }
+                        return <>{access(primary)}{studio(secondary, 'Edit Site in Studio')}</>;
+                      })()}
 
                       {/* Restored from the old Projects tab. Merging the two
                           views dropped these, and a client with a built site is

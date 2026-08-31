@@ -380,6 +380,12 @@ export default function App() {
               onProjectSettings={setSettingsProject}
               onProjectProposal={setProposalProject}
               onDeleteProject={handleDeleteProject}
+              onFindBusiness={() => setCurrentView('prospects')}
+              onEngagementChange={async (project, engagement) => {
+                const updated = { ...project, engagement };
+                await saveProject(updated);
+                setProjects(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+              }}
             />
           </main>
         ) : currentView === 'settings' ? (
