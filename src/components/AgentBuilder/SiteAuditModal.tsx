@@ -107,8 +107,8 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       status: 'fail',
       title: 'Incomplete Candidate / Entity Title',
       details: `Entity name "${name}" is too short or missing official ballot/business designation.`,
-      recommendation: 'Provide the full ballot name (e.g. "Ernest Trevino for Atascosa County Sheriff").',
-      canAutoFix: true,
+      recommendation: 'Provide the full ballot or registered business name.',
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         profile: { ...p.profile, name: 'Ernest Trevino for Atascosa County Sheriff' }
@@ -135,8 +135,8 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       status: 'warning',
       title: 'Placeholder or Missing Contact Information',
       details: `Current email (${email || 'None'}) or phone (${phone || 'None'}) contains demo placeholder domain.`,
-      recommendation: 'Update to an active public campaign inbox (e.g. trevinofortransparency@yahoo.com) and phone.',
-      canAutoFix: true,
+      recommendation: 'Update to an inbox and phone number the client actually monitors.',
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         profile: {
@@ -168,8 +168,8 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       status: 'warning',
       title: 'Vague Endorsements (Missing Concrete Numbers)',
       details: 'Endorsements lack specific verifiable career metrics, award names, or historical event citations.',
-      recommendation: 'Include specific numbers: years of service, Medal of Valor citations, warrant counts, and budget scale.',
-      canAutoFix: true,
+      recommendation: 'Ask the client for specific, checkable figures. Do not estimate them.',
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         testimonials: [
@@ -201,10 +201,10 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
         id: 'fact-treasurer',
         category: 'Fact-Checking & Credentials',
         status: 'warning',
-        title: 'Campaign Treasurer Disclosure (Joseph S. Boyle)',
+        title: 'Campaign Treasurer Disclosure',
         details: `Current campaign treasurer is unassigned or using demo placeholder (${treasurer || 'Marcus Sterling'}). Texas Election Code § 255.001 requires the official Campaign Treasurer to be cited in all legal advertising disclosures.`,
-        recommendation: 'Update legal disclosure to officially designated Campaign Treasurer: Joseph S. Boyle.',
-        canAutoFix: true,
+        recommendation: 'Name the officially designated campaign treasurer.',
+        canAutoFix: false,
         fixAction: (p) => ({
           ...p,
           profile: {
@@ -252,7 +252,7 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       title: 'Missing Hero / Candidate Portrait',
       details: 'No hero image path is specified, causing an empty image placeholder on public load.',
       recommendation: 'Assign high-resolution portrait or campaign hero photo.',
-      canAutoFix: true,
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         profile: { ...p.profile, heroImage: '/images/candidates/trevino.jpg' }
@@ -305,8 +305,8 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       status: 'warning',
       title: 'Insufficient Policy Pillars',
       details: `Found only ${servicesCount} pillars. High-converting platforms require at least 3 distinct focus areas.`,
-      recommendation: 'Add School Safety, Transparency, and Rural Property Crime interdiction.',
-      canAutoFix: true,
+      recommendation: "Add at least three distinct focus areas in the client's own words.",
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         services: [
@@ -340,7 +340,7 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
       title: 'Missing Custom SEO Meta Description',
       details: 'Meta description is using generic fallback. Custom description boosts Google click-through and search ranking.',
       recommendation: 'Inject geo-targeted keywords: "Ernest Trevino for Atascosa County Sheriff 2026, early voting, and platform priorities".',
-      canAutoFix: true,
+      canAutoFix: false,
       fixAction: (p) => ({
         ...p,
         seo: {
@@ -406,7 +406,28 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
     }, 2000);
   };
 
-  // 1-Click Fix single item
+  /**
+   * Auto-fix is DISABLED, and the fixActions below are dead.
+   *
+   * Every one of them wrote a single real candidate's data onto whatever client
+   * the audit was run against: his ballot name, his email and phone, his hero
+   * photograph, his campaign treasurer, his family's campaign pillars — and
+   * three testimonials from invented named people ("Captain Sarah Garza",
+   * "Lieutenant Hector Benavides") citing "1,473 felony suspect arrests",
+   * "$100 million in cartel seizures" and an "SAPD Medal of Valor", each
+   * flagged verified: true.
+   *
+   * So pressing 1-Click Fix on a hair salon turned her site into his campaign,
+   * complete with fabricated endorsements attributed to people who never said
+   * them. That is not a default that slipped through — it is a feature that
+   * fabricates on purpose, and it is the fifth and worst instance this week of
+   * plausible filler shipping as fact.
+   *
+   * An audit can tell you a field is empty. It cannot know what belongs in it.
+   * The findings and their recommendations stay; the writing stops. If auto-fix
+   * comes back it fixes structure — a missing alt attribute, a malformed link —
+   * never a claim about a business.
+   */
   const handleFixItem = (item: AuditItem) => {
     if (!item.fixAction || !onApplyFixes) return;
     const updated = item.fixAction(project);
@@ -432,8 +453,8 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-      <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl my-8 flex flex-col max-h-[88vh]">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
+      <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl my-auto py-0 flex flex-col max-h-[88vh]">
         
         {/* Modal Header */}
         <div className="p-5 border-b border-stone-800 flex items-center justify-between bg-stone-950/90">
