@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { apiJson } from '../api';
 import { AccessPanel } from './ClientAccess/AccessPanel';
 import { PortalLinkButton } from './PortalLinkButton';
+import { ServicesEditor, type EditableService } from './ServicesEditor';
 import { X, Loader2, UploadCloud, CheckCircle2, AlertTriangle, History } from 'lucide-react';
 
 /**
@@ -30,7 +31,10 @@ export interface ClientSettingsModalProps {
     portalToken?: string | null;
   };
   onClose: () => void;
-  /** Save a blueprint read back off the live site. Does not publish it. */
+  /**
+   * Save a changed blueprint. Never publishes — the operator publishes when
+   * they are ready, which is the whole distinction this panel exists to make.
+   */
   onRestore?: (blueprint: any) => void | Promise<void>;
 }
 
@@ -38,6 +42,12 @@ export function ClientSettingsModal({ project, onClose, onRestore }: ClientSetti
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [services, setServices] = useState<EditableService[]>(
+    Array.isArray(project.blueprint?.services) ? project.blueprint.services : []
+  );
+  const [servicesDirty, setServicesDirty] = useState(false);
+  const [savingServices, setSavingServices] = useState(false);
 
   const [liveUrl, setLiveUrl] = useState('');
   const [restoring, setRestoring] = useState(false);
@@ -101,6 +111,19 @@ export function ClientSettingsModal({ project, onClose, onRestore }: ClientSetti
       setError(e.message);
     } finally {
       setRestoring(false);
+    }
+  };
+
+  const saveServices = async () => {
+    setSavingServices(true);
+    setError(null);
+    try {
+      await onRestore?.({ ...(project.blueprint || {}), services });
+      setServicesDirty(false);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSavingServices(false);
     }
   };
 
@@ -168,6 +191,37 @@ export function ClientSettingsModal({ project, onClose, onRestore }: ClientSetti
             )}
 
             {error && <p className="text-sm text-red-400">{error}</p>}
+          </section>
+
+          <section className={card}>
+            <div>
+              <h3 className="font-bold text-stone-100">Services &amp; booking links</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                What customers see and act on. Give a service its own booking link and the visitor
+                lands on that service instead of a menu asking them to pick it again.
+              </p>
+            </div>
+
+            <ServicesEditor
+              services={services}
+              fallbackBookingUrl={profile.bookingUrl}
+              onChange={next => { setServices(next); setServicesDirty(true); }}
+            />
+
+            {servicesDirty && (
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={saveServices}
+                  disabled={savingServices}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-stone-800 border border-stone-700 text-stone-100 disabled:opacity-40"
+                >
+                  {savingServices && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                  Save services
+                </button>
+                <span className="text-xs text-stone-500">Saved changes go live when you publish.</span>
+              </div>
+            )}
           </section>
 
           <section className={card}>

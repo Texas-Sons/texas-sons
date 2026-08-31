@@ -11,6 +11,18 @@ export interface ServiceItem {
   duration?: string;
   icon?: string;
   highlight?: boolean;
+  /**
+   * Books this specific service, rather than dropping the visitor on a menu to
+   * find it again. Square Appointments gives a per-service link from its own
+   * dashboard; paste that here.
+   *
+   * Deliberately pasted rather than derived. Square's URL shape is theirs to
+   * change, and a link built from a guessed pattern fails as a booking page
+   * that will not load — which nobody notices until a customer gives up.
+   *
+   * Falls back to the business's general booking URL when absent.
+   */
+  bookingUrl?: string;
 }
 
 export interface TestimonialItem {

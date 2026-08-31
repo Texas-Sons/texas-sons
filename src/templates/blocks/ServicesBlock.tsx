@@ -111,13 +111,26 @@ export function ServicesBlock({
                 <span className="text-xs font-medium text-[color:var(--ts-muted)]">
                   {service.duration || (isCampaign ? 'Core Pillar' : 'Standard')}
                 </span>
-                <a
-                  href={ctaHref}
-                  className={`inline-flex items-center text-xs sm:text-sm font-semibold group-hover:translate-x-1 transition-transform whitespace-nowrap text-[color:var(--ts-accent)]`}
-                >
-                  <span>{finalCtaText}</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </a>
+                {(() => {
+                  // Straight to this service where we have a link for it. A
+                  // visitor who has already chosen "Balayage" should not be
+                  // handed a menu and asked to choose it again — every extra
+                  // step between deciding and booking loses some of them.
+                  const href = service.bookingUrl || ctaHref;
+                  const external = /^https?:\/\//i.test(href);
+                  return (
+                    <a
+                      href={href}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
+                      aria-label={`${finalCtaText}: ${service.title}`}
+                      className={`inline-flex items-center text-xs sm:text-sm font-semibold group-hover:translate-x-1 transition-transform whitespace-nowrap text-[color:var(--ts-accent)]`}
+                    >
+                      <span>{finalCtaText}</span>
+                      <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </a>
+                  );
+                })()}
               </div>
             </motion.div>
           ))}

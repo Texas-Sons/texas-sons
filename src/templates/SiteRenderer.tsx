@@ -178,6 +178,11 @@ export function SiteRenderer({
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+            ctaText={p.ctaText}
+            // Was never passed, so every service CTA fell back to '#contact' —
+            // scrolling a visitor who had already picked a service down to a
+            // generic form. Services with their own bookingUrl override this.
+            ctaHref={primaryCtaHref}
           />
         );
 

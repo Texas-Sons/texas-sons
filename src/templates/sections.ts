@@ -163,7 +163,18 @@ function tradesArchetype(): SiteSection[] {
   ];
 }
 
-/** Beauty & wellness. Booking-led, with the service menu and its pricing high up. */
+/**
+ * Beauty & wellness. Booking-led, with the service menu and its pricing high up.
+ *
+ * No embedded booking frame. It was here briefly, and the service menu turned
+ * out to be the better route: each service links straight to its own booking
+ * page, so a visitor who has chosen balayage is not handed a menu and asked to
+ * choose it again. An iframe below that menu duplicated the same flow a second
+ * time, further down, in a smaller box.
+ *
+ * 'squareBooking' still exists as a block. A blueprint can ask for it; nothing
+ * gets it by default.
+ */
 function beautyArchetype(): SiteSection[] {
   return [
     {
@@ -197,10 +208,6 @@ function beautyArchetype(): SiteSection[] {
     {
       kind: 'products',
       props: { title: 'Shop the Studio', subtitle: 'Take the salon home with you.' },
-    },
-    {
-      kind: 'squareBooking',
-      props: { title: 'Book Your Appointment', subtitle: 'Schedule your next visit.' },
     },
     {
       kind: 'booking',
