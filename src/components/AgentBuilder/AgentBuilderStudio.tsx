@@ -114,6 +114,14 @@ interface AgentState {
 
 export interface ProjectSnapshot {
   id: string;
+  /**
+   * The client_intakes row this was built from, when it came from an intake.
+   *
+   * Absent on projects created before 2026-08-30 and on anything started from
+   * scratch, so treat it as a hint rather than a guarantee — an intake and its
+   * project used to share nothing but a business name.
+   */
+  intakeId?: string;
   prompt: string;
   timestamp: string;
   profile: BusinessProfile;

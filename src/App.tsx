@@ -178,6 +178,14 @@ export default function App() {
   const handleLaunchStudioFromClient = (client: ClientIntake) => {
     const snapshot: ProjectSnapshot = {
       id: `prj-${Date.now()}`,
+      // Which intake this was built from. Nothing carried it over before, so an
+      // intake and the project made from it were two unrelated rows that only
+      // happened to share a business name — there was no way to show one client
+      // in one place, or to tell which submissions belong to a live site.
+      //
+      // Lives on the blueprint (jsonb) rather than a column, so no migration and
+      // no backfill. Projects created before today simply have no link.
+      intakeId: client.id,
       prompt: `Generated from Client Intake: ${client.businessName}`,
       timestamp: new Date().toLocaleTimeString(),
       profile: {
