@@ -24,6 +24,66 @@ interface BeforeAfterBlockProps {
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
   maxItems?: number;
+  /**
+   * 'slider'     — drag to wipe between the two. Right when the frames are
+   *                geometrically identical: a driveway, a room, teeth. The eye
+   *                tracks one thing changing in place and the wipe is the story.
+   * 'sideBySide' — both visible at once. Right when the shape itself changes.
+   *
+   * Hair is the second case. Colour changes the silhouette — length, volume,
+   * how it falls — so a wipe reads as two photographs fighting rather than one
+   * transformation, and the visitor can never see both states together, which
+   * is exactly what someone judging a colourist wants to do. They are comparing,
+   * not revealing.
+   */
+  layout?: 'slider' | 'sideBySide';
+}
+
+function SideBySide({ item }: { item: BeforeAfterItem }) {
+  const frame =
+    'relative flex-1 min-w-0 aspect-[4/5] overflow-hidden rounded-2xl border border-[color:var(--ts-border)] bg-[color:var(--ts-surface)]';
+  const tag =
+    'absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm';
+
+  return (
+    <figure className="w-full">
+      <div className="flex gap-2 sm:gap-3">
+        <div className={frame}>
+          <img
+            src={item.before}
+            alt={item.label ? `${item.label}, before` : 'Before'}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <span className={`${tag} bg-black/55 text-white`}>Before</span>
+        </div>
+        <div className={frame}>
+          <img
+            src={item.after}
+            alt={item.label ? `${item.label}, after` : 'After'}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <span className={`${tag} bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)]`}>
+            After
+          </span>
+        </div>
+      </div>
+
+      {(item.label || item.service) && (
+        <figcaption className="mt-3 flex items-baseline justify-between gap-3">
+          {item.label && (
+            <span className="text-sm font-bold text-[color:var(--ts-text)]">{item.label}</span>
+          )}
+          {item.service && (
+            <span className="text-xs text-[color:var(--ts-muted)]">{item.service}</span>
+          )}
+        </figcaption>
+      )}
+    </figure>
+  );
 }
 
 function Comparison({ item }: { item: BeforeAfterItem }) {
@@ -172,9 +232,10 @@ function Comparison({ item }: { item: BeforeAfterItem }) {
 
 export function BeforeAfterBlock({
   title = 'The Transformation',
-  subtitle = 'Drag to reveal.',
+  subtitle,
   items,
   maxItems = 6,
+  layout = 'slider',
 }: BeforeAfterBlockProps) {
   // Hook before any early return — see c53ae74.
   const reveal = useReveal();
@@ -182,6 +243,11 @@ export function BeforeAfterBlock({
   // A pair needs both halves; one alone is not a comparison.
   const pairs = (items || []).filter(i => i && i.before && i.after).slice(0, maxItems);
   if (pairs.length === 0) return null;
+
+  const sideBySide = layout === 'sideBySide';
+  // "Drag to reveal" is an instruction for a control that is not on the page in
+  // the side-by-side layout.
+  const displaySubtitle = subtitle ?? (sideBySide ? undefined : 'Drag to reveal.');
 
   return (
     <section
@@ -203,8 +269,8 @@ export function BeforeAfterBlock({
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3 font-[family-name:var(--ts-font-heading)]">
             {title}
           </h2>
-          {subtitle && (
-            <p className="text-sm sm:text-base text-[color:var(--ts-muted)]">{subtitle}</p>
+          {displaySubtitle && (
+            <p className="text-sm sm:text-base text-[color:var(--ts-muted)]">{displaySubtitle}</p>
           )}
         </motion.div>
 
@@ -215,7 +281,7 @@ export function BeforeAfterBlock({
         >
           {pairs.map((item, i) => (
             <motion.div key={`${item.label || 'pair'}-${i}`} variants={reveal.item}>
-              <Comparison item={item} />
+              {sideBySide ? <SideBySide item={item} /> : <Comparison item={item} />}
             </motion.div>
           ))}
         </motion.div>

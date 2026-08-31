@@ -208,6 +208,7 @@ export function SiteRenderer({
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+            layout={p.layout}
           />
         );
 

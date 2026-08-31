@@ -195,7 +195,10 @@ function beautyArchetype(): SiteSection[] {
     },
     {
       kind: 'beforeAfter',
-      props: { title: 'The Transformation', subtitle: 'Drag to reveal.' },
+      // Side by side, not a wipe. Hair changes the silhouette, so a slider
+      // reads as two photographs fighting and never shows both states at once —
+      // which is the one thing someone judging a colourist wants.
+      props: { title: 'The Transformation', layout: 'sideBySide' },
     },
     {
       kind: 'services',
