@@ -13,7 +13,7 @@ import Stripe from "stripe";
 import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { requireAdmin, isPublicApiPath, isClientApiPath } from './lib/auth';
+import { requireAdmin, isPublicApiPath, isClientApiPath, type AuthedRequest } from './lib/auth';
 import { isAllowedClientOrigin } from './lib/clientOrigins';
 import {
   requireClientMember, requireClientOwner, requireClientSession, type ClientRequest,
@@ -24,6 +24,7 @@ import {
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 import { blueprintWithClientMedia, type MediaKind } from './lib/clientMedia';
+import { stageOf } from './src/utils/clientStage';
 import { vaultContextFor } from './lib/vault';
 
 const TEMPLATES_ROOT = path.join(process.cwd(), 'public', 'templates');
@@ -2139,6 +2140,66 @@ ${text.trim()}`);
     return cachedContext;
   }
 
+  /**
+   * Where each client actually stands, for the assistant.
+   *
+   * It could talk about the business in general and knew nothing about any
+   * particular client, so "what should I work on" produced advice rather than
+   * answers. Everything needed was already computed for the Clients tab and
+   * simply never reached the model.
+   *
+   * Read fresh per request rather than cached. The whole value is that it is
+   * current, and a stale answer about which client has unpublished edits is
+   * worse than no answer at all.
+   */
+  async function loadClientContext(ownerId?: string): Promise<string> {
+    if (!ownerId) return '';
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('projects')
+        .select('company_name, status, engagement, published_at, updated_at, blueprint')
+        .eq('owner_id', ownerId)
+        .order('updated_at', { ascending: false })
+        .limit(40);
+      if (error || !data?.length) return '';
+
+      const lines = data.map((row: any) => {
+        const state = stageOf({
+          project: {
+            engagement: row.engagement === 'commissioned' ? 'commissioned' : 'demo',
+            publishedAt: row.published_at || undefined,
+            updatedAt: row.updated_at,
+            blueprint: row.blueprint,
+          },
+        });
+        const bits = [
+          '- ' + (row.company_name || 'Untitled'),
+          'stage: ' + state.stage,
+          'publish: ' + state.publish,
+          'status: ' + (row.status || 'unknown'),
+        ];
+        if (state.issues.length) {
+          bits.push(state.issues.length + ' issue(s): ' + state.issues.map(i => i.field).join(', '));
+        }
+        if (state.hasClaimIssues) bits.push('SAYS UNVERIFIED THINGS ABOUT THE BUSINESS');
+        return bits.join(' - ');
+      });
+
+      return [
+        '## His clients right now',
+        'Computed from the database on this request.',
+        'publish=stale means he has edited since publishing, so customers see an older site.',
+        'publish=never means nothing has been published through the recording path, and that',
+        "client's own photo uploads will not go live until he publishes once.",
+        '',
+      ].concat(lines).join(String.fromCharCode(10));
+    } catch (error: any) {
+      // The assistant should know less, never fail.
+      console.warn('[assistant] client context unavailable:', error?.message || error);
+      return '';
+    }
+  }
+
   app.get("/api/assistant/models", (_req, res) => {
     res.json({
       success: true,
@@ -2163,6 +2224,7 @@ ${text.trim()}`);
         .map((m: any) => ({ role: m.role, content: String(m.content).slice(0, 8000) }));
 
       const businessContext = await loadBusinessContext();
+      const clientContext = await loadClientContext((req as AuthedRequest).user?.id);
 
       // Vault retrieval keys off the latest question only. Scoring the whole
       // conversation drags in terms from three topics ago and reliably retrieves
@@ -2181,6 +2243,7 @@ ${text.trim()}`);
         '- When you recommend something, say what it would cost him in time and what it would change.',
         '',
         businessContext ? `## His operating manual\n${businessContext}` : '',
+        clientContext,
         vaultContext,
         stats
           ? `## Current pipeline (from his event log)\n${JSON.stringify(stats, null, 2)}`
