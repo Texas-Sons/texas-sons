@@ -8,6 +8,7 @@
 
 import { isBlockedAddress, safeFetchText } from '../lib/safeFetch';
 import { getAdminEmails, isPublicApiPath, isClientApiPath } from '../lib/auth';
+import { isAllowedClientOrigin } from '../lib/clientOrigins';
 import { resolveModel } from '../lib/models';
 
 let failures = 0;
@@ -249,6 +250,44 @@ if (serviceKey && serviceKey.length > 20) {
   }
 }
 
+
+// --- CORS origins ------------------------------------------------------------
+//
+// Deployed client sites are cross-origin to this server, so they need CORS to
+// post a lead at all. The allowlist is not a security boundary — curl ignores
+// CORS entirely and every client route still needs a Bearer token — but a
+// pattern that matches too much is still worth catching, because the classic
+// way an allowlist like this fails is a suffix test that forgets to anchor.
+
+const savedAppUrl = process.env.APP_URL;
+const savedOrigins = process.env.CLIENT_SITE_ORIGINS;
+process.env.APP_URL = 'https://texas-sons-production.up.railway.app';
+process.env.CLIENT_SITE_ORIGINS = 'https://opalescentcolorstudio.com';
+
+for (const o of [
+  'https://opalescent.pages.dev',
+  'https://some-site-abc123.pages.dev',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'https://texas-sons-production.up.railway.app',
+  'https://opalescentcolorstudio.com',
+]) check(`origin allowed: ${o}`, isAllowedClientOrigin(o), true);
+
+for (const o of [
+  'https://pages.dev.attacker.com',   // the anchoring bug this pattern exists to avoid
+  'https://evil.com',
+  'http://opalescent.pages.dev',      // http, not https
+  'https://opalescent.pages.dev.evil.com',
+  'https://notopalescentcolorstudio.com',
+  'null',                             // sandboxed iframe or file:// page
+  '*',
+  '',
+  undefined,
+]) check(`origin refused: ${String(o)}`, isAllowedClientOrigin(o), false);
+
+process.env.APP_URL = savedAppUrl;
+process.env.CLIENT_SITE_ORIGINS = savedOrigins;
+
 // --- Result ----------------------------------------------------------------
 
 if (failures > 0) {
@@ -260,5 +299,5 @@ console.log(
   `4 fetch refusals, 3 allowlist checks, ` +
   `${mustBePublic.length + mustBeGuarded.length} route-gate checks, ` +
   `${mustBeClientTier.length + mustNotBeClientTier.length} client-tier checks, ` +
-  `every /api/client route gated, .env.example clean`
+  `every /api/client route gated, 15 CORS origin checks, .env.example clean`
 );

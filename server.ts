@@ -14,6 +14,7 @@ import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath, isClientApiPath } from './lib/auth';
+import { isAllowedClientOrigin } from './lib/clientOrigins';
 import {
   requireClientMember, requireClientOwner, requireClientSession, type ClientRequest,
 } from './lib/clientAuth';
@@ -661,6 +662,32 @@ async function startServer() {
   // -------------------------------------------------------------------------
   // isPublicApiPath lives in lib/auth.ts so scripts/smoke-security.ts can assert
   // it in CI — notably that '/intake/' does not also open '/intake-link'.
+  // CORS for deployed client sites, which live on Cloudflare Pages and are
+  // therefore cross-origin to this server. Mounted before the auth gate so a
+  // preflight is answered rather than challenged for a token it cannot carry.
+  app.use('/api', (req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && isAllowedClientOrigin(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      // Vary matters here: without it a cache can hand one origin's allowance
+      // to another and produce failures nobody can reproduce.
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.setHeader('Access-Control-Max-Age', '600');
+      // Deliberately NOT Allow-Credentials. Sessions travel as Bearer tokens
+      // read from the page's own storage, so no cookie needs to cross origins,
+      // and allowing credentials would widen this for no gain.
+    }
+    if (req.method === 'OPTIONS') {
+      // An unallowed origin gets a preflight with no CORS headers, which the
+      // browser rejects. That is the correct outcome and needs no status of
+      // its own.
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
   app.use('/api', (req, res, next) => {
     if (req.method === 'OPTIONS') return next();
     if (isPublicApiPath(req.path)) return next();
@@ -1243,7 +1270,27 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     clientHtml = clientHtml.replace(/<title>[\s\S]*?<\/title>/i, '');
 
     const blueprintJson = JSON.stringify(blueprint).replace(/</g, '\\u003c');
-    const injection = `${buildSeoTags(blueprint, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};</script></head>`;
+
+    // Where this site's API lives.
+    //
+    // A deployed site is static files on Cloudflare Pages, so a relative
+    // /api/lead resolves to the Pages host, where no such route exists. Every
+    // lead form on every deployed site was posting into nothing — and the form
+    // still showed its success state, because the failure happened after the
+    // component had congratulated the visitor.
+    //
+    // Injected rather than baked into the bundle at build time so one build
+    // serves local development and production without a rebuild.
+    const apiBase = (process.env.APP_URL || '').replace(/\/+$/, '');
+    if (!apiBase) {
+      // Not fatal — the site still renders, and a same-origin fallback is
+      // correct in local development. Loud, because on a real deploy it means
+      // the lead form is silently inert.
+      console.warn('[deploy] APP_URL is not set — the deployed site will post leads to itself and lose them.');
+    }
+    const apiJson = JSON.stringify(apiBase).replace(/</g, '\\u003c');
+
+    const injection = `${buildSeoTags(blueprint, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};window.__TXSONS_API__ = ${apiJson};</script></head>`;
     const finalHtml = clientHtml.replace('</head>', injection);
 
     const files: Record<string, string | Buffer> = {

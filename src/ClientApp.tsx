@@ -97,7 +97,11 @@ export function ClientApp() {
   const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {
-    const res = await fetch("/api/lead", {
+    // Absolute when the deploy injected a base, relative in local development.
+    // A relative path on a deployed site resolves to the Cloudflare Pages host,
+    // which has no API — see the injection in publishBlueprint.
+    const apiBase = (window as any).__TXSONS_API__ || '';
+    const res = await fetch(apiBase + "/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
