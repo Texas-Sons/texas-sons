@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
-  Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon,
+  Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon, User as UserIcon,
   Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal,
   LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2
 } from 'lucide-react';
@@ -127,6 +127,9 @@ export interface InstantFormData {
   address: string;
   hours: string;
   heroImage: string;
+  ownerPhoto: string;
+  ownerName: string;
+  ownerRole: string;
   theme: ProjectSnapshot['theme'];
   primaryColor: string;
   accentColor: string;
@@ -150,6 +153,9 @@ const DEFAULT_FORM: InstantFormData = {
   description: 'Protecting rural Texas landowners, enhancing county deputy patrols, and maintaining strict fiscal transparency.',
   phone: '(830) 555-VOTE', email: 'campaign@trevinoforsheriff.com', address: 'Jourdanton, TX 78026', hours: 'Mon – Sat: 8AM – 6PM', 
   heroImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80',
+  ownerPhoto: '',
+  ownerName: '',
+  ownerRole: '',
   theme: 'campaign-navy', primaryColor: '#00081e', accentColor: '#C5A059',
   treasurerName: 'Joseph S. Boyle, CPA', heroVariant: 'split',
   selectedArchetype: 'civic',
@@ -177,6 +183,9 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     address: snap.profile.address || '',
     hours: Array.isArray(snap.profile.hours) ? snap.profile.hours.join(', ') : (snap.profile.hours || ''),
     heroImage: snap.profile.heroImage || '',
+    ownerPhoto: snap.profile.ownerPhoto || '',
+    ownerName: snap.profile.ownerName || '',
+    ownerRole: snap.profile.ownerRole || '',
     theme: snap.theme || 'campaign-navy',
     primaryColor: snap.profile.primaryColor || '#00081e',
     accentColor: snap.profile.accentColor || '#C5A059',
@@ -232,6 +241,9 @@ function buildSnapshot(form: InstantFormData): Omit<ProjectSnapshot, 'id' | 'pro
     address: form.address,
     hours: form.hours,
     heroImage: form.heroImage,
+    ownerPhoto: form.ownerPhoto,
+    ownerName: form.ownerName,
+    ownerRole: form.ownerRole,
     category: form.category,
     theme: form.theme,
     primaryColor: form.primaryColor,
@@ -640,6 +652,43 @@ export default function BlueprintFormPanel({
             onChange={v => set('heroImage', v)} 
             icon={ImageIcon}
           />
+
+          {/* The card over the hero image.
+            *
+            * These three fields existed on the blueprint and in HeroBlock with
+            * nowhere to enter them, so the card they drive could not actually be
+            * turned on. They replaced a hardcoded "Top Rated Service · 100%
+            * Guaranteed · Verified" badge that was true of nobody; with a name
+            * and a photo it is true of exactly one person, which is the point.
+            *
+            * Leave them empty and no card is drawn. An image with no badge looks
+            * finished; an invented badge does not. */}
+          <InputField 
+            label="Owner / Stylist Photo URL" 
+            id="ownerPhoto" 
+            placeholder="https://... (shown on the hero card)" 
+            value={form.ownerPhoto} 
+            onChange={v => set('ownerPhoto', v)} 
+            icon={ImageIcon}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <InputField 
+              label="Owner / Stylist Name" 
+              id="ownerName" 
+              placeholder="Annie Selph" 
+              value={form.ownerName} 
+              onChange={v => set('ownerName', v)} 
+              icon={UserIcon}
+            />
+            <InputField 
+              label="Their Title" 
+              id="ownerRole" 
+              placeholder="Owner & Master Colorist" 
+              value={form.ownerRole} 
+              onChange={v => set('ownerRole', v)} 
+              icon={UserIcon}
+            />
+          </div>
           {isCampaign && (
             <InputField 
               label="Campaign Treasurer Name" 

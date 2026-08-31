@@ -84,6 +84,25 @@ export interface BusinessProfile {
   logoUrl?: string;
   heroImage?: string;
   /**
+   * The person, for the card over the hero image.
+   *
+   * These replaced a hardcoded "Top Rated Service · Fast Response · 100%
+   * Guaranteed · Verified" badge that was rendered on every non-campaign site
+   * and was true of nobody in particular. A name and a face are true of exactly
+   * one person, which is the whole difference — and for a salon it is also the
+   * better sell, since choosing a colourist is choosing a person.
+   *
+   * All optional. With no name the card is not drawn at all: an image with no
+   * badge looks finished, an invented badge does not.
+   */
+  ownerPhoto?: string;
+  ownerName?: string;
+  /** e.g. "Owner & Master Colorist". Defaults to "Owner" when a name is set. */
+  ownerRole?: string;
+  /** Real review data only, never a default — see HeroBlock. */
+  rating?: number;
+  reviewCount?: number;
+  /**
    * Additional real photos of the business, from Google Places or a client
    * upload. Carried on the blueprint so the data survives; no block renders a
    * gallery yet.
