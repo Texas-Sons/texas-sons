@@ -57,6 +57,10 @@ interface ClientIntakeViewProps {
   onOpenProject?: (project: any) => void;
   /** Open the client-access and publishing panel for a built site. */
   onProjectSettings?: (project: any) => void;
+  /** Open proposals and contracts for a built site. */
+  onProjectProposal?: (project: any) => void;
+  /** Delete the built site. Distinct from deleting the dossier. */
+  onDeleteProject?: (projectId: string) => void;
 }
 
 const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
@@ -254,7 +258,7 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings }: ClientIntakeViewProps) {
+export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings, onProjectProposal, onDeleteProject }: ClientIntakeViewProps) {
   // Paint from cache immediately, then reconcile with Supabase.
   const [submissions, setSubmissions] = useState<IntakeSubmission[]>([]);
   const [shareLinkLoading, setShareLinkLoading] = useState(false);
@@ -821,6 +825,49 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         <Users className="w-3.5 h-3.5" />
                         <span>Client access &amp; publish</span>
                       </button>
+
+                      {/* Restored from the old Projects tab. Merging the two
+                          views dropped these, and a client with a built site is
+                          exactly the client you need to invoice and send a
+                          contract to. */}
+                      <div className="grid grid-cols-4 gap-1.5 mt-1.5">
+                        <button
+                          onClick={() => onProjectProposal?.(project)}
+                          title="Proposal & contracts"
+                          className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-[#C5A059] text-xs flex items-center justify-center transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => onInvoiceClient(client)}
+                          title="Create deposit invoice"
+                          className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-emerald-400 text-xs flex items-center justify-center transition-colors"
+                        >
+                          <Receipt className="w-3.5 h-3.5" />
+                        </button>
+                        {project.domain ? (
+                          <a
+                            href={project.domain}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="View live site"
+                            className="py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-blue-400 text-xs flex items-center justify-center transition-colors"
+                          >
+                            <Globe className="w-3.5 h-3.5" />
+                          </a>
+                        ) : <span />}
+                        <button
+                          onClick={() => {
+                            if (confirm('Delete this SITE? The client dossier stays. This does not take the live site down — remove it in Cloudflare.')) {
+                              onDeleteProject?.(project.id);
+                            }
+                          }}
+                          title="Delete site record"
+                          className="py-2 rounded-xl bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-500 hover:text-red-400 text-xs flex items-center justify-center transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </>
                   ) : (
                     <button

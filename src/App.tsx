@@ -11,6 +11,7 @@ import ProspectsView from './components/ProspectsView';
 import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/AgentBuilderStudio';
 import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
 import { ClientSettingsModal } from './components/ClientSettingsModal';
+import { ProjectProposalModal } from './components/ProjectProposalModal';
 import SettingsView from './components/SettingsView';
 import InsightsView from './components/InsightsView';
 import AssistantPanel from './components/AssistantPanel';
@@ -76,6 +77,7 @@ export default function App() {
 
   const [selectedClientSnapshot, setSelectedClientSnapshot] = useState<ProjectSnapshot | null>(null);
   const [settingsProject, setSettingsProject] = useState<Project | null>(null);
+  const [proposalProject, setProposalProject] = useState<Project | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -376,6 +378,8 @@ export default function App() {
               projects={projects}
               onOpenProject={handleEditProject}
               onProjectSettings={setSettingsProject}
+              onProjectProposal={setProposalProject}
+              onDeleteProject={handleDeleteProject}
             />
           </main>
         ) : currentView === 'settings' ? (
@@ -477,6 +481,21 @@ export default function App() {
           projects={projects}
           onClose={() => setIsGeneratingInvoice(false)}
           onGenerate={handleGenerateInvoice}
+        />
+      )}
+
+      {proposalProject && (
+        <ProjectProposalModal
+          isOpen={Boolean(proposalProject)}
+          onClose={() => setProposalProject(null)}
+          project={proposalProject}
+          snapshot={proposalProject.blueprint}
+          onSaveProject={async (updated) => {
+            await saveProject(updated);
+            setProjects(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+            setProposalProject(null);
+          }}
+          onLaunchStudio={(p) => { setProposalProject(null); handleEditProject(p as Project); }}
         />
       )}
 
