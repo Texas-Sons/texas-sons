@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, ExternalLink, Wand2, Trash2, FileText, FileCheck, Search, Folders, Globe } from 'lucide-react';
+import { Plus, ExternalLink, Wand2, Trash2, FileText, FileCheck, Search, Folders, Globe, Users } from 'lucide-react';
 import { Project, Status, Tier } from '../types';
 import { ProjectProposalModal } from './ProjectProposalModal';
-import { PortalLinkButton } from './PortalLinkButton';
+import { ClientSettingsModal } from './ClientSettingsModal';
 
 interface ProjectListProps {
   projects: Project[];
@@ -16,6 +16,7 @@ type FilterState = 'all' | 'live' | 'active' | 'draft';
 
 export default function ProjectList({ projects, onNewProject, onEditProject, onDeleteProject, onSaveProject }: ProjectListProps) {
   const [selectedProjectForModal, setSelectedProjectForModal] = useState<Project | null>(null);
+  const [settingsProject, setSettingsProject] = useState<Project | null>(null);
   const [filter, setFilter] = useState<FilterState>('all');
   const [search, setSearch] = useState('');
 
@@ -167,10 +168,13 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
                     <Wand2 className="w-3.5 h-3.5" />Studio
                   </button>
                 )}
-                <PortalLinkButton
-                  projectId={project.id}
-                  token={(project as any).portalToken}
-                />
+                <button
+                  onClick={() => setSettingsProject(project)}
+                  title="Photo link, dashboard access, and publishing"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-stone-300 bg-stone-800 hover:bg-stone-700 border border-stone-700 rounded-lg transition-all cursor-pointer active:scale-95"
+                >
+                  <Users className="w-3.5 h-3.5" />Client
+                </button>
                 {project.domain && (
                   <a
                     href={project.domain}
@@ -198,6 +202,13 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
             </div>
           ))}
         </div>
+      )}
+
+      {settingsProject && (
+        <ClientSettingsModal
+          project={settingsProject as any}
+          onClose={() => setSettingsProject(null)}
+        />
       )}
 
       {/* Project Proposal & Details Modal */}

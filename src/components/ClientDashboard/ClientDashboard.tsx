@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../supabase';
+import { apiJson } from '../../api';
 import { MediaManager, type MediaApi, type MediaKind } from '../ClientPortal/MediaManager';
+import { AccessPanel } from '../ClientAccess/AccessPanel';
 import TexasSonsLogo from '../TexasSonsLogo';
 import {
-  Loader2, AlertCircle, LogOut, Images, Globe, Users, Trash2, Plus, ExternalLink,
+  Loader2, AlertCircle, LogOut, Images, Globe, Users, ExternalLink,
 } from 'lucide-react';
 
 /**
@@ -37,32 +39,7 @@ interface SiteInfo {
   services?: Array<{ title?: string; price?: string; description?: string }>;
 }
 
-interface Person {
-  id: string;
-  email: string;
-  role: 'owner' | 'member';
-  last_seen_at?: string | null;
-}
-
 type Tab = 'photos' | 'site' | 'access';
-
-/** fetch() with the current Supabase session attached. */
-async function authFetch(input: string, init: RequestInit = {}) {
-  const { data } = await supabase.auth.getSession();
-  const headers = new Headers(init.headers);
-  const token = data.session?.access_token;
-  if (token) headers.set('Authorization', `Bearer ${token}`);
-  return fetch(input, { ...init, headers });
-}
-
-async function authJson<T = any>(input: string, init: RequestInit = {}): Promise<T> {
-  const res = await authFetch(input, init);
-  const json = await res.json().catch(() => ({} as any));
-  if (!res.ok || json?.success === false) {
-    throw new Error(json?.error || `Request failed (${res.status})`);
-  }
-  return json as T;
-}
 
 export default function ClientDashboard() {
   const [session, setSession] = useState<any>(null);
@@ -86,7 +63,7 @@ export default function ClientDashboard() {
   useEffect(() => {
     if (!session) { setProjects(null); return; }
     let live = true;
-    authJson<{ projects: ClientProject[] }>('/api/client/projects')
+    apiJson<{ projects: ClientProject[] }>('/api/client/projects')
       .then(data => {
         if (!live) return;
         setProjects(data.projects);
@@ -104,15 +81,15 @@ export default function ClientDashboard() {
   const api = useMemo<MediaApi>(() => {
     const base = '/api/client/' + encodeURIComponent(activeId || '');
     return {
-      list: async () => (await authJson(base + '/media')).media || [],
+      list: async () => (await apiJson(base + '/media')).media || [],
       add: async (kind: MediaKind, data, sortOrder) =>
-        (await authJson(base + '/media', {
+        (await apiJson(base + '/media', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ kind, data, sortOrder }),
         })).id,
       remove: async (id: string) => {
-        await authJson(base + '/media/' + encodeURIComponent(id), { method: 'DELETE' });
+        await apiJson(base + '/media/' + encodeURIComponent(id), { method: 'DELETE' });
       },
     };
   }, [activeId]);
@@ -291,7 +268,7 @@ function SitePanel({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     let live = true;
-    authJson<{ site: SiteInfo }>('/api/client/' + encodeURIComponent(projectId) + '/site')
+    apiJson<{ site: SiteInfo }>('/api/client/' + encodeURIComponent(projectId) + '/site')
       .then(d => { if (live) setSite(d.site); })
       .catch(e => { if (live) setError(e.message); });
     return () => { live = false; };
@@ -356,131 +333,6 @@ function SitePanel({ projectId }: { projectId: string }) {
           </p>
         </section>
       )}
-    </div>
-  );
-}
-
-/** Who else may manage this salon's content. Owners only — the tab is hidden otherwise. */
-function AccessPanel({ projectId }: { projectId: string }) {
-  const [people, setPeople] = useState<Person[] | null>(null);
-  const [you, setYou] = useState('');
-  const [email, setEmail] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const base = '/api/client/' + encodeURIComponent(projectId) + '/access';
-
-  const load = useCallback(async () => {
-    try {
-      const d = await authJson<{ people: Person[]; you: string }>(base);
-      setPeople(d.people);
-      setYou(d.you);
-    } catch (e: any) {
-      setError(e.message);
-    }
-  }, [base]);
-
-  useEffect(() => { load(); }, [load]);
-
-  const add = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      await authJson(base, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, role: 'member' }),
-      });
-      setEmail('');
-      await load();
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const revoke = async (person: Person) => {
-    if (!confirm(`Remove ${person.email}? They will not be able to add or change photos.`)) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await authJson(base + '/' + encodeURIComponent(person.id), { method: 'DELETE' });
-      await load();
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      {error && (
-        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {error}
-        </div>
-      )}
-
-      <section className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 space-y-4">
-        <div>
-          <h2 className="font-bold">Who can manage your photos</h2>
-          <p className="text-xs text-stone-500 mt-1">
-            Add a stylist by the email address of their Google account. They get access as soon as
-            they sign in — there is no invitation to accept.
-          </p>
-        </div>
-
-        {people === null ? (
-          <p className="text-sm text-stone-500">Loading…</p>
-        ) : people.length === 0 ? (
-          <p className="text-sm text-stone-500">Only you, so far.</p>
-        ) : (
-          <ul className="divide-y divide-stone-800/70">
-            {people.map(p => (
-              <li key={p.id} className="py-3 flex items-center gap-3 text-sm">
-                <div className="flex-1 min-w-0">
-                  <p className="text-stone-200 truncate">{p.email}</p>
-                  <p className="text-xs text-stone-600">
-                    {p.role === 'owner' ? 'Owner' : 'Can manage photos'}
-                    {!p.last_seen_at && ' · has not signed in yet'}
-                  </p>
-                </div>
-                {p.email.toLowerCase() !== you.toLowerCase() && (
-                  <button
-                    type="button"
-                    onClick={() => revoke(p)}
-                    disabled={busy}
-                    aria-label={'Remove ' + p.email}
-                    className="p-2 text-stone-500 hover:text-red-400 disabled:opacity-40"
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="flex flex-wrap gap-3">
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="stylist@gmail.com"
-            className="flex-1 min-w-[200px] px-4 py-3 rounded-xl bg-stone-950 border border-stone-800 text-sm text-stone-100 placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/60"
-          />
-          <button
-            type="button"
-            onClick={add}
-            disabled={busy || !email.includes('@')}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold bg-amber-500 text-stone-950 disabled:opacity-40"
-          >
-            <Plus className="w-4 h-4" aria-hidden="true" />
-            Add
-          </button>
-        </div>
-      </section>
     </div>
   );
 }
