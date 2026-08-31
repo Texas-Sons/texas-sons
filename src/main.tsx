@@ -3,13 +3,19 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import IntakePortal from './components/IntakePortal/IntakePortal.tsx';
 import ClientPortal from './components/ClientPortal/ClientPortal.tsx';
+import ClientDashboard from './components/ClientDashboard/ClientDashboard.tsx';
 import './index.css';
 
-// Two client-facing surfaces, both reached by an unguessable token and neither
-// requiring an account:
+// Three client-facing surfaces. Everything else is the operator's admin app.
+//
 //   /intake/<token>  filled in once, before the site is built
-//   /portal/<token>  permanent — how she keeps her own portfolio current
-// Everything else is the operator's admin app.
+//   /portal/<token>  permanent, no account — works the minute the link is sent
+//   /dashboard       signed in with Google; the only one that can grant a
+//                    stylist access and revoke it again
+//
+// The token portal and the dashboard edit the same content through the same
+// component and differ only in how a request is authenticated. Keeping both is
+// deliberate: the link asks nothing of a client who will never make an account.
 const path = window.location.pathname;
 
 createRoot(document.getElementById('root')!).render(
@@ -18,6 +24,8 @@ createRoot(document.getElementById('root')!).render(
       <IntakePortal />
     ) : path.startsWith('/portal/') ? (
       <ClientPortal />
+    ) : path.startsWith('/dashboard') ? (
+      <ClientDashboard />
     ) : (
       <App />
     )}
