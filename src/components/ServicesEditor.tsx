@@ -1,5 +1,7 @@
 import React from 'react';
-import { Plus, Trash2, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, ChevronUp, ChevronDown, ScanLine, Loader2 } from 'lucide-react';
+import { apiJson } from '../api';
+import { resizeImage } from './IntakePortal/imageUtils';
 
 /**
  * Edits the service menu and its per-service booking links.
@@ -35,6 +37,48 @@ export interface ServicesEditorProps {
 }
 
 export function ServicesEditor({ services, onChange, fallbackBookingUrl }: ServicesEditorProps) {
+  const [scanning, setScanning] = React.useState(false);
+  const [scanError, setScanError] = React.useState<string | null>(null);
+
+  /**
+   * Reads a screenshot of a price list and appends what it finds.
+   *
+   * Appends rather than replaces: an operator who has already typed six
+   * services and scans a photo of the other three should not lose the six. The
+   * model reads prices and durations verbatim and is told not to invent one for
+   * a service that does not list it, so a blank field is a real blank.
+   *
+   * Booking links are never extracted — a URL cannot be read off a screenshot,
+   * and a guessed one is a booking page that will not load.
+   */
+  const scan = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? ([] as unknown as FileList)).slice(0, 4) as File[];
+    e.target.value = '';
+    if (!files.length) return;
+
+    setScanning(true);
+    setScanError(null);
+    try {
+      const images = await Promise.all(
+        files.map(async file => ({ data: await resizeImage(file, 2000), mimeType: 'image/jpeg' }))
+      );
+      const res = await apiJson<{ services: EditableService[] }>('/api/extract-services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images }),
+      });
+      if (!res.services?.length) {
+        setScanError('No services were readable in that image. A clearer or closer screenshot usually fixes it.');
+        return;
+      }
+      onChange([...services, ...res.services]);
+    } catch (err: any) {
+      setScanError(err.message);
+    } finally {
+      setScanning(false);
+    }
+  };
+
   const update = (i: number, patch: Partial<EditableService>) => {
     onChange(services.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   };
@@ -106,13 +150,25 @@ export function ServicesEditor({ services, onChange, fallbackBookingUrl }: Servi
             </button>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div className="grid grid-cols-[1fr_7rem] gap-2">
             <input
               value={service.description || ''}
               onChange={e => update(i, { description: e.target.value })}
-              placeholder="Full head · 180 min"
+              placeholder="What it includes"
               className={field}
             />
+            {/* Its own field. It was in the type and had no input, so the only
+                way to show a duration was to bury it in the description. */}
+            <input
+              value={service.duration || ''}
+              onChange={e => update(i, { duration: e.target.value })}
+              placeholder="90 min"
+              className={field}
+            />
+          </div>
+
+          <div className="grid grid-cols-[1fr_auto] gap-2">
+            <span />
             <label className="flex items-center gap-1.5 px-3 rounded-lg border border-stone-800 text-[11px] text-stone-400 cursor-pointer whitespace-nowrap">
               <input
                 type="checkbox"
@@ -147,14 +203,26 @@ export function ServicesEditor({ services, onChange, fallbackBookingUrl }: Servi
         </div>
       ))}
 
-      <button
-        type="button"
-        onClick={() => onChange([...services, { title: '', description: '', price: '' }])}
-        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-700 text-sm font-bold text-stone-300 hover:bg-stone-900"
-      >
-        <Plus className="w-4 h-4" aria-hidden="true" />
-        Add a service
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onChange([...services, { title: '', description: '', price: '' }])}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-700 text-sm font-bold text-stone-300 hover:bg-stone-900"
+        >
+          <Plus className="w-4 h-4" aria-hidden="true" />
+          Add a service
+        </button>
+
+        <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-700 text-sm font-bold text-stone-300 hover:bg-stone-900 cursor-pointer">
+          {scanning
+            ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+            : <ScanLine className="w-4 h-4" aria-hidden="true" />}
+          {scanning ? 'Reading…' : 'Read from a screenshot'}
+          <input type="file" accept="image/*" multiple className="hidden" onChange={scan} />
+        </label>
+      </div>
+
+      {scanError && <p className="text-xs text-red-400">{scanError}</p>}
 
       <p className="text-xs text-stone-600">
         Without its own link, a service sends the visitor to the general booking page

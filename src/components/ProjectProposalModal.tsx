@@ -75,12 +75,20 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extract initial project details
-  const initialName = project?.companyName || snapshot?.profile?.name || 'Ernest Trevino for Atascosa County Sheriff';
-  const initialClient = project?.clientName || snapshot?.profile?.name || 'Ernest Trevino';
-  const initialEmail = snapshot?.profile?.email || project?.blueprint?.profile?.email || 'trevinofortransparency@yahoo.com';
-  const initialPhone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '(830) 555-VOTE';
-  const initialAddress = snapshot?.profile?.address || project?.blueprint?.profile?.address || 'Jourdanton, TX 78026';
-  const initialDomain = project?.domain || `https://${initialName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
+  // Empty rather than a real person's details.
+  //
+  // These fell back to a specific sheriff candidate — his name, his yahoo
+  // address, his town. Any client with a field missing inherited them, so a
+  // salon could open this form and find another client's contact details
+  // prefilled in it, ready to be saved. An empty field says "fill me in"; a
+  // populated one says "this is right".
+  const initialName = project?.companyName || snapshot?.profile?.name || '';
+  const initialClient = project?.clientName || snapshot?.profile?.name || '';
+  const initialEmail = snapshot?.profile?.email || project?.blueprint?.profile?.email || '';
+  const initialPhone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '';
+  const initialAddress = snapshot?.profile?.address || project?.blueprint?.profile?.address || '';
+  const initialDomain = project?.domain
+    || (initialName ? `https://${initialName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev` : '');
   const isCampaign = initialName.toLowerCase().includes('sheriff') || 
                      initialName.toLowerCase().includes('judge') || 
                      initialName.toLowerCase().includes('campaign') ||
@@ -97,12 +105,14 @@ export const ProjectProposalModal: React.FC<ProjectProposalModalProps> = ({
     domain: initialDomain,
     status: (project?.status || 'QA & Staging') as Status,
     tier: (project?.tier || 'Lead Generation Site') as Tier,
-    tagline: snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || 'Honest Leadership. Safer Communities. Stronger Atascosa County.',
-    treasurer: snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || 'Joseph S. Boyle'
+    tagline: snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || '',
+    // No default. It used to be a real candidate's treasurer, so every client
+    // of every kind started with one man's name in a legal disclosure field.
+    treasurer: snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || ''
   });
 
   // Proposal Generator state
-  const [recipientName, setRecipientName] = useState(initialClient || 'Ernest Trevino for Atascosa County Sheriff');
+  const [recipientName, setRecipientName] = useState(initialClient);
   const [recipientEmail, setRecipientEmail] = useState(initialEmail || '');
   const [customNotes, setCustomNotes] = useState('');
   const [subject, setSubject] = useState(`Website Demo & Digital Platform Preview for ${initialName}`);
@@ -1266,18 +1276,25 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-stone-400 mb-1">
-                    Campaign Treasurer
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.treasurer}
-                    onChange={(e) => setEditForm({ ...editForm, treasurer: e.target.value })}
-                    placeholder="Joseph S. Boyle"
-                    className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
-                  />
-                </div>
+                {/* Campaign-only. A treasurer is a Texas Election Code
+                    requirement for political advertising and means nothing to a
+                    salon — asking a hair studio to name one, prefilled with a
+                    real candidate's treasurer, reads as a form built for
+                    somebody else and shown to them by mistake. */}
+                {isCampaign && (
+                  <div>
+                    <label className="block text-xs font-semibold text-stone-400 mb-1">
+                      Campaign Treasurer
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.treasurer}
+                      onChange={(e) => setEditForm({ ...editForm, treasurer: e.target.value })}
+                      placeholder="Required for political advertising"
+                      className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1294,7 +1311,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-stone-400 mb-1">
-                    Campaign / Business Address
+                    {isCampaign ? 'Campaign Address' : 'Business Address'}
                   </label>
                   <input
                     type="text"
@@ -1308,7 +1325,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
 
               <div>
                 <label className="block text-xs font-semibold text-stone-400 mb-1">
-                  Tagline / Campaign Motto
+                  {isCampaign ? 'Campaign Motto' : 'Tagline'}
                 </label>
                 <input
                   type="text"

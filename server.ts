@@ -1745,6 +1745,76 @@ Draft a short, persuasive email proposal recommending we build them a modern web
   });
 
   // Multimodal AI Photo / Menu / Flyer Extraction Route
+  /**
+   * Reads a service menu out of a screenshot.
+   *
+   * Retyping nine services with prices and durations off a Square booking page
+   * is the kind of work that gets done badly at 11pm, and a mistyped price is a
+   * number a customer acts on. A screenshot is what the operator already has.
+   *
+   * Booking links are deliberately NOT guessed from the image. A URL cannot be
+   * read off a screenshot, and inventing one produces a booking page that will
+   * not load — a failure nobody notices until a customer gives up. Those stay
+   * hand-pasted from Square's own dashboard.
+   */
+  app.post("/api/extract-services", async (req, res) => {
+    try {
+      const { images } = req.body || {};
+      if (!Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({ success: false, error: "At least one image is required" });
+      }
+
+      const parts: any[] = [];
+      for (const img of images.slice(0, 4)) {
+        if (!img?.data) continue;
+        const cleanBase64 = img.data.includes('base64,') ? img.data.split('base64,')[1] : img.data;
+        parts.push({ inlineData: { data: cleanBase64, mimeType: img.mimeType || 'image/jpeg' } });
+      }
+      if (parts.length === 0) {
+        return res.status(400).json({ success: false, error: "No readable image data was supplied." });
+      }
+
+      parts.push({
+        text: [
+          'Read the service menu in these images and return the services exactly as printed.',
+          '',
+          'Return ONLY a JSON array, no markdown fences and no commentary:',
+          '[{ "title": "", "price": "", "duration": "", "description": "" }]',
+          '',
+          'Rules:',
+          '- Copy prices and durations VERBATIM, including symbols and qualifiers:',
+          '  "$350+", "From $220", "Custom", "Enquire", "90 min", "1 hr 30 min".',
+          '- Do not convert, round, normalise or tidy a price or a duration. These',
+          '  are numbers a customer will act on and a guess is worse than a blank.',
+          '- Leave a field as an empty string when the image does not show it.',
+          '  Never infer a plausible price for a service that does not list one.',
+          '- description: only text actually shown for that service. Do not write',
+          '  marketing copy.',
+          '- Ignore navigation, headings, staff names, reviews and totals.',
+        ].join(String.fromCharCode(10)),
+      });
+
+      const response = await callModel({ task: 'extract-services', parts });
+      const parsed = parseModelJson<any>(response);
+      const rows = Array.isArray(parsed) ? parsed : (parsed?.services || []);
+
+      const services = rows
+        .filter((r: any) => r && typeof r.title === 'string' && r.title.trim())
+        .slice(0, 40)
+        .map((r: any) => ({
+          title: String(r.title).trim(),
+          price: typeof r.price === 'string' ? r.price.trim() : '',
+          duration: typeof r.duration === 'string' ? r.duration.trim() : '',
+          description: typeof r.description === 'string' ? r.description.trim() : '',
+        }));
+
+      res.json({ success: true, services });
+    } catch (error: any) {
+      console.error('[extract-services] failed:', error?.message || error);
+      res.status(500).json({ success: false, error: error?.message || 'Could not read that image.' });
+    }
+  });
+
   app.post("/api/extract-dossier", async (req, res) => {
     try {
       const { images, contextHint } = req.body;

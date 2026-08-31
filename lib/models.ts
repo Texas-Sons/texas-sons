@@ -18,6 +18,7 @@
 
 export type TaskName =
   | 'extract-dossier'   // photos -> client dossier (MULTIMODAL — Gemini only)
+  | 'extract-services'  // a screenshot of a price list -> services (MULTIMODAL)
   | 'scrape-extract'    // page text -> JSON
   | 'generate-config'   // business profile -> template tokens
   | 'draft-proposal'
@@ -48,6 +49,11 @@ const DEFAULT_TASK_MODELS: Record<TaskName, ModelConfig> = {
     provider: 'gemini',
     model: 'gemini-3.6-flash',
     why: 'Multimodal. DeepSeek text models cannot read photos at all.',
+  },
+  'extract-services': {
+    provider: 'gemini',
+    model: 'gemini-3.6-flash',
+    why: 'Multimodal. Reads a screenshot of a booking page or printed price list.',
   },
   'scrape-extract': {
     provider: 'gemini',
