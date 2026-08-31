@@ -45,9 +45,8 @@ export default function Sidebar({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'agent-builder', label: '1-Click Studio', icon: Zap, highlight: true },
     { id: 'insights', label: 'Insights', icon: TrendingUp },
-    { id: 'projects', label: 'Projects', icon: Folders },
     { id: 'prospects', label: 'Lead Finder', icon: Target },
-    { id: 'clients', label: 'Client Intake', icon: Users },
+    { id: 'clients', label: 'Clients', icon: Users },
     { id: 'billing', label: 'Billing & Invoices', icon: Receipt },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

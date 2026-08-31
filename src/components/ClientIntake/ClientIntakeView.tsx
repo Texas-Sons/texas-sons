@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { apiFetch } from '../../api';
+import { mergeClients, intakeFromProject, type LinkKind } from '../../utils/clientMerge';
 import { 
   Users, 
   Plus, 
@@ -43,6 +44,19 @@ interface ClientIntakeViewProps {
   onLaunchStudio: (client: ClientIntake) => void;
   onInvoiceClient: (client: ClientIntake) => void;
   intakePrefill?: Partial<ClientIntake>;
+  /**
+   * Built sites, merged in so one client is one row.
+   *
+   * This view and the Projects list were two tabs over two tables — an intake
+   * and the site built from it — which meant the same salon appeared twice and
+   * nothing said they were the same business. Projects arrive here rather than
+   * this view fetching them, because App already owns that state.
+   */
+  projects?: any[];
+  /** Open a built site in the Studio. */
+  onOpenProject?: (project: any) => void;
+  /** Open the client-access and publishing panel for a built site. */
+  onProjectSettings?: (project: any) => void;
 }
 
 const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
@@ -240,7 +254,7 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill }: ClientIntakeViewProps) {
+export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings }: ClientIntakeViewProps) {
   // Paint from cache immediately, then reconcile with Supabase.
   const [submissions, setSubmissions] = useState<IntakeSubmission[]>([]);
   const [shareLinkLoading, setShareLinkLoading] = useState(false);
@@ -493,12 +507,30 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }
   };
 
-  const filteredClients = clients.filter(c => {
-    const matchesSearch = 
-      c.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.clientContact.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.domain && c.domain.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      c.email.toLowerCase().includes(searchQuery.toLowerCase());
+  /**
+   * One row per client, whichever halves exist.
+   *
+   * A site with no dossier is shown through intakeFromProject rather than a
+   * second card component. Two components over one list is how ClientApp and
+   * the Studio preview drifted until three blocks were live on real sites and
+   * invisible in the preview.
+   */
+  const rows = useMemo(() => {
+    return mergeClients(clients as any[], projects || []).map(m => ({
+      key: m.key,
+      client: (m.intake || intakeFromProject(m.project!)) as ClientIntake & { derived?: boolean },
+      project: m.project,
+      link: m.link as LinkKind,
+    }));
+  }, [clients, projects]);
+
+  const filteredClients = rows.filter(({ client: c }) => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      (c.businessName || '').toLowerCase().includes(q) ||
+      (c.clientContact || '').toLowerCase().includes(q) ||
+      (c.domain || '').toLowerCase().includes(q) ||
+      (c.email || '').toLowerCase().includes(q);
 
     const matchesCategory = filterCategory === 'all' || c.category === filterCategory;
     const matchesStatus = filterStatus === 'all' || c.status === filterStatus;
@@ -677,11 +709,11 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
 
         {/* Client Intake Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10">
-          {filteredClients.map((client) => {
+          {filteredClients.map(({ key, client, project, link }) => {
             const Icon = getCategoryIcon(client.category);
             return (
               <div 
-                key={client.id}
+                key={key}
                 className="rounded-2xl bg-stone-900 border border-stone-800 hover:border-[#C5A059]/50 transition-all flex flex-col justify-between overflow-hidden group shadow-lg h-full"
               >
                 {/* Card Header & Identity */}
@@ -752,15 +784,61 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 <div className="p-3.5 bg-stone-950 border-t border-stone-800 flex flex-col gap-2.5 mt-auto flex-shrink-0">
                   
                   {/* Primary Studio Bridge Button */}
-                  <button
-                    onClick={() => onLaunchStudio(client)}
-                    className="w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-                  >
-                    <Wand2 className="w-3.5 h-3.5" />
-                    <span>Launch in 1-Click Studio</span>
-                  </button>
+                  {project ? (
+                    <>
+                      {/* This client has a built site. Everything below acts on
+                          that site rather than on the dossier, so the two are
+                          never confused for one another. */}
+                      <div className="flex items-center gap-2 mb-2.5 text-[10px] font-mono text-stone-500">
+                        <span className="inline-flex items-center gap-1 text-emerald-400">
+                          <Globe className="w-3 h-3" />SITE BUILT
+                        </span>
+                        {link === 'inferred' && (
+                          <span
+                            title="Matched to this dossier by business name, not by a recorded link. Older sites were built before that link existed."
+                            className="text-amber-500/80"
+                          >
+                            · matched by name
+                          </span>
+                        )}
+                        {(client as any).derived && (
+                          <span className="text-stone-600">· no dossier</span>
+                        )}
+                      </div>
 
-                  {/* Secondary Action Toolbar */}
+                      <button
+                        onClick={() => onOpenProject?.(project)}
+                        className="w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                      >
+                        <Wand2 className="w-3.5 h-3.5" />
+                        <span>Edit Site in Studio</span>
+                      </button>
+
+                      <button
+                        onClick={() => onProjectSettings?.(project)}
+                        className="w-full mt-1.5 py-2 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        <span>Client access &amp; publish</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => onLaunchStudio(client)}
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                    >
+                      <Wand2 className="w-3.5 h-3.5" />
+                      <span>Launch in 1-Click Studio</span>
+                    </button>
+                  )}
+
+                  {/* Secondary Action Toolbar.
+                      Hidden for a site with no dossier: every button here acts
+                      on a client_intakes row, and a derived card has none. Its
+                      id is a synthetic 'derived:<projectId>', so Delete would
+                      issue a request against a row that does not exist and Edit
+                      would open a form that saves a new one. */}
+                  {!(client as any).derived && (
                   <div className="grid grid-cols-4 gap-1.5">
                     <button
                       onClick={() => onInvoiceClient(client)}
@@ -794,6 +872,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
+                  )}
                 </div>
               </div>
             );

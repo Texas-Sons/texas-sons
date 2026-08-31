@@ -10,6 +10,7 @@ import LandingPage from './components/LandingPage';
 import ProspectsView from './components/ProspectsView';
 import AgentBuilderStudio, { ProjectSnapshot } from './components/AgentBuilder/AgentBuilderStudio';
 import ClientIntakeView from './components/ClientIntake/ClientIntakeView';
+import { ClientSettingsModal } from './components/ClientSettingsModal';
 import SettingsView from './components/SettingsView';
 import InsightsView from './components/InsightsView';
 import AssistantPanel from './components/AssistantPanel';
@@ -47,7 +48,11 @@ export default function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   
   const [currentView, setCurrentView] = useState<ViewState>(() => {
-    return (localStorage.getItem('txsons_current_view') as ViewState) || 'dashboard';
+    const saved = localStorage.getItem('txsons_current_view') as ViewState;
+    // Projects and Client Intake are one tab now. A browser that remembers the
+    // old value would open a view nothing in the sidebar points at.
+    if (saved === 'projects') return 'clients';
+    return saved || 'dashboard';
   });
   
   useEffect(() => {
@@ -70,6 +75,7 @@ export default function App() {
   }, [intakePrefill]);
 
   const [selectedClientSnapshot, setSelectedClientSnapshot] = useState<ProjectSnapshot | null>(null);
+  const [settingsProject, setSettingsProject] = useState<Project | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -367,6 +373,9 @@ export default function App() {
               onLaunchStudio={handleLaunchStudioFromClient}
               onInvoiceClient={handleInvoiceFromClient}
               intakePrefill={intakePrefill}
+              projects={projects}
+              onOpenProject={handleEditProject}
+              onProjectSettings={setSettingsProject}
             />
           </main>
         ) : currentView === 'settings' ? (
@@ -468,6 +477,13 @@ export default function App() {
           projects={projects}
           onClose={() => setIsGeneratingInvoice(false)}
           onGenerate={handleGenerateInvoice}
+        />
+      )}
+
+      {settingsProject && (
+        <ClientSettingsModal
+          project={settingsProject as any}
+          onClose={() => setSettingsProject(null)}
         />
       )}
       
