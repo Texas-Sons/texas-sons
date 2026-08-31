@@ -54,6 +54,28 @@ export function isPublicApiPath(pathname: string): boolean {
   return PUBLIC_API_PREFIXES.some(prefix => pathname.startsWith(prefix));
 }
 
+/**
+ * Routes for signed-in CLIENT users — a salon owner and her stylists — rather
+ * than for the operator.
+ *
+ * A third tier, and the reason one was needed: these are neither public nor
+ * admin. They require a real session, but the session belongs to someone who
+ * must never reach /api/deploy, /api/invoice, or another salon's data. Sending
+ * them through requireAdmin would deny every one of them; leaving them public
+ * would expose one client's content to anybody who guessed a project id.
+ *
+ * Authorization is per-project and resolved in lib/clientAuth.ts. This function
+ * only says which gate a path belongs to.
+ *
+ * The trailing slash is load-bearing for the same reason it is on the public
+ * prefixes: '/client/' must not also match a future '/client-export'.
+ */
+export const CLIENT_API_PREFIX = '/client/';
+
+export function isClientApiPath(pathname: string): boolean {
+  return pathname.startsWith(CLIENT_API_PREFIX);
+}
+
 let authClient: SupabaseClient | null = null;
 function getAuthClient(): SupabaseClient {
   if (!authClient) {
@@ -90,11 +112,38 @@ function cacheSet(token: string, user: { id: string; email: string }) {
   verifiedTokens.set(token, { user, expiresAt: Date.now() + CACHE_TTL_MS });
 }
 
-function extractBearer(req: Request): string | null {
+export function extractBearer(req: Request): string | null {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) return null;
   const token = header.slice('Bearer '.length).trim();
   return token || null;
+}
+
+/**
+ * Verifies a Supabase session token and returns the user, or null.
+ *
+ * Says only "this is a real, current session for this email" — it makes no
+ * authorization decision at all. requireAdmin checks the result against the
+ * operator allowlist; the client gate checks it against project membership.
+ * Two questions, one answer to the first, so a change to how sessions are
+ * verified cannot apply to one gate and not the other.
+ *
+ * Throws only when the server itself is misconfigured. An invalid or expired
+ * token is null, not an exception.
+ */
+export async function verifySessionUser(
+  token: string
+): Promise<{ id: string; email: string } | null> {
+  const cached = cacheGet(token);
+  if (cached) return cached;
+
+  const client = getAuthClient(); // throws when unconfigured — the caller 500s
+  const { data, error } = await client.auth.getUser(token);
+  if (error || !data?.user?.email) return null;
+
+  const user = { id: data.user.id, email: data.user.email.toLowerCase() };
+  cacheSet(token, user);
+  return user;
 }
 
 /**
@@ -107,39 +156,24 @@ export async function requireAdmin(req: AuthedRequest, res: Response, next: Next
     return res.status(401).json({ success: false, error: 'Authentication required' });
   }
 
-  const cached = cacheGet(token);
-  if (cached) {
-    req.user = cached;
-    return next();
-  }
-
-  let client: SupabaseClient;
+  let user: { id: string; email: string } | null;
   try {
-    client = getAuthClient();
+    user = await verifySessionUser(token);
   } catch (error: any) {
     // Misconfiguration must not open the door.
-    console.error('[auth] Cannot verify sessions:', error.message);
+    console.error('[auth] Cannot verify sessions:', error?.message || error);
     return res.status(500).json({ success: false, error: 'Server auth is not configured' });
   }
 
-  try {
-    const { data, error } = await client.auth.getUser(token);
-    if (error || !data?.user?.email) {
-      return res.status(401).json({ success: false, error: 'Invalid or expired session' });
-    }
-
-    const email = data.user.email.toLowerCase();
-    if (!getAdminEmails().includes(email)) {
-      console.warn(`[auth] Rejected non-admin login attempt: ${email}`);
-      return res.status(403).json({ success: false, error: 'This portal is restricted to authorized administrators' });
-    }
-
-    const user = { id: data.user.id, email };
-    cacheSet(token, user);
-    req.user = user;
-    next();
-  } catch (error: any) {
-    console.error('[auth] Verification failed:', error?.message || error);
-    return res.status(401).json({ success: false, error: 'Could not verify session' });
+  if (!user) {
+    return res.status(401).json({ success: false, error: 'Invalid or expired session' });
   }
+
+  if (!getAdminEmails().includes(user.email)) {
+    console.warn(`[auth] Rejected non-admin login attempt: ${user.email}`);
+    return res.status(403).json({ success: false, error: 'This portal is restricted to authorized administrators' });
+  }
+
+  req.user = user;
+  next();
 }

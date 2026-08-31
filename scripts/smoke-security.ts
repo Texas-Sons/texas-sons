@@ -7,7 +7,7 @@
  */
 
 import { isBlockedAddress, safeFetchText } from '../lib/safeFetch';
-import { getAdminEmails, isPublicApiPath } from '../lib/auth';
+import { getAdminEmails, isPublicApiPath, isClientApiPath } from '../lib/auth';
 import { resolveModel } from '../lib/models';
 
 let failures = 0;
@@ -103,6 +103,59 @@ const mustBeGuarded = [
 
 for (const p of mustBePublic) check(`public: ${p}`, isPublicApiPath(p), true);
 for (const p of mustBeGuarded) check(`guarded: ${p}`, isPublicApiPath(p), false);
+
+// --- The client tier ---------------------------------------------------------
+//
+// /api/client/* skips requireAdmin, because no salon owner is on the operator
+// allowlist and the admin gate would reject every one of them. That skip is only
+// safe while two things hold, and both are asserted here:
+//
+//   1. isClientApiPath matches nothing outside that prefix, and
+//   2. every route defined under it mounts its own per-project gate.
+//
+// The second is the one that would kill us quietly. A new /api/client/ route
+// added without `clientGate` is not merely under-protected — it is completely
+// open, because the middleware above waved it past the admin check on the
+// strength of its prefix.
+
+const mustBeClientTier = ['/client/projects', '/client/abc/media', '/client/abc/access'];
+const mustNotBeClientTier = [
+  '/client',           // no trailing slash
+  '/clients',          // near-miss
+  '/client-export',    // a future admin route must not fall through the gate
+  '/deploy',
+  '/portal/abc123',
+];
+
+for (const p of mustBeClientTier) check(`client tier: ${p}`, isClientApiPath(p), true);
+for (const p of mustNotBeClientTier) check(`not client tier: ${p}`, isClientApiPath(p), false);
+
+// The client tier and the public tier must never overlap. A path in both would
+// be served with no session at all while looking gated in review.
+for (const p of [...mustBeClientTier, ...mustBeGuarded]) {
+  check(`not public: ${p}`, isPublicApiPath(p), false);
+}
+
+// Static check: no /api/client/ route may be registered without a gate.
+{
+  const { readFileSync } = await import('fs');
+  const { join } = await import('path');
+  const source = readFileSync(join(process.cwd(), 'server.ts'), 'utf8');
+
+  // app.get("/api/client/...", <what comes next>
+  const routes = [...source.matchAll(/app\.(get|post|put|patch|delete)\(\s*["'`]\/api\/client\/[^"'`]*["'`]\s*,\s*([A-Za-z_$][\w$]*)/g)];
+  check('client routes are found by the scanner at all', routes.length > 0, true);
+
+  // Two gates are legitimate, and only two. clientGate resolves membership for
+  // the project named in the path; requireClientSession is the single deliberate
+  // exception, for the route that lists which projects exist for this session
+  // and therefore cannot name one. Anything else is a forgotten gate.
+  const ALLOWED_GATES = ['clientGate', 'requireClientSession'];
+  const ungated = routes
+    .filter(m => !ALLOWED_GATES.includes(m[2]))
+    .map(m => m[0].slice(0, 60));
+  check('every /api/client/ route mounts a client gate', ungated, []);
+}
 
 // --- Model routing config ---------------------------------------------------
 
@@ -202,4 +255,10 @@ if (failures > 0) {
   console.error(`\nSECURITY SMOKE FAIL: ${failures} check(s) failed`);
   process.exit(1);
 }
-console.log(`SECURITY SMOKE PASS: ${mustBlock.length + mustAllow.length} address checks, 4 fetch refusals, 3 allowlist checks, ${mustBePublic.length + mustBeGuarded.length} route-gate checks`);
+console.log(
+  `SECURITY SMOKE PASS: ${mustBlock.length + mustAllow.length} address checks, ` +
+  `4 fetch refusals, 3 allowlist checks, ` +
+  `${mustBePublic.length + mustBeGuarded.length} route-gate checks, ` +
+  `${mustBeClientTier.length + mustNotBeClientTier.length} client-tier checks, ` +
+  `every /api/client route gated, .env.example clean`
+);

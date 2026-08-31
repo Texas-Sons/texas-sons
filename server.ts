@@ -13,7 +13,10 @@ import Stripe from "stripe";
 import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { requireAdmin, isPublicApiPath } from './lib/auth';
+import { requireAdmin, isPublicApiPath, isClientApiPath } from './lib/auth';
+import {
+  requireClientMember, requireClientOwner, requireClientSession, type ClientRequest,
+} from './lib/clientAuth';
 import {
   callModel, registerGeminiCaller, resolveModel, isAllowedAssistantModel,
   ASSISTANT_MODEL_CHOICES, logRoutingTable, parseModelJson, type ChatMessage,
@@ -661,6 +664,13 @@ async function startServer() {
   app.use('/api', (req, res, next) => {
     if (req.method === 'OPTIONS') return next();
     if (isPublicApiPath(req.path)) return next();
+    // Client users are authenticated but not operators. Their routes carry
+    // their own per-project gate (requireClientMember, mounted on each route);
+    // sending them through requireAdmin would reject every one of them, since
+    // no salon owner is on the operator allowlist. Skipping the admin gate here
+    // is only safe because every /api/client/ route mounts that gate itself —
+    // scripts/smoke-security.ts asserts that none is left bare.
+    if (isClientApiPath(req.path)) return next();
     return requireAdmin(req, res, next);
   });
 
@@ -2178,6 +2188,244 @@ ${text.trim()}`);
     } catch (error: any) {
       console.error('[portal] delete error:', error);
       res.status(500).json({ success: false, error: "Could not remove that item." });
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Signed-in client dashboard
+  //
+  // The same content as the token portal, reached by a Google sign-in instead of
+  // an unguessable link. Both exist on purpose: the link needs nothing of the
+  // client and works the minute it is sent, while accounts are the only way to
+  // give a stylist access and take it away again without disturbing anyone else.
+  //
+  // Every route names its project and mounts requireClientMember, which resolves
+  // membership for that project specifically. There is no ambient "current
+  // client" — a session valid for one salon is not a session for another.
+  // -------------------------------------------------------------------------
+
+  const clientGate = requireClientMember(() => getSupabaseAdmin());
+
+  /** Which projects this signed-in person can manage. Drives the dashboard. */
+  app.get("/api/client/projects", requireClientSession, async (req: ClientRequest, res) => {
+    // requireClientSession, not clientGate: there is no single project yet —
+    // finding out which ones exist is the whole point of the route. So it must
+    // filter by the session's own email and return nothing else.
+    try {
+      const user = req.user!;
+      const db = getSupabaseAdmin();
+      const [{ data: owned }, { data: memberships }] = await Promise.all([
+        db.from('projects').select('id, company_name').eq('owner_id', user.id),
+        db.from('client_users').select('project_id, role').ilike('email', user.email),
+      ]);
+
+      const ids = (memberships || []).map(m => m.project_id);
+      const { data: joined } = ids.length
+        ? await db.from('projects').select('id, company_name').in('id', ids)
+        : { data: [] as any[] };
+
+      const byId = new Map<string, any>();
+      for (const p of owned || []) byId.set(p.id, { id: p.id, name: p.company_name, role: 'owner' });
+      for (const p of joined || []) {
+        if (byId.has(p.id)) continue;
+        const role = (memberships || []).find(m => m.project_id === p.id)?.role || 'member';
+        byId.set(p.id, { id: p.id, name: p.company_name, role });
+      }
+
+      res.json({ success: true, email: user.email, projects: [...byId.values()] });
+    } catch (error: any) {
+      console.error('[client] project list failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not load your salons.' });
+    }
+  });
+
+  /** Read-only view of what is currently published, so she can spot what is wrong. */
+  app.get("/api/client/:projectId/site", clientGate, async (req: ClientRequest, res) => {
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('projects')
+        .select('company_name, domain, blueprint')
+        .eq('id', req.params.projectId)
+        .maybeSingle();
+      if (error) throw error;
+
+      const bp = (data?.blueprint || {}) as any;
+      const p = bp.profile || {};
+      // Her own business details and nothing else. The blueprint also carries
+      // operator notes, tier and pricing for the build itself, none of which is
+      // hers to see.
+      res.json({
+        success: true,
+        site: {
+          name: data?.company_name,
+          domain: data?.domain,
+          phone: p.phone,
+          email: p.email,
+          address: p.address,
+          hours: p.hours,
+          tagline: p.tagline,
+          bookingUrl: p.bookingUrl,
+          services: Array.isArray(bp.services) ? bp.services : [],
+        },
+      });
+    } catch (error: any) {
+      console.error('[client] site read failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not load your site details.' });
+    }
+  });
+
+  app.get("/api/client/:projectId/media", clientGate, async (req: ClientRequest, res) => {
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('client_media')
+        .select('id, kind, data, sort_order')
+        .eq('project_id', req.params.projectId)
+        .eq('hidden', false)
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      res.json({ success: true, media: data || [], role: req.membership?.role });
+    } catch (error: any) {
+      console.error('[client] media read failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not load your photos.' });
+    }
+  });
+
+  app.post("/api/client/:projectId/media", clientGate, async (req: ClientRequest, res) => {
+    try {
+      const projectId = req.params.projectId;
+      const { kind, data } = req.body || {};
+      const kinds: MediaKind[] = ['portfolio', 'beforeAfter', 'product'];
+      if (!kinds.includes(kind)) {
+        return res.status(400).json({ success: false, error: "kind must be one of: " + kinds.join(', ') });
+      }
+      if (!data || typeof data !== 'object') {
+        return res.status(400).json({ success: false, error: "Nothing was submitted." });
+      }
+
+      const size = Buffer.byteLength(JSON.stringify(data), 'utf8');
+      if (size > MAX_MEDIA_BYTES) {
+        return res.status(413).json({
+          success: false,
+          error: "That is too large (" + Math.round(size / 1024 / 1024) + "MB). Please use a smaller image.",
+        });
+      }
+
+      const { data: project } = await getSupabaseAdmin()
+        .from('projects').select('owner_id, company_name').eq('id', projectId).maybeSingle();
+
+      const { data: inserted, error } = await getSupabaseAdmin()
+        .from('client_media')
+        .insert({
+          project_id: projectId,
+          owner_id: project?.owner_id,
+          kind,
+          data,
+          sort_order: Number(req.body.sortOrder) || 0,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+
+      scheduleRedeploy(projectId, project?.company_name || projectId);
+      res.json({ success: true, id: inserted?.id, publishing: true });
+    } catch (error: any) {
+      console.error('[client] media save failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not save. Please try again.' });
+    }
+  });
+
+  app.delete("/api/client/:projectId/media/:id", clientGate, async (req: ClientRequest, res) => {
+    try {
+      const projectId = req.params.projectId;
+      // Scoped by project as well as by id: an id from another salon must not
+      // be deletable just because this session is valid somewhere.
+      const { error } = await getSupabaseAdmin()
+        .from('client_media')
+        .update({ hidden: true })
+        .eq('id', req.params.id)
+        .eq('project_id', projectId);
+      if (error) throw error;
+
+      const { data: project } = await getSupabaseAdmin()
+        .from('projects').select('company_name').eq('id', projectId).maybeSingle();
+      scheduleRedeploy(projectId, project?.company_name || projectId);
+      res.json({ success: true, publishing: true });
+    } catch (error: any) {
+      console.error('[client] media delete failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not remove that item.' });
+    }
+  });
+
+  // --- Who else has access -------------------------------------------------
+
+  app.get("/api/client/:projectId/access", clientGate, requireClientOwner, async (req: ClientRequest, res) => {
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('client_users')
+        .select('id, email, role, created_at, last_seen_at')
+        .eq('project_id', req.params.projectId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      res.json({ success: true, people: data || [], you: req.membership?.email });
+    } catch (error: any) {
+      console.error('[client] access read failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not load the list.' });
+    }
+  });
+
+  app.post("/api/client/:projectId/access", clientGate, requireClientOwner, async (req: ClientRequest, res) => {
+    try {
+      const email = String(req.body?.email || '').trim().toLowerCase();
+      const role = req.body?.role === 'owner' ? 'owner' : 'member';
+      // Deliberately loose: this is a typo guard, not validation. Whether the
+      // address exists is decided when someone signs in with it, not here.
+      if (!email || !email.includes('@') || email.length > 254) {
+        return res.status(400).json({ success: false, error: 'That does not look like an email address.' });
+      }
+
+      const { error } = await getSupabaseAdmin()
+        .from('client_users')
+        .upsert(
+          { project_id: req.params.projectId, email, role, invited_by: req.user?.id },
+          { onConflict: 'project_id,email' }
+        );
+      if (error) throw error;
+
+      // No email is sent. Access begins the moment they sign in with Google
+      // using this address — there is no invitation to accept, no token to
+      // expire, and nothing to go stale in an inbox.
+      res.json({ success: true, email, role });
+    } catch (error: any) {
+      console.error('[client] access grant failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not add that person.' });
+    }
+  });
+
+  app.delete("/api/client/:projectId/access/:id", clientGate, requireClientOwner, async (req: ClientRequest, res) => {
+    try {
+      const { data: row } = await getSupabaseAdmin()
+        .from('client_users')
+        .select('email')
+        .eq('id', req.params.id)
+        .eq('project_id', req.params.projectId)
+        .maybeSingle();
+
+      // Locking yourself out is not a thing anyone means to do, and recovering
+      // needs the operator. Refuse it.
+      if (row && String(row.email).toLowerCase() === req.membership?.email) {
+        return res.status(400).json({ success: false, error: 'You cannot remove your own access.' });
+      }
+
+      const { error } = await getSupabaseAdmin()
+        .from('client_users')
+        .delete()
+        .eq('id', req.params.id)
+        .eq('project_id', req.params.projectId);
+      if (error) throw error;
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('[client] access revoke failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not remove that person.' });
     }
   });
 
