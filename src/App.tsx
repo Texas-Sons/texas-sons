@@ -484,6 +484,15 @@ export default function App() {
         <ClientSettingsModal
           project={settingsProject as any}
           onClose={() => setSettingsProject(null)}
+          onRestore={async (blueprint) => {
+            // Saves only. Publishing a blueprint nobody has looked at is the
+            // exact fault this recovery path exists to undo, so the operator
+            // opens the Studio, checks it, and deploys.
+            const updated = { ...settingsProject, blueprint };
+            await saveProject(updated);
+            setProjects(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+            setSettingsProject(updated);
+          }}
         />
       )}
       

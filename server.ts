@@ -1380,6 +1380,59 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     }
   });
 
+  /**
+   * Reads the blueprint back off a live site.
+   *
+   * Every deployed page carries the exact blueprint it was built from, injected
+   * as window.__TXSONS_BLUEPRINT__. That makes the live site the most reliable
+   * record of what a client actually has — more reliable than projects.blueprint,
+   * which is only as fresh as the last Studio deploy.
+   *
+   * Written for the 2026-08-31 incident: a client photo upload republished a
+   * stale blueprint over a live salon site, and the fix was a Cloudflare
+   * rollback. The rollback restores the page, but the operator's own database
+   * still holds the bad version, and nothing existed to close that gap.
+   *
+   * Uses safeFetchText, so a hand-typed URL cannot be pointed at the metadata
+   * endpoint or anything on the private network.
+   */
+  app.post("/api/restore-from-live", async (req, res) => {
+    try {
+      const { url } = req.body || {};
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ success: false, error: 'A live site URL is required.' });
+      }
+
+      const { text: html } = await safeFetchText(url, { timeoutMs: 15_000 });
+
+      // Deliberately anchored on the exact injection this server writes. A
+      // looser search would happily pull a blueprint out of any page that
+      // happened to mention one.
+      const match = html.match(/window\.__TXSONS_BLUEPRINT__\s*=\s*(\{[\s\S]*?\});?\s*(?:window\.__TXSONS_API__|<\/script>)/);
+      if (!match) {
+        return res.status(422).json({
+          success: false,
+          error: 'No blueprint found on that page. Check the URL points at a site deployed from here.',
+        });
+      }
+
+      let blueprint: any;
+      try {
+        blueprint = JSON.parse(match[1]);
+      } catch {
+        return res.status(422).json({ success: false, error: 'The blueprint on that page could not be read.' });
+      }
+      if (!blueprint?.profile?.name) {
+        return res.status(422).json({ success: false, error: 'That page carries a blueprint with no business profile.' });
+      }
+
+      res.json({ success: true, blueprint });
+    } catch (error: any) {
+      console.error('[restore] failed:', error?.message || error);
+      res.status(500).json({ success: false, error: error?.message || 'Could not read that site.' });
+    }
+  });
+
   // Attach Custom Domain (e.g. from Namecheap) to Cloudflare Pages Project
   app.post("/api/domains/add", async (req, res) => {
     try {

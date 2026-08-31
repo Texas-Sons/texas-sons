@@ -136,6 +136,14 @@ export function SiteRenderer({
             badges={project.badges}
             accentColor={accentColor}
             proofBadgeText={project.proofBadgeText}
+            // Real review data only. Absent means no rating is shown at all —
+            // the block used to default to "4.9 Rating (128+ Reviews)" for a
+            // business nobody had counted the reviews of.
+            rating={project.profile.rating}
+            reviewCount={project.profile.reviewCount}
+            ownerPhoto={project.profile.ownerPhoto}
+            ownerName={project.profile.ownerName}
+            ownerRole={project.profile.ownerRole}
             ctaText={p.ctaText}
             ctaHref={primaryCtaHref}
             secondaryCtaText={p.secondaryCtaText}

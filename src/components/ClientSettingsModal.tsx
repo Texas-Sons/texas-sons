@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { apiJson } from '../api';
 import { AccessPanel } from './ClientAccess/AccessPanel';
 import { PortalLinkButton } from './PortalLinkButton';
-import { X, Loader2, UploadCloud, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { X, Loader2, UploadCloud, CheckCircle2, AlertTriangle, History } from 'lucide-react';
 
 /**
  * Client-side settings, from the operator's side.
@@ -30,12 +30,18 @@ export interface ClientSettingsModalProps {
     portalToken?: string | null;
   };
   onClose: () => void;
+  /** Save a blueprint read back off the live site. Does not publish it. */
+  onRestore?: (blueprint: any) => void | Promise<void>;
 }
 
-export function ClientSettingsModal({ project, onClose }: ClientSettingsModalProps) {
+export function ClientSettingsModal({ project, onClose, onRestore }: ClientSettingsModalProps) {
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [liveUrl, setLiveUrl] = useState('');
+  const [restoring, setRestoring] = useState(false);
+  const [restored, setRestored] = useState<string | null>(null);
 
   const profile = project.blueprint?.profile || {};
 
@@ -68,6 +74,33 @@ export function ClientSettingsModal({ project, onClose }: ClientSettingsModalPro
       setError(e.message);
     } finally {
       setPublishing(false);
+    }
+  };
+
+  /**
+   * Pulls the blueprint back off the live page and saves it as this project's
+   * blueprint, so a Cloudflare rollback can be reflected on this side too.
+   *
+   * It does NOT publish. The whole incident this exists for was an automatic
+   * publish of a blueprint nobody had looked at; the fix must not be another one.
+   * The operator opens the Studio, checks it, and deploys.
+   */
+  const restore = async () => {
+    setRestoring(true);
+    setError(null);
+    try {
+      const target = (liveUrl || project.domain || '').trim();
+      const res = await apiJson<{ blueprint: any }>('/api/restore-from-live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: target }),
+      });
+      await onRestore?.(res.blueprint);
+      setRestored(res.blueprint?.profile?.name || 'the live blueprint');
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -135,6 +168,49 @@ export function ClientSettingsModal({ project, onClose }: ClientSettingsModalPro
             )}
 
             {error && <p className="text-sm text-red-400">{error}</p>}
+          </section>
+
+          <section className={card}>
+            <div>
+              <h3 className="font-bold text-stone-100">Restore from the live site</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                Every published page carries the blueprint it was built from, so after a Cloudflare
+                rollback the live site is the most reliable record of what this client actually has —
+                more reliable than what is stored here. Pull it back and publish it to bring the two
+                into agreement.
+              </p>
+            </div>
+
+            {restored ? (
+              <div className="flex items-start gap-2 text-sm text-emerald-300">
+                <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                <span>
+                  Read {restored}. Open the Studio, confirm it looks right, and deploy from there —
+                  that is what writes it back and records it as published.
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                <input
+                  type="url"
+                  value={liveUrl}
+                  onChange={e => setLiveUrl(e.target.value)}
+                  placeholder={project.domain || 'https://their-site.pages.dev'}
+                  className="flex-1 min-w-[220px] px-4 py-3 rounded-xl bg-stone-950 border border-stone-800 text-sm text-stone-100 placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/60"
+                />
+                <button
+                  type="button"
+                  onClick={restore}
+                  disabled={restoring || !(liveUrl || project.domain)}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold bg-stone-800 border border-stone-700 text-stone-200 disabled:opacity-40"
+                >
+                  {restoring
+                    ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                    : <History className="w-4 h-4" aria-hidden="true" />}
+                  {restoring ? 'Reading…' : 'Read live site'}
+                </button>
+              </div>
+            )}
           </section>
 
           <section className={card}>
