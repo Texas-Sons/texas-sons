@@ -35,7 +35,44 @@ const r1 = mergeClientMedia(base, [
   row('portfolio', { url: 'https://cdn.example/2.jpg' }, 1),
 ]);
 
-check('her photos replace the stock gallery entirely', r1.blueprint.profile.galleryImages, [REAL, 'https://cdn.example/2.jpg']);
+check('her photos replace a wholly stock gallery', r1.blueprint.profile.galleryImages, [REAL, 'https://cdn.example/2.jpg']);
+
+// The incident of 2026-08-31, pinned.
+//
+// This used to assign the uploaded array over the whole gallery, so a client
+// uploading her first photo replaced a curated five-image gallery with one
+// image. On a live salon site that read, correctly, as the site being wiped.
+// Uploading a photo adds a photo.
+{
+  const curated = {
+    profile: {
+      name: 'Opalescent',
+      heroImage: 'https://cdn.example/operator-hero.jpg',
+      galleryImages: [
+        'https://cdn.example/curated-1.jpg',
+        STOCK,
+        'https://cdn.example/curated-2.jpg',
+      ],
+    },
+  };
+  const after = mergeClientMedia(curated, [row('portfolio', { url: REAL }, 0)]);
+  const gallery = after.blueprint.profile.galleryImages;
+
+  check('one upload does not wipe a curated gallery', gallery.length, 3);
+  check('her photo leads the gallery', gallery[0], REAL);
+  check('operator-chosen images survive', gallery.includes('https://cdn.example/curated-1.jpg'), true);
+  check('stock images still lose', gallery.includes(STOCK), false);
+  check('a deliberate hero is untouched', after.blueprint.profile.heroImage, 'https://cdn.example/operator-hero.jpg');
+}
+
+// Re-uploading the same file must not double it up.
+{
+  const dupes = mergeClientMedia(
+    { profile: { galleryImages: [REAL, 'https://cdn.example/curated.jpg'] } },
+    [row('portfolio', { url: REAL }, 0)]
+  );
+  check('duplicates are collapsed', dupes.blueprint.profile.galleryImages, [REAL, 'https://cdn.example/curated.jpg']);
+}
 check('a stock hero is replaced by her first real photo', r1.blueprint.profile.heroImage, REAL);
 check('applied counts are reported', r1.applied.portfolio, 2);
 

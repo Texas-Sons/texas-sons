@@ -15,6 +15,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type MediaKind = 'portfolio' | 'beforeAfter' | 'product';
 
+/**
+ * Stock imagery standing in for a photo nobody has taken yet.
+ *
+ * Only these lose to a client upload. Anything else in the gallery was chosen
+ * by the operator, and a client adding her own work must not silently delete it.
+ */
+export function isPlaceholderImage(url: unknown): boolean {
+  return typeof url === 'string' && /images\.unsplash\.com/i.test(url);
+}
+
 export interface ClientMediaRow {
   id: string;
   kind: MediaKind;
@@ -69,13 +79,36 @@ export function mergeClientMedia(blueprint: any, media: ClientMediaRow[]): Merge
     .map(m => m.data?.url)
     .filter((u): u is string => typeof u === 'string' && u.length > 0);
   if (portfolio.length) {
-    merged.profile.galleryImages = portfolio;
+    // Her photos REPLACE placeholders and are ADDED alongside anything real.
+    //
+    // This used to assign the whole array, so a client uploading her first photo
+    // replaced a curated five-image gallery with one image. That happened to a
+    // live salon site on 2026-08-31 and read, correctly, as the site being
+    // wiped. Uploading a photo should add a photo.
+    //
+    // A stock stand-in still loses — that is the entire point of the portal —
+    // but an image the operator chose deliberately is not a placeholder and is
+    // not hers to remove by uploading something.
+    const existing: string[] = Array.isArray(merged.profile.galleryImages)
+      ? merged.profile.galleryImages.filter(
+          (u: unknown) => typeof u === 'string' && u.length > 0 && !isPlaceholderImage(u)
+        )
+      : [];
+
+    // Hers first: she is the authority on her own work, and the gallery reads
+    // top-down.
+    const seen = new Set<string>();
+    merged.profile.galleryImages = [...portfolio, ...existing].filter(u => {
+      if (seen.has(u)) return false;
+      seen.add(u);
+      return true;
+    });
     applied.portfolio = portfolio.length;
 
     // Her first real photo is a better hero than a stock stand-in. Only replace
     // a placeholder, never a hero the operator chose deliberately.
     const hero = merged.profile.heroImage;
-    if (!hero || /images\.unsplash\.com/i.test(hero)) {
+    if (!hero || isPlaceholderImage(hero)) {
       merged.profile.heroImage = portfolio[0];
     }
   }

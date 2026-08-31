@@ -753,13 +753,23 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
    * "save" and "deploy" paths, which previously carried two near-identical
    * copies of this id-normalisation and tier logic.
    */
+  /**
+   * The projects-table id for this snapshot.
+   *
+   * The snapshot carries 'prj-<n>' while the row is keyed on '<n>'. Deploy and
+   * save both need the row id and must agree on it: they disagreed until
+   * 2026-08-31, so the deploy could not record what it had published and a
+   * client's photo upload later republished a stale blueprint over her site.
+   */
+  const projectRowId = () => {
+    const id = project.id;
+    if (id.startsWith('prj-')) return id.slice(4);
+    if (id.startsWith('bp-')) return `prj_${Date.now()}`;
+    return id;
+  };
+
   const persistProject = async (status: Project['status'], domain: string) => {
-    let projectId = project.id;
-    if (projectId.startsWith('prj-')) {
-      projectId = projectId.slice(4);
-    } else if (projectId.startsWith('bp-')) {
-      projectId = `prj_${Date.now()}`;
-    }
+    const projectId = projectRowId();
 
     await saveProject({
       id: projectId,
@@ -915,7 +925,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectName: project.profile.name,
-          currentSnapshot: project
+          currentSnapshot: project,
+          // Lets the server merge this client's uploaded media into the deploy,
+          // and record what went live so her next upload republishes THIS.
+          projectId: projectRowId()
         })
       });
       const data = await res.json();

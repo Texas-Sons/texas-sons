@@ -1357,6 +1357,22 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         projectName || currentSnapshot.profile?.name, snapshot
       );
 
+      // Record what actually went live, so a later client photo upload can
+      // republish THIS and not whatever happens to be sitting in `blueprint`.
+      // Stored pre-merge: client media is re-merged fresh on every publish, and
+      // storing the merged copy would bake one moment's photos in permanently.
+      if (projectId) {
+        const { error } = await getSupabaseAdmin()
+          .from('projects')
+          .update({ published_blueprint: currentSnapshot, published_at: new Date().toISOString() })
+          .eq('id', String(projectId));
+        // Not fatal — the site is already live. Loud, because until this lands
+        // the auto-redeploy will decline to run and her uploads will not appear.
+        if (error) console.error('[deploy] could not record the published blueprint:', error.message);
+      } else {
+        console.warn('[deploy] no projectId supplied — client uploads will not auto-publish for this site.');
+      }
+
       res.json({ success: true, url: siteUrl, deploymentUrl, projectName: slug });
     } catch (error: any) {
       console.error('Deploy error:', error);
@@ -2129,13 +2145,32 @@ ${text.trim()}`);
       try {
         const db = getSupabaseAdmin();
         const { data: proj } = await db
-          .from('projects').select('blueprint').eq('id', projectId).maybeSingle();
-        if (!proj?.blueprint) {
-          console.warn('[portal] redeploy skipped for ' + projectId + ': no blueprint');
+          .from('projects')
+          .select('blueprint, published_blueprint')
+          .eq('id', projectId)
+          .maybeSingle();
+
+        // Republish what is LIVE, never what was last saved.
+        //
+        // This used to read `blueprint`, which is written only when the operator
+        // deploys from the Studio. Any tuning not followed by a deploy never
+        // reached it, so an unattended redeploy could push a materially older
+        // site over a newer one. On 2026-08-31 a client uploaded a photo and her
+        // live site reverted — different colours, weeks of work gone — because a
+        // photo upload was trusted to republish a blueprint nobody had reviewed.
+        //
+        // If nothing has been published through this path yet, refuse. A photo
+        // upload changing the photos is the whole contract; a photo upload
+        // rewriting the site is a bug, and guessing is what caused it.
+        if (!proj?.published_blueprint) {
+          console.warn(
+            '[portal] redeploy skipped for ' + projectId + ': nothing recorded as published. ' +
+            'Publish once from the app and client uploads will go live automatically after that.'
+          );
           return;
         }
 
-        const { blueprint } = await blueprintWithClientMedia(db, projectId, proj.blueprint);
+        const { blueprint } = await blueprintWithClientMedia(db, projectId, proj.published_blueprint);
         await publishBlueprint(siteName || blueprint?.profile?.name, blueprint);
         console.log('[portal] redeployed after a content change: ' + projectId);
       } catch (err: any) {
