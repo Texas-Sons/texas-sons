@@ -381,6 +381,7 @@ export default function App() {
               onProjectProposal={setProposalProject}
               onDeleteProject={handleDeleteProject}
               onFindBusiness={() => setCurrentView('prospects')}
+              onPrefillConsumed={() => setIntakePrefill({})}
               onEngagementChange={async (project, engagement) => {
                 const updated = { ...project, engagement };
                 await saveProject(updated);

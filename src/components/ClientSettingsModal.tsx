@@ -131,7 +131,7 @@ export function ClientSettingsModal({ project, onClose, onRestore }: ClientSetti
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-stone-950 border border-stone-800 w-full max-w-2xl rounded-2xl shadow-2xl my-auto py-0">
+      <div className="bg-stone-950 border border-stone-800 w-full max-w-2xl rounded-2xl shadow-2xl my-8">
         <header className="flex items-start justify-between gap-4 px-5 sm:px-6 py-4 border-b border-stone-800">
           <div className="min-w-0">
             <h2 className="text-lg font-extrabold text-stone-100 truncate">

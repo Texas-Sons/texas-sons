@@ -68,138 +68,22 @@ interface ClientIntakeViewProps {
   onEngagementChange?: (project: any, engagement: 'demo' | 'commissioned') => void;
   /** Jump to Lead Finder to search for a business. */
   onFindBusiness?: () => void;
+  /** Called once a prefill has been applied, so it is not re-applied on return. */
+  onPrefillConsumed?: () => void;
 }
 
-const DEFAULT_SAMPLE_CLIENTS: ClientIntake[] = [
-  {
-    id: 'intake-waylon-rogers',
-    businessName: 'Waylon Rogers for County Judge',
-    clientContact: 'Waylon Rogers (Campaign Mgr: Sarah Jenkins)',
-    email: 'campaign@waylonrogers.com',
-    phone: '(830) 555-1234',
-    address: 'Campaign HQ: 104 N Smith St, Jourdanton, TX 78026',
-    domain: 'waylonrogers.com',
-    category: 'Campaign & Leadership',
-    tier: 'Full Custom Application',
-    status: 'Studio Ready',
-    theme: 'campaign-judicial',
-    primaryColor: '#0a1f44',
-    accentColor: '#C5A059',
-    tagline: 'A Lifetime of Service. A Commitment to Justice.',
-    description: 'Official Write-In Candidate for Atascosa County Judge. Restoring judicial integrity, protecting rural property owners, and bringing transparent fiscal stewardship to county government.',
-    heroImage: '/images/candidates/waylon-rogers.png',
-    badges: ['Official Write-In Candidate', 'Judicial Integrity', 'Rural Property Advocate', 'Fiscal Responsibility'],
-    proofBadgeText: 'Write-In Waylon Rogers for County Judge · Atascosa County',
-    services: [
-      { title: 'Restoring Judicial Integrity & Speedy Dockets', description: 'Eliminating case backlogs, upholding constitutional rule of law, and ensuring fair, impartial justice in Atascosa County courts.', duration: 'Judicial Pillar #1', highlight: true },
-      { title: 'Protecting Rural Landowners & Property Rights', description: 'Defending agricultural tax exemptions, private groundwater rights, and ensuring county zoning respects generational family lands.', duration: 'Judicial Pillar #2' },
-      { title: 'Transparent County Budgets & Fiscal Stewardship', description: 'Demanding zero wasteful taxpayer expenditures and providing line-item transparency for every county department.', duration: 'Judicial Pillar #3' }
-    ],
-    testimonials: [
-      { quote: 'Waylon has the courtroom experience, unshakeable ethics, and deep community roots our county bench urgently requires.', author: 'Sheriff Hector Ramirez', role: 'Law Enforcement Coalition Endorsement', rating: 5, verified: true },
-      { quote: 'A steadfast defender of our landowners, water rights, and constitutional freedoms. He has our full trust and endorsement.', author: 'Sarah Jenkins', role: 'Atascosa County Cattlemen & Landowner', rating: 5, verified: true },
-      { quote: 'Fair, disciplined, and committed to transparency. Waylon will run our county courts with the highest standard of honor.', author: 'Judge Ronald Sterling', role: 'Presiding Magistrate (Ret.)', rating: 5, verified: true }
-    ],
-    depositAmount: 3500,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'intake-debbie-judge',
-    businessName: 'Deborah Dietzmann for Judge',
-    clientContact: 'Debbie Dietzmann (Campaign Mgr: Sarah)',
-    email: 'campaign@debbieforjudge.com',
-    phone: '(512) 555-0194',
-    address: 'Campaign HQ: 701 Brazos St, Suite 500, Austin, TX',
-    domain: 'debbieforjudge.com',
-    category: 'Campaign & Leadership',
-    tier: 'Full Custom Application',
-    status: 'Studio Ready',
-    theme: 'campaign-navy',
-    primaryColor: '#00081e',
-    accentColor: '#C5A059',
-    tagline: 'Courtroom Integrity. Constitutional Defense. Proven Leadership.',
-    description: 'Over 28 years of courtroom trial experience, dedicated to upholding the Constitution, protecting Texas families, and delivering efficient, impartial justice.',
-    heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200',
-    badges: ['28+ Years Trial Experience', 'Endorsed by Law Enforcement', 'Preserving the Constitution', 'Lifelong Texan'],
-    proofBadgeText: 'Official 2026 Endorsements · Texas Bar Association Verified',
-    services: [
-      { title: 'Courtroom & Constitutional Integrity', description: 'Upholding the rule of law without political bias or judicial activism.', duration: 'Key Platform', highlight: true },
-      { title: 'Youth Intervention & Diversion', description: 'Early intervention programs to break criminal cycles and rehabilitate youth.', duration: 'Community Priority' },
-      { title: 'Docket Efficiency & Taxpayer Savings', description: 'Modernizing case management to eliminate backlog and save county funds.', duration: 'Fiscal Policy' }
-    ],
-    testimonials: [
-      { quote: 'Deborah has the highest ethical standards and sharpest legal mind in our district.', author: 'Justice Franklin Vance', role: 'Texas Court of Appeals (Ret.)', rating: 5, verified: true },
-      { quote: 'Fair, decisive, and dedicated to the safety of our neighborhoods and families.', author: 'Sheriff Hector Ramirez', role: 'County Law Enforcement Coalition', rating: 5, verified: true }
-    ],
-    depositAmount: 3750,
-    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'intake-rustic-smokehouse',
-    businessName: 'The Rustic Oak Smokehouse',
-    clientContact: 'Cody & Tyler Miller',
-    email: 'catering@rusticoakbbq.com',
-    phone: '(512) 555-SMOKE',
-    address: '1402 E 7th St, Austin, TX 78702',
-    domain: 'rusticoakbbq.com',
-    category: 'Food & Beverage',
-    tier: 'Lead Generation Site',
-    status: 'Deposit Paid',
-    theme: 'crimson-bold',
-    primaryColor: '#1c1917',
-    accentColor: '#dc2626',
-    tagline: '16-Hour Post Oak Pit Barbecue & Hill Country Catering',
-    description: 'Authentic Central Texas barbecue smoked low and slow over native post oak logs. Family recipes, homemade sausage, and full-service event catering across Travis County.',
-    heroImage: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&q=80&w=1200',
-    badges: ['16-Hour Post Oak Smoked', 'Central Texas Heritage', 'Family Owned & Operated', 'Full Smoker Rig Catering'],
-    proofBadgeText: 'Top 50 Texas BBQ Pick · Reader Favorite',
-    services: [
-      { title: 'Full-Service Pit BBQ Catering', description: 'On-site post oak smoker catering for weddings, corporate galas, and private events with custom carving stations.', price: 'From $24/plate', highlight: true },
-      { title: 'Custom Meat Market & Bulk Orders', description: 'Vacuum-sealed whole prime briskets, smoked beef ribs, and jalapeño cheddar links shipped hot or chilled.', price: 'Priced per lb' },
-      { title: 'Hill Country Event Venue Booking', description: 'Private covered beer garden and live acoustic music stage rental for parties of 50 to 300 guests.', price: 'Custom Quote' }
-    ],
-    testimonials: [
-      { quote: 'The bark on their prime brisket is legendary. Best catering experience in Central Texas!', author: 'Marcus Sterling', role: 'Corporate Event Planner', rating: 5, verified: true },
-      { quote: 'We drive an hour just for their brisket and jalapeño links. Bring cash for the peach cobbler — it sells out fast.', author: "Dwayne 'Smokey' Harrell", role: 'Texas Monthly Reader Pick', rating: 5, verified: true }
-    ],
-    depositAmount: 1750,
-    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'intake-aura-salon',
-    businessName: 'Aura Luxury Salon & Spa',
-    clientContact: 'Genevieve Laurent',
-    email: 'concierge@aurasalonspa.com',
-    phone: '(512) 555-GLAM',
-    address: '2200 S Congress Ave, Austin, TX',
-    domain: 'aurasalonspa.com',
-    category: 'Beauty & Wellness',
-    tier: 'Full Custom Application',
-    status: 'Assets Pending',
-    theme: 'luxury',
-    primaryColor: '#0c0a09',
-    accentColor: '#d97706',
-    tagline: 'Haute Coiffure, Bespoke Color, and Editorial Botanical Spa',
-    description: 'An oasis of serene French-Texan luxury on South Congress. Specializing in bespoke balayage, organic scalp rituals, and bridal couture styling.',
-    heroImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1200',
-    badges: ['Master Colorists', 'Organic Botanical Products', 'Beverly Hills Trained', 'Private Suite Booking'],
-    proofBadgeText: '4.9 Stars (240+ Verified Reviews)',
-    services: [
-      { title: 'Couture Balayage & Gloss', description: 'Hand-painted sun-kissed dimension with organic bond-building glaze and custom toner.', price: 'From $285', duration: '3.5 hrs', highlight: true },
-      { title: 'Botanical Hair & Scalp Therapy', description: 'Multi-step Japanese head spa with cedarwood steam, scalp exfoliation, and deep peptide infusion.', price: 'From $175', duration: '75 min' },
-      { title: 'Bridal & Editorial VIP Suite', description: 'Private champagne studio booking with complete hair, airbrush makeup, and preview trials.', price: 'From $550', duration: '4.0 hrs' }
-    ],
-    testimonials: [
-      { quote: 'Genevieve is a genius with color. My blonde has never looked healthier or more radiant.', author: 'Julianna Vance', role: 'Vogue Contributing Stylist', rating: 5, verified: true }
-    ],
-    depositAmount: 3750,
-    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+/**
+ * There is deliberately no sample-client data here any more.
+ *
+ * A 130-line DEFAULT_SAMPLE_CLIENTS array stood in whenever the list was empty,
+ * and the loader below only replaced it `if (stored.length)`. So deleting your
+ * last real client resurrected the demo data — and one of those demo clients was
+ * a real candidate, with his real address and phone. Morgan deleted him, watched
+ * him vanish, reloaded, and there he was again.
+ *
+ * An empty list is a true statement about an account with no clients, and the
+ * empty state below already says so properly.
+ */
 
 const PRESET_TEMPLATES = [
   {
@@ -265,15 +149,14 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings, onProjectProposal, onDeleteProject, onEngagementChange, onFindBusiness }: ClientIntakeViewProps) {
+export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, intakePrefill, projects, onOpenProject, onProjectSettings, onProjectProposal, onDeleteProject, onEngagementChange, onFindBusiness, onPrefillConsumed }: ClientIntakeViewProps) {
   // Paint from cache immediately, then reconcile with Supabase.
   const [submissions, setSubmissions] = useState<IntakeSubmission[]>([]);
   const [shareLinkLoading, setShareLinkLoading] = useState(false);
   const [reviewSubmission, setReviewSubmission] = useState<IntakeSubmission | null>(null);
 
   const [clients, setClients] = useState<ClientIntake[]>(() => {
-    const cached = cachedIntakes();
-    return cached.length ? cached : DEFAULT_SAMPLE_CLIENTS;
+    return cachedIntakes();
   });
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -339,18 +222,29 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }
   }, [form.heroImage]);
 
+  // Opens the form when arriving from Lead Finder with a prospect in hand, then
+  // tells the parent to drop the prefill.
+  //
+  // Without that second half the prefill sat in localStorage for good, so the
+  // effect fired on every visit and the Clients tab force-opened a blank intake
+  // form for ever — you could not look at your client list without dismissing a
+  // dialog first.
   useEffect(() => {
     if (intakePrefill && Object.keys(intakePrefill).length > 0) {
       setForm(prev => ({ ...prev, ...intakePrefill }));
       setIsNewModalOpen(true);
+      onPrefillConsumed?.();
     }
-  }, [intakePrefill]);
+  }, [intakePrefill, onPrefillConsumed]);
 
   // Source of truth is Supabase; the repo caches on the way through.
   useEffect(() => {
     (async () => {
-      const stored = await listIntakes();
-      if (stored.length) setClients(stored);
+      // Always take the server's answer, including an empty one. Guarding this
+      // with `if (stored.length)` meant a deleted client could never actually
+      // leave the screen: the delete succeeded, the reload returned nothing,
+      // and nothing overwrote the stale list.
+      setClients(await listIntakes());
       
       const storedSubmissions = await listSubmissions();
       setSubmissions(storedSubmissions);

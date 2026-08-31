@@ -23,7 +23,7 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-      <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-auto py-0">
+      <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
         
         {/* Modal Header */}
         <div className="p-5 border-b border-stone-800 flex items-center justify-between bg-stone-950/80">

@@ -1072,7 +1072,13 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       </header>
 
       {/* ── DESKTOP: Full Master Action Bar ─────────────────────────── */}
-      <header className="hidden md:flex h-16 border-b border-stone-800/80 px-3 sm:px-4 items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3">
+      {/* overflow-x-auto because every child here is flex-shrink-0 and the row
+          does not wrap. Below roughly 1500px the right-hand end — Deploy among
+          it — simply left the screen, with no scrollbar and nothing to drag,
+          which is why the only workaround was zooming the whole browser out.
+          Scrolling keeps every control reachable without reflowing a toolbar
+          whose order carries meaning. */}
+      <header className="hidden md:flex h-16 border-b border-stone-800/80 px-3 sm:px-4 items-center justify-between bg-stone-950 text-stone-100 backdrop-blur-md flex-shrink-0 z-30 gap-2 sm:gap-3 overflow-x-auto overscroll-x-contain">
         
         {/* Left Section: Mobile App Navigation Hamburger, Director / Sidebar Toggle, Active Experience Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
