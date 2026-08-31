@@ -198,23 +198,23 @@ Texas Sons Digital Platform Team
         subject: `Join our movement — Official Campaign Platform for ${editForm.companyName}`,
         body: `Dear Community Leader,
 
-We are excited to share the official campaign platform for ${editForm.companyName} with trusted leaders across Atascosa County.
+We are excited to share the official campaign platform for ${editForm.companyName} with trusted leaders in the community.
 
 Explore the official campaign website here:
 👉 ${siteLink}
 
-With over 28 years of dedicated Texas law enforcement service, Master Peace Officer certification, and the SAPD Medal of Valor, Ernest Trevino is committed to proactive crime interdiction, school safety, and constitutional integrity.
+${editForm.tagline || ''}
 
 How You Can Support:
 • Request a Campaign Yard Sign directly on the site
-• RSVP for our upcoming Community Town Hall & BBQ Fundraiser
+• RSVP for upcoming community events
 • Sign up to join our grassroots volunteer coalition
 ${targetNotes ? `\nCommunity Note:\n• ${targetNotes}\n` : ''}
 Thank you for your continued leadership and support.
 
 Respectfully,
-Ernest Trevino Campaign Team
-Campaign HQ: Jourdanton, TX | (830) 555-VOTE`
+${editForm.companyName} Campaign Team
+${editForm.address}`
       };
     } else {
       // Default: campaign-presentation
@@ -229,17 +229,14 @@ You can review the live, fully interactive platform here:
 
 Key Highlights Included in This Build:
 • Core Policy Platform & Pillars:
-  - Proactive Violent Crime & Cartel Narcotics Interdiction
-  - School & Campus Safety Taskforce
-  - Modernized Jail Operations & Taxpayer Fiscal Accountability
+${(snapshot?.services || []).slice(0, 3).map((s: any) => '  - ' + s.title).join(String.fromCharCode(10)) || '  - (add their platform pillars in the Studio)'}
 
-• Verified Career Credentials & Endorsements:
-  - SAPD Medal of Valor Tactical Leadership Citation
-  - 28+ Years Texas Law Enforcement & Certified Master Peace Officer
+${(snapshot?.badges || []).length ? '• Credentials & Endorsements:' : ''}
+${(snapshot?.badges || []).map((b: any) => '  - ' + b).join(String.fromCharCode(10))}
 
 • Public Voter Engagement & Mobilization:
-  - Live Atascosa County Voter Information Center & Polling Guide
-  - Community Town Hall & BBQ Rally RSVP System
+  - Voter Information Center & Polling Guide
+  - Community Event RSVP System
   - Instant Yard Sign & Grassroots Volunteer Intake (Direct Database Sync)
   - Official Legal Political Advertising Disclaimer (Treasurer: ${editForm.treasurer})
 ${targetNotes ? `\nCustom Campaign Instructions:\n• ${targetNotes}\n` : ''}
@@ -263,7 +260,7 @@ https://texassons.dev | (512) 555-TEXAS`
 
     const deliverables = isCamp ? [
       '1. Custom Single-Page Responsive Campaign Web Platform (Mobile & Desktop optimized)',
-      '2. Atascosa County Voter Information Center & Polling Location Directory (#voting)',
+      '2. Voter Information Center & Polling Location Directory (#voting)',
       '3. Public Community Events & Town Hall / BBQ RSVP System with instant attendee logging (#events)',
       '4. Grassroots Volunteer & Yard Sign Intake Form connected to real-time database sync',
       '5. Texas Election Code § 255.001 Political Advertising Legal Compliance Integration',
@@ -381,16 +378,23 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
   // Re-synchronize form when modal opens or props change
   useEffect(() => {
     if (isOpen) {
-      const name = project?.companyName || snapshot?.profile?.name || 'Ernest Trevino for Atascosa County Sheriff';
-      const client = project?.clientName || snapshot?.profile?.name || 'Ernest Trevino';
-      const email = snapshot?.profile?.email || project?.blueprint?.profile?.email || 'trevinofortransparency@yahoo.com';
-      const phone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '(830) 555-VOTE';
-      const address = snapshot?.profile?.address || project?.blueprint?.profile?.address || 'Jourdanton, TX 78026';
+      // Empty, for the same reason as the initial state above.
+      //
+      // The initial values were cleared and these were not, and this effect runs
+      // on open — so the modal was reset to a real sheriff candidate's name,
+      // email and phone every single time it was opened, three hundred lines
+      // below a comment promising it would not be. Fixing one of two places is
+      // how this repo's worst bugs have all worked.
+      const name = project?.companyName || snapshot?.profile?.name || '';
+      const client = project?.clientName || snapshot?.profile?.name || '';
+      const email = snapshot?.profile?.email || project?.blueprint?.profile?.email || '';
+      const phone = snapshot?.profile?.phone || project?.blueprint?.profile?.phone || '';
+      const address = snapshot?.profile?.address || project?.blueprint?.profile?.address || '';
       const domain = project?.domain || `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`;
       const status = (project?.status || 'QA & Staging') as Status;
       const tier = (project?.tier || 'Lead Generation Site') as Tier;
-      const tagline = snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || 'Honest Leadership. Safer Communities. Stronger Atascosa County.';
-      const treasurer = snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || 'Joseph S. Boyle';
+      const tagline = snapshot?.profile?.tagline || project?.blueprint?.profile?.tagline || '';
+      const treasurer = snapshot?.profile?.treasurerName || project?.blueprint?.profile?.treasurerName || '';
 
       setEditForm({
         companyName: name,
@@ -900,7 +904,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="text"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    placeholder="e.g. Ernest Trevino"
+                    placeholder="Who this is going to"
                     className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
@@ -912,7 +916,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    placeholder="e.g. trevinofortransparency@yahoo.com"
+                    placeholder="Their email address"
                     className="w-full px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                 </div>
@@ -1069,7 +1073,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
                     type="text"
                     value={contractCustomClauses}
                     onChange={(e) => setContractCustomClauses(e.target.value)}
-                    placeholder="Custom Clauses / Special Notes (e.g. Includes Joseph S. Boyle campaign treasurer setup)..."
+                    placeholder="Custom Clauses / Special Notes ..."
                     className="flex-1 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-xs text-stone-200 focus:outline-none focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20"
                   />
                   <button

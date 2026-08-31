@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
-import { listIntakes, saveIntake, cachedIntakes, recordEvent } from '../../store';
+import { listIntakes, saveIntake, removeIntake, cachedIntakes, recordEvent } from '../../store';
 import { listSubmissions, IntakeSubmission, markSubmissionReviewed } from '../../store/submissions';
 import { extractPaletteFromImage, ExtractedColorPalette } from '../../utils/colorExtractor';
 
@@ -493,9 +493,21 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }
   };
 
-  const handleDeleteClient = (id: string) => {
-    if (confirm('Are you sure you want to remove this client intake dossier?')) {
-      setClients(prev => prev.filter(c => c.id !== id));
+  const handleDeleteClient = async (id: string) => {
+    const target = clients.find(c => c.id === id);
+    if (!confirm(`Delete the dossier for ${target?.businessName || 'this client'}? Their built site, if any, is not affected.`)) return;
+
+    // This only filtered local state and never called the server, so a deleted
+    // dossier reappeared on the next reload — and the operator, having watched
+    // it vanish, had no reason to look. A delete that does not persist is worse
+    // than no delete: it teaches you to trust a result that is not real.
+    const previous = clients;
+    setClients(prev => prev.filter(c => c.id !== id));
+    try {
+      await removeIntake(id);
+    } catch (err: any) {
+      setClients(previous);
+      alert(err?.message || 'Could not delete that dossier. It is still there.');
     }
   };
 
