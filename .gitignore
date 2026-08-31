@@ -17,3 +17,7 @@ coverage/
 # notes rather than project source. Better still, move it outside this
 # directory — nesting one git repo inside another invites exactly that mistake.
 /vault/
+
+# Local responsive audit outputs
+.audit-profile/
+.audit-shots/
