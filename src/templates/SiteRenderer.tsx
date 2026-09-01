@@ -194,6 +194,7 @@ export function SiteRenderer({
         return (
           <GalleryBlock
             images={project.profile.galleryImages}
+            instagramUrl={project.profile.instagramUrl}
             theme={project.theme}
             accentColor={accentColor}
             title={p.title}

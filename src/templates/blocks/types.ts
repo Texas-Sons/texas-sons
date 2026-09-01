@@ -82,6 +82,8 @@ export interface BusinessProfile {
   address?: string;
   hours?: string | string[];
   logoUrl?: string;
+  /** Public profile, linked from the gallery. */
+  instagramUrl?: string;
   /** Multiplier on the navbar logo's height, 1 being the default 2.5rem. */
   logoScale?: number;
   heroImage?: string;

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { resizeImage } from '../IntakePortal/imageUtils';
+import { ServicesEditor, type EditableService } from '../ServicesEditor';
 import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
   Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon, User as UserIcon, Upload as UploadIcon,
   Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal,
-  LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2
+  LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2,
+  Instagram as InstagramIcon
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
 import { SUPPORTED_MODELS } from './aiModelConfig';
@@ -129,6 +131,7 @@ export interface InstantFormData {
   hours: string;
   heroImage: string;
   logoUrl: string;
+  instagramUrl: string;
   logoScale: string;
   ownerPhoto: string;
   ownerName: string;
@@ -170,6 +173,7 @@ const DEFAULT_FORM: InstantFormData = {
   phone: '', email: '', address: '', hours: '',
   heroImage: '',
   logoUrl: '',
+  instagramUrl: '',
   logoScale: '1',
   ownerPhoto: '', ownerName: '', ownerRole: '',
   theme: 'campaign-navy',
@@ -201,6 +205,7 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     hours: Array.isArray(snap.profile.hours) ? snap.profile.hours.join(', ') : (snap.profile.hours || ''),
     heroImage: snap.profile.heroImage || '',
     logoUrl: snap.profile.logoUrl || '',
+    instagramUrl: snap.profile.instagramUrl || '',
     logoScale: String(snap.profile.logoScale ?? 1),
     ownerPhoto: snap.profile.ownerPhoto || '',
     ownerName: snap.profile.ownerName || '',
@@ -302,7 +307,18 @@ function mergeBadges(base: string[], form: InstantFormData): string[] {
 
 function buildSnapshot(
   form: InstantFormData,
-  base?: ProjectSnapshot
+  base?: ProjectSnapshot,
+  /**
+   * The full service menu, for clients who have one.
+   *
+   * The three "pillar" fields are a campaign's platform, and mapping them onto
+   * `services` was fine for a candidate with three priorities and ruinous for a
+   * salon with nine treatments: the form could only ever describe the first
+   * three, under campaign labels, with no price, no duration and no booking
+   * link. When this is supplied it is the menu, and the pillar fields are not
+   * consulted at all.
+   */
+  services?: EditableService[]
 ): Omit<ProjectSnapshot, 'id' | 'prompt' | 'timestamp'> {
   const baseProfile = (base?.profile || {}) as Partial<BusinessProfile>;
 
@@ -319,6 +335,7 @@ function buildSnapshot(
     hours: form.hours,
     heroImage: form.heroImage,
     logoUrl: form.logoUrl,
+    instagramUrl: form.instagramUrl,
     logoScale: Number(form.logoScale) > 0 ? Number(form.logoScale) : 1,
     ownerPhoto: form.ownerPhoto,
     ownerName: form.ownerName,
@@ -333,7 +350,11 @@ function buildSnapshot(
   return {
     ...(base || {}),
     profile,
-    services: mergeServices(Array.isArray(base?.services) ? base!.services : [], form),
+    // A row typed into and then emptied is not a service. The editor lets one
+    // exist while it is being filled in; the site should never carry it.
+    services: services
+      ? (services.filter(s => (s.title || '').trim()) as ServiceItem[])
+      : mergeServices(Array.isArray(base?.services) ? base!.services : [], form),
     testimonials: mergeTestimonials(Array.isArray(base?.testimonials) ? base!.testimonials : [], form),
     theme: form.theme,
     heroVariant: form.heroVariant,
@@ -555,6 +576,15 @@ export default function BlueprintFormPanel({
     return activeSnapshot ? snapshotToForm(activeSnapshot) : DEFAULT_FORM;
   });
 
+  /**
+   * The service menu, held whole rather than flattened into three pillar
+   * fields. Everything the salon actually sells, with what it costs, how long
+   * it takes and where it is booked.
+   */
+  const [services, setServices] = useState<EditableService[]>(
+    () => (Array.isArray(activeSnapshot?.services) ? activeSnapshot!.services : [])
+  );
+
   const [activeTab, setActiveTab] = useState<TabKey>('archetype');
 
   useEffect(() => {
@@ -569,6 +599,7 @@ export default function BlueprintFormPanel({
   useEffect(() => {
     if (activeSnapshot) {
       setForm(snapshotToForm(activeSnapshot));
+      setServices(Array.isArray(activeSnapshot.services) ? activeSnapshot.services : []);
     }
   }, [activeSnapshot?.id, activeSnapshot?.profile?.name]);
 
@@ -587,11 +618,11 @@ export default function BlueprintFormPanel({
     }));
   };
 
-  const handleBuild = () => {
-    onBuild(buildSnapshot(form, activeSnapshot));
-  };
-
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
+
+  const handleBuild = () => {
+    onBuild(buildSnapshot(form, activeSnapshot, isCampaign ? undefined : services));
+  };
 
   return (
     <div className="w-full space-y-4 px-3.5 py-3 pb-32">
@@ -815,6 +846,17 @@ export default function BlueprintFormPanel({
               icon={Mail}
             />
           </div>
+          {/* Shown under the gallery. A gallery caps at a dozen photos and a
+              working stylist posts that many in a fortnight, so the link is
+              where the rest of the portfolio actually lives. */}
+          <InputField
+            label="Instagram Profile"
+            id="instagramUrl"
+            placeholder="https://instagram.com/theirhandle"
+            value={form.instagramUrl}
+            onChange={v => set('instagramUrl', v)}
+            icon={InstagramIcon}
+          />
           <div className="grid grid-cols-2 gap-2">
             <InputField 
               label="HQ Address / County" 
@@ -944,8 +986,24 @@ export default function BlueprintFormPanel({
       )}
 
       {/* ── TAB 4: Core Pillars & Platform ─────────────────────────────────── */}
-      {(activeTab === 'pillars' || activeTab === 'all') && (
-        <FormCard title={isCampaign ? "3 Campaign Pillars" : "3 Core Services"} icon={ShieldCheck} badge="Key Focus">
+      {(activeTab === 'pillars' || activeTab === 'all') && !isCampaign && (
+        <FormCard title="Services & Booking Links" icon={ShieldCheck} badge="What They Sell">
+          {/* The three pillar fields below are a campaign's platform. A salon
+              has a menu: nine treatments, each with a price, a duration and its
+              own Square link. Editing three of them through fields labelled
+              "Priority #1" and "Action Plan" described none of that, and — since
+              the form rebuilt `services` from what it could see — quietly cut
+              the other six every time the panel was used. */}
+          <ServicesEditor
+            services={services}
+            onChange={setServices}
+            fallbackBookingUrl={activeSnapshot?.profile?.bookingUrl}
+          />
+        </FormCard>
+      )}
+
+      {(activeTab === 'pillars' || activeTab === 'all') && isCampaign && (
+        <FormCard title="3 Campaign Pillars" icon={ShieldCheck} badge="Key Focus">
           <div className="space-y-3">
             <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
               <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
