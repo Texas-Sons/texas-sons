@@ -103,13 +103,38 @@ const REVEAL_AFTER_PX = 400;
  * tuning it is tuning how gelatinous the thing feels. Size follows softer, so
  * it is still swelling into its new shape after it has arrived.
  */
-const POSITION = { k: 168, c: 20 };
-const SIZE = { k: 128, c: 17 };
+const POSITION = { k: 210, c: 22 };
+const SIZE = { k: 150, c: 18 };
 
-/** It gathers itself before it goes. Anticipation, in the animator's sense. */
+/**
+ * How much of the target's own motion a spring inherits.
+ *
+ * Damping a spring against its absolute velocity means it spends that damping
+ * fighting the target's motion as well as its own overshoot, and the steady
+ * error while chasing something that keeps moving is roughly its speed over the
+ * stiffness. Scrolling quickly, that error is most of the screen — which is
+ * exactly the sluggishness: not a slow spring, a spring being asked to catch
+ * something while braking against the fact that it is moving.
+ *
+ * Damping against velocity *relative to the target* removes it. At a steady
+ * chase the body simply travels at the target's speed with no error left over.
+ * The droplets take less than all of it on purpose: their lag is the point.
+ */
+const BODY_FOLLOW = 1;
+const DROPLET_FOLLOW = 0.55;
+
+/**
+ * It gathers itself before it goes. Anticipation, in the animator's sense — and
+ * dead time, which is the one thing that always reads as lag. Scaled away when
+ * the page is moving quickly: a pause to think about it is charming at rest and
+ * infuriating when you are already three screens further down.
+ */
 const ANTICIPATE_MS = 150;
 /** However lively the spring, it must always finish and free the slot. */
-const MORPH_CEILING_MS = 2600;
+const MORPH_CEILING_MS = 1800;
+
+/** Page scroll speed, in px/s, at which the handoff is treated as urgent. */
+const URGENT_SCROLL = 1100;
 
 /** Speed, in px/s, at which it is at its most deformed. */
 const FULL_STRETCH_SPEED = 2400;
@@ -132,10 +157,25 @@ const centreY = (b: Box) => b.top + b.height / 2;
 interface Spring { value: number; velocity: number }
 const spring = (value: number): Spring => ({ value, velocity: 0 });
 
-/** One step of `a = -k(x - target) - c·v`, integrated over dt seconds. */
-function advance(s: Spring, target: number, dt: number, k: number, c: number) {
-  s.velocity += (-k * (s.value - target) - c * s.velocity) * dt;
+/**
+ * One step of `a = -k(x - target) - c(v - targetVelocity·follow)`, over dt
+ * seconds. The damping term is what makes this track rather than trail — see
+ * BODY_FOLLOW.
+ */
+function advance(
+  s: Spring, target: number, dt: number, k: number, c: number,
+  targetVelocity = 0, follow = 0
+) {
+  s.velocity += (-k * (s.value - target) - c * (s.velocity - targetVelocity * follow)) * dt;
   s.value += s.velocity * dt;
+}
+
+/** Rate of change of a value that is read fresh each frame, kept sane. */
+function rateOf(now: number, previous: number, dt: number): number {
+  if (dt <= 0) return 0;
+  // A slot can jump — a layout change, a box that was display:none. A jump is
+  // not a speed, and feeding one in would fire the body across the viewport.
+  return Math.max(-6000, Math.min(6000, (now - previous) / dt));
 }
 
 export function BookingFab({
@@ -156,6 +196,8 @@ export function BookingFab({
 
   const floatBoxRef = useRef<Box | null>(null);
   const rafRef = useRef<number | null>(null);
+  /** How fast the page is moving when a handoff is called for. */
+  const scrollSpeedRef = useRef(0);
   const ownerRef = useRef<Slot>('float');
   const [owner, setOwner] = useState<Slot>('float');
   const [morphing, setMorphing] = useState(false);
@@ -248,8 +290,17 @@ export function BookingFab({
     const size = spring(0);
     const drops = DROPLETS.map(() => ({ x: spring(px.value), y: spring(py.value) }));
 
+    // How much of a hurry the reader is in. A handoff triggered by a flick is
+    // not the same event as one triggered by a slow drift past the hero, and
+    // giving them the same timing is what makes the fast one feel slow.
+    const urgency = clamp01(scrollSpeedRef.current / URGENT_SCROLL);
+    const gatherMs = ANTICIPATE_MS * (1 - urgency);
+    const hurry = 1 + urgency * 0.9;
+
     const started = performance.now();
     let last = started;
+    let previousTargetX = centreX(endBox) - centreX(home);
+    let previousTargetY = centreY(endBox) - centreY(home);
 
     const frame = (now: number) => {
       // Clamped: a backgrounded tab hands back a dt of several seconds, and a
@@ -265,17 +316,24 @@ export function BookingFab({
 
       // It gathers before it goes: squashes in place, holding position, the
       // way anything about to spring somewhere does.
-      const gather = elapsed < ANTICIPATE_MS
-        ? Math.sin(Math.PI * (elapsed / ANTICIPATE_MS))
+      const gather = gatherMs > 0 && elapsed < gatherMs
+        ? Math.sin(Math.PI * (elapsed / gatherMs))
         : 0;
-      const launched = elapsed >= ANTICIPATE_MS;
+      const launched = elapsed >= gatherMs;
 
       const targetX = centreX(b) - centreX(home);
       const targetY = centreY(b) - centreY(home);
+      // The destination's own speed, which the body inherits instead of
+      // braking against.
+      const targetVx = rateOf(targetX, previousTargetX, dt);
+      const targetVy = rateOf(targetY, previousTargetY, dt);
+      previousTargetX = targetX;
+      previousTargetY = targetY;
+
       if (launched) {
-        advance(px, targetX, dt, POSITION.k, POSITION.c);
-        advance(py, targetY, dt, POSITION.k, POSITION.c);
-        advance(size, 1, dt, SIZE.k, SIZE.c);
+        advance(px, targetX, dt, POSITION.k * hurry, POSITION.c, targetVx, BODY_FOLLOW);
+        advance(py, targetY, dt, POSITION.k * hurry, POSITION.c, targetVy, BODY_FOLLOW);
+        advance(size, 1, dt, SIZE.k * hurry, SIZE.c);
       } else {
         px.value = centreX(a) - centreX(home);
         py.value = centreY(a) - centreY(home);
@@ -284,11 +342,14 @@ export function BookingFab({
       // Deformation is a function of how fast it is going, not of how far
       // through the animation it is. This is the whole difference between
       // slime and a rectangle on a timeline.
-      const speed = Math.hypot(px.velocity, py.velocity);
+      // Speed relative to the target, not to the page. Deformation should come
+      // from closing a gap, and a body keeping pace with a scrolling
+      // destination is not straining at anything.
+      const speed = Math.hypot(px.velocity - targetVx, py.velocity - targetVy);
       const stretch = Math.min(MAX_STRETCH, speed / FULL_STRETCH_SPEED * MAX_STRETCH)
         + gather * 0.18;
       const heading = speed > 12
-        ? (Math.atan2(py.velocity, px.velocity) * 180) / Math.PI
+        ? (Math.atan2(py.velocity - targetVy, px.velocity - targetVx) * 180) / Math.PI
         // Standing still it has no direction to stretch along, so the gather
         // squashes it downward like something crouching.
         : 90;
@@ -343,8 +404,10 @@ export function BookingFab({
         const el = dropsRef.current[i];
         if (!el) return;
         const spec = DROPLETS[i];
-        advance(drop.x, px.value + spec.drift * stretch, dt, spec.k, spec.c);
-        advance(drop.y, py.value, dt, spec.k, spec.c);
+        advance(drop.x, px.value + spec.drift * stretch, dt, spec.k * hurry, spec.c,
+                px.velocity, DROPLET_FOLLOW);
+        advance(drop.y, py.value, dt, spec.k * hurry, spec.c,
+                py.velocity, DROPLET_FOLLOW);
         const alive = clamp01(stretch / MAX_STRETCH) * (1 - arrival);
         if (alive < 0.03) { el.style.opacity = '0'; return; }
         el.style.opacity = (alive * 0.9).toFixed(2);
@@ -358,7 +421,10 @@ export function BookingFab({
         if (arriving) arriving.style.opacity = String(easeOutCubic(arrival));
       }
 
-      const settled = speed < 8 && remaining < 1.2 && Math.abs(1 - grow) < 0.01;
+      // Settled means caught up, not stationary. Judging it on absolute speed
+      // meant a handoff during a long scroll could never finish and always ran
+      // to the ceiling — which is most of what felt slow.
+      const settled = speed < 14 && remaining < 2 && Math.abs(1 - grow) < 0.012;
       if ((launched && settled) || elapsed > MORPH_CEILING_MS) { land(); return; }
       rafRef.current = requestAnimationFrame(frame);
     };
@@ -437,7 +503,21 @@ export function BookingFab({
   useEffect(() => {
     if (isPreview) return;
     setHasSlots(!!slotEl('home') || !!slotEl('dock'));
-    const onScroll = () => setScrolled(window.scrollY > REVEAL_AFTER_PX);
+    let lastY = window.scrollY;
+    let lastAt = performance.now();
+    const onScroll = () => {
+      const now = performance.now();
+      const dt = (now - lastAt) / 1000;
+      if (dt > 0.004) {
+        // Eased rather than sampled, so one stuttering frame does not decide
+        // how urgent the next handoff is.
+        const instant = Math.abs(window.scrollY - lastY) / dt;
+        scrollSpeedRef.current += (instant - scrollSpeedRef.current) * 0.4;
+        lastY = window.scrollY;
+        lastAt = now;
+      }
+      setScrolled(window.scrollY > REVEAL_AFTER_PX);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
