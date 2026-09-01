@@ -1252,12 +1252,26 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
    * Two copies of this would drift, and the drift would only show up on a
    * client's live site.
    */
-  async function publishBlueprint(siteName: string, blueprint: any): Promise<{ siteUrl: string; deploymentUrl: string; slug: string }> {
-    const { accountId, apiToken } = getCloudflareCredentials();
+  /**
+   * Builds the page a deploy uploads, without uploading it.
+   *
+   * Split out of publishBlueprint so the true preview and the real deploy
+   * produce the same bytes from the same code. Parity used to be maintained by
+   * hand — a second render path in the Studio kept in step with this one — and
+   * it drifted four separate times: a hardcoded block list, unmerged client
+   * media, window-measured breakpoints, and unset theme variables. Every one was
+   * found by the operator noticing the live site did not match what they had
+   * approved. One code path cannot drift.
+   *
+   * `preview` is the single deliberate difference: it marks the page so the
+   * lead form does not file real enquiries from a page nobody has published.
+   */
+  async function buildSiteHtml(
+    siteName: string,
+    blueprint: any,
+    opts: { preview?: boolean } = {}
+  ): Promise<{ html: string; siteUrl: string; slug: string }> {
     const slug = sanitizeProjectName(siteName || blueprint?.profile?.name);
-
-    let project = await findPagesProject(accountId, apiToken, slug);
-    if (!project) project = await createPagesProject(accountId, apiToken, slug);
 
     const clientHtmlPath = path.join(process.cwd(), 'dist', 'client.html');
     let clientHtml = '';
@@ -1291,8 +1305,18 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     }
     const apiJson = JSON.stringify(apiBase).replace(/</g, '\\u003c');
 
-    const injection = `${buildSeoTags(blueprint, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};window.__TXSONS_API__ = ${apiJson};</script></head>`;
-    const finalHtml = clientHtml.replace('</head>', injection);
+    const previewFlag = opts.preview ? 'window.__TXSONS_PREVIEW__ = true;' : '';
+    const injection = `${buildSeoTags(blueprint, siteUrl)}\n  <script>window.__TXSONS_BLUEPRINT__ = ${blueprintJson};window.__TXSONS_API__ = ${apiJson};${previewFlag}</script></head>`;
+    const html = clientHtml.replace('</head>', injection);
+    return { html, siteUrl, slug };
+  }
+
+  async function publishBlueprint(siteName: string, blueprint: any): Promise<{ siteUrl: string; deploymentUrl: string; slug: string }> {
+    const { accountId, apiToken } = getCloudflareCredentials();
+    const { html: finalHtml, siteUrl, slug } = await buildSiteHtml(siteName, blueprint);
+
+    let project = await findPagesProject(accountId, apiToken, slug);
+    if (!project) project = await createPagesProject(accountId, apiToken, slug);
 
     const files: Record<string, string | Buffer> = {
       'index.html': finalHtml,
@@ -1331,6 +1355,86 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     const deploymentUrl = await uploadDeployment(accountId, apiToken, slug, files);
     return { siteUrl, deploymentUrl, slug };
   }
+
+  /**
+   * Preview builds, held in memory until they are looked at.
+   *
+   * Keyed by an unguessable id rather than by project, because the page is
+   * served without a session: an iframe sends no Authorization header, so a
+   * URL behind the admin gate could only ever 401. Short-lived, so a link that
+   * escapes is worth nothing later, and capped, so a long editing session
+   * cannot grow the process without bound.
+   */
+  const previewBuilds = new Map<string, { html: string; expires: number }>();
+  const PREVIEW_TTL_MS = 15 * 60 * 1000;
+  const PREVIEW_MAX = 40;
+
+  function storePreview(html: string): string {
+    const now = Date.now();
+    for (const [key, value] of previewBuilds) {
+      if (value.expires <= now) previewBuilds.delete(key);
+    }
+    while (previewBuilds.size >= PREVIEW_MAX) {
+      const oldest = previewBuilds.keys().next().value;
+      if (oldest === undefined) break;
+      previewBuilds.delete(oldest);
+    }
+    const id = crypto.randomBytes(24).toString('hex');
+    previewBuilds.set(id, { html, expires: now + PREVIEW_TTL_MS });
+    return id;
+  }
+
+  /**
+   * Builds the page a deploy would upload and hands back a URL to look at it.
+   *
+   * The Studio's other preview renders the blueprint through React in the
+   * operator's own app, which is useful for editing but is not the deployed
+   * page: it has the app's fonts, the app's document head, no SEO, and no
+   * ClientApp wrapper. This route runs the deploy's own builder and returns
+   * the result, so what the operator approves is what the client receives.
+   */
+  app.post("/api/preview", async (req, res) => {
+    try {
+      const { projectName, currentSnapshot, projectId } = req.body;
+      if (!currentSnapshot) {
+        return res.status(400).json({ success: false, error: "currentSnapshot is required" });
+      }
+
+      // The same merge the deploy performs, in the same order. A preview that
+      // skipped it would be missing exactly the photos the client uploaded,
+      // which is the discrepancy this whole route exists to end.
+      let snapshot = currentSnapshot;
+      if (projectId) {
+        const { blueprint } = await blueprintWithClientMedia(
+          getSupabaseAdmin(), String(projectId), currentSnapshot
+        );
+        snapshot = blueprint;
+      }
+
+      const { html, siteUrl } = await buildSiteHtml(
+        projectName || currentSnapshot.profile?.name, snapshot, { preview: true }
+      );
+      res.json({ success: true, url: `/__preview/${storePreview(html)}`, siteUrl });
+    } catch (error: any) {
+      console.error('Preview error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  /** Serves a built preview. Outside /api deliberately — see storePreview. */
+  app.get('/__preview/:id', (req, res) => {
+    const id = String(req.params.id);
+    const build = previewBuilds.get(id);
+    if (!build || build.expires <= Date.now()) {
+      previewBuilds.delete(id);
+      return res.status(404).type('html').send(
+        '<!doctype html><meta charset="utf-8"><body style="font:14px system-ui;padding:2rem;color:#78716c">' +
+        'This preview expired. Switch tabs and back to build a fresh one.</body>'
+      );
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    res.type('html').send(build.html);
+  });
 
   app.post("/api/deploy", async (req, res) => {
     try {
@@ -2764,6 +2868,17 @@ ${text.trim()}`);
       server: { middlewareMode: true },
       appType: "spa",
     });
+    // The true preview loads the built bundle from dist, exactly as the
+    // deployed page does. Vite serves source modules and knows nothing about
+    // dist, so without this the preview's <script src="/assets/index-HASH.js">
+    // 404s in development and the frame comes up blank. HTML is excluded so
+    // dist/index.html cannot shadow the app you are working in.
+    const builtAssets = express.static(path.join(process.cwd(), 'dist'), { index: false });
+    app.use((req, res, next) => {
+      if (req.path.endsWith('.html')) return next();
+      return builtAssets(req, res, next);
+    });
+
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');

@@ -97,6 +97,13 @@ export function ClientApp() {
   const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {
+    // The Studio's true preview renders this exact page from the same builder
+    // the deploy uses. That fidelity has one cost: without this guard, an
+    // operator clicking through their own preview files a real enquiry against
+    // a site no customer can reach yet.
+    if ((window as any).__TXSONS_PREVIEW__) {
+      throw new Error('Preview only — this form starts working when the site is published.');
+    }
     // Absolute when the deploy injected a base, relative in local development.
     // A relative path on a deployed site resolves to the Cloudflare Pages host,
     // which has no API — see the injection in publishBlueprint.

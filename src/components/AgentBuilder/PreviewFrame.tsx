@@ -48,6 +48,41 @@ function syncStyles(doc: Document) {
   }
 }
 
+/**
+ * Copies the client site's own font links into the frame.
+ *
+ * The preview clones the host page's stylesheets, and the host is index.html —
+ * this app, which loads Rye, DM Sans, Rajdhani and Oxanium. The client site is
+ * built from client.html, which loads Cinzel, Playfair Display, Inter,
+ * Montserrat and Libre Caslon, and theme.ts names those exact families. So
+ * every heading and every line of body copy in the preview rendered in a
+ * typeface the client would never see.
+ *
+ * Read out of client.html at runtime rather than repeated here. A second copy
+ * of the font list is a second thing to keep in step, and this component exists
+ * because things kept falling out of step.
+ */
+async function syncClientFonts(doc: Document) {
+  if (doc.head.querySelector('[data-preview-font]')) return;
+  try {
+    const res = await fetch('/client.html');
+    if (!res.ok) return;
+    const parsed = new DOMParser().parseFromString(await res.text(), 'text/html');
+    parsed.head.querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"]').forEach(node => {
+      const clone = node.cloneNode(true) as HTMLLinkElement;
+      clone.setAttribute('data-preview-font', '');
+      // client.html defers its fonts with media="print" plus an onload swap, so
+      // they do not block first paint. Cloned as-is that is a stylesheet which
+      // never applies to anything.
+      if (clone.media === 'print') clone.media = 'all';
+      clone.removeAttribute('onload');
+      doc.head.appendChild(clone);
+    });
+  } catch {
+    // A preview in the wrong typeface does not deserve an error banner.
+  }
+}
+
 export function PreviewFrame({ bodyStyle, bodyClassName, className, title, children }: PreviewFrameProps) {
   const ref = useRef<HTMLIFrameElement>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
@@ -61,6 +96,7 @@ export function PreviewFrame({ bodyStyle, bodyClassName, className, title, child
     const mount = doc.createElement('div');
     doc.body.appendChild(mount);
     syncStyles(doc);
+    syncClientFonts(doc);
     setRoot(mount);
 
     // Vite injects styles as the app runs, and the operator changes themes while

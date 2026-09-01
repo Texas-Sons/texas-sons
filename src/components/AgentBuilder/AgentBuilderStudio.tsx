@@ -441,7 +441,6 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   // Blueprint Dropdown State
   const [isBlueprintDropdownOpen, setIsBlueprintDropdownOpen] = useState(false);
   const [dropdownSearch, setDropdownSearch] = useState('');
-  const [previewMode, setPreviewMode] = useState<'site' | 'admin' | 'code'>('site');
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
@@ -828,6 +827,76 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     () => mergeClientMedia(project, clientMedia).blueprint,
     [project, clientMedia]
   );
+
+  /**
+   * The true preview: the page the deploy builds, served back and shown as-is.
+   *
+   * The preview above renders the blueprint through React inside this app,
+   * which is right for editing but is not the deployed page. It inherits the
+   * operator app's fonts, not the client site's; it has no injected SEO, no
+   * document title, and no ClientApp wrapper, so the sub-pages do not exist in
+   * it. Four separate times a difference like that reached a client's live site
+   * and was found by looking at the site, not by looking here.
+   *
+   * So this asks the server to run the deploy's own builder and hand back the
+   * result. There is nothing left to keep in step.
+   *
+   * Built on demand rather than on every keystroke: each build reads the bundle
+   * off disk and re-merges the client's media, and a frame that reloads while
+   * you type loses your place in the page. Editing happens in the other mode;
+   * this one is for the last look before publishing.
+   */
+  const [previewMode, setPreviewMode] = useState<'edit' | 'true'>('edit');
+  const [truePreview, setTruePreview] = useState<{ url: string; siteUrl?: string; builtFrom: string } | null>(null);
+  const [truePreviewBusy, setTruePreviewBusy] = useState(false);
+  const [truePreviewError, setTruePreviewError] = useState<string | null>(null);
+
+  // Compared against what the current preview was built from, so the operator
+  // is told the page is out of date instead of quietly reading a stale one.
+  const projectSignature = useMemo(() => {
+    try { return JSON.stringify(project); } catch { return String(Date.now()); }
+  }, [project]);
+  const truePreviewStale = !!truePreview && truePreview.builtFrom !== projectSignature;
+
+  const buildTruePreview = React.useCallback(async () => {
+    setTruePreviewBusy(true);
+    setTruePreviewError(null);
+    const builtFrom = projectSignature;
+    try {
+      const res = await apiFetch('/api/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectName: project.companyName || project.profile?.name,
+          currentSnapshot: project,
+          projectId: projectRowId(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data?.success === false) throw new Error(data?.error || `Preview failed (${res.status})`);
+      setTruePreview({ url: data.url, siteUrl: data.siteUrl, builtFrom });
+    } catch (e: any) {
+      // The most common cause by far, and the least obvious from the message
+      // the server sends up.
+      setTruePreviewError(
+        /client\.html/i.test(e?.message || '')
+          ? 'The built bundle is missing. Run npm run build once, then rebuild the preview.'
+          : e?.message || 'Could not build the preview.'
+      );
+    } finally {
+      setTruePreviewBusy(false);
+    }
+    // projectRowId is deliberately out of the dependency list: it is redefined
+    // every render, so including it would rebuild this callback every render.
+    // It reads only project.id, and project is already a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project, projectSignature]);
+
+  useEffect(() => {
+    if (activeTab !== 'preview' || previewMode !== 'true') return;
+    if (truePreview || truePreviewBusy || truePreviewError) return;
+    buildTruePreview();
+  }, [activeTab, previewMode, truePreview, truePreviewBusy, truePreviewError, buildTruePreview]);
 
   const projectRowId = () => {
     const id = project.id;
@@ -1697,22 +1766,78 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       className="w-3.5 h-3.5 object-contain rounded flex-shrink-0"
                       alt="Favicon"
                     />
-                    <span className="truncate">https://{project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev</span>
+                    <span className="truncate">
+                      {(previewMode === 'true' && truePreview?.siteUrl)
+                        || 'https://' + project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.pages.dev'}
+                    </span>
                   </div>
-                  <div className="w-10" />
+                  <div className="flex items-center gap-0.5 bg-stone-950 border border-stone-800 rounded-lg p-0.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewMode('edit')}
+                      title="Editable preview — click a block to inspect it"
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-colors ${
+                        previewMode === 'edit' ? 'bg-stone-800 text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                      }`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewMode('true')}
+                      title="The page the deploy builds, exactly as the client receives it"
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-colors ${
+                        previewMode === 'true' ? 'bg-stone-800 text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                      }`}
+                    >
+                      True
+                    </button>
+                  </div>
                 </div>
 
-                {/* One renderer, shared with ClientApp.
-                    This used to be a hardcoded list of nine blocks, so anything
-                    added to the deployed site — gallery, before/after, products —
-                    was invisible here and the preview lied about what the client
-                    would receive. */}
-                {/* Inside an iframe so the breakpoints are real.
-                    The device buttons used to change only the width of this box
-                    while the page inside kept rendering the desktop layout,
-                    because a media query measures the window and not the box.
-                    The frame has its own viewport, so the phone button now shows
-                    what a phone shows. */}
+                {previewMode === 'true' ? (
+                  /* The deploy's own output, served back and shown untouched.
+                     Nothing on this branch renders the blueprint a second time,
+                     which is the entire point — a second render path is what
+                     drifted, four times, onto a client's live site. */
+                  <div className="w-full flex-1 min-h-[600px] flex flex-col bg-stone-950">
+                    <div className="flex items-center justify-between gap-3 px-3 py-1.5 border-b border-stone-800/80 text-[11px] flex-shrink-0">
+                      <span className="text-stone-500 truncate">
+                        {truePreviewBusy
+                          ? 'Building the page a deploy would upload…'
+                          : truePreviewStale
+                            ? 'You have edited since this was built.'
+                            : 'The deployed page, built from your current draft.'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={buildTruePreview}
+                        disabled={truePreviewBusy}
+                        className={`px-2.5 py-1 rounded-lg font-bold flex-shrink-0 transition-colors disabled:opacity-40 ${
+                          truePreviewStale
+                            ? 'bg-[#C5A059] text-stone-950'
+                            : 'bg-stone-900 border border-stone-800 text-stone-300 hover:text-white'
+                        }`}
+                      >
+                        {truePreviewBusy ? 'Building…' : 'Rebuild'}
+                      </button>
+                    </div>
+                    {truePreviewError ? (
+                      <div className="flex-1 flex items-center justify-center p-8">
+                        <p className="max-w-sm text-center text-sm text-red-400">{truePreviewError}</p>
+                      </div>
+                    ) : truePreview ? (
+                      <iframe
+                        key={truePreview.url}
+                        src={truePreview.url}
+                        title="Deployed page preview"
+                        className="w-full flex-1 border-0 bg-white"
+                      />
+                    ) : (
+                      <div className="flex-1" />
+                    )}
+                  </div>
+                ) : (
                 <PreviewFrame
                   title="Live site preview"
                   className="w-full flex-1 min-h-[600px] border-0 bg-[color:var(--ts-bg)]"
@@ -1725,6 +1850,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                     selectedBlock={selectedBlock}
                   />
                 </PreviewFrame>
+                )}
               </div>
             )}
 
