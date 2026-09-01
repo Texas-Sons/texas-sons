@@ -49,6 +49,7 @@ import {
   Save,
   Trash2,
   Palette,
+  LayoutGrid,
   ShieldAlert,
   Settings2,
   LayoutDashboard,
@@ -105,7 +106,7 @@ import {
 } from './aiModelConfig';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { ClientIntake, Project } from '../../types';
-import BlueprintFormPanel from './BlueprintFormPanel';
+import BlueprintFormPanel, { FORM_TABS, type TabKey } from './BlueprintFormPanel';
 import CustomDomainModal from '../CustomDomainModal';
 import DeploymentHistoryModal from '../DeploymentHistoryModal';
 
@@ -434,7 +435,32 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isChatCollapsed, setIsChatCollapsed] = useState(false);
+  /**
+   * The configurator starts out of the way.
+   *
+   * It is a 24rem column pinned open against the one thing this screen is for,
+   * which is looking at the site. Most of a session is spent reading the
+   * preview, not filling in the form, and the form is two clicks away — the
+   * launcher below, or the toggle in the header.
+   */
+  const [isChatCollapsed, setIsChatCollapsed] = useState(true);
+
+  /**
+   * The tool launcher, and which section it was last asked to open.
+   *
+   * The nonce is what makes picking the same section twice work: without it,
+   * asking for the tab the panel already shows is a no-op and the launcher
+   * looks broken precisely when the operator is being decisive.
+   */
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [openTab, setOpenTab] = useState<{ key: TabKey; at: number } | undefined>();
+
+  const openSection = (key: TabKey) => {
+    setOpenTab({ key, at: Date.now() });
+    setToolsOpen(false);
+    if (window.innerWidth < 768) setIsMobileDirectorOpen(true);
+    else setIsChatCollapsed(false);
+  };
   const [isMobileDirectorOpen, setIsMobileDirectorOpen] = useState(false);
   const [isMobileQuickMenuOpen, setIsMobileQuickMenuOpen] = useState(false);
   const [outlawMode, setOutlawMode] = useState(true);
@@ -1614,6 +1640,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 onOpenHandoff={() => setIsHandoffOpen(true)}
                 onOpenAudit={() => setIsAuditOpen(true)}
                 onOpenProposal={() => setIsProposalModalOpen(true)}
+                openTab={openTab}
                 onBuild={(snap) => {
                   const newSnapshot: ProjectSnapshot = {
                     // The fifth place that minted a fresh id on an edit. Every
@@ -1634,6 +1661,48 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             </div>
           </div>
         )}
+
+        {/* Tool launcher.
+            Bottom-left, opposite the assistant's own button, because the
+            configurator now starts closed and something has to say where it
+            went. Each entry opens the panel already on that section, which is
+            the actual destination — landing on Archetype and hunting for
+            Identity is the step this removes. The tab row at the top of the
+            panel stays in charge once it is open. */}
+        <div className="absolute bottom-6 left-6 z-30 flex flex-col items-start gap-2 pointer-events-none">
+          {toolsOpen && FORM_TABS.map((tab, i) => {
+            const Icon = [LayoutGrid, Zap, Building2, ShieldCheck, Palette][i] || Sliders;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => openSection(tab.key)}
+                title={tab.title}
+                style={{ animationDelay: `${i * 35}ms` }}
+                className="pointer-events-auto flex items-center gap-2.5 pl-2.5 pr-4 py-2 rounded-2xl bg-stone-900 border border-stone-700 text-stone-200 text-xs font-bold shadow-xl hover:border-[#C5A059]/60 hover:text-white transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200 fill-mode-backwards"
+              >
+                <span className="w-7 h-7 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] flex-shrink-0">
+                  <Icon className="w-3.5 h-3.5" />
+                </span>
+                {tab.label}
+              </button>
+            );
+          })}
+
+          <button
+            type="button"
+            onClick={() => setToolsOpen(open => !open)}
+            aria-expanded={toolsOpen}
+            title={toolsOpen ? 'Close the tools' : 'Open the tools'}
+            className={`pointer-events-auto w-12 h-12 rounded-2xl border shadow-xl flex items-center justify-center transition-all active:scale-95 ${
+              toolsOpen
+                ? 'bg-[#C5A059] border-[#C5A059] text-stone-950 rotate-90'
+                : 'bg-stone-900 border-stone-700 text-[#C5A059] hover:border-[#C5A059]/60'
+            }`}
+          >
+            {toolsOpen ? <X className="w-5 h-5" /> : <Settings2 className="w-5 h-5" />}
+          </button>
+        </div>
 
         {/* Mobile Full-Screen Slide-Up Experience Director Drawer */}
         {isMobileDirectorOpen && (

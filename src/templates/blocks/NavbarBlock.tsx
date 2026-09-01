@@ -151,7 +151,11 @@ export function NavbarBlock({
         </nav>
 
         {/* Right CTA Button — Guaranteed Flex-Shrink-0 & No Cut Off */}
-        <div className="hidden sm:flex items-center flex-shrink-0 whitespace-nowrap z-10">
+        {/* Hidden while the drawer is open. The drawer carries its own, full
+            width and unmissable, so leaving this one up puts two identical
+            booking buttons on screen at once — and the drawer's exists
+            precisely because this one is not always there. */}
+        <div className={`${mobileMenuOpen ? 'hidden' : 'hidden sm:flex'} items-center flex-shrink-0 whitespace-nowrap z-10`}>
           <a
             href={ctaHref}
             {...ctaLinkProps}
@@ -177,7 +181,17 @@ export function NavbarBlock({
 
       {/* Mobile / Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="2xl:hidden border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <>
+        {/* The page kept showing through underneath, so the hero's booking
+            button sat a thumb's width below the drawer's and read as a second
+            copy of it. Dismisses on tap, which a drawer with no way out but the
+            X badly needed anyway. */}
+        <div
+          className="2xl:hidden fixed inset-0 top-20 z-30 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+        <div className="2xl:hidden relative z-40 border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             return (
@@ -208,6 +222,7 @@ export function NavbarBlock({
             </a>
           </div>
         </div>
+        </>
       )}
     </header>
   );

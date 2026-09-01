@@ -352,11 +352,33 @@ interface BlueprintFormPanelProps {
   onOpenAudit: () => void;
   onOpenProposal: () => void;
   isBusy: boolean;
+  /**
+   * Opens the panel on a section. Carries a nonce rather than being a plain
+   * value so that asking for the tab the panel is already on still works — the
+   * operator picking Identity from the launcher twice should land on Identity
+   * twice, not silently do nothing the second time.
+   */
+  openTab?: { key: TabKey; at: number };
   selectedModel?: string;
   onSelectModel?: (modelId: string) => void;
 }
 
-type TabKey = 'archetype' | 'brand' | 'pillars' | 'badges' | 'feature' | 'theme' | 'all';
+export type TabKey = 'archetype' | 'brand' | 'pillars' | 'badges' | 'feature' | 'theme' | 'all';
+
+/**
+ * The sections of this panel, in the order they are shown.
+ *
+ * Exported because the Studio's tool launcher offers the same five, and two
+ * hand-kept lists of the same thing is how one of them ends up naming a tab
+ * that no longer exists.
+ */
+export const FORM_TABS: { key: TabKey; label: string; title: string }[] = [
+  { key: 'archetype', label: 'Archetype', title: 'Visual Archetype' },
+  { key: 'feature', label: 'Feature', title: 'Signature Feature' },
+  { key: 'brand', label: 'Identity', title: 'Identity & Bio' },
+  { key: 'pillars', label: 'Pillars', title: 'Platform / Services' },
+  { key: 'theme', label: 'Style', title: 'Style & Tokens' },
+];
 
 const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: string }) => (
   <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -526,7 +548,7 @@ const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
 );
 
 export default function BlueprintFormPanel({
-  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy,
+  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy, openTab,
   selectedModel = 'claude-3-7-sonnet', onSelectModel
 }: BlueprintFormPanelProps) {
   const [form, setForm] = useState<InstantFormData>(() => {
@@ -534,6 +556,14 @@ export default function BlueprintFormPanel({
   });
 
   const [activeTab, setActiveTab] = useState<TabKey>('archetype');
+
+  useEffect(() => {
+    if (openTab) setActiveTab(openTab.key);
+    // Keyed on the nonce alone: the tab row above stays in charge of itself
+    // once the panel is open, and re-running this on every render would drag
+    // it back to whatever the launcher last asked for.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openTab?.at]);
 
   // Synchronize when the user switches snapshots/presets in the Studio
   useEffect(() => {
