@@ -161,7 +161,25 @@ export function NavbarBlock({
             width and unmissable, so leaving this one up puts two identical
             booking buttons on screen at once — and the drawer's exists
             precisely because this one is not always there. */}
-        <div className={`${mobileMenuOpen ? 'hidden' : 'hidden sm:flex'} items-center flex-shrink-0 whitespace-nowrap z-10`}>
+        <div className={`${mobileMenuOpen ? 'hidden' : 'hidden sm:flex'} items-center gap-2 flex-shrink-0 whitespace-nowrap z-10`}>
+          {/* Secondary, and it has to look it: two solid accent buttons side by
+              side are two primary actions, and the visitor is left choosing
+              between them instead of booking. Appears only from lg upward —
+              this bar has one element whose width depends on client data and
+              has already been pushed off the edge once by a long business name,
+              so a second button earns its place only where there is room. It is
+              in the menu at every width regardless. */}
+          {giftCardUrl && (
+            <a
+              href={giftCardUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex items-center gap-1.5 whitespace-nowrap px-3 xl:px-4 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold uppercase tracking-wider border transition-all hover:scale-[1.02] active:scale-[0.98] border-[color:var(--ts-border)] text-[color:var(--ts-text)] hover:border-[color:var(--ts-accent)] hover:text-[color:var(--ts-accent)] flex-shrink-0"
+            >
+              <Gift className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+              <span>Gift Cards</span>
+            </a>
+          )}
           <a
             href={ctaHref}
             {...ctaLinkProps}

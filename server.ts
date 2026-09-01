@@ -674,7 +674,7 @@ async function startServer() {
       // Vary matters here: without it a cache can hand one origin's allowance
       // to another and produce failures nobody can reproduce.
       res.setHeader('Vary', 'Origin');
-      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.setHeader('Access-Control-Max-Age', '600');
       // Deliberately NOT Allow-Credentials. Sessions travel as Bearer tokens
@@ -2707,6 +2707,47 @@ ${text.trim()}`);
     } catch (error: any) {
       console.error('[client] media save failed:', error?.message || error);
       res.status(500).json({ success: false, error: 'Could not save. Please try again.' });
+    }
+  });
+
+  /**
+   * Sets the order of a project's photos.
+   *
+   * `sort_order` has been on the table and in the read query since client_media
+   * shipped, and nothing ever wrote it — every row inserted at 0, so the
+   * gallery came out in whatever order Postgres felt like. Which photo leads a
+   * salon's portfolio is a decision, and it was being made by chance.
+   *
+   * Deliberately does NOT redeploy, unlike the upload and delete routes above.
+   * Those are the client acting on her own site and publish themselves; this is
+   * the operator arranging a page in the Studio, and an operator's edits never
+   * publish without them pressing Deploy. That distinction is the whole reason
+   * published_blueprint exists.
+   */
+  app.patch("/api/client/:projectId/media/order", clientGate, async (req: ClientRequest, res) => {
+    try {
+      const projectId = req.params.projectId;
+      const ids = Array.isArray(req.body?.ids) ? req.body.ids.map(String) : null;
+      if (!ids || !ids.length) {
+        return res.status(400).json({ success: false, error: "ids must be a non-empty array." });
+      }
+
+      // Scoped by project as well as by id, so an id from another salon cannot
+      // be reordered just because this session is valid somewhere — the same
+      // reason the delete route above filters on both.
+      const db = getSupabaseAdmin();
+      const results = await Promise.all(
+        ids.map((id, index) =>
+          db.from('client_media').update({ sort_order: index }).eq('id', id).eq('project_id', projectId)
+        )
+      );
+      const failed = results.find(r => r.error);
+      if (failed?.error) throw failed.error;
+
+      res.json({ success: true, ordered: ids.length });
+    } catch (error: any) {
+      console.error('[client] media reorder failed:', error?.message || error);
+      res.status(500).json({ success: false, error: 'Could not save that order.' });
     }
   });
 

@@ -859,6 +859,40 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   const clientPhotos = useMemo(() => portfolioPhotos(clientMedia), [clientMedia]);
 
   /**
+   * Saves the order of the client's own photos.
+   *
+   * Applied here first and sent afterwards: a drag that waits on a round trip
+   * before the tile moves is not a drag. If the write fails the order is
+   * reloaded from the server rather than left looking saved.
+   *
+   * It does not redeploy. Her uploads publish themselves because they are her
+   * acting on her own site; this is the operator arranging a page, and an
+   * operator's edits reach customers when they press Deploy.
+   */
+  const reorderClientPhotos = async (ids: string[]) => {
+    const rowId = projectRowId();
+    const previous = clientMedia;
+    const rank = new Map(ids.map((id, i) => [id, i]));
+    setClientMedia(prev =>
+      [...prev].sort((a, b) => (rank.get(a.id) ?? Infinity) - (rank.get(b.id) ?? Infinity))
+    );
+    try {
+      const res = await apiFetch(`/api/client/${encodeURIComponent(rowId)}/media/order`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+    } catch {
+      setClientMedia(previous);
+      setAgentState(state => ({
+        ...state,
+        message: 'That order was not saved — the photos are back as they were.',
+      }));
+    }
+  };
+
+  /**
    * The true preview: the page the deploy builds, served back and shown as-is.
    *
    * The preview above renders the blueprint through React inside this app,
@@ -1645,6 +1679,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 onOpenProposal={() => setIsProposalModalOpen(true)}
                 openTab={openTab}
                 clientPhotos={clientPhotos}
+                onReorderClientPhotos={reorderClientPhotos}
                 onBuild={(snap) => {
                   const newSnapshot: ProjectSnapshot = {
                     // The fifth place that minted a fresh id on an edit. Every

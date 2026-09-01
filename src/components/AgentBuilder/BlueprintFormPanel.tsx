@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { resizeImage } from '../IntakePortal/imageUtils';
 import { ServicesEditor, type EditableService } from '../ServicesEditor';
-import { GalleryEditor } from '../GalleryEditor';
+import { GalleryEditor, type ClientPhoto } from '../GalleryEditor';
 import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
@@ -391,7 +391,8 @@ interface BlueprintFormPanelProps {
    */
   openTab?: { key: TabKey; at: number };
   /** The client's own uploads, so the gallery editor shows the real gallery. */
-  clientPhotos?: string[];
+  clientPhotos?: ClientPhoto[];
+  onReorderClientPhotos?: (ids: string[]) => void;
   selectedModel?: string;
   onSelectModel?: (modelId: string) => void;
 }
@@ -581,7 +582,7 @@ const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
 );
 
 export default function BlueprintFormPanel({
-  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy, openTab, clientPhotos,
+  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy, openTab, clientPhotos, onReorderClientPhotos,
   selectedModel = 'claude-3-7-sonnet', onSelectModel
 }: BlueprintFormPanelProps) {
   const [form, setForm] = useState<InstantFormData>(() => {
@@ -974,6 +975,7 @@ export default function BlueprintFormPanel({
               images={gallery}
               onChange={setGallery}
               clientPhotos={clientPhotos}
+              onReorderClientPhotos={onReorderClientPhotos}
               hint="Anything the client uploads through her own dashboard is added ahead of these."
             />
           </div>

@@ -49,11 +49,11 @@ export interface MergeResult {
  * outright once she has uploaded anything. So the editor showed five photos
  * that were not on the site and none of the ones that were.
  */
-export function portfolioPhotos(media: ClientMediaRow[]): string[] {
+export function portfolioPhotos(media: ClientMediaRow[]): { id: string; url: string }[] {
   return media
     .filter(m => m.kind === 'portfolio')
-    .map(m => m.data?.url)
-    .filter((u): u is string => typeof u === 'string' && u.length > 0);
+    .map(m => ({ id: m.id, url: m.data?.url }))
+    .filter((p): p is { id: string; url: string } => typeof p.url === 'string' && p.url.length > 0);
 }
 
 /** Reads a project's live client media, lowest sort_order first. */
@@ -91,7 +91,7 @@ export function mergeClientMedia(blueprint: any, media: ClientMediaRow[]): Merge
 
   const byKind = (kind: MediaKind) => media.filter(m => m.kind === kind);
 
-  const portfolio = portfolioPhotos(media);
+  const portfolio = portfolioPhotos(media).map(p => p.url);
   if (portfolio.length) {
     // Her photos REPLACE placeholders and are ADDED alongside anything real.
     //
