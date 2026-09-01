@@ -82,8 +82,10 @@ export interface BusinessProfile {
   address?: string;
   hours?: string | string[];
   logoUrl?: string;
-  /** Public profile, linked from the gallery. */
+  /** Public profile, linked from the gallery, the menu and the footer. */
   instagramUrl?: string;
+  /** Where gift cards are bought — Square's own page, usually. */
+  giftCardUrl?: string;
   /** Multiplier on the navbar logo's height, 1 being the default 2.5rem. */
   logoScale?: number;
   heroImage?: string;

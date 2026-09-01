@@ -4,7 +4,7 @@ import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealt
 import type { SiteSection } from '../../templates/sections';
 import { SiteRenderer } from '../../templates/SiteRenderer';
 import { PreviewFrame } from './PreviewFrame';
-import { mergeClientMedia, type ClientMediaRow } from '../../../lib/clientMedia';
+import { mergeClientMedia, portfolioPhotos, type ClientMediaRow } from '../../../lib/clientMedia';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
   cachedProjects,
@@ -855,6 +855,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     [project, clientMedia]
   );
 
+  /** Hers, for the gallery editor — which otherwise lists half the gallery. */
+  const clientPhotos = useMemo(() => portfolioPhotos(clientMedia), [clientMedia]);
+
   /**
    * The true preview: the page the deploy builds, served back and shown as-is.
    *
@@ -1641,6 +1644,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 onOpenAudit={() => setIsAuditOpen(true)}
                 onOpenProposal={() => setIsProposalModalOpen(true)}
                 openTab={openTab}
+                clientPhotos={clientPhotos}
                 onBuild={(snap) => {
                   const newSnapshot: ProjectSnapshot = {
                     // The fifth place that minted a fresh id on an edit. Every

@@ -8,7 +8,7 @@ import {
   Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon, User as UserIcon, Upload as UploadIcon,
   Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal,
   LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2,
-  Instagram as InstagramIcon
+  Instagram as InstagramIcon, Gift as GiftIcon
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
 import { SUPPORTED_MODELS } from './aiModelConfig';
@@ -133,6 +133,7 @@ export interface InstantFormData {
   heroImage: string;
   logoUrl: string;
   instagramUrl: string;
+  giftCardUrl: string;
   logoScale: string;
   ownerPhoto: string;
   ownerName: string;
@@ -175,6 +176,7 @@ const DEFAULT_FORM: InstantFormData = {
   heroImage: '',
   logoUrl: '',
   instagramUrl: '',
+  giftCardUrl: '',
   logoScale: '1',
   ownerPhoto: '', ownerName: '', ownerRole: '',
   theme: 'campaign-navy',
@@ -207,6 +209,7 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     heroImage: snap.profile.heroImage || '',
     logoUrl: snap.profile.logoUrl || '',
     instagramUrl: snap.profile.instagramUrl || '',
+    giftCardUrl: snap.profile.giftCardUrl || '',
     logoScale: String(snap.profile.logoScale ?? 1),
     ownerPhoto: snap.profile.ownerPhoto || '',
     ownerName: snap.profile.ownerName || '',
@@ -341,6 +344,7 @@ function buildSnapshot(
     heroImage: form.heroImage,
     logoUrl: form.logoUrl,
     instagramUrl: form.instagramUrl,
+    giftCardUrl: form.giftCardUrl,
     logoScale: Number(form.logoScale) > 0 ? Number(form.logoScale) : 1,
     ownerPhoto: form.ownerPhoto,
     ownerName: form.ownerName,
@@ -386,6 +390,8 @@ interface BlueprintFormPanelProps {
    * twice, not silently do nothing the second time.
    */
   openTab?: { key: TabKey; at: number };
+  /** The client's own uploads, so the gallery editor shows the real gallery. */
+  clientPhotos?: string[];
   selectedModel?: string;
   onSelectModel?: (modelId: string) => void;
 }
@@ -575,7 +581,7 @@ const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
 );
 
 export default function BlueprintFormPanel({
-  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy, openTab,
+  activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy, openTab, clientPhotos,
   selectedModel = 'claude-3-7-sonnet', onSelectModel
 }: BlueprintFormPanelProps) {
   const [form, setForm] = useState<InstantFormData>(() => {
@@ -872,6 +878,18 @@ export default function BlueprintFormPanel({
             onChange={v => set('instagramUrl', v)}
             icon={InstagramIcon}
           />
+          {/* Square sells these from a page of its own. Pasted rather than
+              derived — their URL shape is theirs to change, and a guessed one
+              is a checkout that will not load, which nobody notices until a
+              customer gives up. */}
+          <InputField
+            label="Gift Card Link"
+            id="giftCardUrl"
+            placeholder="https://squareup.com/gift/.../order"
+            value={form.giftCardUrl}
+            onChange={v => set('giftCardUrl', v)}
+            icon={GiftIcon}
+          />
           <div className="grid grid-cols-2 gap-2">
             <InputField 
               label="HQ Address / County" 
@@ -955,6 +973,7 @@ export default function BlueprintFormPanel({
             <GalleryEditor
               images={gallery}
               onChange={setGallery}
+              clientPhotos={clientPhotos}
               hint="Anything the client uploads through her own dashboard is added ahead of these."
             />
           </div>

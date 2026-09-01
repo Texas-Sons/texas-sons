@@ -100,6 +100,8 @@ export function SiteRenderer({
             businessName={project.profile.name}
             logoUrl={project.profile.logoUrl}
             logoScale={project.profile.logoScale}
+            instagramUrl={project.profile.instagramUrl}
+            giftCardUrl={project.profile.giftCardUrl}
             phone={project.profile.phone}
             theme={project.theme}
             accentColor={accentColor}

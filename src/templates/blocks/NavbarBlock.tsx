@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, ArrowRight, Shield, Star, Vote } from 'lucide-react';
+import { Menu, X, Phone, ArrowRight, Shield, Star, Vote, Instagram, Gift } from 'lucide-react';
 import { ScalesOfJusticeIcon } from './CampaignIcons';
 import { NavItem } from './types';
 
@@ -16,6 +16,10 @@ interface NavbarBlockProps {
    * the one looking at both.
    */
   logoScale?: number;
+  /** Linked from the menu and the footer. */
+  instagramUrl?: string;
+  /** Bought elsewhere — Square's own gift card page, usually. */
+  giftCardUrl?: string;
   navItems?: NavItem[];
   phone?: string;
   ctaText?: string;
@@ -29,6 +33,8 @@ export function NavbarBlock({
   businessName,
   logoUrl,
   logoScale,
+  instagramUrl,
+  giftCardUrl,
   navItems = [
     { label: 'Services', href: '#services' },
     { label: 'Reviews', href: '#reviews' },
@@ -210,6 +216,39 @@ export function NavbarBlock({
               </a>
             );
           })}
+          {/* Things a customer came for that are not on the page. Gift cards
+              are bought and Instagram is browsed — both leave the site, so
+              neither belongs in the nav links above, and both are worth more
+              than the space they take in a menu. */}
+          {(giftCardUrl || instagramUrl) && (
+            <div className="pt-1 space-y-2 border-t border-[color:var(--ts-border)] mt-2">
+              {giftCardUrl && (
+                <a
+                  href={giftCardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2.5 px-3.5 py-2.5 mt-2 rounded-xl text-sm font-bold transition-all text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)] hover:text-[color:var(--ts-accent)]"
+                >
+                  <Gift className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                  <span>Gift Cards</span>
+                </a>
+              )}
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)] hover:text-[color:var(--ts-accent)]"
+                >
+                  <Instagram className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                  <span>Instagram</span>
+                </a>
+              )}
+            </div>
+          )}
+
           <div className="pt-2">
             <a
               href={ctaHref}

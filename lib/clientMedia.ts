@@ -38,6 +38,24 @@ export interface MergeResult {
   applied: Record<MediaKind, number>;
 }
 
+/**
+ * The client's own gallery photos, in the order they will appear.
+ *
+ * Requires a url; a row without one is a half-finished upload, not a photo.
+ *
+ * Exported because the Studio's gallery editor has to show these too. It used
+ * to list only the operator's own `galleryImages`, which is not what the site
+ * renders — hers lead, and any stock stand-in of the operator's is dropped
+ * outright once she has uploaded anything. So the editor showed five photos
+ * that were not on the site and none of the ones that were.
+ */
+export function portfolioPhotos(media: ClientMediaRow[]): string[] {
+  return media
+    .filter(m => m.kind === 'portfolio')
+    .map(m => m.data?.url)
+    .filter((u): u is string => typeof u === 'string' && u.length > 0);
+}
+
 /** Reads a project's live client media, lowest sort_order first. */
 export async function fetchClientMedia(
   db: SupabaseClient,
@@ -73,11 +91,7 @@ export function mergeClientMedia(blueprint: any, media: ClientMediaRow[]): Merge
 
   const byKind = (kind: MediaKind) => media.filter(m => m.kind === kind);
 
-  // Portfolio -> gallery images. Requires a url; a row without one is a
-  // half-finished upload, not a photo.
-  const portfolio = byKind('portfolio')
-    .map(m => m.data?.url)
-    .filter((u): u is string => typeof u === 'string' && u.length > 0);
+  const portfolio = portfolioPhotos(media);
   if (portfolio.length) {
     // Her photos REPLACE placeholders and are ADDED alongside anything real.
     //

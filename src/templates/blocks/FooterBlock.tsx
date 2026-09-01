@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useReveal, revealBlock } from './motion';
-import { MapPin, Phone, Mail, Clock, Shield, Vote } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Shield, Vote, Instagram, Gift } from 'lucide-react';
 import { BusinessProfile } from './types';
 
 interface FooterBlockProps {
@@ -152,6 +152,34 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
               <div className="flex items-start text-sm gap-2.5">
                 <MapPin className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <span>{business.address}</span>
+              </div>
+            )}
+            {/* For a salon this is where a customer actually keeps up with the
+                work — more often than the phone number above it. */}
+            {business.instagramUrl && (
+              <div className="flex items-center text-sm gap-2.5">
+                <Instagram className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                <a
+                  href={business.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[color:var(--ts-text)] transition-colors"
+                >
+                  Instagram
+                </a>
+              </div>
+            )}
+            {business.giftCardUrl && (
+              <div className="flex items-center text-sm gap-2.5">
+                <Gift className="w-4 h-4 text-[color:var(--ts-accent)] flex-shrink-0" aria-hidden="true" />
+                <a
+                  href={business.giftCardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[color:var(--ts-text)] transition-colors"
+                >
+                  Gift Cards
+                </a>
               </div>
             )}
           </div>

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Plus, X, ArrowLeft, ArrowRight, UploadCloud, GripVertical } from 'lucide-react';
 import { resizeImage } from './IntakePortal/imageUtils';
+import { isPlaceholderImage } from '../../lib/clientMedia';
 
 /**
  * Arranges the photos on a client's gallery.
@@ -28,6 +29,14 @@ export interface GalleryEditorProps {
   onChange: (images: string[]) => void;
   /** Explains where these sit relative to anything the client uploads. */
   hint?: string;
+  /**
+   * What the client has uploaded through her own dashboard.
+   *
+   * Shown, not editable. These are hers, they lead the section, and they are
+   * the reason the editor and the live site can disagree — listing only the
+   * operator's own photos described a gallery nobody would ever see.
+   */
+  clientPhotos?: string[];
 }
 
 function move<T>(items: T[], from: number, to: number): T[] {
@@ -38,7 +47,12 @@ function move<T>(items: T[], from: number, to: number): T[] {
   return next;
 }
 
-export function GalleryEditor({ images, onChange, hint }: GalleryEditorProps) {
+export function GalleryEditor({ images, onChange, hint, clientPhotos = [] }: GalleryEditorProps) {
+  // A stock stand-in loses to a real photo — that is the entire point of the
+  // client portal — so once she has uploaded anything, the operator's
+  // placeholders are not on the site at all. Saying so here is the difference
+  // between an editor that matches the page and one that quietly does not.
+  const stockIsDropped = clientPhotos.length > 0;
   const [url, setUrl] = useState('');
   const [dragging, setDragging] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +161,34 @@ export function GalleryEditor({ images, onChange, hint }: GalleryEditorProps) {
 
   return (
     <div className="space-y-3">
+      {clientPhotos.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/80">
+            {clientPhotos.length} uploaded by the client — these lead
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {clientPhotos.map((src, i) => (
+              <div
+                key={`client-${src}`}
+                className="relative aspect-square rounded-xl overflow-hidden border border-emerald-500/30"
+                title="Uploaded by the client. Remove it from her dashboard, not here."
+              >
+                <img src={src} alt="" className="w-full h-full object-cover" />
+                <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-emerald-500/90 text-[9px] font-bold text-stone-950 font-mono">
+                  {i === 0 ? 'LEADS' : i + 1}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {clientPhotos.length > 0 && images.length > 0 && (
+        <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 pt-1">
+          Yours, after hers
+        </p>
+      )}
+
       {images.length === 0 ? (
         <p className="text-xs text-stone-500">
           No photos yet. For a salon this section is the strongest thing on the page — add her
@@ -174,11 +216,24 @@ export function GalleryEditor({ images, onChange, hint }: GalleryEditorProps) {
                   : 'border-stone-800 hover:border-stone-600'
               }`}
             >
-              <img src={src} alt="" draggable={false} className="w-full h-full object-cover pointer-events-none" />
+              <img
+                src={src}
+                alt=""
+                draggable={false}
+                className={`w-full h-full object-cover pointer-events-none ${
+                  stockIsDropped && isPlaceholderImage(src) ? 'opacity-30 grayscale' : ''
+                }`}
+              />
 
-              <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-black/70 text-[9px] font-bold text-stone-200 font-mono">
-                {i === 0 ? 'LEADS' : i + 1}
-              </span>
+              {stockIsDropped && isPlaceholderImage(src) ? (
+                <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-amber-500/90 text-[9px] font-bold text-stone-950 font-mono">
+                  NOT SHOWN
+                </span>
+              ) : (
+                <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-black/70 text-[9px] font-bold text-stone-200 font-mono">
+                  {clientPhotos.length + i + 1}
+                </span>
+              )}
 
               <span className="absolute top-1 right-1 text-stone-300/70 opacity-0 group-hover:opacity-100 transition-opacity">
                 <GripVertical className="w-3.5 h-3.5" aria-hidden="true" />
@@ -267,7 +322,10 @@ export function GalleryEditor({ images, onChange, hint }: GalleryEditorProps) {
       {error && <p className="text-xs text-red-400">{error}</p>}
 
       <p className="text-[10px] text-stone-600 leading-snug">
-        Drag to rearrange, or use the arrows on each photo. The first one leads the section.
+        Drag to rearrange, or use the arrows on each photo.
+        {stockIsDropped
+          ? ' Greyed-out photos are stock stand-ins, and the client\'s own uploads replace them — they are not on the live site.'
+          : ' The first one leads the section.'}
         {hint ? ` ${hint}` : ''}
       </p>
     </div>
