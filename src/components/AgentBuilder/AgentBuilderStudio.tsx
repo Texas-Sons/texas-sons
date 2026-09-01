@@ -7,6 +7,7 @@ import { PreviewFrame } from './PreviewFrame';
 import { mergeClientMedia, type ClientMediaRow } from '../../../lib/clientMedia';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
+  cachedProjects,
   loadCurrentProject, loadHistory, saveCurrentProject, saveHistory, cachedHistory,
   cachedCurrentProject,
 } from '../../store';
@@ -858,6 +859,21 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   }, [project]);
   const truePreviewStale = !!truePreview && truePreview.builtFrom !== projectSignature;
 
+  /**
+   * Whether what is on screen has reached the client's project row.
+   *
+   * The Studio autosaves on every keystroke, which looks exactly like saving
+   * and is not the same thing: that write goes to studio_snapshots, one scratch
+   * row per operator rather than one per client, and nothing reads it back into
+   * a project. Only Save and a deploy write the client's own row. Nothing said
+   * so, so an edit could look kept and be gone as soon as another client was
+   * opened.
+   */
+  const [savedSignature, setSavedSignature] = useState<string | null>(null);
+  useEffect(() => { setSavedSignature(null); }, [project.id]);
+  useEffect(() => { setSavedSignature(prev => prev ?? projectSignature); }, [projectSignature]);
+  const unsavedChanges = savedSignature !== null && savedSignature !== projectSignature;
+
   const buildTruePreview = React.useCallback(async () => {
     setTruePreviewBusy(true);
     setTruePreviewError(null);
@@ -908,18 +924,36 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     return id;
   };
 
-  const persistProject = async (status: Project['status'], domain: string) => {
+  /**
+   * Writes the Studio's snapshot onto the client's project row.
+   *
+   * Starts from the row as it already exists, because the Studio owns the
+   * blueprint and nothing else. It does not know whether the client has
+   * commissioned the work, what domain they are on, or that they were Live —
+   * and it asserted all three anyway. saveProject upserts the whole row, so
+   * every press of Save stamped status 'Theme Assembly', a guessed pages.dev
+   * domain, and — through projectToRow's `|| 'demo'` — engagement 'demo'.
+   * Saving an edit to a live commissioned client demoted her to an unbuilt
+   * demo, and overwrote the contact name with the business name on the way.
+   *
+   * status and domain are passed only by the deploy, which has just made both
+   * of them true.
+   */
+  const persistProject = async (status?: Project['status'], domain?: string) => {
     const projectId = projectRowId();
+    const existing = cachedProjects().find(p => p.id === projectId);
 
     await saveProject({
+      ...(existing || ({} as Project)),
       id: projectId,
-      clientName: project.profile.name,
+      clientName: existing?.clientName || project.profile.name,
       companyName: project.profile.name,
-      tier: project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier',
-      status,
+      tier: existing?.tier
+        || (project.profile.category === 'Campaign & Leadership' ? 'Campaign Platform Tier' : 'Spur Digital Tier'),
+      status: status || existing?.status || 'Theme Assembly',
       updatedAt: new Date().toISOString(),
-      domain,
-      ownerId: '',
+      domain: domain || existing?.domain || '',
+      ownerId: existing?.ownerId || '',
       blueprint: project,
     });
   };
@@ -1022,19 +1056,24 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         tokensUsed: agentState.tokensUsed
       });
 
-      const slug = project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      await persistProject('Theme Assembly', `https://${slug}.pages.dev`);
+      const saved = projectSignature;
+      await persistProject();
+      setSavedSignature(saved);
 
       setAgentState({
         step: 'ready',
-        message: `Saved! "${project.profile.name}" is now tracked in your Projects tab.`,
+        message: `Saved. "${project.profile.name}" is up to date in your Clients tab.`,
         tokensUsed: agentState.tokensUsed
       });
     } catch (err: any) {
       console.error("Save Project error:", err);
+      // This used to read "Saved locally!" on any failure, which is the one
+      // message that must never be optimistic: an operator told their work is
+      // saved closes the tab. The Studio's own scratch row is not the client's
+      // project. The button is left showing unsaved changes.
       setAgentState({
         step: 'ready',
-        message: `Saved locally! (${err.message || 'Supabase sync'})`,
+        message: `Not saved — ${err.message || 'the database refused the write'}. Your changes are still on screen; try Save again.`,
         tokensUsed: agentState.tokensUsed
       });
     }
@@ -1087,6 +1126,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       // Auto-save the now-live project
       try {
         await persistProject('Live', data.url);
+        setSavedSignature(projectSignature);
       } catch (dbErr) {
         console.warn('Auto-save to projects failed:', dbErr);
       }
@@ -1342,16 +1382,29 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             )}
           </div>
 
+          {/* Save.
+              It lived in the 2XL-only group below, so on any screen narrower
+              than about 1536px there was no way to save an edit to a client's
+              project at all — only Deploy wrote the row, which meant publishing
+              in order to keep work. It carries its own state because the
+              autosave makes everything look saved already. */}
+          <button
+            onClick={handleSaveToProjects}
+            title={unsavedChanges
+              ? 'Save these changes to the project'
+              : 'Saved to the project'}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex-shrink-0 ${
+              unsavedChanges
+                ? 'bg-[#C5A059] text-stone-950 border-[#C5A059] hover:brightness-110'
+                : 'bg-stone-900/80 text-stone-400 border-stone-800 hover:text-stone-200'
+            }`}
+          >
+            <FolderCheck className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline">{unsavedChanges ? 'Save' : 'Saved'}</span>
+          </button>
+
           {/* Quick Studio Tools (Desktop 2XL) */}
           <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800 flex-shrink-0">
-            <button
-              onClick={handleSaveToProjects}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
-              title="Save Project to Database"
-            >
-              <FolderCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Save</span>
-            </button>
             <button
               onClick={() => setIsHandoffOpen(true)}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-[#C5A059] hover:text-[#C5A059] hover:bg-[#C5A059]/10 transition-all cursor-pointer"
