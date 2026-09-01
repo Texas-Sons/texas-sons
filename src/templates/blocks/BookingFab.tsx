@@ -16,9 +16,14 @@ import { Calendar } from 'lucide-react';
  * belongs — in the hero, floating at the corner, and in the booking section —
  * and this is one button that occupies whichever of them is right, melting out
  * of the last and reforming in the next. A slot nobody is standing in is empty.
- * The alternative, which is what shipped before, is three identical controls
- * fading past each other, and at the bottom of the page two of them a thumb's
- * width apart at the exact moment the visitor found the one they wanted.
+ *
+ * The melt is built out of geometry — squash, an undulating outline, thrown
+ * droplets — and a plain CSS blur. An earlier version got its liquid quality
+ * from an SVG feTurbulence/feDisplacementMap filter, and it disappeared instead
+ * of melting: when `filter: url(#id)` fails to resolve, the spec says the
+ * element is not rendered at all, so the button was solid at each end of the
+ * animation and absent for the middle of it. Nothing here can fail that way.
+ * Everything that draws the effect also draws the button.
  *
  * This lives in its own component for two reasons, both of which were bugs:
  *
@@ -77,13 +82,20 @@ const PHONE_QUERY = '(max-width: 639px)';
 const REVEAL_AFTER_PX = 400;
 
 /** Melt, travel, reform. Long enough to read as a material, short enough to sit through. */
-const MORPH_MS = 940;
-const MELT_END = 0.3;
-const REFORM_START = 0.72;
+const MORPH_MS = 1050;
+const MELT_END = 0.32;
+const REFORM_START = 0.7;
+
+/** Thrown ahead of the main body and caught up with. */
+const DROPLETS = [
+  { delay: 0.10, size: 0.34, drift: -14 },
+  { delay: 0.17, size: 0.24, drift: 13 },
+  { delay: 0.25, size: 0.16, drift: -7 },
+];
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 /** Progress within one phase of the morph. */
-const phase = (t: number, from: number, to: number) => clamp01((t - from) / (to - from));
+const spanOf = (t: number, from: number, to: number) => clamp01((t - from) / (to - from));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 const easeInCubic = (t: number) => t * t * t;
 const easeOutBack = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
@@ -92,6 +104,19 @@ interface Box { left: number; top: number; width: number; height: number }
 const centreX = (b: Box) => b.left + b.width / 2;
 const centreY = (b: Box) => b.top + b.height / 2;
 
+/**
+ * How molten it is at this moment: solid at both ends, fully liquid across the
+ * middle. Everything the melt does is scaled by this one number, so the shape,
+ * the blur, the sag and the droplets all soften and set together rather than
+ * drifting out of step.
+ */
+function liquidAt(t: number): number {
+  if (t <= 0 || t >= 1) return 0;
+  if (t < MELT_END) return easeOutCubic(spanOf(t, 0, MELT_END));
+  if (t < REFORM_START) return 1;
+  return 1 - easeOutCubic(spanOf(t, REFORM_START, 1));
+}
+
 export function BookingFab({
   bookingUrl,
   variant = 'fixed',
@@ -99,12 +124,15 @@ export function BookingFab({
 }: BookingFabProps) {
   const isPreview = variant === 'preview';
 
-  const blobRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLAnchorElement>(null);
-  const wobbleRef = useRef<SVGFEDisplacementMapElement>(null);
-  const blurRef = useRef<SVGFEGaussianBlurElement>(null);
+  /** Untransformed, so its box is the corner the button rests in. */
+  const hostRef = useRef<HTMLDivElement>(null);
+  /** Everything the morph moves and deforms. */
+  const shapeRef = useRef<HTMLDivElement>(null);
+  const pillRef = useRef<HTMLAnchorElement>(null);
+  /** The lettering only. The pill behind it is the blob. */
+  const inkRef = useRef<HTMLSpanElement>(null);
+  const dropsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
-  /** The blob's own resting box, measured untransformed and cached. */
   const floatBoxRef = useRef<Box | null>(null);
   const rafRef = useRef<number | null>(null);
   const ownerRef = useRef<Slot>('float');
@@ -116,13 +144,10 @@ export function BookingFab({
 
   const boxOf = useCallback((slot: Slot): Box | null => {
     if (slot === 'float') {
-      const el = blobRef.current;
+      const el = hostRef.current;
       if (!el) return null;
       if (!floatBoxRef.current) {
-        const previous = el.style.transform;
-        el.style.transform = '';
         const r = el.getBoundingClientRect();
-        el.style.transform = previous;
         floatBoxRef.current = { left: r.left, top: r.top, width: r.width, height: r.height };
       }
       return floatBoxRef.current;
@@ -162,8 +187,9 @@ export function BookingFab({
    * former address.
    */
   const morph = useCallback((from: Slot, to: Slot) => {
-    const blob = blobRef.current;
-    if (!blob) return;
+    const shape = shapeRef.current;
+    const pill = pillRef.current;
+    if (!shape || !pill) return;
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
 
     const reduced = typeof window.matchMedia === 'function'
@@ -171,94 +197,122 @@ export function BookingFab({
 
     const land = () => {
       rafRef.current = null;
-      blob.style.transform = '';
-      blob.style.filter = '';
-      blob.style.opacity = to === 'float' ? '1' : '0';
-      blob.style.borderRadius = '';
-      if (labelRef.current) labelRef.current.style.opacity = '';
+      shape.style.transform = '';
+      shape.style.filter = '';
+      shape.style.opacity = '';
+      pill.style.borderRadius = '';
+      pill.style.transition = '';
+      if (inkRef.current) inkRef.current.style.opacity = '';
+      dropsRef.current.forEach(drop => { if (drop) drop.style.opacity = '0'; });
       occupy(to === 'float' ? null : to);
-      const el = slotEl(to);
-      if (el) el.style.opacity = '';
+      const arrived = slotEl(to);
+      if (arrived) arrived.style.opacity = '';
       setMorphing(false);
     };
 
     if (reduced) { land(); return; }
 
-    const fromBox = boxOf(from);
-    const toBox = boxOf(to);
-    if (!fromBox || !toBox) { land(); return; }
-
+    const startBox = boxOf(from);
+    const endBox = boxOf(to);
     const home = boxOf('float');
-    if (!home) { land(); return; }
+    if (!startBox || !endBox || !home) { land(); return; }
 
     setMorphing(true);
     occupy(null);
     const arriving = slotEl(to);
     if (arriving) {
-      // It is there, ready to be seen, but not yet visible — the last fifteen
-      // percent cross-fades the blob into it at the same size and position, so
-      // the swap of one element for another has nothing to give it away.
+      // Present and measurable but not yet seen. The last stretch cross-fades
+      // the blob into it at the same size and position, so swapping one element
+      // for another has nothing to give it away.
       arriving.style.visibility = '';
       arriving.style.opacity = '0';
     }
+    // The pill's own hover transition would fight a transform written every
+    // frame, interpolating towards each one and lagging the whole way.
+    pill.style.transition = 'none';
 
     const started = performance.now();
+
+    /** Where the centre of the mass is, as an offset from the resting corner. */
+    const pathAt = (t: number, a: Box, b: Box) => {
+      const travel = spanOf(t, MELT_END, REFORM_START);
+      return {
+        // Ground covered horizontally early, falling into place vertically
+        // late. One curve on both axes is a diagonal slide, which is precisely
+        // what reads as a slideshow rather than as something moving.
+        x: centreX(a) + (centreX(b) - centreX(a)) * easeOutCubic(travel) - centreX(home),
+        y: centreY(a) + (centreY(b) - centreY(a)) * easeInCubic(travel) - centreY(home)
+          // Sags as it goes soft, the way something losing its shape does.
+          + 12 * liquidAt(t),
+      };
+    };
 
     const frame = (now: number) => {
       const t = clamp01((now - started) / MORPH_MS);
 
       // Both ends re-measured every frame; either may be moving.
-      const a = boxOf(from) || fromBox;
-      const b = boxOf(to) || toBox;
+      const a = boxOf(from) || startBox;
+      const b = boxOf(to) || endBox;
 
-      const melt = phase(t, 0, MELT_END);
-      const travel = phase(t, MELT_END, REFORM_START);
-      const reform = phase(t, REFORM_START, 1);
+      const liquid = liquidAt(t);
+      const { x, y } = pathAt(t, a, b);
 
-      // How liquid it is right now: fully at the midpoint, solid at both ends.
-      const liquid = t < MELT_END
-        ? easeOutCubic(melt)
-        : t < REFORM_START ? 1 : 1 - easeOutCubic(reform);
-
-      // Position: covers ground horizontally early and falls into place
-      // vertically late. One curve on both axes is a diagonal slide, which is
-      // the thing that reads as a slideshow rather than as something moving.
-      const x = centreX(a) + (centreX(b) - centreX(a)) * easeOutCubic(travel) - centreX(home);
-      const y = centreY(a) + (centreY(b) - centreY(a)) * easeInCubic(travel) - centreY(home)
-        // Sags as it goes soft, the way something losing its shape does.
-        + 10 * liquid;
-
-      // Size: the source's box, slumping into a puddle, then rising into the
+      // Size: the source's box slumping into a puddle, then rising into the
       // destination's box with a little overshoot on the way up.
-      const puddleW = 1.34, puddleH = 0.22;
-      const sx = (a.width / home.width) * (1 - liquid) + (a.width / home.width) * puddleW * liquid;
-      const sy = (a.height / home.height) * (1 - liquid) + (a.height / home.height) * puddleH * liquid;
-      const tx = (b.width / home.width) * (1 - liquid) + (b.width / home.width) * puddleW * liquid;
-      const ty = (b.height / home.height) * (1 - liquid) + (b.height / home.height) * puddleH * liquid;
+      const puddleW = 1.32, puddleH = 0.26;
+      const widen = (box: Box) => (box.width / home.width) * (1 + (puddleW - 1) * liquid);
+      const flatten = (box: Box) => (box.height / home.height) * (1 - (1 - puddleH) * liquid);
+      const rise = t >= REFORM_START
+        ? easeOutBack(spanOf(t, REFORM_START, 1))
+        : easeOutCubic(spanOf(t, MELT_END, REFORM_START));
+      const scaleX = widen(a) + (widen(b) - widen(a)) * rise;
+      const scaleY = flatten(a) + (flatten(b) - flatten(a)) * rise;
 
-      const rise = reform > 0 ? easeOutBack(reform) : easeOutCubic(travel);
-      const scaleX = sx + (tx - sx) * rise;
-      const scaleY = sy + (ty - sy) * rise;
+      // Leans into the direction it is being pulled.
+      const lean = -9 * liquid * Math.sin(Math.PI * spanOf(t, MELT_END, REFORM_START));
 
-      blob.style.transform =
-        `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scaleX.toFixed(3)}, ${scaleY.toFixed(3)})`;
-      // Rounder the softer it is. A puddle has no corners.
-      blob.style.borderRadius = `${(16 + 48 * liquid).toFixed(1)}px`;
+      shape.style.transform =
+        `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) `
+        + `skewX(${lean.toFixed(2)}deg) scale(${scaleX.toFixed(3)}, ${scaleY.toFixed(3)})`;
+      // A plain blur, which every browser draws. This is what stops it reading
+      // as a rectangle changing size — an outline that softens as it goes.
+      shape.style.filter = liquid > 0.005 ? `blur(${(liquid * 3.2).toFixed(2)}px)` : '';
 
-      // The label cannot melt convincingly, so it leaves before the shape does
-      // and does not come back — the destination's own label arrives instead.
-      if (labelRef.current) labelRef.current.style.opacity = String(1 - Math.min(1, liquid * 2.4));
+      // An outline that will not hold still. Eight radii on their own slow
+      // waves; at rest they settle back to the button's own corners.
+      if (liquid > 0.005) {
+        const wob = (i: number) =>
+          (50 + 30 * liquid * Math.sin(t * Math.PI * 3.1 * (1 + i * 0.21) + i * 1.9)).toFixed(1);
+        pill.style.borderRadius =
+          `${wob(0)}% ${wob(1)}% ${wob(2)}% ${wob(3)}% / ${wob(4)}% ${wob(5)}% ${wob(6)}% ${wob(7)}%`;
+      } else {
+        pill.style.borderRadius = '';
+      }
 
-      // The wobble and the smear are what make it a material rather than a
-      // rectangle changing size. Both peak with `liquid` and are switched off
-      // entirely at the ends, since a filter left running costs a repaint a
-      // frame for nothing.
-      if (wobbleRef.current) wobbleRef.current.setAttribute('scale', (liquid * 26).toFixed(2));
-      if (blurRef.current) blurRef.current.setAttribute('stdDeviation', (liquid * 3.4).toFixed(2));
-      blob.style.filter = liquid > 0.01 ? 'url(#ts-melt)' : '';
+      // The lettering goes before the shape does. Text cannot melt
+      // convincingly — it smears into something illegible — and the
+      // destination brings its own. Only the ink fades: the pill behind it is
+      // the body of the blob, and fading that is how the last attempt at this
+      // ended up looking like the button simply vanished.
+      if (inkRef.current) inkRef.current.style.opacity = String(1 - Math.min(1, liquid * 2.6));
 
-      blob.style.opacity = String(1 - easeInCubic(phase(t, 0.85, 1)));
-      if (arriving) arriving.style.opacity = String(easeOutCubic(phase(t, 0.85, 1)));
+      // Flung ahead and caught up with. Each runs the same path a little behind
+      // the body, so they trail on the way out and are reabsorbed on arrival.
+      dropsRef.current.forEach((drop, i) => {
+        if (!drop) return;
+        const spec = DROPLETS[i];
+        const lagged = clamp01(t - spec.delay);
+        const alive = liquidAt(lagged) * liquid;
+        if (alive < 0.02) { drop.style.opacity = '0'; return; }
+        const at = pathAt(lagged, a, b);
+        drop.style.opacity = (alive * 0.95).toFixed(2);
+        drop.style.transform =
+          `translate3d(${(at.x + spec.drift * alive).toFixed(2)}px, ${(at.y + 8 * alive).toFixed(2)}px, 0) `
+          + `scale(${(spec.size * alive).toFixed(3)})`;
+      });
+
+      shape.style.opacity = String(1 - easeInCubic(spanOf(t, 0.86, 1)));
+      if (arriving) arriving.style.opacity = String(easeOutCubic(spanOf(t, 0.86, 1)));
 
       if (t < 1) {
         rafRef.current = requestAnimationFrame(frame);
@@ -274,18 +328,25 @@ export function BookingFab({
    * Decides which slot should hold the button, and hands it over when that
    * changes. The booking section wins over the hero, and the corner takes it
    * whenever neither is on screen.
+   *
+   * The margins matter as much as the thresholds. Handing off exactly as a slot
+   * crosses the edge means the melt happens off screen — the interesting half
+   * of it, since the button goes soft where it started. Shrinking the box the
+   * observer measures against buys the animation somewhere to be seen: the hero
+   * gives the button up while still comfortably in view, and the booking
+   * section takes it once it is properly on screen rather than a sliver.
    */
   useEffect(() => {
     if (isPreview) return;
     if (typeof window.matchMedia !== 'function') return;
-    const phone = window.matchMedia(PHONE_QUERY);
-    if (!phone.matches) return;
+    if (!window.matchMedia(PHONE_QUERY).matches) return;
 
     const home = slotEl('home');
     const dock = slotEl('dock');
     if (!home && !dock) return;
 
     const onScreen: Record<string, boolean> = { home: false, dock: false };
+    const observers: IntersectionObserver[] = [];
 
     const settle = () => {
       const next: Slot = onScreen.dock ? 'dock' : onScreen.home ? 'home' : 'float';
@@ -296,28 +357,25 @@ export function BookingFab({
       morph(previous, next);
     };
 
-    const observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        const key = entry.target === dock ? 'dock' : 'home';
-        // Properly on screen, not merely clipping an edge — otherwise the
-        // handover fires while the receiving button is a sliver nobody can press.
-        onScreen[key] = entry.isIntersecting;
-      }
-      settle();
-    }, { threshold: 0.6 });
+    const watch = (el: Element | null, key: 'home' | 'dock', rootMargin: string) => {
+      if (!el) return;
+      const observer = new IntersectionObserver(entries => {
+        onScreen[key] = entries[entries.length - 1].isIntersecting;
+        settle();
+      }, { threshold: 0.5, rootMargin });
+      observer.observe(el);
+      observers.push(observer);
+    };
 
-    if (home) observer.observe(home);
-    if (dock) observer.observe(dock);
+    watch(home, 'home', '-28% 0px 0px 0px');
+    watch(dock, 'dock', '0px 0px -12% 0px');
 
-    // The corner starts empty and the hero holds the button, which is where a
-    // page load leaves things; a deep link or a restored scroll position is
-    // corrected by the observer's first callback.
     ownerRef.current = home ? 'home' : 'float';
     setOwner(ownerRef.current);
     occupy(ownerRef.current === 'home' ? 'home' : null);
 
     return () => {
-      observer.disconnect();
+      observers.forEach(o => o.disconnect());
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       // Never leave a client's booking button hidden because a component
       // unmounted mid-morph.
@@ -352,74 +410,63 @@ export function BookingFab({
   const isExternal = /^https?:\/\//i.test(bookingUrl || '');
 
   return (
-    <>
-      {/* The melt itself. feTurbulence gives an irregular edge and
-          feDisplacementMap pushes the pixels around by it, so the shape crawls
-          instead of merely scaling; the blur fuses what the displacement pulls
-          apart. Both are driven to zero at rest — a filter left mounted on a
-          fixed element costs a repaint per frame for no picture. */}
-      {!isPreview && (
-        <svg aria-hidden="true" focusable="false" width="0" height="0"
-             className="absolute pointer-events-none" style={{ position: 'absolute' }}>
-          <defs>
-            <filter id="ts-melt" x="-40%" y="-40%" width="180%" height="180%">
-              <feTurbulence
-                type="fractalNoise" baseFrequency="0.013 0.055" numOctaves="2" seed="7"
-                result="noise"
-              />
-              <feDisplacementMap
-                ref={wobbleRef}
-                in="SourceGraphic" in2="noise" scale="0"
-                xChannelSelector="R" yChannelSelector="G" result="pushed"
-              />
-              <feGaussianBlur ref={blurRef} in="pushed" stdDeviation="0" />
-            </filter>
-          </defs>
-        </svg>
-      )}
+    <div
+      ref={hostRef}
+      className={`${
+        isPreview ? 'absolute' : 'fixed'
+      } ${
+        // Mobile only. On desktop the navbar's own "Book" button is pinned in
+        // view the whole way down the page, so a second floating one is a
+        // duplicate control covering the content. On a phone that navbar CTA is
+        // folded into the hamburger menu — two taps and a decision — which is
+        // exactly where a persistent button earns its place.
+        //
+        // Kept visible in the Studio at every width on purpose: that panel is a
+        // phone frame, and hiding the button there would mean the one preview
+        // meant to show mobile is the one place you cannot see the mobile UI.
+        isPreview ? '' : 'sm:hidden'
+      } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] ${
+        // Only the plain reveal is a transition. The morph writes transform,
+        // filter and opacity every frame, and a transition on top of that
+        // interpolates towards each frame's value and lags the whole way.
+        morphing ? '' : 'transition-opacity duration-300'
+      } ${
+        visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+      // Hidden means hidden: an invisible button must not be focusable or
+      // announced, or keyboard and screen-reader users reach a phantom control.
+      // Mid-morph it is a shape in transit, not a target.
+      aria-hidden={!visible || morphing}
+    >
+      {/* Thrown off the body as it goes soft and reabsorbed as it sets. They
+          are the same accent as the button and sit behind it, so at rest they
+          are three invisible dots costing nothing. */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+        {DROPLETS.map((drop, i) => (
+          <span
+            key={i}
+            ref={el => { dropsRef.current[i] = el; }}
+            style={{ opacity: 0, width: 34, height: 34, marginLeft: -17, marginTop: -17 }}
+            className="absolute left-1/2 top-1/2 rounded-full bg-[color:var(--ts-accent)] blur-[2px] will-change-transform"
+          />
+        ))}
+      </div>
 
-      <div
-        ref={blobRef}
-        className={`${
-          isPreview ? 'absolute' : 'fixed'
-        } ${
-          // Mobile only. On desktop the navbar's own "Book" button is pinned in
-          // view the whole way down the page, so a second floating one is a
-          // duplicate control covering the content. On a phone that navbar CTA
-          // is folded into the hamburger menu — two taps and a decision — which
-          // is exactly where a persistent button earns its place.
-          //
-          // Kept visible in the Studio at every width on purpose: that panel is
-          // a phone frame, and hiding the button there would mean the one
-          // preview meant to show mobile is the one place you cannot see the
-          // mobile UI.
-          isPreview ? '' : 'sm:hidden'
-        } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] will-change-transform ${
-          // Only the plain reveal is a transition. The morph writes transform,
-          // filter and opacity every frame, and a transition on top of that
-          // interpolates towards each frame's value and lags the whole way.
-          morphing ? '' : 'transition-opacity duration-300'
-        } ${
-          visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        style={{ transformOrigin: 'center center' }}
-        // Hidden means hidden: an invisible button must not be focusable or
-        // announced, or keyboard and screen-reader users reach a phantom
-        // control. Mid-morph it is a shape in transit, not a target.
-        aria-hidden={!visible || morphing}
-      >
+      <div ref={shapeRef} className="will-change-transform" style={{ transformOrigin: 'center center' }}>
         <a
-          ref={labelRef}
+          ref={pillRef}
           href={bookingUrl || '#contact'}
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noopener noreferrer' : undefined}
           tabIndex={visible && !morphing ? 0 : -1}
           className="inline-flex items-center gap-2 h-12 pl-4 pr-5 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--ts-accent)]"
         >
-          <Calendar className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-          <span className="text-sm font-bold whitespace-nowrap">{label}</span>
+          <span ref={inkRef} className="inline-flex items-center gap-2">
+            <Calendar className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+            <span className="text-sm font-bold whitespace-nowrap">{label}</span>
+          </span>
         </a>
       </div>
-    </>
+    </div>
   );
 }
