@@ -24,6 +24,7 @@ import {
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
 import { blueprintWithClientMedia, type MediaKind } from './lib/clientMedia';
+import { mergeSnapshotEdit } from './lib/snapshotMerge';
 import { stageOf } from './src/utils/clientStage';
 import { vaultContextFor } from './lib/vault';
 
@@ -2062,7 +2063,10 @@ ${prompt}`;
 
       const response = await callModel({ task: 'studio-edit', prompt: systemInstruction });
 
-      const updatedSnapshot = parseModelJson(response);
+      // Only what the model actually returned is applied. It is asked for the
+      // complete object and does not reliably give one; a field it omits is a
+      // field it did not change, not a field to delete. See lib/snapshotMerge.
+      const updatedSnapshot = mergeSnapshotEdit(currentSnapshot, parseModelJson(response));
 
       // Restore preserved image assets
       if (originalHeroImage && (!updatedSnapshot.profile?.heroImage || updatedSnapshot.profile.heroImage === '[PRESERVED_CLIENT_HERO_IMAGE]')) {
