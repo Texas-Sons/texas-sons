@@ -621,9 +621,27 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     }
   }, [project.profile?.name, project.profile?.heroImage]);
 
+  /**
+   * The id this Studio session belongs to.
+   *
+   * Every operation that produced a new snapshot — applying a preset, scanning a
+   * photo, running an AI edit — stamped `prj-${Date.now()}` on it and threw away
+   * which project was open. The next deploy then saved under that new id, so
+   * editing a live client and pressing Deploy created a SECOND row for her
+   * instead of updating the first. Two Opalescents in the client list, the
+   * newer one missing whatever the older one had.
+   *
+   * A new snapshot is a new version of this client, not a new client. The id is
+   * the one thing that must survive an edit. Only a genuinely blank session
+   * mints one, and "New Site" is how you ask for that deliberately.
+   */
+  const keepProjectId = () => project.id && !project.id.startsWith('bp-')
+    ? project.id
+    : `prj-${Date.now()}`;
+
   const handleApplyPreset = (preset: PresetBlueprint) => {
     const newSnapshot: ProjectSnapshot = {
-      id: `prj-${Date.now()}`,
+      id: keepProjectId(),
       prompt: preset.prompt,
       timestamp: new Date().toLocaleTimeString(),
       profile: preset.profile,
@@ -646,7 +664,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
   const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string, allImages?: string[]) => {
     const newSnapshot: ProjectSnapshot = {
-      id: `prj-${Date.now()}`,
+      id: keepProjectId(),
       prompt: `Scanned from photo: ${dossier.businessName || 'Business Asset'}`,
       timestamp: new Date().toLocaleTimeString(),
       profile: {
@@ -814,7 +832,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   const projectRowId = () => {
     const id = project.id;
     if (id.startsWith('prj-')) return id.slice(4);
-    if (id.startsWith('bp-')) return `prj_${Date.now()}`;
+    // Was `prj_${Date.now()}`, so this returned a DIFFERENT id every call — and
+    // it is called twice per deploy, once for the API and once for the save.
+    // A function that mints identity on read cannot be called twice safely.
+    if (id.startsWith('bp-')) return id.slice(3);
     return id;
   };
 
@@ -894,7 +915,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
       const updatedSnapshot: ProjectSnapshot = {
         ...data.snapshot,
-        id: `prj-${Date.now()}`,
+        id: keepProjectId(),
         prompt: textToRun,
         timestamp: new Date().toLocaleTimeString(),
       };

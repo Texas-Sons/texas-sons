@@ -73,8 +73,20 @@ export function PreviewFrame({ bodyStyle, bodyClassName, className, title, child
 
   useEffect(() => {
     if (!root) return;
-    Object.assign(root.style, bodyStyle || {});
+    // Custom properties need setProperty. Object.assign(el.style, {'--ts-bg': x})
+    // silently does nothing — CSSStyleDeclaration has no '--ts-bg' key to write,
+    // so every --ts-* variable stayed unset inside the frame and the whole
+    // preview fell back to unstyled defaults. React does this correctly for
+    // inline style props, which is why it worked before the iframe.
+    root.removeAttribute('style');
+    for (const [key, value] of Object.entries(bodyStyle || {})) {
+      if (value === undefined || value === null) continue;
+      if (key.startsWith('--')) root.style.setProperty(key, String(value));
+      else (root.style as any)[key] = value;
+    }
     root.className = bodyClassName || '';
+    // Some styling keys off this attribute on the deployed site's root.
+    root.setAttribute('data-ts-site', '');
   }, [root, bodyStyle, bodyClassName]);
 
   return (
