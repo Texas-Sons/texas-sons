@@ -233,22 +233,80 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
 }
 
 // ── Helper: build a ProjectSnapshot from form fields ─────────────────────────
-function buildSnapshot(form: InstantFormData): Omit<ProjectSnapshot, 'id' | 'prompt' | 'timestamp'> {
-  const services: ServiceItem[] = [
-    form.pillar1title ? { title: form.pillar1title, description: form.pillar1desc, duration: 'Pillar #1', highlight: true } : null,
-    form.pillar2title ? { title: form.pillar2title, description: form.pillar2desc, duration: 'Pillar #2' } : null,
-    form.pillar3title ? { title: form.pillar3title, description: form.pillar3desc, duration: 'Pillar #3' } : null,
-  ].filter(Boolean) as ServiceItem[];
+/**
+ * The form holds a flat subset of the blueprint: three "pillars", three
+ * endorsements, four badges, and the profile fields. It is not the whole site,
+ * and it used to be treated as though it were — this function constructed a
+ * fresh snapshot out of the form alone and the Studio replaced the project with
+ * it.
+ *
+ * For a salon that was ruinous. Nine services became three, each retitled with
+ * a campaign's "Pillar #1" in place of its real duration, with the price and
+ * the per-service Square link gone. So did the booking URL, the favicon, the
+ * gallery, the before/after pairs, the products and the section order — every
+ * one of them absent from the form, and therefore, on the next press of the
+ * build button, absent from her site. The operator had changed a photo.
+ *
+ * So the form contributes rather than replaces. Fields it shows are applied by
+ * index onto what is already there; everything it has no input for is left
+ * exactly as it was.
+ */
+function mergeServices(base: ServiceItem[], form: InstantFormData): ServiceItem[] {
+  const edits = [
+    { title: form.pillar1title, description: form.pillar1desc },
+    { title: form.pillar2title, description: form.pillar2desc },
+    { title: form.pillar3title, description: form.pillar3desc },
+  ];
+  const next: (ServiceItem | null)[] = [...base];
+  edits.forEach((edit, i) => {
+    if (!edit.title) {
+      // Cleared in the form. Only ever removes a service the form was showing.
+      if (i < base.length) next[i] = null;
+      return;
+    }
+    // Spread first: price, duration and bookingUrl live on these objects and
+    // have no input here. A "90 min" balayage at $350 must not come back as a
+    // campaign pillar because someone edited its description.
+    next[i] = { ...(base[i] || {}), title: edit.title, description: edit.description };
+  });
+  return next.filter(Boolean) as ServiceItem[];
+}
 
-  const testimonials: TestimonialItem[] = [
-    form.endorsement1author ? { quote: form.endorsement1quote, author: form.endorsement1author, role: form.endorsement1role, rating: 5, verified: true } : null,
-    form.endorsement2author ? { quote: form.endorsement2quote, author: form.endorsement2author, role: form.endorsement2role, rating: 5, verified: true } : null,
-    form.endorsement3author ? { quote: form.endorsement3quote, author: form.endorsement3author, role: form.endorsement3role, rating: 5, verified: true } : null,
-  ].filter(Boolean) as TestimonialItem[];
+function mergeTestimonials(base: TestimonialItem[], form: InstantFormData): TestimonialItem[] {
+  const edits = [
+    { quote: form.endorsement1quote, author: form.endorsement1author, role: form.endorsement1role },
+    { quote: form.endorsement2quote, author: form.endorsement2author, role: form.endorsement2role },
+    { quote: form.endorsement3quote, author: form.endorsement3author, role: form.endorsement3role },
+  ];
+  const next: (TestimonialItem | null)[] = [...base];
+  edits.forEach((edit, i) => {
+    if (!edit.author) {
+      if (i < base.length) next[i] = null;
+      return;
+    }
+    // Typed here means typed by the operator, not confirmed by the person
+    // quoted. This used to stamp verified: true and rating: 5 on every one.
+    next[i] = { ...(base[i] || {}), quote: edit.quote, author: edit.author, role: edit.role };
+  });
+  return next.filter(Boolean) as TestimonialItem[];
+}
 
-  const badges = [form.badge1, form.badge2, form.badge3, form.badge4].filter(Boolean);
+function mergeBadges(base: string[], form: InstantFormData): string[] {
+  const next = [...base];
+  [form.badge1, form.badge2, form.badge3, form.badge4].forEach((badge, i) => { next[i] = badge; });
+  return next.filter(Boolean);
+}
+
+function buildSnapshot(
+  form: InstantFormData,
+  base?: ProjectSnapshot
+): Omit<ProjectSnapshot, 'id' | 'prompt' | 'timestamp'> {
+  const baseProfile = (base?.profile || {}) as Partial<BusinessProfile>;
 
   const profile: BusinessProfile = {
+    // Everything the form has no field for — bookingUrl, faviconUrl,
+    // galleryImages — survives because it is spread in first.
+    ...(baseProfile as BusinessProfile),
     name: form.name || 'Campaign Name',
     tagline: form.tagline,
     description: form.description,
@@ -268,15 +326,16 @@ function buildSnapshot(form: InstantFormData): Omit<ProjectSnapshot, 'id' | 'pro
     treasurerName: form.treasurerName || undefined,
   };
 
-  return { 
-    profile, 
-    services, 
-    testimonials, 
-    theme: form.theme, 
-    heroVariant: form.heroVariant, 
-    badges, 
-    proofBadgeText: form.proofBadgeText, 
-    seo: { title: `${form.name} — ${form.tagline}`, description: form.description } 
+  return {
+    ...(base || {}),
+    profile,
+    services: mergeServices(Array.isArray(base?.services) ? base!.services : [], form),
+    testimonials: mergeTestimonials(Array.isArray(base?.testimonials) ? base!.testimonials : [], form),
+    theme: form.theme,
+    heroVariant: form.heroVariant,
+    badges: mergeBadges(Array.isArray(base?.badges) ? base!.badges : [], form),
+    proofBadgeText: form.proofBadgeText,
+    seo: { title: `${form.name} — ${form.tagline}`, description: form.description },
   };
 }
 
@@ -340,8 +399,7 @@ export default function BlueprintFormPanel({
   };
 
   const handleBuild = () => {
-    const snap = buildSnapshot(form);
-    onBuild(snap);
+    onBuild(buildSnapshot(form, activeSnapshot));
   };
 
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar } from 'lucide-react';
 
 /**
@@ -56,6 +56,7 @@ export function BookingFab({
 }: BookingFabProps) {
   const isPreview = variant === 'preview';
   const [scrolled, setScrolled] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPreview) return;
@@ -65,7 +66,50 @@ export function BookingFab({
     return () => window.removeEventListener('scroll', onScroll);
   }, [isPreview]);
 
-  const visible = isPreview || scrolled;
+  /**
+   * Hands over to the page's own booking button when that button is on screen.
+   *
+   * Otherwise the floating one sits on top of the real one, two identical
+   * controls a thumb's width apart, and a visitor who has just scrolled to the
+   * thing they were looking for is asked which copy of it to press.
+   *
+   * It moves toward the real button as it goes rather than simply vanishing, so
+   * the handover reads as the same button arriving where it belongs. The offset
+   * is measured at the moment of docking; it is a direction to travel in, not a
+   * position to hold, so it does not need to track the page as it scrolls.
+   */
+  const [dock, setDock] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    if (isPreview) return;
+    const target = document.querySelector('[data-ts-book-dock]');
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setDock(null);
+          return;
+        }
+        const from = ref.current?.getBoundingClientRect();
+        const to = entry.boundingClientRect;
+        setDock(from
+          ? {
+              x: (to.left + to.width / 2) - (from.left + from.width / 2),
+              y: (to.top + to.height / 2) - (from.top + from.height / 2),
+            }
+          // Measurable failure is not worth keeping two buttons for.
+          : { x: 0, y: 24 });
+      },
+      // Properly on screen, not merely clipping the bottom edge — otherwise it
+      // hands over while the real button is still a sliver nobody can press.
+      { threshold: 0.6 }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isPreview]);
+
+  const visible = isPreview || (scrolled && !dock);
 
   // Test the protocol, not merely presence. Since the Square embed landed, this
   // prop is often an in-page anchor like '#book', and `!!bookingUrl` treated
@@ -75,6 +119,8 @@ export function BookingFab({
 
   return (
     <div
+      ref={ref}
+      style={dock ? { transform: `translate(${dock.x}px, ${dock.y}px) scale(0.6)` } : undefined}
       className={`${
         isPreview ? 'absolute' : 'fixed'
       } ${
@@ -88,7 +134,7 @@ export function BookingFab({
         // phone frame, and hiding the button there would mean the one preview
         // meant to show mobile is the one place you cannot see the mobile UI.
         isPreview ? '' : 'sm:hidden'
-      } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] transition-opacity duration-300 ${
+      } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       // Hidden means hidden: an invisible button must not be focusable or

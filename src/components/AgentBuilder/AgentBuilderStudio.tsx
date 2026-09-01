@@ -1616,7 +1616,11 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 onOpenProposal={() => setIsProposalModalOpen(true)}
                 onBuild={(snap) => {
                   const newSnapshot: ProjectSnapshot = {
-                    id: `prj-${Date.now()}`,
+                    // The fifth place that minted a fresh id on an edit. Every
+                    // press of the form's build button on an open client made
+                    // the snapshot a different project, so the next deploy
+                    // wrote a second row instead of updating hers.
+                    id: keepProjectId(),
                     prompt: `1-Click Build: ${snap.profile.name}`,
                     timestamp: new Date().toLocaleTimeString(),
                     ...snap,

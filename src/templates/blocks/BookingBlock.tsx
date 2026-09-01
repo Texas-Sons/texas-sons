@@ -162,10 +162,14 @@ export function BookingBlock({
             <>
             {bookingUrl && (
               <div className="mb-8">
+                {/* The floating button hands over to this one when it
+                    scrolls into view, rather than hovering on top of it.
+                    See BookingFab. */}
                 <a
                   href={bookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-ts-book-dock=""
                   className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-base font-extrabold uppercase tracking-wider shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)]"
                 >
                   {bookingLabel}
