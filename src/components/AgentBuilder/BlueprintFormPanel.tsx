@@ -129,6 +129,7 @@ export interface InstantFormData {
   hours: string;
   heroImage: string;
   logoUrl: string;
+  logoScale: string;
   ownerPhoto: string;
   ownerName: string;
   ownerRole: string;
@@ -169,6 +170,7 @@ const DEFAULT_FORM: InstantFormData = {
   phone: '', email: '', address: '', hours: '',
   heroImage: '',
   logoUrl: '',
+  logoScale: '1',
   ownerPhoto: '', ownerName: '', ownerRole: '',
   theme: 'campaign-navy',
   primaryColor: '', accentColor: '',
@@ -199,6 +201,7 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     hours: Array.isArray(snap.profile.hours) ? snap.profile.hours.join(', ') : (snap.profile.hours || ''),
     heroImage: snap.profile.heroImage || '',
     logoUrl: snap.profile.logoUrl || '',
+    logoScale: String(snap.profile.logoScale ?? 1),
     ownerPhoto: snap.profile.ownerPhoto || '',
     ownerName: snap.profile.ownerName || '',
     ownerRole: snap.profile.ownerRole || '',
@@ -316,6 +319,7 @@ function buildSnapshot(
     hours: form.hours,
     heroImage: form.heroImage,
     logoUrl: form.logoUrl,
+    logoScale: Number(form.logoScale) > 0 ? Number(form.logoScale) : 1,
     ownerPhoto: form.ownerPhoto,
     ownerName: form.ownerName,
     ownerRole: form.ownerRole,
@@ -794,6 +798,48 @@ export default function BlueprintFormPanel({
             onChange={v => set('logoUrl', v)}
             hint="Shown in the navbar. Without one the site falls back to the first letter of the business name."
           />
+
+          {/* How big it renders is a property of the file, not of the design.
+              A wordmark that fills its canvas and a mark sitting in a wide
+              margin of transparent pixels need very different heights to read
+              as the same size on the page, and no single number in the template
+              can be right for both. */}
+          {form.logoUrl && (
+            <div className="space-y-1.5 -mt-1">
+              <div className="flex items-center justify-between">
+                <label htmlFor="logoScale" className="text-[11px] font-bold text-stone-400">
+                  Logo size
+                </label>
+                <span className="text-[11px] font-mono text-stone-500">
+                  {Math.round(Number(form.logoScale || 1) * 100)}%
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  id="logoScale"
+                  type="range"
+                  min="0.6"
+                  max="1.6"
+                  step="0.05"
+                  value={form.logoScale || '1'}
+                  onChange={e => set('logoScale', e.target.value)}
+                  className="flex-1 accent-[#C5A059]"
+                />
+                <button
+                  type="button"
+                  onClick={() => set('logoScale', '1')}
+                  className="text-[11px] font-bold text-stone-500 hover:text-stone-300"
+                >
+                  Reset
+                </button>
+              </div>
+              <p className="text-[10px] text-stone-600 leading-snug">
+                If it still looks small at the maximum, the file itself has empty
+                space around the mark — crop that off and it will fill the space
+                it is given.
+              </p>
+            </div>
+          )}
 
           <PhotoField
             label="Hero Photo"

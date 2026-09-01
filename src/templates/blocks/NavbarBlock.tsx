@@ -6,6 +6,16 @@ import { NavItem } from './types';
 interface NavbarBlockProps {
   businessName: string;
   logoUrl?: string;
+  /**
+   * Multiplier on the logo's height, 1 being the 2.5rem default.
+   *
+   * A per-client control rather than one number in this file, because the right
+   * size depends entirely on the file: a wordmark that fills its canvas edge to
+   * edge and a mark sitting in a wide margin of transparent pixels need very
+   * different heights to read as the same size on the page, and the operator is
+   * the one looking at both.
+   */
+  logoScale?: number;
   navItems?: NavItem[];
   phone?: string;
   ctaText?: string;
@@ -18,6 +28,7 @@ interface NavbarBlockProps {
 export function NavbarBlock({
   businessName,
   logoUrl,
+  logoScale,
   navItems = [
     { label: 'Services', href: '#services' },
     { label: 'Reviews', href: '#reviews' },
@@ -68,7 +79,15 @@ export function NavbarBlock({
             it the one that has to yield. */}
         <a href="#" className="flex items-center space-x-3 group min-w-0 shrink">
           {logoUrl ? (
-            <img src={logoUrl} alt={businessName} className="h-10 w-auto object-contain flex-shrink-0" />
+            <img
+              src={logoUrl}
+              alt={businessName}
+              // Capped at the header's own height less its padding. A logo that
+              // outgrows the bar does not make the bar taller, it spills out of
+              // it and sits over the page behind.
+              style={{ height: `${Math.min(4, Math.max(1.25, 2.5 * (logoScale || 1)))}rem` }}
+              className="w-auto object-contain flex-shrink-0"
+            />
           ) : (
             <div
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shadow-lg group-hover:scale-105 transition-transform flex-shrink-0 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] ${isCampaign ? 'font-serif' : ''}`}
