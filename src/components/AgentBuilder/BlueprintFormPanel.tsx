@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { resizeImage } from '../IntakePortal/imageUtils';
 import { ServicesEditor, type EditableService } from '../ServicesEditor';
+import { GalleryEditor } from '../GalleryEditor';
 import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
@@ -309,17 +310,21 @@ function buildSnapshot(
   form: InstantFormData,
   base?: ProjectSnapshot,
   /**
-   * The full service menu, for clients who have one.
+   * The parts of the blueprint the form holds as themselves rather than as
+   * flat strings.
    *
-   * The three "pillar" fields are a campaign's platform, and mapping them onto
-   * `services` was fine for a candidate with three priorities and ruinous for a
-   * salon with nine treatments: the form could only ever describe the first
-   * three, under campaign labels, with no price, no duration and no booking
-   * link. When this is supplied it is the menu, and the pillar fields are not
-   * consulted at all.
+   * `services`: the full menu. The three "pillar" fields are a campaign's
+   * platform, and mapping them onto `services` was fine for a candidate with
+   * three priorities and ruinous for a salon with nine treatments — the form
+   * could only describe the first three, under campaign labels, with no price,
+   * no duration and no booking link. When this is supplied it is the menu, and
+   * the pillar fields are not consulted at all.
+   *
+   * `galleryImages`: the photos and their order.
    */
-  services?: EditableService[]
+  extras?: { services?: EditableService[]; galleryImages?: string[] }
 ): Omit<ProjectSnapshot, 'id' | 'prompt' | 'timestamp'> {
+  const services = extras?.services;
   const baseProfile = (base?.profile || {}) as Partial<BusinessProfile>;
 
   const profile: BusinessProfile = {
@@ -345,6 +350,7 @@ function buildSnapshot(
     primaryColor: form.primaryColor,
     accentColor: form.accentColor,
     treasurerName: form.treasurerName || undefined,
+    ...(extras?.galleryImages ? { galleryImages: extras.galleryImages } : {}),
   };
 
   return {
@@ -585,6 +591,11 @@ export default function BlueprintFormPanel({
     () => (Array.isArray(activeSnapshot?.services) ? activeSnapshot!.services : [])
   );
 
+  /** The gallery photos, in the order they will appear. */
+  const [gallery, setGallery] = useState<string[]>(
+    () => (Array.isArray(activeSnapshot?.profile?.galleryImages) ? activeSnapshot!.profile.galleryImages! : [])
+  );
+
   const [activeTab, setActiveTab] = useState<TabKey>('archetype');
 
   useEffect(() => {
@@ -600,6 +611,7 @@ export default function BlueprintFormPanel({
     if (activeSnapshot) {
       setForm(snapshotToForm(activeSnapshot));
       setServices(Array.isArray(activeSnapshot.services) ? activeSnapshot.services : []);
+      setGallery(Array.isArray(activeSnapshot.profile?.galleryImages) ? activeSnapshot.profile.galleryImages : []);
     }
   }, [activeSnapshot?.id, activeSnapshot?.profile?.name]);
 
@@ -621,7 +633,10 @@ export default function BlueprintFormPanel({
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
 
   const handleBuild = () => {
-    onBuild(buildSnapshot(form, activeSnapshot, isCampaign ? undefined : services));
+    onBuild(buildSnapshot(form, activeSnapshot, {
+      services: isCampaign ? undefined : services,
+      galleryImages: gallery,
+    }));
   };
 
   return (
@@ -928,6 +943,21 @@ export default function BlueprintFormPanel({
               </p>
             </div>
           )}
+
+          {/* The gallery had no editor at all: these photos could only arrive
+              from Google Places, the intake portal, or the client's own
+              uploads, and nothing here could add one, remove one, or say which
+              came first. Which photo leads that section is a decision. */}
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+              Gallery Photos
+            </label>
+            <GalleryEditor
+              images={gallery}
+              onChange={setGallery}
+              hint="Anything the client uploads through her own dashboard is added ahead of these."
+            />
+          </div>
 
           <PhotoField
             label="Hero Photo"
