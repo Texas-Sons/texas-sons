@@ -148,26 +148,38 @@ export interface InstantFormData {
 }
 
 const DEFAULT_FORM: InstantFormData = {
-  title: 'Campaign Platform', category: 'Campaign & Leadership', 
-  name: 'Ernest Trevino for Sheriff', tagline: 'A Lifetime of Dedicated Service & Courtroom Integrity', 
-  description: 'Protecting rural Texas landowners, enhancing county deputy patrols, and maintaining strict fiscal transparency.',
-  phone: '(830) 555-VOTE', email: 'campaign@trevinoforsheriff.com', address: 'Jourdanton, TX 78026', hours: 'Mon – Sat: 8AM – 6PM', 
-  heroImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80',
-  ownerPhoto: '',
-  ownerName: '',
-  ownerRole: '',
-  theme: 'campaign-navy', primaryColor: '#00081e', accentColor: '#C5A059',
-  treasurerName: 'Joseph S. Boyle, CPA', heroVariant: 'split',
+  // Structure only. No content.
+  //
+  // This used to be one real candidate's entire campaign: his name, his
+  // tagline, his contact details, four credential badges, and three
+  // endorsements attributed to named people — "Judge Ronald Sterling",
+  // "Captain Marcus Vance", "Eleanor Rodriguez" — who never said them.
+  //
+  // It is the form's STARTING state, so a blank new blueprint opened
+  // pre-populated with fabricated quotes from invented officials, one save away
+  // from a client's site. Six other copies of this pattern have been removed
+  // this week and this was the largest.
+  //
+  // An empty form is honest and the fields are self-explanatory. Structural
+  // defaults stay, because a layout choice is not a claim about anybody.
+  title: '', category: '',
+  name: '', tagline: '', description: '',
+  phone: '', email: '', address: '', hours: '',
+  heroImage: '',
+  ownerPhoto: '', ownerName: '', ownerRole: '',
+  theme: 'campaign-navy',
+  primaryColor: '', accentColor: '',
+  treasurerName: '', heroVariant: 'split',
   selectedArchetype: 'civic',
   selectedFeature: 'voting-guide',
-  pillar1title: 'Violent Crime Interdiction', pillar1desc: 'Expanding rapid patrol response times and specialized narcotics task force units across rural county highways.',
-  pillar2title: 'Landowner Rights & Anti-Poaching', pillar2desc: 'Direct deputy coordination with local ranch managers to safeguard property borders and agricultural livestock.',
-  pillar3title: 'Fiscal Responsibility & Grants', pillar3desc: 'Securing state & federal law enforcement equipment grants without burdening local county taxpayers.',
-  badge1: '28+ Years Texas Law Enforcement', badge2: 'Master Peace Officer Certified', badge3: 'Unanimously Backed by Deputies', badge4: 'Lifelong Atascosa County Resident', 
-  proofBadgeText: 'Official 2026 Endorsements · Law Enforcement Association Verified',
-  endorsement1quote: 'Ernest Trevino brings unmatched courtroom composure, proven tactical leadership, and unwavering constitutional dedication to our community.', endorsement1author: 'Judge Ronald Sterling', endorsement1role: 'Presiding County Magistrate (Ret.)',
-  endorsement2quote: 'A steadfast defender of rural landowners who always answers the call. He has earned the trust and respect of every deputy.', endorsement2author: 'Captain Marcus Vance', endorsement2role: 'Atascosa Deputy Patrol Commander',
-  endorsement3quote: 'He will restore real accountability, transparent budgeting, and swift justice to the Sheriff’s Department from Day One.', endorsement3author: 'Eleanor Rodriguez', endorsement3role: 'President, Pleasanton Small Business Alliance',
+  pillar1title: '', pillar1desc: '',
+  pillar2title: '', pillar2desc: '',
+  pillar3title: '', pillar3desc: '',
+  badge1: '', badge2: '', badge3: '', badge4: '',
+  proofBadgeText: '',
+  endorsement1quote: '', endorsement1author: '', endorsement1role: '',
+  endorsement2quote: '', endorsement2author: '', endorsement2role: '',
+  endorsement3quote: '', endorsement3author: '', endorsement3role: '',
 };
 
 // ── Helper: Map Snapshot to Form ─────────────────────────────────────────────

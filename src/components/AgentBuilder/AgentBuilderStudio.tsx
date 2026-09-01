@@ -198,11 +198,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'Protecting Rural Landowners & Property Rights', description: 'Defending agricultural tax exemptions, private groundwater rights, and ensuring county zoning respects generational family lands.', duration: 'Judicial Pillar #2' },
       { title: 'Transparent County Budgets & Fiscal Stewardship', description: 'Demanding zero wasteful taxpayer expenditures and providing line-item transparency for every county department.', duration: 'Judicial Pillar #3' }
     ],
-    testimonials: [
-      { quote: 'Waylon has the courtroom experience, unshakeable ethics, and deep community roots our county bench urgently requires.', author: 'Sheriff Hector Ramirez', role: 'Law Enforcement Coalition Endorsement', rating: 5, verified: true },
-      { quote: 'A steadfast defender of our landowners, water rights, and constitutional freedoms. He has our full trust and endorsement.', author: 'Sarah Jenkins', role: 'Atascosa County Cattlemen & Landowner', rating: 5, verified: true },
-      { quote: 'Fair, disciplined, and committed to transparency. Waylon will run our county courts with the highest standard of honor.', author: 'Judge Ronald Sterling', role: 'Presiding Magistrate (Ret.)', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'campaign-judicial',
     heroVariant: 'split'
   },
@@ -239,11 +240,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'School & Campus Safety Taskforce', description: 'Placing certified School Resource Deputies in every county campus and conducting active threat readiness training.', duration: 'Pillar #2' },
       { title: 'Fiscal Transparency & Modernized Jail Ops', description: 'Eliminating administrative waste, modernizing detention facilities, and ensuring every taxpayer dollar is accounted for.', duration: 'Pillar #3' },
     ],
-    testimonials: [
-      { quote: 'When lives were on the line during an active hostage crisis, Trevino led tactical entry from the front with extraordinary courage. His SAPD Medal of Valor speaks for itself.', author: 'Captain Sarah Garza', role: 'Retired SWAT & Tactical Commander', rating: 5, verified: true },
-      { quote: 'Ernest served as one of the most relentless lead detectives in South Texas, spearheading major criminal investigations and dismantling dangerous cartel trafficking networks.', author: 'Lieutenant Hector Benavides', role: 'Former Chief of Criminal Investigations', rating: 5, verified: true },
-      { quote: 'Ernest Trevino is a true lawman of unshakeable constitutional integrity. He understands rural property owners, supports our deputies, and brings proven leadership to Atascosa County.', author: 'Judge Ronald Sterling', role: 'Presiding County Magistrate & Rancher', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'campaign-navy',
     heroVariant: 'split'
   },
@@ -274,11 +276,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'Youth Intervention & Diversion Programs', description: 'Expanding non-violent first-time offender rehabilitation while maintaining strict accountability for violent repeat offenders.', duration: 'Pillar #2' },
       { title: 'Docket Efficiency & Taxpayer Savings', description: 'Eliminating case backlogs with modern digital courtroom scheduling to save county taxpayers millions annually.', duration: 'Pillar #3' },
     ],
-    testimonials: [
-      { quote: 'Deborah has the sharpest legal mind and highest ethical standard in our district. She has my full endorsement for Judge.', author: 'Justice Franklin E. Vance', role: 'Former Court of Appeals Justice', rating: 5, verified: true },
-      { quote: 'A dedicated public servant who commands respect from both prosecution and defense counsel alike.', author: 'Sheriff R. Douglas', role: 'County Law Enforcement Coalition', rating: 5, verified: true },
-      { quote: 'Fair, decisive, and unwavering in her commitment to Texas families and community safety.', author: 'Patricia Holbrook', role: 'County Bar Association Past-President', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'campaign-navy',
     heroVariant: 'split'
   },
@@ -308,11 +311,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'School Safety Taskforce', description: 'Placing certified School Resource Deputies in every county campus and conducting active threat readiness training.', duration: 'Pillar #2' },
       { title: 'Fiscal & Jail Transparency', description: 'Eliminating administrative waste, modernizing detention facilities, and ensuring every taxpayer dollar is accounted for.', duration: 'Pillar #3' },
     ],
-    testimonials: [
-      { quote: 'John Stone has stood on the front lines protecting our county for over two decades. He has my complete endorsement for Sheriff.', author: 'Judge Robert Sterling', role: 'Presiding County Magistrate', rating: 5, verified: true },
-      { quote: 'A leader of unmatched integrity. When deputies needed backup, Stone was the first through the door.', author: 'Captain Sarah Briggs', role: 'Retired SWAT Supervisor', rating: 5, verified: true },
-      { quote: 'Sheriff Stone is the only candidate who has a real, actionable plan to keep our neighborhoods safe.', author: 'Elena Martinez', role: 'Neighborhood Association President', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'campaign-navy',
     heroVariant: 'split'
   },
@@ -342,11 +346,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'Precision Silk Press', description: 'Organic botanical wash, deep hydration mask, and thermal finish.', price: 'From $110', duration: '1.5 hrs' },
       { title: 'Bridal & Editorial Styling', description: 'Full trial session, bespoke veil placement, and all-day styling package.', price: 'From $450', duration: '4 hrs' },
     ],
-    testimonials: [
-      { quote: 'Best salon experience in Dallas. My balayage lasted months and my hair has never felt healthier.', author: 'Elena Rostova', rating: 5, verified: true },
-      { quote: 'The attention to detail and atmosphere is pure luxury. Worth every single penny.', author: 'Marcus Vance', rating: 5, verified: true },
-      { quote: 'Aura transformed my damaged hair in just two sessions. The staff is world class.', author: 'Sophia Chen', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'luxury',
     heroVariant: 'split'
   },
@@ -376,11 +381,12 @@ const DEFAULT_BLUEPRINTS: PresetBlueprint[] = [
       { title: 'Jalapeño Cheddar Sausage Links', description: 'Hand-stuffed house links bursting with sharp cheddar and fresh jalapeños.', price: '$9 / link', duration: 'House Special' },
       { title: 'Full County Event Catering', description: 'Mobile smoker rig delivered with hot sides, cobblers, and pitmasters on-site.', price: 'From $24 / person', duration: 'Min 25 guests' },
     ],
-    testimonials: [
-      { quote: 'Hands down the best brisket in Fort Worth. Melt-in-your-mouth perfection every single time.', author: 'Hank Callahan', role: 'Local Food Critic', rating: 5, verified: true },
-      { quote: 'They catered our company retreat of 150 people and everyone is still raving about the ribs.', author: 'Jessica Thorne', role: 'Corporate Event Lead', rating: 5, verified: true },
-      { quote: 'We drive an hour just for their brisket and jalapeño links. Bring cash for the peach cobbler — it sells out fast.', author: 'Dwayne \'Smokey\' Harrell', role: 'Texas Monthly Reader Pick', rating: 5, verified: true }
-    ],
+    // Testimonials removed. Each preset shipped three five-star reviews
+    // attributed to named people — "Judge Ronald Sterling", "Captain Sarah
+    // Garza" — and flagged verified: true. Starting any client from a
+    // template put invented endorsements on their site under real-sounding
+    // names. The block renders nothing when handed nothing.
+    testimonials: [],
     theme: 'crimson-bold',
     heroVariant: 'split'
   }
@@ -695,21 +701,28 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
     const parsedTestimonials: TestimonialItem[] = intakeForm.testimonialsText.split('\n').filter(Boolean).map((line, idx) => {
       const match = line.match(/^"?(.*?)"?\s*—\s*(.*?)(?:\s*\((.*?)\))?$/);
+      // verified is false and the author is not invented.
+      //
+      // These quotes are typed by the operator, which makes the words real. The
+      // rest was not: every one was stamped verified: true by a system that
+      // verifies nothing, and an unattributed line became "Supporter #2,
+      // Verified Endorsement" — a person and a credential conjured to fill a
+      // field. An anonymous quote is fine; a fabricated endorser is not.
       if (match) {
         return {
           quote: match[1],
-          author: match[2] || `Endorser #${idx + 1}`,
-          role: match[3] || 'Community Leader',
+          author: match[2] || '',
+          role: match[3] || '',
           rating: 5,
-          verified: true
+          verified: false
         };
       }
       return {
         quote: line.replace(/^"|"$/g, ''),
-        author: `Supporter #${idx + 1}`,
-        role: 'Verified Endorsement',
+        author: '',
+        role: '',
         rating: 5,
-        verified: true
+        verified: false
       };
     });
 

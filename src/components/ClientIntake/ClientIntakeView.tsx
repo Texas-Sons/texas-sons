@@ -185,19 +185,20 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     tier: 'Lead Generation Site',
     status: 'New Intake',
     theme: 'campaign-navy',
-    primaryColor: '#00081e',
-    accentColor: '#C5A059',
+    // Campaign navy and campaign gold, on a form that starts every client.
+    primaryColor: '',
+    accentColor: '',
     tagline: '',
     description: '',
     heroImage: '',
-    badges: ['25+ Years Experience', 'Satisfaction Guaranteed', 'Locally Owned'],
-    proofBadgeText: 'Top Rated · 100% Guaranteed',
-    services: [
-      { title: 'Primary Offering', description: 'Comprehensive premium service tailored for your specific needs.', price: 'Custom Quote', highlight: true }
-    ],
-    testimonials: [
-      { quote: 'Exceptional service and unmatched attention to detail.', author: 'Verified Client', role: 'Austin, TX', rating: 5, verified: true }
-    ]
+    // Empty. These were '25+ Years Experience', 'Satisfaction Guaranteed',
+    // 'Top Rated · 100% Guaranteed' and a five-star review from "Verified
+    // Client" — claims about a business whose name had not been typed yet,
+    // pre-loaded into a blank dossier and one save from a live site.
+    badges: [],
+    proofBadgeText: '',
+    services: [],
+    testimonials: []
   });
 
   const [photoPalette, setPhotoPalette] = useState<ExtractedColorPalette | null>(null);
@@ -293,11 +294,9 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         tagline: '',
         description: '',
         heroImage: '',
-        badges: ['25+ Years Experience', 'Locally Owned & Operated', 'Satisfaction Guaranteed'],
-        proofBadgeText: 'Official Endorsements · Top Rated',
-        services: [
-          { title: 'Core Solution', description: 'Comprehensive craftsmanship delivered on time and within budget.', price: 'Custom', highlight: true }
-        ],
+        badges: [],
+        proofBadgeText: '',
+        services: [],
         testimonials: [
           { quote: 'Unmatched leadership and execution across all deliverables.', author: 'Client Partner', role: 'Austin, TX', rating: 5, verified: true }
         ]
