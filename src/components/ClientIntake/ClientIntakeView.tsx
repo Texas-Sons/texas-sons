@@ -794,7 +794,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                         );
                         const access = (cls: string) => (
                           <button key="access" onClick={() => onProjectSettings?.(project)} className={cls}>
-                            <Users className="w-3.5 h-3.5" /><span>Client access &amp; publish</span>
+                            <Users className="w-3.5 h-3.5" /><span>Services, access &amp; publish</span>
                           </button>
                         );
                         const proposal = (cls: string) => (

@@ -90,6 +90,20 @@ export function intakeFromProject(project: ProjectLike): IntakeLike {
     accentColor: profile.accentColor || '',
     heroImage: profile.heroImage || '',
     status: project.status || 'Live',
+
+    // The card reads these to describe the client, and a project-only row was
+    // handing it nothing: a live salon with nine services on it reported "0
+    // Offerings, 0 Badges" and left Tier and Theme blank, because this function
+    // stopped at the contact details. The dossier is what is missing for these
+    // clients, not the content — the site itself has all of it.
+    tier: project.tier,
+    theme: (project.blueprint as any)?.theme,
+    services: (project.blueprint as any)?.services,
+    badges: (project.blueprint as any)?.badges,
+    proofBadgeText: profile.proofBadgeText,
+    logoUrl: profile.logoUrl,
+    bookingUrl: profile.bookingUrl,
+    primaryColor: profile.primaryColor,
   };
 }
 
