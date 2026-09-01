@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { apiFetch } from '../../api';
 import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealth';
 import type { SiteSection } from '../../templates/sections';
 import { SiteRenderer } from '../../templates/SiteRenderer';
+import { mergeClientMedia, type ClientMediaRow } from '../../../lib/clientMedia';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
   loadCurrentProject, loadHistory, saveCurrentProject, saveHistory, cachedHistory,
@@ -774,6 +775,41 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
    * 2026-08-31, so the deploy could not record what it had published and a
    * client's photo upload later republished a stale blueprint over her site.
    */
+  /**
+   * The client's own uploads, merged into the preview and nowhere else.
+   *
+   * /api/deploy folds client_media into the blueprint on the way out, and the
+   * Studio did not, so every photo, transformation and product a client added
+   * through her portal was live on her site and invisible here. The preview
+   * showed strictly less than the thing it was previewing, which is the exact
+   * failure SiteRenderer was built to end — one renderer, two datasets.
+   *
+   * Held separately and merged for display only. It must never reach `project`:
+   * the Studio saves that object wholesale, so folding her media in would write
+   * her photos onto the operator's blueprint, and the next Studio save would own
+   * content she is supposed to control. Keeping the two apart is the entire
+   * reason client_media is its own table.
+   */
+  const [clientMedia, setClientMedia] = useState<ClientMediaRow[]>([]);
+
+  useEffect(() => {
+    const rowId = project.id.startsWith('prj-') ? project.id.slice(4) : project.id;
+    if (!rowId || rowId.startsWith('bp-')) { setClientMedia([]); return; }
+    let live = true;
+    apiFetch(`/api/client/${encodeURIComponent(rowId)}/media`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (live && d?.success) setClientMedia(d.media || []); })
+      // A preview without her media is worse than this one, but neither is
+      // worth an error banner over the editor.
+      .catch(() => {});
+    return () => { live = false; };
+  }, [project.id]);
+
+  const previewProject = useMemo(
+    () => mergeClientMedia(project, clientMedia).blueprint,
+    [project, clientMedia]
+  );
+
   const projectRowId = () => {
     const id = project.id;
     if (id.startsWith('prj-')) return id.slice(4);
@@ -1651,7 +1687,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                     would receive. */}
                 <div className="divide-y divide-transparent overflow-x-hidden">
                   <SiteRenderer
-                    project={project}
+                    project={previewProject}
                     onSelectBlock={kind => inspectorActive && setSelectedBlock(kind)}
                     selectedBlock={selectedBlock}
                   />

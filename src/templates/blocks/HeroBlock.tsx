@@ -255,7 +255,13 @@ export function HeroBlock({
                 * no real proof line, it renders nothing — an image with no card
                 * looks finished, and a fabricated badge does not.
                 */}
-              {ownerName || proofText ? (
+              {/* A photo alone is enough to draw the card.
+                *
+                * This required a NAME, so uploading a stylist's photo and
+                * nothing else rendered nothing at all — the upload appeared to
+                * do nothing, with no error and no hint that a second field was
+                * load-bearing. If someone has put a face here, show the face. */}
+              {ownerPhoto || ownerName || proofText ? (
                 <div className={`absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-3 sm:p-3.5 rounded-xl backdrop-blur-md border shadow-xl bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]`}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center space-x-2.5 min-w-0">
@@ -272,9 +278,11 @@ export function HeroBlock({
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-[color:var(--ts-text)] truncate">
-                          {ownerName || proofText}
-                        </p>
+                        {(ownerName || proofText) && (
+                          <p className="text-xs font-bold text-[color:var(--ts-text)] truncate">
+                            {ownerName || proofText}
+                          </p>
+                        )}
                         {ownerName && (
                           <p className="text-[10px] text-[color:var(--ts-muted)] truncate">
                             {ownerRole || 'Owner'}
