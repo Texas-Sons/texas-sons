@@ -18,6 +18,7 @@ import AssistantPanel from './components/AssistantPanel';
 import { Project, Invoice, ViewState, ClientIntake } from './types';
 import { supabase, handleSupabaseError } from './supabase';
 import { prospectToIntakePrefill } from './utils/prospectToIntake';
+import { normalizeName } from './utils/clientMerge';
 import { prospectHasRealAssets } from './utils/blueprintHealth';
 import { User } from '@supabase/supabase-js';
 import {
@@ -184,6 +185,27 @@ export default function App() {
   };
 
   const handleLaunchStudioFromClient = (client: ClientIntake) => {
+    // If this client already has a built site, OPEN IT. Do not rebuild one.
+    //
+    // This function used to construct a fresh snapshot from the dossier every
+    // time, under a brand-new project id, so "Save & Edit in Studio" on a live
+    // client silently abandoned her real site and started over from the intake
+    // form. Her accent colour reverted to campaign gold, her nine services were
+    // replaced by one line of filler, and a proof badge nobody had written
+    // reappeared — while the real blueprint sat untouched in the database,
+    // which is why the services were still visible in settings.
+    //
+    // Pairs on the recorded intakeId first and falls back to the business name,
+    // exactly as the Clients list does.
+    const existing = projects.find(p => p.blueprint?.intakeId === client.id)
+      || projects.find(p =>
+           normalizeName(p.companyName) === normalizeName(client.businessName)
+           && normalizeName(client.businessName) !== '');
+    if (existing) {
+      handleEditProject(existing);
+      return;
+    }
+
     const snapshot: ProjectSnapshot = {
       id: `prj-${Date.now()}`,
       // Which intake this was built from. Nothing carried it over before, so an
@@ -218,19 +240,25 @@ export default function App() {
         bookingUrl: client.bookingUrl || undefined,
         category: client.category,
         theme: client.theme,
-        primaryColor: client.primaryColor || '#00081e',
-        accentColor: client.accentColor || '#C5A059'
+        // No colour defaults. These were campaign navy and campaign gold, so a
+        // salon built from an intake opened in another client's palette.
+        // Undefined lets buildThemeVars pick from the theme.
+        primaryColor: client.primaryColor || undefined,
+        accentColor: client.accentColor || undefined
       },
-      services: (client.services && client.services.length > 0) ? client.services : [
-        { title: 'Core Platform Solution', description: 'Comprehensive execution tailored for your community and goals.', highlight: true }
-      ],
-      testimonials: (client.testimonials && client.testimonials.length > 0) ? client.testimonials : [
-        { quote: 'Exceptional leadership and unmatched attention to detail.', author: 'Verified Partner', role: 'Austin, TX', rating: 5, verified: true }
-      ],
+      // Empty, not filler. A single service called "Core Platform Solution" and
+      // a testimonial from "Verified Partner" are not placeholders a client
+      // recognises as placeholders — they read as a finished site that says
+      // nothing, and the blocks already render nothing when handed nothing.
+      services: client.services || [],
+      testimonials: client.testimonials || [],
       theme: client.theme,
       heroVariant: 'split',
-      badges: client.badges && client.badges.length > 0 ? client.badges : ['25+ Years Experience', 'Satisfaction Guaranteed', 'Locally Owned'],
-      proofBadgeText: client.proofBadgeText || 'Top Rated · 100% Guaranteed',
+      // "25+ Years Experience" and "Top Rated · 100% Guaranteed" are claims
+      // about a real business that nobody checked, and this is where the badge
+      // removed from HeroBlock kept coming back from.
+      badges: client.badges || [],
+      proofBadgeText: client.proofBadgeText || undefined,
       seo: {
         title: `${client.businessName} — ${client.tagline || 'Local Business'}`,
         description: client.description || `Contact ${client.businessName} in ${client.address || 'Texas'} for professional services. ${client.phone || ''}`,
