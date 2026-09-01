@@ -60,7 +60,13 @@ export function NavbarBlock({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 lg:gap-4">
 
         {/* Brand Logo & Name */}
-        <a href="#" className="flex items-center space-x-3 group flex-shrink-0">
+        {/* min-w-0 and shrink, not flex-shrink-0.
+            This was fixed-width with a nowrap name, so a long business name —
+            "Opalescent Color Studio" — could neither shrink nor wrap and simply
+            pushed the booking button off the right edge. The brand is the only
+            element in this bar whose width depends on client data, which makes
+            it the one that has to yield. */}
+        <a href="#" className="flex items-center space-x-3 group min-w-0 shrink">
           {logoUrl ? (
             <img src={logoUrl} alt={businessName} className="h-10 w-auto object-contain flex-shrink-0" />
           ) : (
@@ -80,14 +86,14 @@ export function NavbarBlock({
               )}
             </div>
           )}
-          <div className="flex flex-col flex-shrink-0">
-            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity whitespace-nowrap text-[color:var(--ts-text)] ${
+          <div className="flex flex-col min-w-0">
+            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity truncate text-[color:var(--ts-text)] ${
               isCampaign ? 'font-serif' : ''
             }`}>
               {primaryName}
             </span>
             {isCampaign && subBadgeText && (
-              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--ts-accent)] group-hover:opacity-90 whitespace-nowrap">
+              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--ts-accent)] group-hover:opacity-90 truncate">
                 <span className="hidden sm:inline">{subBadgeText}</span>
                 <span className="sm:hidden">{subBadgeText.includes('·') ? subBadgeText.split('·')[1].trim() : subBadgeText}</span>
               </span>

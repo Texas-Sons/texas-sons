@@ -128,6 +128,7 @@ export interface InstantFormData {
   address: string;
   hours: string;
   heroImage: string;
+  logoUrl: string;
   ownerPhoto: string;
   ownerName: string;
   ownerRole: string;
@@ -167,6 +168,7 @@ const DEFAULT_FORM: InstantFormData = {
   name: '', tagline: '', description: '',
   phone: '', email: '', address: '', hours: '',
   heroImage: '',
+  logoUrl: '',
   ownerPhoto: '', ownerName: '', ownerRole: '',
   theme: 'campaign-navy',
   primaryColor: '', accentColor: '',
@@ -196,6 +198,7 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     address: snap.profile.address || '',
     hours: Array.isArray(snap.profile.hours) ? snap.profile.hours.join(', ') : (snap.profile.hours || ''),
     heroImage: snap.profile.heroImage || '',
+    logoUrl: snap.profile.logoUrl || '',
     ownerPhoto: snap.profile.ownerPhoto || '',
     ownerName: snap.profile.ownerName || '',
     ownerRole: snap.profile.ownerRole || '',
@@ -254,6 +257,7 @@ function buildSnapshot(form: InstantFormData): Omit<ProjectSnapshot, 'id' | 'pro
     address: form.address,
     hours: form.hours,
     heroImage: form.heroImage,
+    logoUrl: form.logoUrl,
     ownerPhoto: form.ownerPhoto,
     ownerName: form.ownerName,
     ownerRole: form.ownerRole,
@@ -721,6 +725,18 @@ export default function BlueprintFormPanel({
               icon={Clock}
             />
           </div>
+          {/* The logo had no field at all. It could only be set by merging an
+              intake submission or editing blueprint JSON, so a Studio blueprint
+              without one showed the first-letter avatar with no way to fix it —
+              and no indication that a logo was even a thing the site supported. */}
+          <PhotoField
+            label="Logo"
+            id="logoUrl"
+            value={form.logoUrl}
+            onChange={v => set('logoUrl', v)}
+            hint="Shown in the navbar. Without one the site falls back to the first letter of the business name."
+          />
+
           <PhotoField
             label="Hero Photo"
             id="heroImage"
