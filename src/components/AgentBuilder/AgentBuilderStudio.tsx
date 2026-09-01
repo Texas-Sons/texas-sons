@@ -3,6 +3,7 @@ import { apiFetch } from '../../api';
 import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealth';
 import type { SiteSection } from '../../templates/sections';
 import { SiteRenderer } from '../../templates/SiteRenderer';
+import { PreviewFrame } from './PreviewFrame';
 import { mergeClientMedia, type ClientMediaRow } from '../../../lib/clientMedia';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
@@ -1685,13 +1686,24 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                     added to the deployed site — gallery, before/after, products —
                     was invisible here and the preview lied about what the client
                     would receive. */}
-                <div className="divide-y divide-transparent overflow-x-hidden">
+                {/* Inside an iframe so the breakpoints are real.
+                    The device buttons used to change only the width of this box
+                    while the page inside kept rendering the desktop layout,
+                    because a media query measures the window and not the box.
+                    The frame has its own viewport, so the phone button now shows
+                    what a phone shows. */}
+                <PreviewFrame
+                  title="Live site preview"
+                  className="w-full flex-1 min-h-[600px] border-0 bg-[color:var(--ts-bg)]"
+                  bodyStyle={buildThemeVars({ theme: project.theme, ...project.profile }) as React.CSSProperties}
+                  bodyClassName="divide-y divide-transparent overflow-x-hidden"
+                >
                   <SiteRenderer
                     project={previewProject}
                     onSelectBlock={kind => inspectorActive && setSelectedBlock(kind)}
                     selectedBlock={selectedBlock}
                   />
-                </div>
+                </PreviewFrame>
               </div>
             )}
 
