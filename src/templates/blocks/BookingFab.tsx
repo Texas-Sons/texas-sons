@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Calendar } from 'lucide-react';
 
 /**
@@ -49,6 +49,23 @@ export interface BookingFabProps {
 /** Below this many pixels the hero's own CTA is still on screen. */
 const REVEAL_AFTER_PX = 400;
 
+/** How long the button takes to cross the screen. */
+const FLIGHT_MS = 620;
+
+/**
+ * The flight is an arc, not a line.
+ *
+ * Driving both axes off one curve gives a straight diagonal slide — the thing
+ * that reads as a slide transition rather than as an object that moved. Real
+ * movement carries: it covers ground horizontally early and falls into place
+ * vertically late. Two different curves on the two axes is the whole trick.
+ */
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeInCubic = (t: number) => t * t * t;
+
+/** Where it is when it is not going anywhere. */
+interface Rect { left: number; top: number; width: number; height: number }
+
 export function BookingFab({
   bookingUrl,
   variant = 'fixed',
@@ -56,7 +73,6 @@ export function BookingFab({
 }: BookingFabProps) {
   const isPreview = variant === 'preview';
   const [scrolled, setScrolled] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPreview) return;
@@ -67,18 +83,122 @@ export function BookingFab({
   }, [isPreview]);
 
   /**
-   * Hands over to the page's own booking button when that button is on screen.
+   * The floating button hands itself over to the page's own booking button
+   * when that one arrives on screen, and takes the job back when it leaves.
    *
-   * Otherwise the floating one sits on top of the real one, two identical
-   * controls a thumb's width apart, and a visitor who has just scrolled to the
-   * thing they were looking for is asked which copy of it to press.
+   * Without it the two sit on top of each other, a thumb's width apart, and a
+   * visitor who has just scrolled to the thing they were looking for is asked
+   * which copy of it to press.
    *
-   * It moves toward the real button as it goes rather than simply vanishing, so
-   * the handover reads as the same button arriving where it belongs. The offset
-   * is measured at the moment of docking; it is a direction to travel in, not a
-   * position to hold, so it does not need to track the page as it scrolls.
+   * Every frame is computed here rather than handed to a CSS transition,
+   * because the destination moves. The page is still scrolling during the
+   * flight — that is what triggered it — so a transition to a position measured
+   * at the start lands wherever that position has since drifted to. Re-reading
+   * the target each frame is the difference between a button that travels to
+   * the other button and a button that travels to where it used to be.
    */
-  const [dock, setDock] = useState<{ x: number; y: number } | null>(null);
+  const elRef = useRef<HTMLDivElement>(null);
+  const homeRef = useRef<Rect | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const [docked, setDocked] = useState(false);
+  const dockedRef = useRef(false);
+
+  /** Its resting box, measured untransformed and only when it has to be. */
+  const measureHome = useCallback((): Rect | null => {
+    const el = elRef.current;
+    if (!el) return null;
+    if (homeRef.current) return homeRef.current;
+    const previous = el.style.transform;
+    el.style.transform = '';
+    const box = el.getBoundingClientRect();
+    el.style.transform = previous;
+    homeRef.current = { left: box.left, top: box.top, width: box.width, height: box.height };
+    return homeRef.current;
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => { homeRef.current = null; };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const fly = useCallback((direction: 'in' | 'out', target: Element) => {
+    const el = elRef.current;
+    const home = measureHome();
+    if (!el || !home) return;
+
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+
+    const reduced = typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const settle = () => {
+      rafRef.current = null;
+      if (direction === 'in') {
+        el.style.opacity = '0';
+      } else {
+        el.style.transform = '';
+        el.style.opacity = '';
+      }
+    };
+
+    if (reduced) { settle(); return; }
+
+    const started = performance.now();
+
+    const frame = (now: number) => {
+      const t = Math.min(1, (now - started) / FLIGHT_MS);
+      // Progress along the journey towards the dock, whichever way it is going.
+      // Applying the easings to this rather than to raw time means the return
+      // retraces the same arc instead of carving a different one.
+      const u = direction === 'in' ? t : 1 - t;
+
+      const to = target.getBoundingClientRect();
+      const dx = (to.left + to.width / 2) - (home.left + home.width / 2);
+      const dy = (to.top + to.height / 2) - (home.top + home.height / 2);
+
+      const x = dx * easeOutCubic(u);
+      const y = dy * easeInCubic(u);
+
+      // Shrinks as it arrives — it is being absorbed by a much larger button,
+      // and something that lands at full size has bounced rather than merged.
+      const scale = 1 - 0.62 * u;
+      // A little stretch through the middle of the trip and none at either end.
+      // This is the part that reads as weight: things that accelerate deform,
+      // and a rigid rectangle sliding at constant proportions reads as a slide.
+      const stretch = 1 + 0.14 * Math.sin(Math.PI * t);
+      // Leans into the turn, and comes back level.
+      const lean = -7 * Math.sin(Math.PI * u);
+
+      el.style.transform =
+        `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) `
+        + `rotate(${lean.toFixed(2)}deg) `
+        + `scale(${(scale * stretch).toFixed(3)}, ${(scale / stretch).toFixed(3)})`;
+      // Solid for most of the trip: it should be seen to arrive, not to
+      // evaporate on the way.
+      el.style.opacity = String(u < 0.72 ? 1 : Math.max(0, 1 - (u - 0.72) / 0.28));
+
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(frame);
+        return;
+      }
+      settle();
+      if (direction === 'in') {
+        // The real button acknowledges the handover. Without it the floating
+        // one arrives somewhere inert and the trip had no destination.
+        (target as HTMLElement).animate?.(
+          [
+            { transform: 'scale(1)' },
+            { transform: 'scale(1.05)' },
+            { transform: 'scale(1)' },
+          ],
+          { duration: 460, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+        );
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(frame);
+  }, [measureHome]);
 
   useEffect(() => {
     if (isPreview) return;
@@ -87,29 +207,24 @@ export function BookingFab({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) {
-          setDock(null);
-          return;
-        }
-        const from = ref.current?.getBoundingClientRect();
-        const to = entry.boundingClientRect;
-        setDock(from
-          ? {
-              x: (to.left + to.width / 2) - (from.left + from.width / 2),
-              y: (to.top + to.height / 2) - (from.top + from.height / 2),
-            }
-          // Measurable failure is not worth keeping two buttons for.
-          : { x: 0, y: 24 });
+        const next = entry.isIntersecting;
+        if (next === dockedRef.current) return;
+        dockedRef.current = next;
+        setDocked(next);
+        fly(next ? 'in' : 'out', target);
       },
       // Properly on screen, not merely clipping the bottom edge — otherwise it
       // hands over while the real button is still a sliver nobody can press.
       { threshold: 0.6 }
     );
     observer.observe(target);
-    return () => observer.disconnect();
-  }, [isPreview]);
+    return () => {
+      observer.disconnect();
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isPreview, fly]);
 
-  const visible = isPreview || (scrolled && !dock);
+  const visible = isPreview || (scrolled && !docked);
 
   // Test the protocol, not merely presence. Since the Square embed landed, this
   // prop is often an in-page anchor like '#book', and `!!bookingUrl` treated
@@ -119,8 +234,7 @@ export function BookingFab({
 
   return (
     <div
-      ref={ref}
-      style={dock ? { transform: `translate(${dock.x}px, ${dock.y}px) scale(0.6)` } : undefined}
+      ref={elRef}
       className={`${
         isPreview ? 'absolute' : 'fixed'
       } ${
@@ -134,7 +248,12 @@ export function BookingFab({
         // phone frame, and hiding the button there would mean the one preview
         // meant to show mobile is the one place you cannot see the mobile UI.
         isPreview ? '' : 'sm:hidden'
-      } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${
+      } bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] will-change-transform ${
+        // Only the reveal-on-scroll fade is a transition. The flight sets
+        // transform and opacity every frame, and a transition on top of that
+        // would interpolate towards each frame's value and lag the whole way.
+        docked ? '' : 'transition-opacity duration-300'
+      } ${
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       // Hidden means hidden: an invisible button must not be focusable or
