@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { resizeImage } from '../IntakePortal/imageUtils';
 import {
   Zap, Layers, ChevronDown, Sparkles, ShieldCheck,
   Camera, Check, Wand2, Users, Briefcase, UtensilsCrossed, Heart,
-  Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon, User as UserIcon,
+  Building2, Phone, Mail, MapPin, Clock, Image as ImageIcon, User as UserIcon, Upload as UploadIcon,
   Award, MessageSquareQuote, Palette, Sliders, Scale, FileText, Cpu, Terminal,
   LayoutGrid, CalendarCheck, Calculator, Vote, Flame, ArrowRight, Shield, CheckCircle2
 } from 'lucide-react';
@@ -363,6 +364,70 @@ export default function BlueprintFormPanel({
     </div>
   );
 
+  /**
+   * A URL field that also accepts a file.
+   *
+   * The Studio only ever took a URL, while the intake form had an upload
+   * button — so the natural move, uploading a photo where the upload button is,
+   * put it on the dossier and never on the site. Two stores for the same field
+   * and only one way in.
+   *
+   * Resized on the way in, unlike the intake's version, which runs a raw
+   * FileReader and drops a full-size phone photo into the blueprint. That
+   * blueprint is injected verbatim into the deployed HTML, so an unresized
+   * upload adds megabytes to every visitor's page load.
+   */
+  const PhotoField = ({ label, id, value, onChange, hint }: {
+    label: string; id: string; value: string; onChange: (v: string) => void; hint?: string;
+  }) => (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+          {label}
+        </label>
+        {value.trim() && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />}
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          id={id}
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder="https://... or upload"
+          className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 text-[11px] font-mono"
+        />
+        <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
+          <UploadIcon className="w-3.5 h-3.5 text-[#C5A059]" />
+          <span>Upload</span>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={async e => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (!file) return;
+              try {
+                onChange(await resizeImage(file, 1600));
+              } catch {
+                alert('That image could not be read. Please try a different one.');
+              }
+            }}
+          />
+        </label>
+      </div>
+      {value.trim() && (
+        <div className="flex items-center gap-2">
+          <img src={value} alt="" className="w-16 h-16 rounded-lg object-cover border border-stone-800" />
+          <button type="button" onClick={() => onChange('')} className="text-[11px] text-stone-500 hover:text-red-400">
+            Remove
+          </button>
+        </div>
+      )}
+      {hint && <p className="text-[10px] text-stone-600">{hint}</p>}
+    </div>
+  );
+
   const InputField = ({ label, id, placeholder, value, onChange, icon: Icon, type = 'text' }: {
     label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; icon?: React.ComponentType<{ className?: string }>; type?: string;
   }) => (
@@ -656,13 +721,12 @@ export default function BlueprintFormPanel({
               icon={Clock}
             />
           </div>
-          <InputField 
-            label="Hero Image URL" 
-            id="heroImage" 
-            placeholder="https://..." 
-            value={form.heroImage} 
-            onChange={v => set('heroImage', v)} 
-            icon={ImageIcon}
+          <PhotoField
+            label="Hero Photo"
+            id="heroImage"
+            value={form.heroImage}
+            onChange={v => set('heroImage', v)}
+            hint="The large photo in the hero. For a salon this is usually her work, not her face."
           />
 
           {/* The card over the hero image.
@@ -675,13 +739,12 @@ export default function BlueprintFormPanel({
             *
             * Leave them empty and no card is drawn. An image with no badge looks
             * finished; an invented badge does not. */}
-          <InputField 
-            label="Owner / Stylist Photo URL" 
-            id="ownerPhoto" 
-            placeholder="https://... (shown on the hero card)" 
-            value={form.ownerPhoto} 
-            onChange={v => set('ownerPhoto', v)} 
-            icon={ImageIcon}
+          <PhotoField
+            label="Owner / Stylist Photo"
+            id="ownerPhoto"
+            value={form.ownerPhoto}
+            onChange={v => set('ownerPhoto', v)}
+            hint="Shown on the card over the hero, with the name below. Leave empty for no card."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <InputField 
