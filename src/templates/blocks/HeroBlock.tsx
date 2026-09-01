@@ -117,6 +117,7 @@ export function HeroBlock({
           <motion.div variants={entrance.item} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <a
               href={ctaHref}
+              data-ts-book-home=""
               className={`w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold shadow-xl transition-all hover:scale-105 bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
             >
               {ctaText}
@@ -198,6 +199,7 @@ export function HeroBlock({
             <motion.div variants={entrance.item} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
               <a
                 href={ctaHref}
+                data-ts-book-home=""
                 className={`inline-flex items-center justify-center px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--ts-accent)] text-[color:var(--ts-accent-contrast)] hover:opacity-95`}
               >
                 {ctaText}
