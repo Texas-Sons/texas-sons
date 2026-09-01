@@ -370,6 +370,161 @@ const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: stri
   </svg>
 );
 
+/**
+ * The form primitives live out here, not inside the panel.
+ *
+ * They were defined in its body, which meant a new function identity on
+ * every render — and React compares component types by identity. A different
+ * type is not a re-render, it is a different component: the old tree is
+ * unmounted and a new one mounted in its place, so the actual <input> DOM
+ * node was destroyed and rebuilt after every keystroke. It lost focus, the
+ * page jumped to wherever the replacement landed, and typing a name meant
+ * clicking back into the field for each letter.
+ *
+ * None of them closed over anything; every value they use arrives as a prop.
+ * So they simply belong at module scope, where their identity is stable and
+ * React can see they are the same component as last time.
+ */
+
+// ── UI Card Primitive with Edgy Color-Blocking & Squiggly Corners ───────────
+const FormCard = ({ title, icon: Icon, badge, children }: { title: string; icon: React.ComponentType<{ className?: string }>; badge?: string; children: React.ReactNode }) => (
+  <div className="bg-stone-900/90 border border-stone-800/80 rounded-[22px_12px_24px_14px/14px_24px_12px_22px] p-4 space-y-3.5 shadow-lg backdrop-blur-sm">
+    <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] shadow-sm">
+          <Icon className="w-3.5 h-3.5" />
+        </div>
+        <h3 className="text-xs font-bold text-stone-100 tracking-wide">{title}</h3>
+      </div>
+      {badge && (
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-[10px_4px_12px_5px/5px_12px_4px_10px] bg-stone-800 text-stone-300 border border-stone-700">
+          {badge}
+        </span>
+      )}
+    </div>
+    <div className="space-y-3">
+      {children}
+    </div>
+  </div>
+);
+
+/**
+ * A URL field that also accepts a file.
+ *
+ * The Studio only ever took a URL, while the intake form had an upload
+ * button — so the natural move, uploading a photo where the upload button is,
+ * put it on the dossier and never on the site. Two stores for the same field
+ * and only one way in.
+ *
+ * Resized on the way in, unlike the intake's version, which runs a raw
+ * FileReader and drops a full-size phone photo into the blueprint. That
+ * blueprint is injected verbatim into the deployed HTML, so an unresized
+ * upload adds megabytes to every visitor's page load.
+ */
+const PhotoField = ({ label, id, value, onChange, hint }: {
+  label: string; id: string; value: string; onChange: (v: string) => void; hint?: string;
+}) => (
+  <div className="space-y-1.5">
+    <div className="flex items-center justify-between">
+      <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+        {label}
+      </label>
+      {value.trim() && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />}
+    </div>
+    <div className="flex items-center gap-2">
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder="https://... or upload"
+        className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 text-[11px] font-mono"
+      />
+      <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
+        <UploadIcon className="w-3.5 h-3.5 text-[#C5A059]" />
+        <span>Upload</span>
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={async e => {
+            const file = e.target.files?.[0];
+            e.target.value = '';
+            if (!file) return;
+            try {
+              onChange(await resizeImage(file, 1600));
+            } catch {
+              alert('That image could not be read. Please try a different one.');
+            }
+          }}
+        />
+      </label>
+    </div>
+    {value.trim() && (
+      <div className="flex items-center gap-2">
+        <img src={value} alt="" className="w-16 h-16 rounded-lg object-cover border border-stone-800" />
+        <button type="button" onClick={() => onChange('')} className="text-[11px] text-stone-500 hover:text-red-400">
+          Remove
+        </button>
+      </div>
+    )}
+    {hint && <p className="text-[10px] text-stone-600">{hint}</p>}
+  </div>
+);
+
+const InputField = ({ label, id, placeholder, value, onChange, icon: Icon, type = 'text' }: {
+  label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; icon?: React.ComponentType<{ className?: string }>; type?: string;
+}) => (
+  <div className="space-y-1.5">
+    <div className="flex items-center justify-between">
+      <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+        {label}
+      </label>
+      {value.trim() && (
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />
+      )}
+    </div>
+    <div className="relative">
+      {Icon && (
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+          <Icon className="w-3.5 h-3.5" />
+        </div>
+      )}
+      <input
+        id={id}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all shadow-inner`}
+      />
+    </div>
+  </div>
+);
+
+const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
+  label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; rows?: number;
+}) => (
+  <div className="space-y-1.5">
+    <div className="flex items-center justify-between">
+      <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+        {label}
+      </label>
+      {value.trim() && (
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />
+      )}
+    </div>
+    <textarea
+      id={id}
+      rows={rows}
+      value={value}
+      placeholder={placeholder}
+      onChange={e => onChange(e.target.value)}
+      className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all resize-none shadow-inner leading-relaxed"
+    />
+  </div>
+);
+
 export default function BlueprintFormPanel({
   activeSnapshot, onBuild, onOpenScanner, onOpenHandoff, onOpenAudit, onOpenProposal, isBusy,
   selectedModel = 'claude-3-7-sonnet', onSelectModel
@@ -407,145 +562,6 @@ export default function BlueprintFormPanel({
   };
 
   const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
-
-  // ── UI Card Primitive with Edgy Color-Blocking & Squiggly Corners ───────────
-  const FormCard = ({ title, icon: Icon, badge, children }: { title: string; icon: React.ComponentType<{ className?: string }>; badge?: string; children: React.ReactNode }) => (
-    <div className="bg-stone-900/90 border border-stone-800/80 rounded-[22px_12px_24px_14px/14px_24px_12px_22px] p-4 space-y-3.5 shadow-lg backdrop-blur-sm">
-      <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] shadow-sm">
-            <Icon className="w-3.5 h-3.5" />
-          </div>
-          <h3 className="text-xs font-bold text-stone-100 tracking-wide">{title}</h3>
-        </div>
-        {badge && (
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-[10px_4px_12px_5px/5px_12px_4px_10px] bg-stone-800 text-stone-300 border border-stone-700">
-            {badge}
-          </span>
-        )}
-      </div>
-      <div className="space-y-3">
-        {children}
-      </div>
-    </div>
-  );
-
-  /**
-   * A URL field that also accepts a file.
-   *
-   * The Studio only ever took a URL, while the intake form had an upload
-   * button — so the natural move, uploading a photo where the upload button is,
-   * put it on the dossier and never on the site. Two stores for the same field
-   * and only one way in.
-   *
-   * Resized on the way in, unlike the intake's version, which runs a raw
-   * FileReader and drops a full-size phone photo into the blueprint. That
-   * blueprint is injected verbatim into the deployed HTML, so an unresized
-   * upload adds megabytes to every visitor's page load.
-   */
-  const PhotoField = ({ label, id, value, onChange, hint }: {
-    label: string; id: string; value: string; onChange: (v: string) => void; hint?: string;
-  }) => (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
-          {label}
-        </label>
-        {value.trim() && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />}
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          id={id}
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder="https://... or upload"
-          className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 text-[11px] font-mono"
-        />
-        <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
-          <UploadIcon className="w-3.5 h-3.5 text-[#C5A059]" />
-          <span>Upload</span>
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={async e => {
-              const file = e.target.files?.[0];
-              e.target.value = '';
-              if (!file) return;
-              try {
-                onChange(await resizeImage(file, 1600));
-              } catch {
-                alert('That image could not be read. Please try a different one.');
-              }
-            }}
-          />
-        </label>
-      </div>
-      {value.trim() && (
-        <div className="flex items-center gap-2">
-          <img src={value} alt="" className="w-16 h-16 rounded-lg object-cover border border-stone-800" />
-          <button type="button" onClick={() => onChange('')} className="text-[11px] text-stone-500 hover:text-red-400">
-            Remove
-          </button>
-        </div>
-      )}
-      {hint && <p className="text-[10px] text-stone-600">{hint}</p>}
-    </div>
-  );
-
-  const InputField = ({ label, id, placeholder, value, onChange, icon: Icon, type = 'text' }: {
-    label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; icon?: React.ComponentType<{ className?: string }>; type?: string;
-  }) => (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
-          {label}
-        </label>
-        {value.trim() && (
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />
-        )}
-      </div>
-      <div className="relative">
-        {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
-            <Icon className="w-3.5 h-3.5" />
-          </div>
-        )}
-        <input
-          id={id}
-          type={type}
-          value={value}
-          placeholder={placeholder}
-          onChange={e => onChange(e.target.value)}
-          className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all shadow-inner`}
-        />
-      </div>
-    </div>
-  );
-
-  const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
-    label: string; id: string; placeholder?: string; value: string; onChange: (v: string) => void; rows?: number;
-  }) => (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <label htmlFor={id} className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
-          {label}
-        </label>
-        {value.trim() && (
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Populated" />
-        )}
-      </div>
-      <textarea
-        id={id}
-        rows={rows}
-        value={value}
-        placeholder={placeholder}
-        onChange={e => onChange(e.target.value)}
-        className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all resize-none shadow-inner leading-relaxed"
-      />
-    </div>
-  );
 
   return (
     <div className="w-full space-y-4 px-3.5 py-3 pb-32">
