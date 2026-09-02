@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isCampaignSite } from '../../../lib/siteKind';
 import { 
   X, 
   ShieldCheck, 
@@ -85,7 +86,9 @@ export const SiteAuditModal: React.FC<SiteAuditModalProps> = ({
   // Found by eslint-plugin-react-hooks, 2026-08-30. See eslint.config.js.
   if (!isOpen) return null;
 
-  const isCampaign = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy';
+  // Was the only variant that checked one campaign theme and not the other,
+  // so a judicial campaign skipped its own treasurer-disclosure check.
+  const isCampaign = isCampaignSite(project);
 
   // -------------------------------------------------------------
   // DYNAMIC PRE-FLIGHT GAP & FACT-CHECK ENGINE

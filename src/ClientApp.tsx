@@ -11,6 +11,7 @@ import { BookingBlock } from "./templates/blocks/BookingBlock";
 import { FooterBlock } from "./templates/blocks/FooterBlock";
 import { IndustryAdminBlock } from "./templates/blocks/IndustryAdminBlock";
 import { resolveSections, SiteSection } from "./templates/sections";
+import { isCampaignSite, isWriteInCampaign } from "../lib/siteKind";
 import { SiteRenderer } from "./templates/SiteRenderer";
 import { VotingBannerBlock } from "./templates/blocks/VotingBannerBlock";
 import { VotingPageBlock } from "./templates/blocks/VotingPageBlock";
@@ -68,8 +69,8 @@ export function ClientApp() {
     meta.setAttribute('content', description);
 
     // Dynamic Favicon update
-    const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.theme === 'campaign-judicial' || project.profile.name.toLowerCase().includes('sheriff') || project.profile.name.toLowerCase().includes('judge');
-    const targetFavicon = project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png');
+    const targetFavicon = project.profile.faviconUrl
+      || (isCampaignSite(project) ? '/sheriff-badge-favicon.svg' : '/favicon.png');
     let faviconLink: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
     if (!faviconLink) {
       faviconLink = document.createElement('link');
@@ -88,12 +89,8 @@ export function ClientApp() {
     );
   }
 
-  const isCampaign = project.profile.category === "Campaign & Leadership" || project.theme === "campaign-navy" || project.theme === "campaign-judicial";
-  const isWriteIn = isCampaign && (
-    (project.proofBadgeText && project.proofBadgeText.toLowerCase().includes('write-in')) ||
-    project.badges?.some(b => b.toLowerCase().includes('write-in')) ||
-    project.profile.name.toLowerCase().includes('waylon')
-  );
+  const isCampaign = isCampaignSite(project);
+  const isWriteIn = isWriteInCampaign(project);
   const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {

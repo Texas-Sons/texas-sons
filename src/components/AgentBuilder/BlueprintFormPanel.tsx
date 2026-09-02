@@ -11,6 +11,7 @@ import {
   Instagram as InstagramIcon, Gift as GiftIcon
 } from 'lucide-react';
 import type { ProjectSnapshot } from './AgentBuilderStudio';
+import { isCampaignSite } from '../../../lib/siteKind';
 import { SUPPORTED_MODELS } from './aiModelConfig';
 import type { BusinessProfile, ServiceItem, TestimonialItem } from '../../templates/blocks';
 
@@ -637,7 +638,11 @@ export default function BlueprintFormPanel({
     }));
   };
 
-  const isCampaign = form.theme === 'campaign-navy' || form.theme === 'campaign-judicial';
+  // This asked the colour scheme what business it was looking at, and
+  // DEFAULT_FORM starts on campaign-navy — so a salon was a campaign until the
+  // palette changed, and handleBuild below replaced her nine priced services
+  // with three campaign pillars every time she pressed Build.
+  const isCampaign = isCampaignSite({ profile: { category: form.category }, theme: form.theme });
 
   const handleBuild = () => {
     onBuild(buildSnapshot(form, activeSnapshot, {

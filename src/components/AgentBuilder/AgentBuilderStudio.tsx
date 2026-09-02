@@ -5,6 +5,7 @@ import type { SiteSection } from '../../templates/sections';
 import { SiteRenderer } from '../../templates/SiteRenderer';
 import { PreviewFrame } from './PreviewFrame';
 import { mergeClientMedia, portfolioPhotos, type ClientMediaRow } from '../../../lib/clientMedia';
+import { isCampaignSite, isWriteInCampaign } from '../../../lib/siteKind';
 import {
   listBlueprints, saveBlueprint, removeBlueprint, cachedBlueprints, saveProject, recordEvent,
   cachedProjects,
@@ -1215,13 +1216,11 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     }
   };
 
-  // Centralized campaign detection — uses category field for reliability with custom blueprints
-  const isCampaignSite = project.profile.category === 'Campaign & Leadership' || project.theme === 'campaign-navy' || project.theme === 'campaign-judicial';
-  const isWriteIn = isCampaignSite && (
-    (project.proofBadgeText && project.proofBadgeText.toLowerCase().includes('write-in')) ||
-    project.badges?.some(b => b.toLowerCase().includes('write-in')) ||
-    project.profile.name.toLowerCase().includes('waylon')
-  );
+  // One definition, shared with the deployed site — see lib/siteKind.ts. The
+  // Studio and ClientApp disagreeing about this is how the preview came to show
+  // a different page from the one that deployed.
+  const isCampaign = isCampaignSite(project);
+  const isWriteIn = isWriteInCampaign(project);
 
   const getThemeBackgroundClass = () => {
     switch (project.theme) {
@@ -1840,7 +1839,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                   title="Change Browser Tab Icon"
                 >
                   <img
-                    src={project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
+                    src={project.profile.faviconUrl || (isCampaign ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
                     className="w-3.5 h-3.5 object-contain rounded"
                     alt="Icon"
                   />
@@ -1866,7 +1865,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                             setIsFaviconMenuOpen(false);
                           }}
                           className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors ${
-                            (project.profile.faviconUrl === fav.url || (!project.profile.faviconUrl && isCampaignSite && fav.url === '/sheriff-badge-favicon.svg'))
+                            (project.profile.faviconUrl === fav.url || (!project.profile.faviconUrl && isCampaign && fav.url === '/sheriff-badge-favicon.svg'))
                               ? 'bg-[#C5A059]/20 text-[#C5A059] font-bold border border-[#C5A059]/40'
                               : 'text-stone-300 hover:bg-stone-800'
                           }`}
@@ -1927,7 +1926,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                   </div>
                   <div className="px-3 py-0.5 rounded-md bg-stone-950 border border-stone-800 text-[11px] text-stone-400 font-mono truncate max-w-[280px] sm:max-w-md flex items-center gap-2">
                     <img
-                      src={project.profile.faviconUrl || (isCampaignSite ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
+                      src={project.profile.faviconUrl || (isCampaign ? '/sheriff-badge-favicon.svg' : '/favicon.png')}
                       className="w-3.5 h-3.5 object-contain rounded flex-shrink-0"
                       alt="Favicon"
                     />
@@ -2058,7 +2057,7 @@ export default function ClientSite() {
         phone={profile.phone} 
         theme="${project.theme}" 
       />
-      ${isCampaignSite ? `
+      ${isCampaign ? `
       <CampaignHeroBlock 
         headline={profile.tagline || profile.name} 
         subheadline={profile.description} 
@@ -2077,20 +2076,20 @@ export default function ClientSite() {
       <ServicesBlock 
         services={services} 
         theme="${project.theme}" 
-        title="${isCampaignSite ? 'Campaign Platform & Priorities' : 'Our Services'}"
-        subtitle="${isCampaignSite ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}"
+        title="${isCampaign ? 'Campaign Platform & Priorities' : 'Our Services'}"
+        subtitle="${isCampaign ? 'Our commitment to the community and our plan for the future.' : 'Professional, reliable, and tailored to your needs.'}"
       />
       <TestimonialsBlock 
         testimonials={testimonials} 
         theme="${project.theme}" 
-        title="${isCampaignSite ? 'Endorsements & Community Support' : 'What Our Clients Say'}"
-        subtitle="${isCampaignSite ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}"
+        title="${isCampaign ? 'Endorsements & Community Support' : 'What Our Clients Say'}"
+        subtitle="${isCampaign ? 'Trusted by leaders, law enforcement, and families across Texas.' : 'Real reviews from verified customers in your area.'}"
       />
       <BookingBlock 
         phone={profile.phone} 
         services={services} 
         theme="${project.theme}"
-        title="${isCampaignSite ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}"
+        title="${isCampaign ? 'Volunteer & Request Yard Signs' : 'Request a Free Consultation'}"
       />
       <FooterBlock business={profile} theme="${project.theme}" />
     </div>

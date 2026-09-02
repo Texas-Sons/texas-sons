@@ -45,6 +45,16 @@ export function TestimonialsBlock({
   theme = 'dark',
   accentColor
 }: TestimonialsBlockProps) {
+  // A new client has no reviews yet, and this section used to render its
+  // heading over an empty grid regardless — promising "Verified reviews from
+  // regulars" on a salon that opened its site an hour ago. Gallery, Products
+  // and BeforeAfter all already return null when empty; this was the one that
+  // did not, so every brand-new site shipped with a hollow section on it.
+  //
+  // Safe as an early return: this component uses no hooks. If that ever changes,
+  // the guard moves below them — see eslint.config.js, rules-of-hooks.
+  if (!testimonials || testimonials.length === 0) return null;
+
   const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('endorse') || title.toLowerCase().includes('judicial');
   const isJudicial = theme === 'campaign-judicial' || title.toLowerCase().includes('judicial') || (accentColor === '#29374f' || accentColor === '#0a1f44');
 
