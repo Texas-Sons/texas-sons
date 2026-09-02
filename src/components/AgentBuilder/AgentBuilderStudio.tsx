@@ -2456,6 +2456,21 @@ export default function ClientSite() {
         onOpenCustomDomains={() => setIsCustomDomainOpen(true)}
         onRedeploy={handleDeploySite}
         isDeploying={agentState.step === 'building'}
+        projectId={projectRowId()}
+        onRestoreVersion={(blueprint, label) => {
+          // Keep the project id. The restored blueprint carries the id it had
+          // when it was published, and adopting that would point the Studio at
+          // a different row — which is how five duplicate projects were once
+          // created from one salon.
+          const restored = { ...blueprint, id: project.id } as ProjectSnapshot;
+          setProject(restored);
+          setHistory(prev => [...prev, restored]);
+          setAgentState({
+            step: 'ready',
+            message: `Loaded the version from ${label}. It is on the canvas, not on the site — deploy when you are happy with it.`,
+            tokensUsed: 0,
+          });
+        }}
       />
 
       {/* ── MOBILE STITCH-STYLE 5-TAB BOTTOM DOCK ───────────────────── */}

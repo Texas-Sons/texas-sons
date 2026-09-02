@@ -2,7 +2,7 @@
 import { apiFetch } from '../api';
 import {
   UploadCloud, X, Check, Copy, ExternalLink, ShieldCheck,
-  RefreshCw, History, Globe, Zap, ArrowUpRight, Clock, AlertTriangle
+  RefreshCw, History, Globe, Zap, ArrowUpRight, Clock, AlertTriangle, Undo2, Loader2
 } from 'lucide-react';
 
 interface DeploymentHistoryModalProps {
@@ -13,6 +13,23 @@ interface DeploymentHistoryModalProps {
   onOpenCustomDomains: () => void;
   onRedeploy: () => void;
   isDeploying?: boolean;
+  /** Row id of the project, for its version history. Absent on unsaved sites. */
+  projectId?: string;
+  /**
+   * Loads an older version back into the editor.
+   *
+   * Deliberately not a publish. Restoring puts the old blueprint on the canvas
+   * where it can be looked at and deployed on purpose — a restore that went
+   * straight to the live site would be a second irreversible action offered as
+   * the remedy for the first.
+   */
+  onRestoreVersion?: (blueprint: any, label: string) => void;
+}
+
+interface VersionItem {
+  id: string;
+  label: string | null;
+  created_at: string;
 }
 
 interface DeploymentItem {
@@ -25,6 +42,18 @@ interface DeploymentItem {
   is_current?: boolean;
 }
 
+/** "3h ago" reads faster than a timestamp when judging how stale something is. */
+function describeWhen(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(ms)) return 'unknown';
+  const mins = Math.round(ms / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.round(hrs / 24)}d ago`;
+}
+
 export default function DeploymentHistoryModal({
   isOpen,
   onClose,
@@ -32,11 +61,16 @@ export default function DeploymentHistoryModal({
   activeUrl,
   onOpenCustomDomains,
   onRedeploy,
-  isDeploying
+  isDeploying,
+  projectId,
+  onRestoreVersion
 }: DeploymentHistoryModalProps) {
   const [deployments, setDeployments] = useState<DeploymentItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
+  const [versions, setVersions] = useState<VersionItem[]>([]);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+  const [versionError, setVersionError] = useState<string | null>(null);
 
   const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'site';
   const liveUrl = activeUrl || `https://${slug}.pages.dev`;
@@ -57,11 +91,52 @@ export default function DeploymentHistoryModal({
     }
   };
 
+  /**
+   * The site's own version history, which is a different thing from the
+   * Cloudflare list above it: that one records builds, this one records what
+   * was on the page. A build can succeed while publishing the wrong content,
+   * which is exactly what happened four times last month.
+   */
+  const fetchVersions = async () => {
+    if (!projectId) return;
+    try {
+      const res = await apiFetch(`/api/projects/${encodeURIComponent(projectId)}/versions`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.versions)) setVersions(data.versions);
+    } catch (err: any) {
+      console.error('Fetch versions error:', err);
+    }
+  };
+
+  const restore = async (v: VersionItem) => {
+    if (!projectId || !onRestoreVersion) return;
+    setRestoringId(v.id);
+    setVersionError(null);
+    try {
+      const res = await apiFetch(
+        `/api/projects/${encodeURIComponent(projectId)}/versions/${encodeURIComponent(v.id)}`
+      );
+      const data = await res.json();
+      if (!data.success || !data.version?.blueprint) {
+        throw new Error(data.error || 'That version could not be read.');
+      }
+      onRestoreVersion(data.version.blueprint, v.label || describeWhen(v.created_at));
+      onClose();
+    } catch (err: any) {
+      // Surfaced rather than swallowed: this is the recovery path, and a silent
+      // failure here leaves the operator believing a bad site was restored.
+      setVersionError(err?.message || 'That version could not be restored.');
+    } finally {
+      setRestoringId(null);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       fetchHistory();
+      fetchVersions();
     }
-  }, [isOpen, projectName]);
+  }, [isOpen, projectName, projectId]);
 
   if (!isOpen) return null;
 
@@ -252,6 +327,94 @@ export default function DeploymentHistoryModal({
             </div>
           )}
         </div>
+
+        {/* Published versions — what was on the page, not what built */}
+        {projectId && (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Undo2 className="w-3.5 h-3.5 text-stone-400" />
+                <span>Published Versions ({versions.length})</span>
+              </label>
+              <button
+                type="button"
+                onClick={fetchVersions}
+                className="text-[10px] font-bold text-stone-400 hover:text-[#C5A059] flex items-center gap-1 transition-colors"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            {versionError && (
+              <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-2">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-[11px] text-red-300">{versionError}</p>
+              </div>
+            )}
+
+            {versions.length === 0 ? (
+              <div className="p-6 bg-stone-950/60 rounded-2xl border border-stone-800 text-center space-y-1">
+                <Undo2 className="w-6 h-6 text-stone-600 mx-auto" />
+                <p className="text-xs font-semibold text-stone-400">No versions recorded yet.</p>
+                <p className="text-[10px] text-stone-500">
+                  Every deploy from here on is kept, so a bad save can be undone.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {versions.map((v, idx) => (
+                  <div
+                    key={v.id}
+                    className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${
+                      idx === 0
+                        ? 'bg-stone-950 border-emerald-500/30 ring-1 ring-emerald-500/10'
+                        : 'bg-stone-950/80 border-stone-800'
+                    }`}
+                  >
+                    <div className="space-y-0.5 truncate">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-white truncate">
+                          {v.label || 'Published'}
+                        </span>
+                        {idx === 0 && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                            On the site
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] text-stone-500">
+                        <Clock className="w-3 h-3" />
+                        <span>{describeWhen(v.created_at)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => restore(v)}
+                      disabled={restoringId !== null || idx === 0}
+                      title={
+                        idx === 0
+                          ? 'This is what is on the site now.'
+                          : 'Load this version into the editor. It is not published until you deploy.'
+                      }
+                      className="px-2.5 py-1.5 rounded-xl border border-stone-700 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed text-stone-200 text-xs font-semibold flex items-center gap-1 transition-colors flex-shrink-0"
+                    >
+                      {restoringId === v.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Undo2 className="w-3 h-3" />}
+                      <span>Restore</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-[10px] text-stone-600 leading-snug">
+              Restoring loads that version onto the canvas. Nothing reaches the live site until you deploy.
+            </p>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-stone-800">
