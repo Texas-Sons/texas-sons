@@ -28,6 +28,27 @@ here is how two agents disagree about a type: `src/types.ts`, `package.json`,
 
 Anything the user explicitly assigns overrides the table.
 
+### The mailbox — read before you start, write when you finish
+
+```
+.agent-messages/to-<you>/      corrections and briefs addressed to you
+.agent-messages/to-<them>/     what you send back
+```
+
+**Before starting a task, read your inbox.** Corrections land there and are
+usually the reason the last task is not actually finished.
+
+**When you finish a task, write a report to the other agent'''s directory** —
+`<date>-<task>.md`. Reporting only in your chat window means nobody reviews it,
+because nothing watches chat windows. claude-code runs a file watcher on
+`to-claude/` and wakes when a file appears there.
+
+Reports are checked against the working tree, not taken at face value. See
+*Report only what you verified* below — there are four reports on record that
+described work the tree did not contain.
+
+Full protocol: `.agent-messages/README.md`.
+
 ### Hard rules
 
 1. **Stage explicit paths. Never `git add -A` or `git add .`.**
