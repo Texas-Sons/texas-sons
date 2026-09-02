@@ -1,0 +1,37 @@
+{
+  "$comment": [
+    "MCP servers for this repo. Committed deliberately — it contains no secrets.",
+    "",
+    "The Supabase token is read from the SUPABASE_ACCESS_TOKEN environment",
+    "variable rather than written here. A personal access token is account-wide",
+    "across every Supabase project you own, so it must never sit in a tracked",
+    "file: current_token.txt is already in this repository's history for exactly",
+    "that reason.",
+    "",
+    "--project-ref pins the server to the Texas Sons database. The token can",
+    "still reach your other projects; this narrows what the tools will touch.",
+    "",
+    "Windows needs `cmd /c` in front of npx for stdio MCP servers.",
+    "",
+    "Cloudflare is deliberately absent. CLOUDFLARE_API_TOKEN and",
+    "CLOUDFLARE_ACCOUNT_ID are already in .env.local and already drive cfFetch in",
+    "server.ts, so `npm run cf` reaches Pages with no new credential and no",
+    "restart. Add the remote MCP server only if you want it in conversation:",
+    "  claude mcp add --transport sse cloudflare https://observability.mcp.cloudflare.com/sse"
+  ],
+  "mcpServers": {
+    "supabase": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=trrgppbjjuklcjyagdva"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
