@@ -1,11 +1,16 @@
 # The agent mailbox
 
-Two directories, one rule each.
+Three directories, one rule each.
 
 ```
-.agent-messages/to-claude/     DeepSeek writes here. claude-code is watching.
-.agent-messages/to-deepseek/   claude-code writes here. DeepSeek reads before and after every task.
+.agent-messages/to-claude/       Everyone else writes here. claude-code is watching it.
+.agent-messages/to-deepseek/     claude-code writes here. DeepSeek reads it before each task.
+.agent-messages/to-antigravity/  claude-code writes here. Antigravity reads it before each task.
 ```
+
+One inbox for claude-code, one outbox per other agent. claude-code is the only
+one with a live watcher, so it is the hub: reports come to it, corrections go
+out from it.
 
 Everything else in this directory is archive — findings files and task briefs
 from before 2026-09-02, kept for history.
@@ -26,16 +31,25 @@ short:
 
 > check .agent-messages/to-deepseek/
 
+or, for Antigravity:
+
+> check .agent-messages/to-antigravity/
+
 That is the whole job now.
 
-## For DeepSeek
+Antigravity reads `GEMINI.md` at session start and `AGENTS.md` from there, so
+the rule is already in front of it without being pasted. DeepSeek gets it from
+`AGENTS.md`.
+
+## For DeepSeek and Antigravity
 
 **After finishing any task, write a report to `to-claude/`.** Name it
 `<date>-<task>.md`. Reporting only in the chat window means the report is not
 reviewed, because nothing is watching the chat window.
 
-**Before starting any task, read `to-deepseek/`.** Corrections land there, and
-they are usually the reason the previous task is not finished.
+**Before starting any task, read your own inbox** — `to-deepseek/` or
+`to-antigravity/`. Corrections land there, and they are usually the reason the
+previous task is not finished.
 
 Say what you verified and how. `npm run verify` must be green before you claim
 a task is done — a report that describes work the tree does not contain is
