@@ -117,6 +117,18 @@ interface AgentState {
   tokensUsed: number;
 }
 
+/** "3h ago" reads faster than a timestamp when judging whether a site is current. */
+function describeAge(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(ms)) return 'unknown';
+  const mins = Math.round(ms / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.round(hrs / 24) + 'd ago';
+}
+
 export interface ProjectSnapshot {
   id: string;
   /**
@@ -938,6 +950,44 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
   useEffect(() => { setSavedSignature(prev => prev ?? projectSignature); }, [projectSignature]);
   const unsavedChanges = savedSignature !== null && savedSignature !== projectSignature;
 
+  /**
+   * When this client's site was last published, and whether it has been edited
+   * since the last deploy in this session.
+   *
+   * Deliberately NOT computed by comparing the canvas against
+   * published_blueprint. That column is jsonb, and Postgres reorders jsonb keys
+   * on the way in, so a stringify comparison differs even when the content is
+   * identical — an indicator that always said "not deployed" would be worse
+   * than none, because it would be ignored within a day.
+   *
+   * So this reports two things it can actually know: the publish time, from the
+   * server; and staleness relative to a deploy made in this session. Before the
+   * first deploy of a session it says only when the site was last published,
+   * which is still the answer to "is what I am looking at live" far more often
+   * than the product could give before.
+   */
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [deployedSignature, setDeployedSignature] = useState<string | null>(null);
+  const undeployedChanges = deployedSignature !== null && deployedSignature !== projectSignature;
+
+  useEffect(() => {
+    let cancelled = false;
+    const rowId = projectRowId();
+    if (!rowId) return;
+    (async () => {
+      try {
+        const res = await apiFetch(`/api/projects/${encodeURIComponent(rowId)}/versions`);
+        const data = await res.json();
+        if (!cancelled && data?.success) setPublishedAt(data.publishedAt || null);
+      } catch {
+        // A missing publish time is not worth a message. The strip simply says
+        // nothing rather than asserting the site has never been published.
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project.id]);
+
   const buildTruePreview = React.useCallback(async () => {
     setTruePreviewBusy(true);
     setTruePreviewError(null);
@@ -1198,6 +1248,12 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       if (data.url) {
         setActiveDeployedUrl(data.url);
       }
+
+      // This exact canvas is now on the site. Recorded here rather than from
+      // the server so the strip is right immediately, and so a later edit is
+      // measured against what was actually published and not against a reload.
+      setDeployedSignature(projectSignature);
+      setPublishedAt(new Date().toISOString());
 
       setAgentState({
         step: 'ready',
@@ -1622,6 +1678,36 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
             <span className="hidden 2xl:inline">Custom Domain</span>
           </button>
+
+          {/* What is live, and whether this canvas has moved past it. The
+              question "did my change reach the site" came up seven times in one
+              build and nothing in the product could answer it. */}
+          {(publishedAt || undeployedChanges) && (
+            <div
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-900 border border-stone-800 flex-shrink-0"
+              title={
+                undeployedChanges
+                  ? 'This canvas has changed since you last deployed it.'
+                  : publishedAt
+                    ? `Last published ${new Date(publishedAt).toLocaleString()}`
+                    : 'Not published yet.'
+              }
+            >
+              <span className={`relative flex h-2 w-2 ${undeployedChanges ? '' : ''}`}>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  undeployedChanges ? 'bg-amber-400' : 'bg-emerald-500'
+                }`} />
+              </span>
+              <div className="flex flex-col text-left leading-none">
+                <span className="text-[8px] text-stone-400 uppercase font-bold tracking-wider">
+                  {undeployedChanges ? 'Not deployed' : 'Live'}
+                </span>
+                <span className="text-[10px] font-semibold text-white">
+                  {publishedAt ? describeAge(publishedAt) : 'never'}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Deploy Button */}
           <button

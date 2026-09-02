@@ -1747,7 +1747,18 @@ const PREVIEW_MAX = 40;
         .limit(BLUEPRINT_VERSION_CAP);
 
       if (error) throw new Error(error.message);
-      res.json({ success: true, versions: data || [] });
+
+      // When the site was last published, from the project row rather than from
+      // the newest version. They agree from now on, but every site deployed
+      // before this table existed has a published_at and no versions at all,
+      // and reporting "never published" for a live site would be a lie.
+      const { data: proj } = await getSupabaseAdmin()
+        .from('projects')
+        .select('published_at')
+        .eq('id', String(req.params.projectId))
+        .maybeSingle();
+
+      res.json({ success: true, versions: data || [], publishedAt: proj?.published_at || null });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err?.message || 'Could not read the version history.' });
     }
