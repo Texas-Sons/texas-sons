@@ -15,6 +15,12 @@
  *   npm run migrate           apply everything pending
  *   npm run migrate -- --dry  list what would run, touch nothing
  *
+ *   npm run migrate -- --baseline-through=<file>
+ *       Record every migration up to and including <file> as applied, WITHOUT
+ *       running it. For a database that was migrated by hand before this script
+ *       existed — which is how the first eleven landed. Refuses once the ledger
+ *       has anything in it, so it cannot be used to skip a real migration.
+ *
  * Safe to run repeatedly. Applied migrations are recorded in `schema_migrations`
  * and skipped thereafter.
  */
@@ -32,6 +38,8 @@ const API = 'https://api.supabase.com/v1';
 const token = process.env.SUPABASE_ACCESS_TOKEN;
 const projectUrl = process.env.VITE_SUPABASE_URL || '';
 const dryRun = process.argv.includes('--dry');
+const baselineThrough = (process.argv.find(a => a.startsWith('--baseline-through=')) || '')
+  .split('=')[1] || '';
 
 /**
  * The project ref is the subdomain of the Supabase URL. Derived rather than
@@ -131,18 +139,61 @@ async function main() {
 
   // The ledger. Created by this script rather than by a migration of its own,
   // because a migration recording migrations cannot record itself.
-  await applySql(ref, `
-    create table if not exists public.schema_migrations (
-      name        text primary key,
-      checksum    text not null,
-      applied_at  timestamptz not null default now()
-    );
-  `);
+  //
+  // Not created under --dry. A dry run that writes to the database is not a dry
+  // run, and this one did exactly that on its first outing: it reported twelve
+  // pending migrations having already created a table nobody asked for.
+  const ledgerExists = (await query<{ exists: boolean }>(ref, `
+    select exists (
+      select 1 from information_schema.tables
+      where table_schema = 'public' and table_name = 'schema_migrations'
+    ) as exists;
+  `))[0]?.exists === true;
 
-  const applied = await query<{ name: string; checksum: string }>(
-    ref, 'select name, checksum from public.schema_migrations;'
-  );
+  if (!ledgerExists && !dryRun) {
+    await applySql(ref, `
+      create table if not exists public.schema_migrations (
+        name        text primary key,
+        checksum    text not null,
+        applied_at  timestamptz not null default now()
+      );
+    `);
+  }
+
+  const applied = ledgerExists
+    ? await query<{ name: string; checksum: string }>(
+        ref, 'select name, checksum from public.schema_migrations;')
+    : [];
   const appliedBy = new Map(applied.map(r => [r.name, r.checksum]));
+
+  if (baselineThrough) {
+    if (dryRun) fail('--dry and --baseline-through cannot be combined.');
+    if (applied.length) {
+      fail(
+        `the ledger already records ${applied.length} migration(s).\n` +
+        '        --baseline-through is only for a database migrated by hand before\n' +
+        '        this script existed. Refusing, so it cannot skip a real migration.'
+      );
+    }
+    if (!files!.includes(baselineThrough)) {
+      fail(`no migration named ${baselineThrough}. Names must match a file in supabase/migrations exactly.`);
+    }
+
+    const upTo = files!.slice(0, files!.indexOf(baselineThrough) + 1);
+    console.log(`  migrate: recording ${upTo.length} migration(s) as already applied, running none.\n`);
+    for (const name of upTo) {
+      const sql = await fs.readFile(path.join(MIGRATIONS_DIR, name), 'utf-8');
+      const checksum = crypto.createHash('sha256').update(sql).digest('hex').slice(0, 16);
+      await applySql(ref, `
+        insert into public.schema_migrations (name, checksum)
+        values ('${name.replace(/'/g, "''")}', '${checksum}')
+        on conflict (name) do update set checksum = excluded.checksum;
+      `);
+      console.log(`    baselined  ${name}`);
+    }
+    console.log(`\n  migrate: baselined. ${files!.length - upTo.length} still pending.`);
+    return;
+  }
 
   const pending: { name: string; sql: string; checksum: string }[] = [];
   let drifted = 0;
