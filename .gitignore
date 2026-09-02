@@ -21,3 +21,22 @@ coverage/
 # Local responsive audit outputs
 .audit-profile/
 .audit-shots/
+
+# Python virtualenv. Machine-specific binaries, useless to any clone.
+/venv/
+
+# Ad-hoc scratch that was committed before the /*.cjs rule existed. Untracked
+# 2026-09-02; the files stay on disk because some are still useful locally.
+/apply_design.py
+/update-theme.js
+/update.sql
+/trevino_update.json
+/junie_admin_prompt.txt
+/tsc_output.txt
+/test_photo_*.jpg
+
+# A live client share token, committed on 2026-08-28 and untracked on
+# 2026-09-02. Tokens are minted by crypto.randomBytes(24) in server.ts and
+# grant access to one client's intake portal. Never commit one; revoke instead —
+# client_intakes.share_token_revoked exists for exactly this.
+/current_token.txt

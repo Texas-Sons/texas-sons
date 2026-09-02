@@ -20,6 +20,7 @@ edit. Lanes and hygiene do.
 | **claude-code** | `server.ts`, `lib/`, `src/store/`, `scripts/`, `supabase/`, CI |
 | **Antigravity** | `src/components/**`, `src/templates/blocks/`, `src/templates/sections.ts` |
 | **opencode** | `public/templates/`, deploy pipeline, SEO/perf |
+| **DeepSeek** | `src/components/IntakePortal/`, `src/components/ClientIntake/`, audit + form panels when assigned |
 
 **Announce on the board before touching** — these are shared and a silent edit
 here is how two agents disagree about a type: `src/types.ts`, `package.json`,
