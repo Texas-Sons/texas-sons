@@ -68,6 +68,42 @@ Full protocol: `.agent-messages/README.md`.
 7. **Small conventional commits** pushed to `main` (`fix:`, `feat:`, `chore:`,
    `style:`, `docs:`).
 
+### One fault per edit, and verify after each one
+
+Fix one thing, run `npm run verify`, fix the next. Do not batch four fixes into
+one pass and verify at the end.
+
+The reason is not tidiness. When you change four things and the build breaks,
+you cannot tell which change broke it, and the usual response is to keep going
+— which is how a red build survives several rounds of "progress".
+
+**An additive change must produce an additive diff.** If you were asked to add
+three fields and the diff deletes six hundred lines, you rewrote the file
+instead of editing it, and the deletions are things nobody asked you to remove.
+Check `git diff --stat` on your own work before you report. A deletion count
+far larger than the task is the signal.
+
+**Re-read the lines either side of every edit.** Edits that extend a block are
+the dangerous ones: the replacement lands slightly wide and silently eats what
+followed.
+
+Four examples, all real, all from agents working carefully:
+
+- 2026-09-02: extending a `lucide-react` import to add two icons deleted the
+  three `import` lines beneath it. Build went from 4 errors to 22, and the next
+  two progress reports were written against a tree that did not compile.
+- 2026-09-02: a rewrite of `ClientIntakeView.tsx` to add three fields to one
+  merge produced 378 insertions and 636 deletions, renamed a database column in
+  the UI only, and moved two admin routes under a public prefix.
+- 2026-09-02: `git rm --cached` staged eleven removals, then `git commit` with
+  explicit paths committed the whole index anyway — `git commit` takes the
+  index, not your argument list. The message described half of what shipped.
+- 2026-08-30: a fix verified with a rigorous Puppeteer harness still shipped two
+  bugs, because the harness tested the feature that was built rather than the
+  file that was changed.
+
+The last one is the general case, and it has its own section below.
+
 ### Report only what you verified
 
 Say what you actually checked, and how. Three reports on 2026-08-28 described
