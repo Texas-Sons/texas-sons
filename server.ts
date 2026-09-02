@@ -23,6 +23,8 @@ import {
   ASSISTANT_MODEL_CHOICES, logRoutingTable, parseModelJson, type ChatMessage,
 } from './lib/models';
 import { safeFetchText } from './lib/safeFetch';
+import { buildInfo } from './lib/buildInfo';
+import { checkEnv, logEnvStatus } from './lib/envCheck';
 import { blueprintWithClientMedia, type MediaKind } from './lib/clientMedia';
 import { mergeSnapshotEdit } from './lib/snapshotMerge';
 import { stageOf } from './src/utils/clientStage';
@@ -729,9 +731,19 @@ async function startServer() {
     return stripeClient;
   }
 
-  // Sample API Routes
+  // Public, and deliberately so — it is the liveness probe. It names the build
+  // but never a credential: `configured` is presence only, so this cannot be
+  // used to read a key back out. See lib/envCheck.ts.
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok" });
+    const env = checkEnv();
+    res.json({
+      status: "ok",
+      ...buildInfo(),
+      configured: {
+        missingRequired: env.filter(e => e.severity === 'required' && !e.present).map(e => e.name),
+        malformed: env.filter(e => e.malformed).map(e => e.name),
+      },
+    });
   });
 
   // Template catalog (data-driven: add template folders + manifest + catalog entry)
@@ -1368,7 +1380,10 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
    */
   const previewBuilds = new Map<string, { html: string; expires: number }>();
   const PREVIEW_TTL_MS = 15 * 60 * 1000;
-  const PREVIEW_MAX = 40;
+  /** How many published versions of one site to keep. See recordBlueprintVersion. */
+const BLUEPRINT_VERSION_CAP = 30;
+
+const PREVIEW_MAX = 40;
 
   function storePreview(html: string): string {
     const now = Date.now();
@@ -1437,6 +1452,56 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
     res.type('html').send(build.html);
   });
 
+  /**
+   * Appends a published blueprint to the history.
+   *
+   * Never throws. Called from inside a successful deploy, where the site is
+   * already live and the only remaining question is whether we can undo it
+   * later — a failure here must be visible in the log and invisible to the
+   * operator, who cannot act on it and whose deploy did work.
+   */
+  async function recordBlueprintVersion(
+    projectId: string,
+    ownerId: string | undefined,
+    blueprint: any,
+    label: string
+  ): Promise<void> {
+    if (!ownerId) {
+      console.warn('[versions] no user on the request — version not recorded.');
+      return;
+    }
+    try {
+      const db = getSupabaseAdmin();
+      const { error } = await db.from('blueprint_versions').insert({
+        project_id: projectId,
+        owner_id: ownerId,
+        blueprint,
+        label: label.slice(0, 200),
+      });
+      if (error) {
+        console.error('[versions] could not record this deploy:', error.message);
+        return;
+      }
+
+      // Retention. A blueprint is a large document and every deploy writes one,
+      // so this grows without a bound nobody would notice until it mattered.
+      // Thirty is far more than anyone scrolls back through and small enough to
+      // stay cheap.
+      const { data: old } = await db
+        .from('blueprint_versions')
+        .select('id')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false })
+        .range(BLUEPRINT_VERSION_CAP, BLUEPRINT_VERSION_CAP + 200);
+
+      if (old?.length) {
+        await db.from('blueprint_versions').delete().in('id', old.map((r: any) => r.id));
+      }
+    } catch (err: any) {
+      console.error('[versions] could not record this deploy:', err?.message || err);
+    }
+  }
+
   app.post("/api/deploy", async (req, res) => {
     try {
       const { projectName, currentSnapshot, projectId } = req.body;
@@ -1475,6 +1540,17 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         // Not fatal — the site is already live. Loud, because until this lands
         // the auto-redeploy will decline to run and her uploads will not appear.
         if (error) console.error('[deploy] could not record the published blueprint:', error.message);
+
+        // And append it to the history, so this deploy is recoverable after the
+        // next one overwrites published_blueprint. Best effort by design: the
+        // site is already live, and refusing to finish a successful deploy
+        // because the audit trail failed would be the wrong trade.
+        await recordBlueprintVersion(
+          String(projectId),
+          (req as AuthedRequest).user?.id,
+          currentSnapshot,
+          `Deployed ${projectName || currentSnapshot.profile?.name || ''}`.trim()
+        );
       } else {
         console.warn('[deploy] no projectId supplied — client uploads will not auto-publish for this site.');
       }
@@ -1652,6 +1728,55 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
   });
 
   // Get Deployment History for a Project
+  /**
+   * The versions of one project's site, newest first.
+   *
+   * Metadata only. The blueprints themselves are large and listing thirty of
+   * them would send megabytes to render a list of dates.
+   */
+  app.get("/api/projects/:projectId/versions", async (req: AuthedRequest, res) => {
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('blueprint_versions')
+        .select('id, label, created_at')
+        .eq('project_id', String(req.params.projectId))
+        .eq('owner_id', req.user!.id)
+        .order('created_at', { ascending: false })
+        .limit(BLUEPRINT_VERSION_CAP);
+
+      if (error) throw new Error(error.message);
+      res.json({ success: true, versions: data || [] });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err?.message || 'Could not read the version history.' });
+    }
+  });
+
+  /**
+   * Returns one version's full blueprint, so the Studio can load it.
+   *
+   * Deliberately does NOT deploy. Restoring is loading the old version into the
+   * editor, where the operator can look at it and decide; a restore that
+   * published immediately would be a second irreversible action offered as the
+   * remedy for the first.
+   */
+  app.get("/api/projects/:projectId/versions/:versionId", async (req: AuthedRequest, res) => {
+    try {
+      const { data, error } = await getSupabaseAdmin()
+        .from('blueprint_versions')
+        .select('id, label, created_at, blueprint')
+        .eq('id', String(req.params.versionId))
+        .eq('project_id', String(req.params.projectId))
+        .eq('owner_id', req.user!.id)
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      if (!data) return res.status(404).json({ success: false, error: 'No such version.' });
+      res.json({ success: true, version: data });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err?.message || 'Could not read that version.' });
+    }
+  });
+
   app.get("/api/deployments/history", async (req, res) => {
     try {
       const projectName = req.query.project as string;
@@ -2952,7 +3077,11 @@ ${text.trim()}`);
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    const info = buildInfo();
+    console.log(`Server running on http://0.0.0.0:${PORT} — ${info.mode} @ ${info.commit}`);
+    // Named at boot rather than discovered later from an incidental log line,
+    // which is how OPENROUTER_API_KEY was found missing on Railway.
+    logEnvStatus();
   });
 }
 
