@@ -731,19 +731,21 @@ async function startServer() {
     return stripeClient;
   }
 
-  // Public, and deliberately so — it is the liveness probe. It names the build
-  // but never a credential: `configured` is presence only, so this cannot be
-  // used to read a key back out. See lib/envCheck.ts.
+  // Public, and deliberately so — it is the liveness probe, and it has to
+  // answer without a session.
+  //
+  // Build identity only. Which credentials are missing is NOT reported here:
+  // this endpoint is unauthenticated, and a public list of unconfigured
+  // integrations is a map of where a deployment is weakest, even with no values
+  // attached. That lives behind the admin gate on /api/env-status.
   app.get("/api/health", (req, res) => {
-    const env = checkEnv();
-    res.json({
-      status: "ok",
-      ...buildInfo(),
-      configured: {
-        missingRequired: env.filter(e => e.severity === 'required' && !e.present).map(e => e.name),
-        malformed: env.filter(e => e.malformed).map(e => e.name),
-      },
-    });
+    res.json({ status: "ok", ...buildInfo() });
+  });
+
+  // Admin-gated, because the answer names which integrations are unconfigured.
+  // Presence and shape only — never a value. See lib/envCheck.ts.
+  app.get("/api/env-status", (req, res) => {
+    res.json({ success: true, build: buildInfo(), env: checkEnv() });
   });
 
   // Template catalog (data-driven: add template folders + manifest + catalog entry)
