@@ -162,8 +162,25 @@ export function NavbarBlock({
           </div>
         </a>
 
-        {/* Desktop Navigation Links — Stitch Synchronized Pill Track */}
-        <nav className="hidden 2xl:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm flex-shrink min-w-0">
+        {/*
+          The nav was `hidden 2xl:flex` — 1536px — so on any ordinary laptop
+          there was no navigation at all, only a hamburger, and the menu and
+          portfolio pages had no visible way in. It now appears from lg, which
+          is where there is genuinely room for it.
+
+          A campaign keeps the enclosed pill track: it carries a red write-in
+          call to action that needs a container to sit in. Everything else gets
+          plain centred links, which is what a header looks like when the
+          business is the loudest thing in it.
+        */}
+        <nav className={
+          isCampaign
+            ? "hidden 2xl:flex items-center gap-1 xl:gap-1.5 p-1 rounded-2xl bg-[color:var(--ts-surface-raised)]/70 border border-[color:var(--ts-border)]/80 backdrop-blur-md shadow-sm flex-shrink min-w-0"
+            // flex-1 is what pushes the buttons to the right edge: the nav takes
+            // the space between the wordmark and the actions and centres itself
+            // in it, instead of all three bunching in the middle.
+            : "hidden lg:flex flex-1 items-center justify-center gap-6 xl:gap-9 min-w-0"
+        }>
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             
@@ -184,7 +201,11 @@ export function NavbarBlock({
               <a
                 key={idx}
                 href={item.href}
-                className="whitespace-nowrap inline-flex items-center px-3 xl:px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface)]/90 hover:shadow-xs transition-all flex-shrink-0"
+                className={
+                  isCampaign
+                    ? "whitespace-nowrap inline-flex items-center px-3 xl:px-3.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface)]/90 hover:shadow-xs transition-all flex-shrink-0"
+                    : "whitespace-nowrap text-sm text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] transition-colors duration-150 flex-shrink-0"
+                }
               >
                 {item.label}
               </a>
@@ -226,8 +247,10 @@ export function NavbarBlock({
           </a>
         </div>
 
-        {/* Mobile / Tablet / Studio Split-Screen Hamburger Toggle */}
-        <div className="flex 2xl:hidden items-center space-x-2 flex-shrink-0">
+        {/* Stands down wherever the nav is showing, which is lg for a business
+            and 2xl for a campaign — otherwise the same links are on screen
+            twice, once in the bar and once behind a button that opens over it. */}
+        <div className={`flex ${isCampaign ? '2xl:hidden' : 'lg:hidden'} items-center space-x-2 flex-shrink-0`}>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-lg text-[color:var(--ts-muted)] hover:text-[color:var(--ts-text)] hover:bg-[color:var(--ts-surface-raised)]"
@@ -247,11 +270,11 @@ export function NavbarBlock({
             copy of it. Dismisses on tap, which a drawer with no way out but the
             X badly needed anyway. */}
         <div
-          className="2xl:hidden fixed inset-0 top-20 z-30 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          className={`${isCampaign ? '2xl:hidden' : 'lg:hidden'} fixed inset-0 top-20 z-30 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200`}
           onClick={() => setMobileMenuOpen(false)}
           aria-hidden="true"
         />
-        <div className="2xl:hidden relative z-40 border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]">
+        <div className={`${isCampaign ? '2xl:hidden' : 'lg:hidden'} relative z-40 border-b px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200 bg-[color:var(--ts-surface)] border-[color:var(--ts-border)]`}>
           {navItems.map((item, idx) => {
             const isWriteInPill = item.label.toLowerCase().includes('write-in') || item.label.toLowerCase().includes('how to vote');
             return (
