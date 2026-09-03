@@ -180,6 +180,8 @@ const DEFAULT_FORM: InstantFormData = {
   giftCardUrl: '',
   logoScale: '1',
   ownerPhoto: '', ownerName: '', ownerRole: '',
+  // Blank blueprints with no category still start on the campaign-navy/civic
+  // fallback. snaphotToForm below derives from category when one is present.
   theme: 'campaign-navy',
   primaryColor: '', accentColor: '',
   treasurerName: '', heroVariant: 'split',
@@ -195,8 +197,48 @@ const DEFAULT_FORM: InstantFormData = {
   endorsement3quote: '', endorsement3author: '', endorsement3role: '',
 };
 
+// ── Category-derived defaults ────────────────────────────────────────────────
+
+/**
+ * Picks theme, archetype and feature from the business category so a new
+ * project from a beauty intake lands on beauty defaults rather than on
+ * campaign-navy / civic / voting-guide.
+ *
+ * When the snapshot already has a theme set (from a prior save), that wins.
+ * This mapping is consulted only when snap.theme is absent.
+ */
+function categoryDefaults(category: string | undefined): {
+  theme: ProjectSnapshot['theme'];
+  archetype: string;
+  feature: string;
+} {
+  switch (category) {
+    case 'Beauty & Wellness':
+    case 'Luxury Beauty & Spa':
+      return { theme: 'luxury', archetype: 'editorial', feature: 'appointment-drawer' };
+    case 'Food & Beverage':
+    case 'BBQ & Smokehouse':
+      return { theme: 'crimson-bold', archetype: 'bold-craft', feature: 'proof-wall' };
+    case 'Home & Trade Services':
+    case 'Commercial Trades':
+      return { theme: 'dark', archetype: 'bento', feature: 'quote-calculator' };
+    case 'Professional & Medical':
+      return { theme: 'dark', archetype: 'bento', feature: 'appointment-drawer' };
+    case 'Campaign & Leadership':
+    default:
+      // Unknown category or campaign: keep the original campaign defaults.
+      // A blank blueprint with no category must keep behaving as it always did
+      // because live campaign sites without a category record depend on the
+      // palette to identify themselves (lib/siteKind.ts).
+      return { theme: 'campaign-navy', archetype: 'civic', feature: 'voting-guide' };
+  }
+}
+
 // ── Helper: Map Snapshot to Form ─────────────────────────────────────────────
 function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
+  const cat = snap.profile.category || '';
+  const defaults = categoryDefaults(cat || undefined);
+
   return {
     title: snap.prompt || snap.profile.name || '',
     category: snap.profile.category || 'Campaign & Leadership',
@@ -215,13 +257,23 @@ function snapshotToForm(snap: ProjectSnapshot): InstantFormData {
     ownerPhoto: snap.profile.ownerPhoto || '',
     ownerName: snap.profile.ownerName || '',
     ownerRole: snap.profile.ownerRole || '',
-    theme: snap.theme || 'campaign-navy',
+    // When the snapshot has a theme, it was set by a prior save — keep it.
+    // Otherwise derive from the category, falling back to campaign-navy
+    // when the category is unknown (see categoryDefaults above).
+    theme: (snap.theme as ProjectSnapshot['theme']) || defaults.theme,
     primaryColor: snap.profile.primaryColor || '#00081e',
     accentColor: snap.profile.accentColor || '#C5A059',
     treasurerName: snap.profile.treasurerName || '',
     heroVariant: snap.heroVariant || 'split',
-    selectedArchetype: snap.theme === 'dark' ? 'bento' : snap.theme === 'luxury' ? 'editorial' : snap.theme === 'crimson-bold' ? 'bold-craft' : 'civic',
-    selectedFeature: snap.theme === 'campaign-navy' || snap.theme === 'campaign-judicial' ? 'voting-guide' : 'appointment-drawer',
+    // Derive from the category when no theme has been set yet. Once a theme
+    // exists, the old mapping is correct — it describes which archetype
+    // matches the stored theme.
+    selectedArchetype: snap.theme
+      ? (snap.theme === 'dark' ? 'bento' : snap.theme === 'luxury' ? 'editorial' : snap.theme === 'crimson-bold' ? 'bold-craft' : 'civic')
+      : defaults.archetype,
+    selectedFeature: snap.theme
+      ? (snap.theme === 'campaign-navy' || snap.theme === 'campaign-judicial' ? 'voting-guide' : 'appointment-drawer')
+      : defaults.feature,
     pillar1title: snap.services?.[0]?.title || '',
     pillar1desc: snap.services?.[0]?.description || '',
     pillar2title: snap.services?.[1]?.title || '',
@@ -1104,7 +1156,7 @@ export default function BlueprintFormPanel({
               <InputField 
                 label="Pillar 3 Title" 
                 id="p3title" 
-                placeholder="Fiscal Responsibility & Grants" 
+                placeholder="Transparency & Fiscal Responsibility" 
                 value={form.pillar3title} 
                 onChange={v => set('pillar3title', v)} 
               />
@@ -1121,189 +1173,106 @@ export default function BlueprintFormPanel({
         </FormCard>
       )}
 
-      {/* ── TAB 5: Authority Proof & Endorsements ───────────────────────────── */}
-      {(activeTab === 'badges' || activeTab === 'all') && (
-        <div className="space-y-4">
-          <FormCard title="Authority Badges" icon={Award} badge="4 Badges">
-            <InputField 
-              label="Proof Pill Subtitle / Organization Verification" 
-              id="proofBadgeText" 
-              placeholder="Official 2026 Endorsements · Certified" 
-              value={form.proofBadgeText} 
-              onChange={v => set('proofBadgeText', v)} 
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <InputField label="Badge 1" id="b1" placeholder="28+ Yrs Experience" value={form.badge1} onChange={v => set('badge1', v)} />
-              <InputField label="Badge 2" id="b2" placeholder="Master Peace Officer" value={form.badge2} onChange={v => set('badge2', v)} />
-              <InputField label="Badge 3" id="b3" placeholder="Deputies Backing" value={form.badge3} onChange={v => set('badge3', v)} />
-              <InputField label="Badge 4" id="b4" placeholder="Lifelong Resident" value={form.badge4} onChange={v => set('badge4', v)} />
-            </div>
-          </FormCard>
-
-          <FormCard title="Verified Quotes & Endorsements" icon={MessageSquareQuote} badge="Social Proof">
-            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Endorsement #1</span>
-              <TextareaField label="Quote" id="e1q" placeholder="Enter endorsement quote..." value={form.endorsement1quote} onChange={v => set('endorsement1quote', v)} rows={2} />
-              <div className="grid grid-cols-2 gap-2">
-                <InputField label="Author Name" id="e1a" placeholder="Judge Ronald Sterling" value={form.endorsement1author} onChange={v => set('endorsement1author', v)} />
-                <InputField label="Role / Title" id="e1r" placeholder="Presiding Magistrate" value={form.endorsement1role} onChange={v => set('endorsement1role', v)} />
-              </div>
-            </div>
-
-            <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Endorsement #2</span>
-              <TextareaField label="Quote" id="e2q" placeholder="Enter endorsement quote..." value={form.endorsement2quote} onChange={v => set('endorsement2quote', v)} rows={2} />
-              <div className="grid grid-cols-2 gap-2">
-                <InputField label="Author Name" id="e2a" placeholder="Captain Marcus Vance" value={form.endorsement2author} onChange={v => set('endorsement2author', v)} />
-                <InputField label="Role / Title" id="e2r" placeholder="Patrol Commander" value={form.endorsement2role} onChange={v => set('endorsement2role', v)} />
-              </div>
-            </div>
-          </FormCard>
-        </div>
-      )}
-
-      {/* ── TAB 6: Color Palette & Materials ──────────────────────────────── */}
+      {/* ── TAB 5: Brand Theme Tokens ──────────────────────────────────────── */}
       {(activeTab === 'theme' || activeTab === 'all') && (
-        <FormCard title="Color Palette & Material Physics" icon={Palette} badge="Design Tokens">
-          <div className="space-y-3">
-            <div>
-              <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Theme System Preset</label>
-              <select
-                value={form.theme}
-                onChange={e => set('theme', e.target.value as any)}
-                className="w-full h-10 px-3 rounded-xl bg-stone-950 border border-stone-700/80 text-xs font-semibold text-white focus:outline-none focus:border-[#C5A059]"
+        <FormCard title="Theme" icon={Palette} badge="Visual Token Control">
+          <p className="text-[11px] text-stone-400">
+            Select a brand impression style or customize colours manually.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'dark', name: 'Dark Stone', desc: 'Warm charcoal & neutral', prim: '#1c1917', acc: '#C5A059' },
+              { id: 'light', name: 'Clean Light', desc: 'Bright ceramic & airy', prim: '#fafaf9', acc: '#C5A059' },
+              { id: 'luxury', name: 'Editorial Luxury', desc: 'Deep cognac & champagne', prim: '#1c1917', acc: '#d97706' },
+              { id: 'crimson-bold', name: 'Crimson Bold', desc: 'Dark paprika & fiery red', prim: '#2b0c0d', acc: '#dc2626' },
+              { id: 'campaign-navy', name: 'Campaign Navy', desc: 'Presidential navy & gold', prim: '#00081e', acc: '#C5A059' },
+              { id: 'campaign-judicial', name: 'Judicial Crimson', desc: 'Bench red & authority black', prim: '#130404', acc: '#bb0027' },
+              { id: 'emerald-gold', name: 'Emerald Gold', desc: 'Deep green & Texas gold', prim: '#022c22', acc: '#C5A059' },
+              { id: 'custom', name: 'Custom', desc: 'Manual hex control', prim: form.primaryColor || '#00081e', acc: form.accentColor || '#C5A059' },
+            ].map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => {
+                  set('theme', t.id as any);
+                  if (t.prim) set('primaryColor', t.prim);
+                  if (t.acc && t.id !== 'custom') set('accentColor', t.acc);
+                }}
+                className={`p-2.5 rounded-xl border text-left min-w-[120px] transition-all cursor-pointer ${
+                  form.theme === t.id || (t.id === 'custom' && !['dark','light','luxury','crimson-bold','campaign-navy','campaign-judicial','emerald-gold'].includes(form.theme || ''))
+                    ? 'border-[#C5A059] bg-gradient-to-br from-stone-900 to-stone-950 ring-1 ring-[#C5A059]/40 shadow-md'
+                    : 'border-stone-800 bg-stone-950/80 hover:border-stone-700'
+                }`}
               >
-                <option value="campaign-navy">🏛️ Civic Navy & Texas Gold (Authoritative)</option>
-                <option value="campaign-judicial">⚖️ Courtroom Slate & Integrity Bronze</option>
-                <option value="dark">⚡ Texas Sons Obsidian & Flame Orange</option>
-                <option value="luxury">✨ Editorial Luxury Noir & Champagne</option>
-                <option value="crimson-bold">🔥 Smokehouse Crimson & Charcoal</option>
-              </select>
-            </div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-3.5 h-3.5 rounded-full border border-stone-700" style={{ background: t.prim }} />
+                  <span className="w-3.5 h-3.5 rounded-full border border-stone-700" style={{ background: t.acc }} />
+                </div>
+                <span className="text-[11px] font-bold text-stone-200 block">{t.name}</span>
+                <span className="text-[10px] text-stone-500">{t.desc}</span>
+              </button>
+            ))}
+          </div>
 
-            <div>
-              <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Hero Layout Variant</label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['split', 'bento', 'centered'] as const).map(v => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => set('heroVariant', v)}
-                    className={`py-2 px-2 rounded-xl border text-[11px] font-bold capitalize transition-all cursor-pointer ${
-                      form.heroVariant === v 
-                        ? 'border-[#C5A059] bg-[#C5A059]/10 text-[#C5A059] ring-1 ring-[#C5A059]/30' 
-                        : 'border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200'
-                    }`}
-                  >
-                    {v} Hero
-                  </button>
-                ))}
+          <div className="grid grid-cols-2 gap-3 mt-2">
+            <div className="space-y-1.5">
+              <label htmlFor="primaryColor" className="text-[11px] font-bold text-stone-400 block">
+                Primary Colour
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="primaryColor"
+                  type="color"
+                  value={form.primaryColor || '#00081e'}
+                  onChange={e => set('primaryColor', e.target.value)}
+                  className="w-9 h-9 rounded-lg border border-stone-700 bg-transparent cursor-pointer p-0.5"
+                />
+                <input
+                  type="text"
+                  value={form.primaryColor}
+                  onChange={e => set('primaryColor', e.target.value)}
+                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#C5A059]/60"
+                />
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Primary Background</label>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="color" 
-                    value={form.primaryColor} 
-                    onChange={e => set('primaryColor', e.target.value)}
-                    className="w-8 h-8 rounded-lg cursor-pointer border border-stone-700 bg-transparent" 
-                  />
-                  <span className="text-xs text-stone-200 font-mono font-bold">{form.primaryColor}</span>
-                </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">Accent Color</label>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="color" 
-                    value={form.accentColor} 
-                    onChange={e => set('accentColor', e.target.value)}
-                    className="w-8 h-8 rounded-lg cursor-pointer border border-stone-700 bg-transparent" 
-                  />
-                  <span className="text-xs text-stone-200 font-mono font-bold">{form.accentColor}</span>
-                </div>
+            <div className="space-y-1.5">
+              <label htmlFor="accentColor" className="text-[11px] font-bold text-stone-400 block">
+                Accent Colour
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="accentColor"
+                  type="color"
+                  value={form.accentColor || '#C5A059'}
+                  onChange={e => set('accentColor', e.target.value)}
+                  className="w-9 h-9 rounded-lg border border-stone-700 bg-transparent cursor-pointer p-0.5"
+                />
+                <input
+                  type="text"
+                  value={form.accentColor}
+                  onChange={e => set('accentColor', e.target.value)}
+                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#C5A059]/60"
+                />
               </div>
             </div>
           </div>
         </FormCard>
       )}
 
-      {/* ── Action Buttons & Quick Tools ──────────────────────────────────── */}
-      <div className="space-y-2.5 pt-2 pb-4">
-        {/* Model Selection Chip */}
-        <div className="flex items-center justify-between px-1 text-xs">
-          <span className="font-semibold text-stone-400 flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-[#C5A059]" />
-            <span className="text-[11px]">AI Synthesis Engine:</span>
-          </span>
-          <select
-            value={selectedModel}
-            onChange={(e) => onSelectModel?.(e.target.value)}
-            className="bg-stone-900 border border-stone-700 text-[#C5A059] text-xs font-bold rounded-[14px_6px_16px_8px/8px_16px_6px_14px] px-2.5 py-1 focus:outline-none focus:border-[#C5A059] cursor-pointer max-w-[190px] shadow-sm"
-            title="Choose AI Model for Experience Synthesis"
+      {/* ── Build Button ─────────────────────────────────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-stone-950/95 border-t border-stone-800 backdrop-blur-md z-30">
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={handleBuild}
+            disabled={isBusy}
+            className="px-6 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#d4b46d] disabled:opacity-50 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#C5A059]/30 transition-all active:scale-95 cursor-pointer"
           >
-            {SUPPORTED_MODELS.map(m => (
-              <option key={m.id} value={m.id} className="bg-stone-900 text-stone-200">
-                {m.name} ({m.badge})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Primary Build Button */}
-        <button
-          type="button"
-          onClick={handleBuild}
-          disabled={isBusy || !form.name.trim()}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] bg-[#C5A059] hover:bg-[#C5A059] disabled:opacity-40 text-white text-sm font-black tracking-wide shadow-xl shadow-[#C5A059]/30 transition-all hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
-        >
-          <Zap className="w-4 h-4 fill-current" />
-          <span>⚡ Generate Custom Experience</span>
-        </button>
-
-        {/* Secondary Quick Tools */}
-        <div className="grid grid-cols-3 gap-2">
-          <button 
-            type="button" 
-            onClick={onOpenAudit}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
-          >
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Auto-QC</span>
-          </button>
-          <button 
-            type="button" 
-            onClick={onOpenProposal}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
-          >
-            <Layers className="w-4 h-4 text-blue-400" />
-            <span>Proposal</span>
-          </button>
-          <button 
-            type="button" 
-            onClick={onOpenScanner}
-            className="flex flex-col items-center gap-1 py-2.5 rounded-[18px_8px_20px_10px/10px_20px_8px_18px] border border-stone-800 bg-stone-900/80 hover:bg-stone-800 text-stone-200 text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
-          >
-            <Camera className="w-4 h-4 text-[#C5A059]" />
-            <span>Scan Flyer</span>
+            <Sparkles className="w-4 h-4" />
+            {isBusy ? 'Building...' : 'Build Site'}
           </button>
         </div>
-
-        {/* Antigravity AI Prompt / Master Plan Export */}
-        <button 
-          type="button" 
-          onClick={onOpenHandoff}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[20px_10px_22px_12px/12px_22px_10px_20px] border border-[#C5A059]/30 bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] hover:text-[#C5A059] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-[0.98]"
-          title="Get AI Master Plan prompt to give directly to Antigravity"
-        >
-          <Terminal className="w-4 h-4 text-[#C5A059]" />
-          <span>⚡ Antigravity AI Experience Prompt</span>
-        </button>
       </div>
-
     </div>
   );
 }
