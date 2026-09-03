@@ -235,7 +235,13 @@ export function BeforeAfterBlock({
   subtitle,
   items,
   maxItems = 6,
-  layout = 'slider',
+  // Side by side, not a wipe. Hair changes the silhouette, so a slider shows
+  // two photographs fighting over one frame and never both states at once —
+  // the one thing somebody judging a colourist came to see. The slider is still
+  // available for verticals where the frame really is identical either side
+  // (a repainted wall, a cleaned driveway), but it is now opt-in: every caller
+  // that forgets to pass a layout was silently getting the wrong one.
+  layout = 'sideBySide',
 }: BeforeAfterBlockProps) {
   // Hook before any early return — see c53ae74.
   const reveal = useReveal();

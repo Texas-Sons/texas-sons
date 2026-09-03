@@ -195,7 +195,10 @@ export function ClientApp() {
             { kind: 'navbar', props: navProps },
                       {
             kind: 'beforeAfter',
-            props: { title: 'Transformations', subtitle: 'Drag any image to reveal the change.' },
+            // Subtitle said "Drag any image to reveal the change" while the
+            // block rendered side by side — instructions for a control that was
+            // not on the page.
+            props: { title: 'Transformations', subtitle: 'Before and after, side by side.' },
           },
                       {
             kind: 'gallery',
