@@ -52,6 +52,10 @@ export function SiteRenderer({
 }: SiteRendererProps) {
   if (!project?.profile) return null;
 
+  // One definition of "is this a campaign", shared with ClientApp and the
+  // Studio. Always use this rather than inspecting colours or copy in a block.
+  // The seventh definition was a hardcoded gold hex in TestimonialsBlock that
+  // treated any client on the default accent as a campaign — see there.
   const isCampaign =
     project.profile.category === 'Campaign & Leadership' ||
     project.theme === 'campaign-navy' ||
@@ -66,6 +70,8 @@ export function SiteRenderer({
   const officeTitle = project.profile.name?.toLowerCase().includes('judge')
     ? 'Atascosa County Judge'
     : undefined;
+
+  const isJudicial = isCampaign && project.theme === 'campaign-judicial';
 
   const sections = sectionsOverride || resolveSections(project.sections, {
     category: project.profile.category,
@@ -237,6 +243,8 @@ export function SiteRenderer({
             accentColor={accentColor}
             title={p.title}
             subtitle={p.subtitle}
+            isCampaign={isCampaign}
+            isJudicial={isJudicial}
           />
         );
 

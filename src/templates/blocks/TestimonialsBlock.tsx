@@ -18,6 +18,27 @@ interface TestimonialsBlockProps {
   testimonials: TestimonialItem[];
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   accentColor?: string;
+  /**
+   * Whether the site is a political campaign.
+   *
+   * The block used to decide this for itself: theme names, a hardcoded gold
+   * hex, or the words "endorse"/"judicial" in the title. The gold was Texas
+   * Sons' own default accent, so any client left on the default got
+   * "Judicial Bench Endorsement" and "Law Enforcement Coalition" badges
+   * asserted over her real customers' reviews, and a salon whose title
+   * mentioned "endorsements" looked like a candidate.
+   *
+   * The one definition of "is this a campaign" lives in lib/siteKind.ts, and
+   * the renderers that know the category pass it here. Optional so a caller
+   * that does not know (or is not a real site) gets the plain review layout.
+   */
+  isCampaign?: boolean;
+  /**
+   * Whether the campaign is judicial. Only meaningful when isCampaign is true;
+   * a non-campaign site never shows judicial badges regardless of palette or
+   * title.
+   */
+  isJudicial?: boolean;
 }
 
 const containerVariants = {
@@ -43,7 +64,9 @@ export function TestimonialsBlock({
   subtitle = 'Real reviews and endorsements from verified members in our community.',
   testimonials,
   theme = 'dark',
-  accentColor
+  accentColor,
+  isCampaign = false,
+  isJudicial = false,
 }: TestimonialsBlockProps) {
   // A new client has no reviews yet, and this section used to render its
   // heading over an empty grid regardless — promising "Verified reviews from
@@ -54,9 +77,6 @@ export function TestimonialsBlock({
   // Safe as an early return: this component uses no hooks. If that ever changes,
   // the guard moves below them — see eslint.config.js, rules-of-hooks.
   if (!testimonials || testimonials.length === 0) return null;
-
-  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('endorse') || title.toLowerCase().includes('judicial');
-  const isJudicial = theme === 'campaign-judicial' || title.toLowerCase().includes('judicial') || (accentColor === '#29374f' || accentColor === '#0a1f44');
 
   const getJudicialBadgeInfo = (t: TestimonialItem, idx: number) => {
     const text = `${t.quote} ${t.role || ''} ${t.author}`.toLowerCase();
@@ -240,4 +260,3 @@ export function TestimonialsBlock({
     </section>
   );
 }
-
