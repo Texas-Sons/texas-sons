@@ -214,7 +214,9 @@ export function ClientApp() {
             { kind: 'navbar', props: navProps },
                       {
             kind: 'services',
-            props: { title: 'Services & Pricing', subtitle: 'Everything we offer, with no hidden costs.' },
+            // No featuredOnly here: this IS the menu. Every service, with the
+            // category filter, which is the whole reason the page exists.
+            props: { title: 'The Menu', subtitle: 'Everything we offer, with no hidden costs.' },
           },
                       {
             kind: 'products',

@@ -15,6 +15,7 @@ import { WriteInGuideBlock } from './blocks/WriteInGuideBlock';
 import { SquareBookingBlock } from './blocks/SquareBookingBlock';
 import { resolveSections, SiteSection } from './sections';
 import { BookingFab } from './blocks/BookingFab';
+import { isCampaignSite, isWriteInCampaign } from '../../lib/siteKind';
 
 /**
  * The single renderer for a client site.
@@ -54,18 +55,14 @@ export function SiteRenderer({
 
   // One definition of "is this a campaign", shared with ClientApp and the
   // Studio. Always use this rather than inspecting colours or copy in a block.
-  // The seventh definition was a hardcoded gold hex in TestimonialsBlock that
-  // treated any client on the default accent as a campaign — see there.
-  const isCampaign =
-    project.profile.category === 'Campaign & Leadership' ||
-    project.theme === 'campaign-navy' ||
-    project.theme === 'campaign-judicial';
-
-  const isWriteIn = !!isCampaign && (
-    (project.proofBadgeText && project.proofBadgeText.toLowerCase().includes('write-in')) ||
-    project.badges?.some((b: string) => b.toLowerCase().includes('write-in')) ||
-    project.profile.name?.toLowerCase().includes('waylon')
-  );
+  //
+  // Imported, not reimplemented. A copy of this expression here was the eighth
+  // in the codebase, and it carried the fault lib/siteKind exists to fix: an OR
+  // on theme, so a salon left on the campaign palette read as a campaign and
+  // had its service menu replaced by three pillars. The comment above it said
+  // it was the shared definition, which is how a ninth would have followed.
+  const isCampaign = isCampaignSite(project);
+  const isWriteIn = isWriteInCampaign(project);
 
   const officeTitle = project.profile.name?.toLowerCase().includes('judge')
     ? 'Atascosa County Judge'
@@ -192,6 +189,9 @@ export function SiteRenderer({
             // scrolling a visitor who had already picked a service down to a
             // generic form. Services with their own bookingUrl override this.
             ctaHref={primaryCtaHref}
+            isCampaign={isCampaign}
+            featuredOnly={p.featuredOnly}
+            viewAllHref={p.viewAllHref}
           />
         );
 

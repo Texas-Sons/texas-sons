@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useReveal, revealBlock } from './motion';
@@ -12,6 +12,26 @@ interface ServicesBlockProps {
   accentColor?: string;
   ctaText?: string;
   ctaHref?: string;
+  /**
+   * Whether this is a political campaign, decided once in SiteRenderer from
+   * lib/siteKind rather than sniffed here.
+   *
+   * This block used to work it out from the accent colour — `accentColor ===
+   * '#C5A059'` — which is the studio's own default gold. So any client who had
+   * not changed their accent got a "Campaign Platform & Priorities" heading
+   * over their service menu. That was the ninth copy of this guess in the
+   * codebase and the second to key on that hex.
+   */
+  isCampaign?: boolean;
+  /**
+   * Show only the highlighted services, with a link to the full menu beneath.
+   *
+   * Twenty services is a wall on a home page and a menu on a page of its own.
+   * The home page earns the visit; the menu answers "what does it cost".
+   */
+  featuredOnly?: boolean;
+  /** Where "View all services" goes. Only rendered when featuredOnly is set. */
+  viewAllHref?: string;
 }
 
 export function ServicesBlock({
@@ -21,9 +41,11 @@ export function ServicesBlock({
   theme = 'dark',
   accentColor,
   ctaText,
-  ctaHref = '#contact'
+  ctaHref = '#contact',
+  isCampaign = false,
+  featuredOnly = false,
+  viewAllHref
 }: ServicesBlockProps) {
-  const isCampaign = (theme === 'campaign-navy' || theme === 'campaign-judicial') || accentColor === '#C5A059' || title.toLowerCase().includes('platform') || title.toLowerCase().includes('issues');
   
   const displayTitle = isCampaign && title === 'Our Services' ? 'Campaign Platform & Priorities' : title;
   const displaySubtitle = isCampaign && subtitle === 'Professional, reliable, and tailored to your needs.' ? 'Our commitment to the community and our plan for the future.' : subtitle;
@@ -46,7 +68,38 @@ export function ServicesBlock({
            desc.includes('casting your ballot');
   };
 
-  const filteredServices = isCampaign ? (services || []).filter(s => !isVotingStep(s)) : (services || []);
+  const all = isCampaign ? (services || []).filter(s => !isVotingStep(s)) : (services || []);
+
+  /**
+   * The categories actually present, in the order they first appear.
+   *
+   * Derived rather than configured: a category list kept separately from the
+   * services drifts, and an empty "Extensions" tab on a salon that stopped
+   * doing extensions is worse than no tabs at all.
+   */
+  const categories = useMemo(() => {
+    const seen: string[] = [];
+    for (const s of all) {
+      const c = (s.category || '').trim();
+      if (c && !seen.includes(c)) seen.push(c);
+    }
+    return seen;
+  }, [all]);
+
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+
+  // One category is not a filter, it is a label. Pills appear at two or more.
+  const showFilters = !featuredOnly && categories.length > 1;
+
+  const featured = all.filter(s => s.highlight);
+
+  const shown = featuredOnly
+    // Fall back to the first three when nothing is marked featured, so the home
+    // page is never empty just because no one ticked a box.
+    ? (featured.length ? featured : all.slice(0, 3))
+    : showFilters && activeCategory !== 'All'
+      ? all.filter(s => (s.category || '').trim() === activeCategory)
+      : all;
 
   const reveal = useReveal();
 
@@ -72,13 +125,44 @@ export function ServicesBlock({
           </p>
         </motion.div>
 
+        {/* Category filter. Rendered only where there is something to filter —
+            see showFilters. Pills rather than a select: six options a thumb can
+            hit beat a dropdown that hides five of them. */}
+        {showFilters && (
+          <div
+            className="flex flex-wrap justify-center gap-2 mb-10 sm:mb-12"
+            role="tablist"
+            aria-label="Filter services by category"
+          >
+            {['All', ...categories].map(cat => {
+              const active = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 border ${
+                    active
+                      ? 'bg-[color:var(--ts-text)] text-[color:var(--ts-bg)] border-[color:var(--ts-text)]'
+                      : 'bg-transparent text-[color:var(--ts-muted)] border-[color:var(--ts-border)] hover:border-[color:var(--ts-text)] hover:text-[color:var(--ts-text)]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Services Grid */}
         <motion.div
           className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6"
           variants={reveal.group}
           {...reveal.props}
         >
-          {filteredServices.map((service, idx) => (
+          {shown.map((service, idx) => (
             <motion.div
               key={idx}
               variants={reveal.item}
@@ -108,8 +192,16 @@ export function ServicesBlock({
 
               {/* Action Button */}
               <div className="pt-4 border-t border-[color:var(--ts-border)] flex items-center justify-between">
-                <span className="text-xs font-medium text-[color:var(--ts-muted)]">
-                  {service.duration || (isCampaign ? 'Core Pillar' : 'Standard')}
+                <span className="text-xs font-medium text-[color:var(--ts-muted)] flex items-center gap-2 min-w-0">
+                  <span className="truncate">{service.duration || (isCampaign ? 'Core Pillar' : 'Standard')}</span>
+                  {/* Shown only on the featured strip, where there are no pills
+                      to say which group a service belongs to. On the full menu
+                      the active pill already says it. */}
+                  {featuredOnly && service.category && (
+                    <span className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-semibold border border-[color:var(--ts-border)] text-[color:var(--ts-muted)] whitespace-nowrap">
+                      {service.category}
+                    </span>
+                  )}
                 </span>
                 {(() => {
                   // Straight to this service where we have a link for it. A
@@ -135,6 +227,21 @@ export function ServicesBlock({
             </motion.div>
           ))}
         </motion.div>
+
+        {/* The way to the full menu. Only on the featured strip — on the menu
+            itself there is nowhere further to go, and a button that returns you
+            to the page you are on is noise. */}
+        {featuredOnly && viewAllHref && all.length > shown.length && (
+          <div className="mt-10 sm:mt-12 flex justify-center">
+            <a
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold border border-[color:var(--ts-text)] text-[color:var(--ts-text)] hover:bg-[color:var(--ts-text)] hover:text-[color:var(--ts-bg)] transition-colors duration-200"
+            >
+              <span>View all {all.length} services</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        )}
 
       </div>
     </section>

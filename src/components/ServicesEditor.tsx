@@ -25,6 +25,8 @@ export interface EditableService {
   description?: string;
   price?: string;
   duration?: string;
+  /** Groups this on the menu — "Color", "Cut & Style". Free text. */
+  category?: string;
   bookingUrl?: string;
   highlight?: boolean;
 }
@@ -94,8 +96,23 @@ export function ServicesEditor({ services, onChange, fallbackBookingUrl }: Servi
   const field =
     'w-full px-3 py-2 rounded-lg bg-stone-950 border border-stone-800 text-sm text-stone-100 placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50';
 
+  /**
+   * Categories already in use, offered as autocomplete.
+   *
+   * The filter groups by exact string, so "Color" and "color" render as two
+   * separate tabs. Suggesting what is already there makes the consistent
+   * spelling the easiest one to type, which is a better guard than validation
+   * that rejects what someone just typed.
+   */
+  const usedCategories = Array.from(
+    new Set(services.map(s => (s.category || '').trim()).filter(Boolean))
+  ).sort();
+
   return (
     <div className="space-y-3">
+      <datalist id="ts-service-categories">
+        {usedCategories.map(c => <option key={c} value={c} />)}
+      </datalist>
       {services.length === 0 && (
         <p className="text-xs text-stone-500">
           No services yet. These are the prices customers act on, so they are worth getting exactly
@@ -150,11 +167,25 @@ export function ServicesEditor({ services, onChange, fallbackBookingUrl }: Servi
             </button>
           </div>
 
-          <div className="grid grid-cols-[1fr_7rem] gap-2">
+          <div className="grid grid-cols-[1fr_7rem_7rem] gap-2">
             <input
               value={service.description || ''}
               onChange={e => update(i, { description: e.target.value })}
               placeholder="What it includes"
+              className={field}
+            />
+            {/* Free text, and deliberately not a dropdown. The groups that
+                matter to a salon are not the ones that matter to a barbershop,
+                and a fixed list makes every new vertical a code change. Filter
+                pills appear on the site once two services disagree about this;
+                one category is a label, not a filter.
+                Typing it the same way twice is the only rule — "Color" and
+                "color" are two tabs. */}
+            <input
+              value={service.category || ''}
+              onChange={e => update(i, { category: e.target.value })}
+              placeholder="Color"
+              list="ts-service-categories"
               className={field}
             />
             {/* Its own field. It was in the type and had no input, so the only

@@ -61,6 +61,30 @@ export function NavbarBlock({
   let primaryName = businessName;
   let subBadgeText = '';
 
+  /**
+   * The stacked wordmark: a large first word over the rest in letterspaced
+   * caps. "Opalescent" over "COLOR STUDIO".
+   *
+   * Derived rather than configured. It could be two profile fields, but that is
+   * two more boxes to fill on every client for a result the name already
+   * contains, and a blank one would silently flatten the mark back.
+   *
+   * Held back where it would read badly: a single-word name has nothing to
+   * stack, and an opening article gives "THE" over "SALON", which is worse than
+   * not splitting at all. Long trailing halves are left alone too — past about
+   * twenty characters the sub-line wraps and stops looking like a wordmark.
+   */
+  const wordmark = (() => {
+    if (isCampaign) return null;
+    const words = businessName.trim().split(/\s+/);
+    if (words.length < 2) return null;
+    const [first, ...rest] = words;
+    if (first.length < 4) return null;
+    const tail = rest.join(' ');
+    if (tail.length > 20) return null;
+    return { first, tail };
+  })();
+
   if (isCampaign) {
     if (businessName.toLowerCase().includes(' for ')) {
       const parts = businessName.split(/ for /i);
@@ -111,12 +135,24 @@ export function NavbarBlock({
               )}
             </div>
           )}
-          <div className="flex flex-col min-w-0">
-            <span className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity truncate text-[color:var(--ts-text)] ${
-              isCampaign ? 'font-serif' : ''
-            }`}>
-              {primaryName}
+          <div className="flex flex-col min-w-0 leading-none">
+            <span
+              className={`font-bold text-base sm:text-lg tracking-tight group-hover:opacity-90 transition-opacity truncate text-[color:var(--ts-text)] ${
+                isCampaign ? 'font-serif' : ''
+              }`}
+              style={
+                // The heading face, not the body one. A wordmark set in the body
+                // font is the difference between a business name and a logo.
+                wordmark ? { fontFamily: 'var(--ts-font-heading, inherit)', fontWeight: 500 } : undefined
+              }
+            >
+              {wordmark ? wordmark.first : primaryName}
             </span>
+            {wordmark && (
+              <span className="mt-0.5 text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-[color:var(--ts-muted)] truncate">
+                {wordmark.tail}
+              </span>
+            )}
             {isCampaign && subBadgeText && (
               <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--ts-accent)] group-hover:opacity-90 truncate">
                 <span className="hidden sm:inline">{subBadgeText}</span>

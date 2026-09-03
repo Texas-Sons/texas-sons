@@ -9,6 +9,18 @@ export interface ServiceItem {
   description: string;
   price?: string;
   duration?: string;
+  /**
+   * Groups this service on the menu — "Color", "Cut & Style", "Extensions".
+   *
+   * Free text rather than a fixed list, because the categories that matter to a
+   * salon are not the ones that matter to a barbershop or a med spa, and a
+   * closed enum would make every new vertical a code change.
+   *
+   * The menu shows filter pills only when at least two distinct categories are
+   * present. A salon with twenty services and no categories is a wall of
+   * twenty cards; the same twenty under six headings is a menu.
+   */
+  category?: string;
   icon?: string;
   highlight?: boolean;
   /**
@@ -127,7 +139,7 @@ export interface BusinessProfile {
   category?: string;
   primaryColor?: string;
   accentColor?: string;
-  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe';
+  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe' | 'atelier';
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   treasurerName?: string;
   faviconUrl?: string;

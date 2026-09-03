@@ -183,7 +183,7 @@ function beautyArchetype(): SiteSection[] {
         ctaText: 'Book Appointment',
         navItems: [
           { label: 'Portfolio', href: '#portfolio' },
-          { label: 'Services', href: '#services-page' },
+          { label: 'Menu', href: '#services-page' },
           { label: 'Shop', href: '#products' },
           { label: 'Visit', href: '#contact' },
         ],
@@ -202,7 +202,16 @@ function beautyArchetype(): SiteSection[] {
     },
     {
       kind: 'services',
-      props: { title: 'Services & Pricing', subtitle: 'Everything we offer, with no hidden costs.' },
+      props: {
+        title: 'Signature Services',
+        subtitle: 'A few of the things we are known for.',
+        // A salon can carry twenty treatments. Twenty cards is a wall on a home
+        // page, so the home page shows what she is known for and sends the rest
+        // to a menu of its own — where prices belong and where somebody who has
+        // already decided to book goes looking.
+        featuredOnly: true,
+        viewAllHref: '#services-page',
+      },
     },
     {
       kind: 'gallery',

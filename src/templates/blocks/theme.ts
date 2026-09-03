@@ -62,6 +62,18 @@ const FONTS: Record<string, { heading: string; body: string }> = {
     heading: "'Playfair Display', ui-serif, Georgia, serif",
     body: "'Montserrat', ui-sans-serif, system-ui, sans-serif",
   },
+  // Lighter and more open than luxe. Cormorant has less stroke contrast than
+  // Playfair and a taller, narrower bowl, so it reads as quiet rather than
+  // decorative at large sizes — which is most of what separates "elegant" from
+  // "fancy" on a salon page. Outfit underneath is geometric and nearly
+  // invisible, which is the job of a body face here.
+  //
+  // Added rather than replacing luxe: other sites are already using that
+  // pairing and changing it under them is not an improvement they asked for.
+  atelier: {
+    heading: "'Cormorant Garamond', ui-serif, Georgia, serif",
+    body: "'Outfit', ui-sans-serif, system-ui, sans-serif",
+  },
 };
 
 const LIGHT_ACCENTS = ['#C5A059', '#fbbf24', '#facc15', '#eab308', '#d97706', '#f59e0b'];
