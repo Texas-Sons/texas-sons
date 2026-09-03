@@ -91,7 +91,19 @@ export function ClientApp() {
 
   const isCampaign = isCampaignSite(project);
   const isWriteIn = isWriteInCampaign(project);
-  const themeVars = buildThemeVars(project.profile) as React.CSSProperties;
+  // The theme is stored twice — `project.theme` and `project.profile.theme` —
+  // and this read only ever saw the second. They agreed for as long as everyone
+  // set both, and the day they disagreed the deployed site rendered the profile
+  // copy: a blueprint switched to a cream ground kept publishing on near-black,
+  // and nothing in the Studio could show why, because the Studio reads the
+  // other one.
+  //
+  // The snapshot's own theme wins. It is what the theme picker writes and what
+  // lib/siteKind reads; profile.theme is the older duplicate.
+  const themeVars = buildThemeVars({
+    ...project.profile,
+    theme: project.theme ?? project.profile.theme,
+  }) as React.CSSProperties;
 
   const handleLeadSubmit = async (data: any) => {
     // The Studio's true preview renders this exact page from the same builder

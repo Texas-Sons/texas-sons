@@ -1998,7 +1998,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             {activeTab === 'preview' && (
               <div 
                 data-ts-site=""
-                style={buildThemeVars({ theme: project.theme, ...project.profile }) as React.CSSProperties}
+                style={buildThemeVars({ ...project.profile, theme: project.theme ?? project.profile.theme }) as React.CSSProperties}
                 className={`transition-all duration-300 rounded-2xl shadow-2xl border border-stone-800/80 overflow-hidden flex flex-col ${getThemeBackgroundClass()} ${
                   device === 'desktop' ? 'w-full max-w-full' : device === 'tablet' ? 'w-[768px]' : 'w-[375px]'
                 }`}
@@ -2091,7 +2091,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 <PreviewFrame
                   title="Live site preview"
                   className="w-full flex-1 min-h-[600px] border-0 bg-[color:var(--ts-bg)]"
-                  bodyStyle={buildThemeVars({ theme: project.theme, ...project.profile }) as React.CSSProperties}
+                  bodyStyle={buildThemeVars({ ...project.profile, theme: project.theme ?? project.profile.theme }) as React.CSSProperties}
                   bodyClassName="divide-y divide-transparent overflow-x-hidden"
                 >
                   <SiteRenderer

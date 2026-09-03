@@ -16,6 +16,8 @@
  *    of what makes a palette read as defaulted rather than chosen.
  */
 
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { buildThemeVars } from '../src/templates/blocks/theme';
 
 let failures = 0;
@@ -135,6 +137,34 @@ for (const theme of ['campaign-navy', 'campaign-judicial', 'luxury', 'dark', 'cr
 
 check('campaign-navy still renders on navy',
   buildThemeVars({ theme: 'campaign-navy' } as any)['--ts-bg'], '#00081e');
+
+// --- 5. the snapshot's theme beats the profile's stale duplicate -------------
+// The theme is stored twice, at blueprint.theme and blueprint.profile.theme.
+// They agree for as long as everyone remembers to set both. The day they
+// disagreed, the deployed site rendered the profile copy and a cream blueprint
+// published on near-black, with nothing in the Studio able to explain it —
+// because the Studio reads the other one.
+
+{
+  const clientApp = readFileSync(join(process.cwd(), 'src', 'ClientApp.tsx'), 'utf8');
+  const call = clientApp.match(/buildThemeVars\(([\s\S]{0,220}?)\)\s*as React\.CSSProperties/);
+  if (!call) {
+    fail('could not find the buildThemeVars call in ClientApp.tsx');
+  } else if (!/theme:\s*project\.theme/.test(call[1])) {
+    fail(
+      'ClientApp renders the deployed site without passing project.theme. It '
+      + 'falls back to profile.theme, a stale duplicate, so a light theme '
+      + 'silently publishes dark.'
+    );
+  }
+
+  const studio = readFileSync(
+    join(process.cwd(), 'src', 'components', 'AgentBuilder', 'AgentBuilderStudio.tsx'), 'utf8');
+  // Spread order is the whole point: {theme, ...profile} lets the duplicate win.
+  if (/buildThemeVars\(\{\s*theme:\s*project\.theme,\s*\.\.\.project\.profile\s*\}/.test(studio)) {
+    fail('AgentBuilderStudio spreads project.profile after theme, so profile.theme overrides it');
+  }
+}
 
 if (failures) {
   console.error(`\n  smoke-theme: ${failures} failed\n`);
