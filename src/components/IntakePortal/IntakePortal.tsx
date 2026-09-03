@@ -21,9 +21,14 @@ export default function IntakePortal() {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [socialLinks, setSocialLinks] = useState('');
+  // Replaces the single "socialLinks" free‑text box with three real fields.
+  // A client pastes a full URL or a bare handle; rejecting either is worse than
+  // storing what they typed.
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [giftCardUrl, setGiftCardUrl] = useState('');
+  const [bookingUrl, setBookingUrl] = useState('');
   const [notes, setNotes] = useState('');
-  const [services, setServices] = useState([{ title: '', description: '', price: '' }]);
+  const [services, setServices] = useState([{ title: '', description: '', price: '', bookingUrl: '' }]);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -77,7 +82,9 @@ export default function IntakePortal() {
         address,
         phone,
         email,
-        socialLinks,
+        instagramUrl,
+        giftCardUrl,
+        bookingUrl,
         notes,
         services: services.filter(s => s.title || s.description)
       };
@@ -228,15 +235,33 @@ export default function IntakePortal() {
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-300 mb-1">Social Media Links</label>
-                <input type="text" value={socialLinks} onChange={e => setSocialLinks(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="Facebook, Instagram, etc." />
+                <label className="block text-sm font-medium text-stone-300 mb-1">Instagram Profile</label>
+                <input type="text" value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://instagram.com/yourbusiness" />
+              </div>
+            </div>
+          </div>
+
+          {/* Links Section */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">4. Booking & Links</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-stone-300 mb-1">Booking URL</label>
+                <p className="text-xs text-stone-500 mb-2">Where clients book appointments (Square, Vagaro, Calendly…).</p>
+                <input type="text" value={bookingUrl} onChange={e => setBookingUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/appointments/book/..." />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-stone-300 mb-1">Gift Card Link</label>
+                <p className="text-xs text-stone-500 mb-2">Where clients buy gift cards.</p>
+                <input type="text" value={giftCardUrl} onChange={e => setGiftCardUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/gift/.../order" />
               </div>
             </div>
           </div>
 
           {/* Services Section */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">4. Top Services</h2>
+            <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">5. Top Services</h2>
             <p className="text-sm text-stone-400">List 1-3 core services you want highlighted.</p>
             
             {services.map((s, idx) => (
@@ -258,16 +283,22 @@ export default function IntakePortal() {
                   <label className="block text-xs text-stone-400 mb-1">Description</label>
                   <textarea value={s.description} onChange={e => { const newS = [...services]; newS[idx].description = e.target.value; setServices(newS); }} rows={2} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none"></textarea>
                 </div>
+                {/* Per-service booking link — a visitor who has chosen balayage should
+                    land on balayage, not on a menu to choose it again. */}
+                <div className="mt-3">
+                  <label className="block text-xs text-stone-400 mb-1">Booking link for this service (optional)</label>
+                  <input type="text" value={s.bookingUrl || ''} onChange={e => { const newS = [...services]; newS[idx].bookingUrl = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/appointments/book/.../service-id" />
+                </div>
               </div>
             ))}
-            <button type="button" onClick={() => setServices([...services, { title: '', description: '', price: '' }])} className="flex items-center text-sm text-[#C5A059] hover:text-[#d4b06a]">
+            <button type="button" onClick={() => setServices([...services, { title: '', description: '', price: '', bookingUrl: '' }])} className="flex items-center text-sm text-[#C5A059] hover:text-[#d4b06a]">
               <Plus className="w-4 h-4 mr-1" /> Add Service
             </button>
           </div>
           
           {/* Notes Section */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">5. Additional Notes</h2>
+            <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">6. Additional Notes</h2>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="Anything else we should know?"></textarea>
           </div>
 

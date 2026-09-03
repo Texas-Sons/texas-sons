@@ -85,6 +85,10 @@ export interface ClientIntake {
   galleryImages?: string[];
   /** External booking system (Square, Vagaro, Calendly…) if they already use one. */
   bookingUrl?: string;
+  /** Public profile. Rendered in the gallery, the menu and the footer. */
+  instagramUrl?: string;
+  /** Where gift cards are bought — Square's own page, usually. */
+  giftCardUrl?: string;
   logoUrl?: string;
   badges?: string[];
   proofBadgeText?: string;
@@ -94,6 +98,13 @@ export interface ClientIntake {
     price?: string;
     duration?: string;
     highlight?: boolean;
+    /**
+     * Deep link for this one service.
+     *
+     * A visitor who has decided on balayage should land on balayage, not on a
+     * booking page listing nine treatments where they have to find it again.
+     */
+    bookingUrl?: string;
   }>;
   testimonials?: Array<{
     quote: string;

@@ -352,13 +352,34 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     }
   };
 
-  const handleApplyFromScanner = (dossier: Partial<ClientIntake>, primaryImageUrl?: string) => {
+  /**
+   * Applies what the photo scanner extracted.
+   *
+   * `allImages` is third because PhotoScannerModal has always passed three
+   * arguments (PhotoScannerModal.tsx:245) while this declared two — so every
+   * photo the scanner found beyond the hero was discarded at this boundary,
+   * silently, since the scanner shipped. The same fault as photos[0] in the
+   * submission merge above, in a second place.
+   *
+   * Still optional: handleScanWebsite calls this with one argument.
+   */
+  const handleApplyFromScanner = (
+    dossier: Partial<ClientIntake>,
+    primaryImageUrl?: string,
+    allImages?: string[]
+  ) => {
     setEditingClient(null);
-    setForm(prev => ({
-      ...prev,
-      ...dossier,
-      heroImage: primaryImageUrl || dossier.heroImage || prev.heroImage
-    }));
+    const hero = primaryImageUrl || dossier.heroImage;
+    setForm(prev => {
+      const existing = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+      const found = (allImages || []).filter(u => typeof u === 'string' && u && u !== hero);
+      return {
+        ...prev,
+        ...dossier,
+        heroImage: hero || prev.heroImage,
+        galleryImages: [...existing, ...found.filter(u => !existing.includes(u))],
+      };
+    });
     setIsScannerOpen(false);
     setIsNewModalOpen(true);
   };
@@ -1666,11 +1687,30 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                             address: reviewSubmission.payload.address || shareModalClient.address,
                             logoUrl: reviewSubmission.payload.logoBase64 || shareModalClient.logoUrl,
                             notes: (shareModalClient.notes ? shareModalClient.notes + '\n' : '') + (reviewSubmission.payload.notes || ''),
-                            services: reviewSubmission.payload.services?.length ? reviewSubmission.payload.services : shareModalClient.services
+                            services: reviewSubmission.payload.services?.length ? reviewSubmission.payload.services : shareModalClient.services,
+                            // The links the site actually renders. The intake form used to
+                            // ask for "Facebook, Instagram, etc." as one free-text box that
+                            // nothing ever read, which is why these were retyped by hand for
+                            // every client. Collected and unread is worth nothing — this
+                            // list is what makes them real, and anything added to the form
+                            // and not to this list repeats exactly the same bug.
+                            instagramUrl: reviewSubmission.payload.instagramUrl || shareModalClient.instagramUrl,
+                            giftCardUrl: reviewSubmission.payload.giftCardUrl || shareModalClient.giftCardUrl,
+                            bookingUrl: reviewSubmission.payload.bookingUrl || shareModalClient.bookingUrl
                           };
                           
-                          if (reviewSubmission.payload.photos && reviewSubmission.payload.photos.length > 0) {
-                             updated.heroImage = reviewSubmission.payload.photos[0];
+                          // Her photographs. The first leads the hero; the rest used to be
+                          // dropped right here, so a client who uploaded eight got one on
+                          // her site and no sign the other seven had gone anywhere.
+                          const submitted: string[] = Array.isArray(reviewSubmission.payload.photos)
+                            ? reviewSubmission.payload.photos.filter((u: unknown): u is string => typeof u === 'string' && u.length > 0)
+                            : [];
+                          if (submitted.length > 0) {
+                            updated.heroImage = submitted[0];
+                            // Excluding the hero is deliberate: it already leads the page,
+                            // and repeating it as the first gallery tile reads as a mistake.
+                            const existing = Array.isArray(shareModalClient.galleryImages) ? shareModalClient.galleryImages : [];
+                            updated.galleryImages = [...existing, ...submitted.slice(1).filter(u => !existing.includes(u))];
                           }
                           
                           try {
