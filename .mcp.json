@@ -1,37 +1,44 @@
 {
   "$comment": [
-    "MCP servers for this repo. Committed deliberately — it contains no secrets.",
+    "Project-scoped MCP servers. Committed, so it must never contain a secret.",
     "",
-    "The Supabase token is read from the SUPABASE_ACCESS_TOKEN environment",
-    "variable rather than written here. A personal access token is account-wide",
-    "across every Supabase project you own, so it must never sit in a tracked",
-    "file: current_token.txt is already in this repository's history for exactly",
-    "that reason.",
+    "IT IS EMPTY ON PURPOSE. An earlier version declared the Supabase server here",
+    "with \"SUPABASE_ACCESS_TOKEN\": \"${SUPABASE_ACCESS_TOKEN}\", which never",
+    "worked: Claude Code expands ${VAR} from the PROCESS environment, and that",
+    "token lives in .env.local, which only dotenv reads inside our own Node",
+    "scripts. Claude Code never opens that file. So `npm run migrate` worked and",
+    "the MCP server silently did not.",
     "",
-    "--project-ref pins the server to the Texas Sons database. The token can",
-    "still reach your other projects; this narrows what the tools will touch.",
+    "Both servers now live in user scope (~/.claude.json), which keeps the tokens",
+    "out of this repository entirely. Set them up once, per machine:",
     "",
-    "Windows needs `cmd /c` in front of npx for stdio MCP servers.",
+    "  SUPABASE — run migrations and query the database in conversation.",
+    "  Token: supabase.com > Account > Access Tokens.",
+    "  claude mcp add supabase --scope user \\",
+    "    --env SUPABASE_ACCESS_TOKEN=sbp_xxx -- \\",
+    "    cmd /c npx -y @supabase/mcp-server-supabase@latest \\",
+    "    --project-ref=trrgppbjjuklcjyagdva",
     "",
-    "Cloudflare is deliberately absent. CLOUDFLARE_API_TOKEN and",
+    "  STITCH — generate UI designs and read them back as HTML and screenshots.",
+    "  Key: stitch.withgoogle.com > profile picture > Stitch settings > API key.",
+    "  claude mcp add stitch --scope user \\",
+    "    --env STITCH_API_KEY=xxx -- \\",
+    "    cmd /c npx -y @_davideast/stitch-mcp proxy",
+    "",
+    "The `cmd /c` prefix is required on Windows; npx-based stdio servers fail to",
+    "spawn without it.",
+    "",
+    "Restart Claude Code after either, then run /mcp to see what connected.",
+    "",
+    "CLOUDFLARE is deliberately absent. CLOUDFLARE_API_TOKEN and",
     "CLOUDFLARE_ACCOUNT_ID are already in .env.local and already drive cfFetch in",
-    "server.ts, so `npm run cf` reaches Pages with no new credential and no",
-    "restart. Add the remote MCP server only if you want it in conversation:",
-    "  claude mcp add --transport sse cloudflare https://observability.mcp.cloudflare.com/sse"
+    "server.ts, so `npm run cf` reaches Pages with no new credential. Add the",
+    "hosted server only if you want it in conversation:",
+    "  claude mcp add --transport sse cloudflare https://observability.mcp.cloudflare.com/sse",
+    "",
+    "If a server ever does belong in this file — one every agent on the project",
+    "needs — it goes here WITHOUT credentials, and the operator supplies those",
+    "through their own environment."
   ],
-  "mcpServers": {
-    "supabase": {
-      "command": "cmd",
-      "args": [
-        "/c",
-        "npx",
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--project-ref=trrgppbjjuklcjyagdva"
-      ],
-      "env": {
-        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
-      }
-    }
-  }
+  "mcpServers": {}
 }
