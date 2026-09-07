@@ -6,6 +6,10 @@
   --font-texas: "Rye", serif;
   --font-cyber: "Oxanium", ui-sans-serif, system-ui, sans-serif;
   --font-slab: "Alfa Slab One", serif;
+  /* Brasada Studio. Scoped to the marketing page, not the app chrome:
+     changing --font-display would restyle every heading in the Studio too. */
+  --font-brasada: "Petrona", Georgia, "Times New Roman", serif;
+  --font-brasada-body: "Karla", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
