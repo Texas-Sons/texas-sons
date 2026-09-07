@@ -55,6 +55,10 @@ const SPECS: EnvSpec[] = [
   // production has no business holding a token that can rewrite the database.
   { name: 'SUPABASE_ACCESS_TOKEN', severity: 'optional', powers: 'npm run migrate and the Supabase MCP server',
     expect: v => !v.startsWith('eyJ') },
+  // Optional because an intake without it still works — it just arrives with no
+  // design directions to choose from, which is exactly how every intake worked
+  // before. A missing key must never block taking on a client.
+  { name: 'STITCH_API_KEY', severity: 'optional', powers: 'the two design directions offered on a new intake' },
 ];
 
 export interface EnvStatus {

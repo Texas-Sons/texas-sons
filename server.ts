@@ -14,6 +14,7 @@ import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/
 import { blake3 } from '@noble/hashes/blake3.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { requireAdmin, isPublicApiPath, isClientApiPath, type AuthedRequest } from './lib/auth';
+import { generateVariants, isStitchConfigured, type VariantBrief } from './lib/stitch';
 import { isAllowedClientOrigin } from './lib/clientOrigins';
 import {
   requireClientMember, requireClientOwner, requireClientSession, type ClientRequest,
@@ -2311,6 +2312,28 @@ ${prompt}`;
       if (error) throw error;
 
       console.log(`[intake] Submission received for "${intake.business_name}" (${Math.round(size / 1024)}KB)`);
+
+      // Start the design directions now, while the client is still on the thank
+      // you page. Built from the payload rather than the stored row because the
+      // submission is what they just told us; the row is only merged later, by
+      // hand. Fire and forget on purpose — see startVariantGeneration.
+      //
+      // Skipped when a set already exists. The operator normally generates
+      // directions from the intake screen long before the client fills anything
+      // in, and regenerating here would replace the pair they already chose
+      // from — silently, minutes later, from a request they did not make.
+      const alreadyHasDirections = Boolean((await readIntakeRow(intake.id))?.stitch_variants);
+      if (isStitchConfigured() && !alreadyHasDirections) {
+        startVariantGeneration(intake.id, {
+          businessName: intake.business_name || payload.businessName || 'A local business',
+          category: intake.category || payload.category || undefined,
+          tagline: payload.tagline || undefined,
+          description: payload.description || undefined,
+          address: payload.address || undefined,
+          services: Array.isArray(payload.services) ? payload.services : undefined,
+        });
+      }
+
       res.json({ success: true });
     } catch (error: any) {
       console.error('[intake] Submission error:', error);
@@ -2344,6 +2367,132 @@ ${prompt}`;
       res.json({ success: true, token, url: `${base}/intake/${token}` });
     } catch (error: any) {
       console.error('[intake] Link generation error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Stitch design directions
+  //
+  // Two generated directions per intake, offered as a choice the first time the
+  // Studio opens that project. Generation takes about a hundred seconds, which
+  // is why none of it sits on a critical path: it is kicked off when a client
+  // submits their intake, and simply read back later.
+  //
+  // Only three values are ever applied — ground, accent, font pairing. See
+  // lib/stitch.ts for why everything else Stitch returns stays advisory.
+  // -------------------------------------------------------------------------
+
+  const INTAKE_FIELDS = 'id, business_name, category, tagline, description, address, data, stitch_variants';
+
+  async function readIntakeRow(intakeId: string) {
+    const { data, error } = await getSupabaseAdmin()
+      .from('client_intakes').select(INTAKE_FIELDS).eq('id', intakeId).maybeSingle();
+    if (error) throw error;
+    return data as any;
+  }
+
+  async function writeVariants(intakeId: string, value: any) {
+    const { error } = await getSupabaseAdmin()
+      .from('client_intakes').update({ stitch_variants: value }).eq('id', intakeId);
+    if (error) throw error;
+  }
+
+  function briefFromRow(row: any): VariantBrief {
+    return {
+      businessName: row?.business_name || 'A local business',
+      category: row?.category || undefined,
+      tagline: row?.tagline || undefined,
+      description: row?.description || undefined,
+      address: row?.address || undefined,
+      services: Array.isArray(row?.data?.services) ? row.data.services : undefined,
+    };
+  }
+
+  /**
+   * Kick off generation without holding anything open.
+   *
+   * Deliberately not awaited. A client submitting their intake must not wait a
+   * hundred seconds for a design system, and must not see an error if Stitch is
+   * down — from their side the submission succeeded, because it did.
+   */
+  function startVariantGeneration(intakeId: string, brief: VariantBrief) {
+    void (async () => {
+      try {
+        await writeVariants(intakeId, { status: 'generating', startedAt: new Date().toISOString() });
+        const variants = await generateVariants(brief);
+        await writeVariants(intakeId, {
+          status: 'ready', generatedAt: new Date().toISOString(), chosen: null, variants,
+        });
+        console.log(`[stitch] ${variants.length} directions ready for "${brief.businessName}"`);
+      } catch (err: any) {
+        console.error(`[stitch] Generation failed for ${intakeId}:`, err?.message || err);
+        // Recorded rather than swallowed: a Studio showing "failed, try again"
+        // is honest, and a spinner that never resolves is not.
+        await writeVariants(intakeId, {
+          status: 'failed',
+          generatedAt: new Date().toISOString(),
+          error: String(err?.message || err).slice(0, 300),
+        }).catch(() => {});
+      }
+    })();
+  }
+
+  app.get("/api/stitch/variants/:intakeId", async (req, res) => {
+    try {
+      const row = await readIntakeRow(String(req.params.intakeId));
+      if (!row) return res.status(404).json({ success: false, error: "No such intake." });
+      res.json({
+        success: true,
+        configured: isStitchConfigured(),
+        variants: row.stitch_variants || null,
+      });
+    } catch (error: any) {
+      console.error('[stitch] Read error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  app.post("/api/stitch/variants/:intakeId", async (req, res) => {
+    try {
+      if (!isStitchConfigured()) {
+        return res.status(503).json({ success: false, error: "STITCH_API_KEY is not set on the server." });
+      }
+      const intakeId = String(req.params.intakeId);
+      const row = await readIntakeRow(intakeId);
+      if (!row) return res.status(404).json({ success: false, error: "No such intake." });
+
+      const current = row.stitch_variants;
+      if (current?.status === 'generating' && !req.body?.force) {
+        return res.status(409).json({ success: false, error: "Already generating.", variants: current });
+      }
+
+      startVariantGeneration(intakeId, briefFromRow(row));
+      // 202: accepted, not done. The Studio polls the GET above.
+      res.status(202).json({ success: true, status: 'generating' });
+    } catch (error: any) {
+      console.error('[stitch] Generate error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  app.post("/api/stitch/variants/:intakeId/choose", async (req, res) => {
+    try {
+      const index = Number(req.body?.index);
+      const row = await readIntakeRow(String(req.params.intakeId));
+      if (!row) return res.status(404).json({ success: false, error: "No such intake." });
+
+      const stored = row.stitch_variants;
+      const variant = stored?.variants?.[index];
+      if (!variant) return res.status(400).json({ success: false, error: "That direction does not exist." });
+
+      await writeVariants(String(req.params.intakeId), { ...stored, chosen: index });
+      // The seeds go back to the caller rather than being written into the
+      // intake here: which record they land on is the Studio's decision, and
+      // this route should not quietly rewrite a client's theme behind it.
+      res.json({ success: true, chosen: index, seeds: variant.seeds, name: variant.name });
+    } catch (error: any) {
+      console.error('[stitch] Choose error:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   });

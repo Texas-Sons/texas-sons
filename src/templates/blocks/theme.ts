@@ -76,6 +76,14 @@ const FONTS: Record<string, { heading: string; body: string }> = {
   },
 };
 
+/**
+ * The pairing keys a profile may name. Exported so anything choosing a pairing
+ * — the Stitch mapping, the Studio — picks from what actually exists rather
+ * than from a second, drifting list. A family not in FONTS is not loaded by
+ * index.html, so naming one silently falls back to sans.
+ */
+export const FONT_PAIRINGS = Object.keys(FONTS);
+
 const TEXAS_CRIMSON = '#bb0027';
 
 /** Ink used on light grounds and behind light accents. Warm, not slate. */
@@ -91,7 +99,7 @@ function toRgb(hex: string): [number, number, number] | null {
 }
 
 /** WCAG relative luminance. */
-function luminance(hex: string): number {
+export function luminance(hex: string): number {
   const rgb = toRgb(hex);
   if (!rgb) return 0;
   const [r, g, b] = rgb.map(v => {
@@ -101,7 +109,7 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-function contrast(a: string, b: string): number {
+export function contrast(a: string, b: string): number {
   const la = luminance(a);
   const lb = luminance(b);
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);

@@ -244,7 +244,10 @@ export default function App() {
         // salon built from an intake opened in another client's palette.
         // Undefined lets buildThemeVars pick from the theme.
         primaryColor: client.primaryColor || undefined,
-        accentColor: client.accentColor || undefined
+        accentColor: client.accentColor || undefined,
+        // Dropping this here would silently undo a chosen direction: the
+        // colours would survive into the Studio and the type would not.
+        fontFamily: client.fontFamily || undefined
       },
       // Empty, not filler. A single service called "Core Platform Solution" and
       // a testimonial from "Verified Partner" are not placeholders a client

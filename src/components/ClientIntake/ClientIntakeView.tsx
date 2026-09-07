@@ -40,6 +40,7 @@ import {
 import { ClientIntake, IntakeStatus, Tier } from '../../types';
 import PhotoScannerModal from '../PhotoScannerModal';
 import { listIntakes, saveIntake, removeIntake, cachedIntakes, recordEvent } from '../../store';
+import { StitchVariantModal, type StitchSeeds } from '../AgentBuilder/StitchVariantModal';
 import { listSubmissions, IntakeSubmission, markSubmissionReviewed } from '../../store/submissions';
 import { extractPaletteFromImage, ExtractedColorPalette } from '../../utils/colorExtractor';
 
@@ -312,8 +313,11 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     setIsNewModalOpen(true);
   };
 
-  const handleSaveClient = async (launchStudioAfter: boolean = false) => {
-    if (!form.businessName) return;
+  const handleSaveClient = async (
+    launchStudioAfter: boolean = false,
+    keepOpen: boolean = false,
+  ): Promise<ClientIntake | null> => {
+    if (!form.businessName) return null;
 
     let savedClient: ClientIntake;
 
@@ -342,13 +346,82 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
     } catch (err) {
       console.error('Failed to save client intake:', err);
       alert(err instanceof Error ? err.message : 'Could not save this client. Your changes are cached locally but not yet synced.');
-      return;
+      return null;
     }
 
-    setIsNewModalOpen(false);
+    if (!keepOpen) setIsNewModalOpen(false);
 
     if (launchStudioAfter) {
       onLaunchStudio(savedClient);
+    }
+    return savedClient;
+  };
+
+  /**
+   * Design directions, on demand.
+   *
+   * Triggered here rather than waiting on a client submission: the basics are
+   * enough to design against, and this is the point where the operator actually
+   * wants something to look at. The record has to be saved first — Stitch is
+   * driven server-side from the stored row, so an unsaved form has nothing to
+   * generate from and no id to store the result against.
+   */
+  const [stitchTarget, setStitchTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isGeneratingDirections, setIsGeneratingDirections] = useState(false);
+
+  const handleGenerateDirections = async () => {
+    setIsGeneratingDirections(true);
+    try {
+      const saved = await handleSaveClient(false, true);
+      if (!saved) return;
+      const res = await fetch(`/api/stitch/variants/${encodeURIComponent(saved.id)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ force: true }),
+      });
+      if (!res.ok && res.status !== 202) {
+        const json = await res.json().catch(() => ({}));
+        alert(json.error || 'Could not start generating design directions.');
+        return;
+      }
+      // The modal polls from here. Generation takes about two minutes, so it is
+      // safe to close and come back.
+      setStitchTarget({ id: saved.id, name: saved.businessName });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not reach the server.');
+    } finally {
+      setIsGeneratingDirections(false);
+    }
+  };
+
+  /**
+   * Applies a chosen direction to the intake record.
+   *
+   * Writes to the form and to the stored row together. If it only wrote to the
+   * form, closing the dialog without pressing save would throw the choice away
+   * after two minutes of waiting for it.
+   */
+  const handleApplyDirection = async (seeds: StitchSeeds, name: string) => {
+    const patch = {
+      theme: 'custom' as const,
+      primaryColor: seeds.primaryColor,
+      accentColor: seeds.accentColor,
+      fontFamily: seeds.fontFamily as ClientIntake['fontFamily'],
+    };
+    setForm(prev => ({ ...prev, ...patch }));
+
+    const id = stitchTarget?.id;
+    if (!id) return;
+    const current = cachedIntakes().find(c => c.id === id);
+    if (!current) return;
+    const updated: ClientIntake = { ...current, ...patch, updatedAt: new Date().toISOString() };
+    setClients(prev => prev.map(c => (c.id === id ? updated : c)));
+    try {
+      await saveIntake(updated);
+      console.log(`[stitch] Applied "${name}" to ${updated.businessName}`);
+    } catch (err) {
+      console.error('Could not save the chosen direction:', err);
+      alert('The direction was applied to the form but could not be saved. Press Save to retry.');
     }
   };
 
@@ -1465,6 +1538,16 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                 </button>
 
                 <button
+                  onClick={handleGenerateDirections}
+                  disabled={!form.businessName || isGeneratingDirections}
+                  title={form.businessName ? 'Save, then have Stitch draw two directions to choose from' : 'Enter a business name first'}
+                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-orange-600/90 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <Palette className="w-3.5 h-3.5" />
+                  <span>{isGeneratingDirections ? 'Starting…' : 'Save & Design Directions'}</span>
+                </button>
+
+                <button
                   onClick={() => handleSaveClient(true)}
                   className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-lg shadow-[#C5A059]/20"
                 >
@@ -1780,6 +1863,14 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onApplyDossier={handleApplyFromScanner}
+      />
+
+      <StitchVariantModal
+        isOpen={!!stitchTarget}
+        onClose={() => setStitchTarget(null)}
+        intakeId={stitchTarget?.id}
+        businessName={stitchTarget?.name || ''}
+        onApply={handleApplyDirection}
       />
 
     </div>

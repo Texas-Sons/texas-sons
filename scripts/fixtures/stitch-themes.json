@@ -1,0 +1,110 @@
+{
+  "terra-and-silk": {
+    "note": "From a live generate_screen_from_text run. overrideNeutralColor is the DARK ink here.",
+    "displayName": "Terra & Silk",
+    "theme": {
+      "colorMode": "LIGHT",
+      "customColor": "#c67b5c",
+      "overridePrimaryColor": "#c67b5c",
+      "overrideSecondaryColor": "#fdf9f3",
+      "overrideTertiaryColor": "#d4af37",
+      "overrideNeutralColor": "#2d241e",
+      "headlineFontFamily": "Playfair Display",
+      "bodyFontFamily": "Montserrat",
+      "labelFontFamily": "Montserrat",
+      "namedColors": {
+        "surface": "#fff8f5",
+        "on_surface": "#221a14"
+      }
+    }
+  },
+  "valdez-co-premium-studio": {
+    "note": "Read from a real Stitch project.",
+    "displayName": "Valdez & Co. Premium Studio",
+    "theme": {
+      "colorMode": "LIGHT",
+      "customColor": "#673ab7",
+      "overridePrimaryColor": "#673ab7",
+      "overrideSecondaryColor": "#ffd700",
+      "headlineFontFamily": "Plus Jakarta Sans",
+      "bodyFontFamily": "Plus Jakarta Sans",
+      "labelFontFamily": "Plus Jakarta Sans",
+      "namedColors": {
+        "surface": "#fef7ff",
+        "on_surface": "#1d1a22"
+      }
+    }
+  },
+  "bauhaus": {
+    "note": "Read from a real Stitch project.",
+    "displayName": "Bauhaus",
+    "theme": {
+      "colorMode": "LIGHT",
+      "customColor": "#1a1a1a",
+      "overridePrimaryColor": "#1a1a1a",
+      "overrideSecondaryColor": "#e63b2e",
+      "overrideTertiaryColor": "#0055ff",
+      "overrideNeutralColor": "#4a4a4a",
+      "namedColors": {
+        "surface": "#f5f0e8",
+        "on_surface": "#1a1a1a"
+      }
+    }
+  },
+  "valdez-co-professional-chibi": {
+    "note": "Read from a real Stitch project.",
+    "displayName": "Valdez & Co. Professional Chibi",
+    "theme": {
+      "colorMode": "LIGHT",
+      "customColor": "#673ab7",
+      "overridePrimaryColor": "#673ab7",
+      "overrideSecondaryColor": "#9c27b0",
+      "overrideTertiaryColor": "#ffc107",
+      "overrideNeutralColor": "#2d2a32",
+      "headlineFontFamily": "Plus Jakarta Sans",
+      "bodyFontFamily": "Plus Jakarta Sans",
+      "labelFontFamily": "Plus Jakarta Sans",
+      "namedColors": {
+        "surface": "#fef7ff",
+        "on_surface": "#1d1a22"
+      }
+    }
+  },
+  "lone-star-modernist": {
+    "note": "Read from a real Stitch project.",
+    "displayName": "Lone Star Modernist",
+    "theme": {
+      "colorMode": "LIGHT",
+      "customColor": "#bf5700",
+      "overridePrimaryColor": "#bf5700",
+      "overrideSecondaryColor": "#333f48",
+      "overrideNeutralColor": "#f2f2f2",
+      "headlineFontFamily": "Space Grotesk",
+      "bodyFontFamily": "Space Grotesk",
+      "labelFontFamily": "Space Grotesk",
+      "namedColors": {
+        "surface": "#f9f9f9",
+        "on_surface": "#1a1c1c"
+      }
+    }
+  },
+  "obsidian-forge": {
+    "note": "Read from a real Stitch project.",
+    "displayName": "Obsidian Forge",
+    "theme": {
+      "colorMode": "DARK",
+      "customColor": "#ef6c00",
+      "overridePrimaryColor": "#ef6c00",
+      "overrideSecondaryColor": "#263238",
+      "overrideTertiaryColor": "#37474f",
+      "overrideNeutralColor": "#121212",
+      "headlineFontFamily": "Space Grotesk",
+      "bodyFontFamily": "Hanken Grotesk",
+      "labelFontFamily": "Jetbrains Mono",
+      "namedColors": {
+        "surface": "#131313",
+        "on_surface": "#e5e2e1"
+      }
+    }
+  }
+}

@@ -139,7 +139,12 @@ export interface BusinessProfile {
   category?: string;
   primaryColor?: string;
   accentColor?: string;
-  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe' | 'atelier';
+  /**
+   * A pairing key from theme.ts's FONTS. 'judicial' is in the list because
+   * FONTS defines it; it was previously reachable only through the campaign
+   * theme, so the union and the table it names disagreed.
+   */
+  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe' | 'atelier' | 'judicial';
   theme?: 'dark' | 'light' | 'luxury' | 'campaign-navy' | 'campaign-judicial' | 'crimson-bold' | 'emerald-gold' | 'custom';
   treasurerName?: string;
   faviconUrl?: string;

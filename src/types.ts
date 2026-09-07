@@ -78,6 +78,12 @@ export interface ClientIntake {
   theme: 'campaign-navy' | 'campaign-judicial' | 'luxury' | 'crimson-bold' | 'dark' | 'light' | 'emerald-gold' | 'custom';
   primaryColor?: string;
   accentColor?: string;
+  /**
+   * A pairing key from theme.ts's FONTS, set when a Stitch direction is
+   * applied. Stored here rather than only on the project so the choice
+   * survives the intake being opened in the Studio a second time.
+   */
+  fontFamily?: 'sans' | 'serif' | 'display' | 'luxe' | 'atelier' | 'judicial';
   tagline?: string;
   description?: string;
   heroImage?: string;

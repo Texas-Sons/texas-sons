@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { apiFetch } from '../../api';
 import { findBlueprintIssues, summariseIssues } from '../../utils/blueprintHealth';
 import type { SiteSection } from '../../templates/sections';
@@ -94,6 +94,7 @@ import { buildThemeVars } from '../../templates/blocks/theme';
 
 import { ModelSettingsModal } from './ModelSettingsModal';
 import { PlanHandoffModal } from './PlanHandoffModal';
+import { StitchVariantModal, type StitchSeeds } from './StitchVariantModal';
 import { SiteAuditModal } from './SiteAuditModal';
 import { ProjectProposalModal } from '../ProjectProposalModal';
 import { 
@@ -557,6 +558,59 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
       proofBadgeText: DEFAULT_BLUEPRINTS[0].proofBadgeText
     };
   });
+
+  const [isStitchOpen, setIsStitchOpen] = useState(false);
+  const stitchChecked = useRef(false);
+
+  /**
+   * Offer the design directions once, the first time this project is opened
+   * with a set waiting.
+   *
+   * The "once" is carried by `chosen` on the server rather than by local state:
+   * once a direction is picked the modal stops offering itself, on this machine
+   * and on any other. A ref only stops it firing twice per mount.
+   */
+  useEffect(() => {
+    const id = project.intakeId;
+    if (!id || stitchChecked.current) return;
+    stitchChecked.current = true;
+    fetch(`/api/stitch/variants/${encodeURIComponent(id)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.success && j.variants?.status === 'ready' && j.variants?.chosen == null) {
+          setIsStitchOpen(true);
+        }
+      })
+      .catch(() => {
+        // A missing or unreachable direction set is not worth interrupting the
+        // operator over. The Studio works identically without one.
+      });
+  }, [project.intakeId]);
+
+  /**
+   * Apply a chosen direction.
+   *
+   * Writes the theme to BOTH project.theme and project.profile.theme. They are
+   * the same fact stored twice, and the day they disagreed a cream blueprint
+   * published on near-black with nothing in the Studio able to explain it,
+   * because the Studio reads one and the renderer reads the other. Until that
+   * duplication is removed, every writer sets both.
+   */
+  const handleApplyStitch = useCallback((seeds: StitchSeeds, name: string) => {
+    setProject((prev: ProjectSnapshot) => ({
+      ...prev,
+      theme: 'custom',
+      profile: {
+        ...prev.profile,
+        theme: 'custom',
+        primaryColor: seeds.primaryColor,
+        accentColor: seeds.accentColor,
+        fontFamily: seeds.fontFamily as ProjectSnapshot['profile']['fontFamily'],
+      },
+    }));
+    console.log(`[stitch] Applied "${name}" — ground ${seeds.primaryColor}, accent ${seeds.accentColor}, ${seeds.fontFamily}`);
+  }, []);
+
 
     // Multi-Model & Cost Tracking State
   const [selectedModel, setSelectedModel] = useState<string>(getStoredModel);
@@ -2491,6 +2545,14 @@ export default function ClientSite() {
         onSelectModel={handleSelectModel}
         usageStats={usageStats}
         onResetUsage={handleResetUsage}
+      />
+
+      <StitchVariantModal
+        isOpen={isStitchOpen}
+        onClose={() => setIsStitchOpen(false)}
+        intakeId={project.intakeId}
+        businessName={project.profile.name}
+        onApply={handleApplyStitch}
       />
 
       <PlanHandoffModal
