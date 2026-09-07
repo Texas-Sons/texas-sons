@@ -267,7 +267,7 @@ export default function SettingsView() {
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/80 pb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
+            <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center text-[#d4693f]">
               <Settings className="w-5 h-5" />
             </div>
             <div>
@@ -288,7 +288,7 @@ export default function SettingsView() {
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-lg transition-all active:scale-95 ${
               savedSuccess
                 ? 'bg-emerald-600 text-stone-200 shadow-emerald-950/50'
-                : 'bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black'
+                : 'bg-[#d4693f]/90 hover:bg-[#d4693f] text-stone-950 font-black'
             }`}
           >
             {savedSuccess ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
@@ -318,7 +318,7 @@ export default function SettingsView() {
                     : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/50'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#C5A059]' : 'text-stone-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#d4693f]' : 'text-stone-500'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -334,7 +334,7 @@ export default function SettingsView() {
             {/* Live Quota Consumption Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">
                   <span>Daily Free AI Requests</span>
                   <Zap className="w-4 h-4 text-amber-400" />
                 </div>
@@ -345,7 +345,7 @@ export default function SettingsView() {
                 <div className="w-full h-2 rounded-full bg-stone-800 overflow-hidden">
                   <div 
                     style={{ width: `${aiDailyPercent}%` }}
-                    className="h-full bg-gradient-to-r from-emerald-500 to-[#C5A059] rounded-full"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-[#d4693f] rounded-full"
                   />
                 </div>
                 <p className="text-[11px] text-stone-500">
@@ -354,7 +354,7 @@ export default function SettingsView() {
               </div>
 
               <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">
                   <span>Rate Limit Capacity</span>
                   <Activity className="w-4 h-4 text-blue-400" />
                 </div>
@@ -372,7 +372,7 @@ export default function SettingsView() {
               </div>
 
               <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">
+                <div className="flex items-center justify-between text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">
                   <span>Token Budget Guardrail</span>
                   <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
@@ -392,7 +392,7 @@ export default function SettingsView() {
             {/* AI Model Controls */}
             <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-5">
               <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-[#C5A059]" />
+                <Sliders className="w-4 h-4 text-[#d4693f]" />
                 Gemini AI Engine Configuration
               </h3>
 
@@ -402,7 +402,7 @@ export default function SettingsView() {
                   <select
                     value={settings.aiModel}
                     onChange={(e) => setSettings(prev => ({ ...prev, aiModel: e.target.value as any }))}
-                    className="w-full px-3 py-2.5 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                    className="w-full px-3 py-2.5 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   >
                     <option value="gemini-3.6-flash">Gemini 3.6 Flash (Recommended — Fastest, Free 1,500 RPD)</option>
                     <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Complex Reasoning & Synthesis)</option>
@@ -414,7 +414,7 @@ export default function SettingsView() {
 
                 <div>
                   <label className="block text-stone-500 font-mono text-xs font-semibold mb-1.5">
-                    Creativity & Temperature: <span className="text-[#C5A059] font-mono">{settings.aiTemperature}</span>
+                    Creativity & Temperature: <span className="text-[#d4693f] font-mono">{settings.aiTemperature}</span>
                   </label>
                   <input
                     type="range"
@@ -423,7 +423,7 @@ export default function SettingsView() {
                     step="0.05"
                     value={settings.aiTemperature}
                     onChange={(e) => setSettings(prev => ({ ...prev, aiTemperature: parseFloat(e.target.value) }))}
-                    className="w-full accent-[#C5A059] cursor-pointer h-2 bg-stone-950 rounded-lg"
+                    className="w-full accent-[#d4693f] cursor-pointer h-2 bg-stone-950 rounded-lg"
                   />
                   <div className="flex justify-between text-[10px] text-stone-500 mt-1">
                     <span>0.1 (Strict / Factual)</span>
@@ -454,7 +454,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.tokenOptimization}
                     onChange={(e) => setSettings(prev => ({ ...prev, tokenOptimization: e.target.checked }))}
-                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#d4693f] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -474,7 +474,7 @@ export default function SettingsView() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5 text-[#C5A059]" />
+                    <MapPin className="w-5 h-5 text-[#d4693f]" />
                     <h3 className="text-base font-bold text-stone-100">Google Maps Platform Free Tier ($200 Monthly Credit)</h3>
                   </div>
                   <p className="text-xs text-stone-400 mt-1">
@@ -483,7 +483,7 @@ export default function SettingsView() {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-2xl font-bold text-[#C5A059] font-mono">{totalMapsUsage}</span>
+                  <span className="text-2xl font-bold text-[#d4693f] font-mono">{totalMapsUsage}</span>
                   <span className="text-xs text-stone-500 font-mono"> / {settings.mapsMonthlyLimit} Hits</span>
                 </div>
               </div>
@@ -492,22 +492,22 @@ export default function SettingsView() {
                 <div 
                   style={{ width: `${mapsPercent}%` }}
                   className={`h-full rounded-full transition-all ${
-                    mapsPercent > 80 ? 'bg-red-500' : mapsPercent > 50 ? 'bg-[#C5A059]' : 'bg-emerald-500'
+                    mapsPercent > 80 ? 'bg-red-500' : mapsPercent > 50 ? 'bg-[#d4693f]' : 'bg-emerald-500'
                   }`}
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3 text-center text-xs">
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Places Searches</p>
+                  <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">Places Searches</p>
                   <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.searches || 0}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Autocomplete</p>
+                  <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">Autocomplete</p>
                   <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.autocomplete || 0}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-stone-950 border border-stone-800">
-                  <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Place Assets</p>
+                  <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono">Place Assets</p>
                   <p className="text-base font-bold text-stone-100 mt-0.5">{mapsUsageCount.assets || 0}</p>
                 </div>
               </div>
@@ -515,7 +515,7 @@ export default function SettingsView() {
 
             {/* Threshold Controls */}
             <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4 text-xs">
-              <h4 className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono border-b border-stone-800 pb-2">
+              <h4 className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono border-b border-stone-800 pb-2">
                 Monthly Cap & Warning Thresholds
               </h4>
 
@@ -560,7 +560,7 @@ export default function SettingsView() {
             {/* Agency Brand Identity */}
             <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
               <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
-                <Building className="w-4 h-4 text-[#C5A059]" />
+                <Building className="w-4 h-4 text-[#d4693f]" />
                 Agency Brand Information
               </h3>
 
@@ -571,7 +571,7 @@ export default function SettingsView() {
                     type="text"
                     value={settings.agencyName}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyName: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
@@ -581,7 +581,7 @@ export default function SettingsView() {
                     type="email"
                     value={settings.agencyEmail}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyEmail: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
@@ -591,7 +591,7 @@ export default function SettingsView() {
                     type="text"
                     value={settings.agencyPhone}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyPhone: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
 
@@ -601,7 +601,7 @@ export default function SettingsView() {
                     type="text"
                     value={settings.agencyAddress}
                     onChange={(e) => setSettings(prev => ({ ...prev, agencyAddress: e.target.value }))}
-                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                    className="w-full px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                   />
                 </div>
               </div>
@@ -623,7 +623,7 @@ export default function SettingsView() {
                       type="number"
                       value={settings.spurPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, spurPrice: parseInt(e.target.value, 10) || 1500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.spurPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
@@ -637,7 +637,7 @@ export default function SettingsView() {
                       type="number"
                       value={settings.rangerPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, rangerPrice: parseInt(e.target.value, 10) || 3500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.rangerPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
@@ -651,7 +651,7 @@ export default function SettingsView() {
                       type="number"
                       value={settings.maverickPrice}
                       onChange={(e) => setSettings(prev => ({ ...prev, maverickPrice: parseInt(e.target.value, 10) || 7500 }))}
-                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
+                      className="w-full pl-7 pr-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl font-mono text-sm placeholder:text-stone-600"
                     />
                   </div>
                   <span className="text-[10px] text-stone-500 block">50% Deposit: ${(settings.maverickPrice * (settings.defaultDepositPercent / 100)).toLocaleString()}</span>
@@ -686,7 +686,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.whiteLabelWatermark}
                     onChange={(e) => setSettings(prev => ({ ...prev, whiteLabelWatermark: e.target.checked }))}
-                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#d4693f] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -761,7 +761,7 @@ export default function SettingsView() {
                     type="checkbox"
                     checked={settings.autoDeployApproved}
                     onChange={(e) => setSettings(prev => ({ ...prev, autoDeployApproved: e.target.checked }))}
-                    className="w-4 h-4 accent-[#C5A059] cursor-pointer rounded"
+                    className="w-4 h-4 accent-[#d4693f] cursor-pointer rounded"
                   />
                 </div>
               </div>
@@ -796,11 +796,11 @@ export default function SettingsView() {
                   value={newEmailInput}
                   onChange={(e) => setNewEmailInput(e.target.value)}
                   placeholder="name@texassons.com or partner@gmail.com"
-                  className="flex-1 px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#C5A059]/60 focus:ring-1 focus:ring-[#C5A059]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
+                  className="flex-1 px-3 py-2 bg-stone-900 border border-stone-800 focus:border-[#d4693f]/60 focus:ring-1 focus:ring-[#d4693f]/20 text-stone-100 rounded-xl placeholder:text-stone-600"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-4 py-2 bg-[#d4693f]/90 hover:bg-[#d4693f] text-stone-950 font-black rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Admin Email</span>
@@ -812,7 +812,7 @@ export default function SettingsView() {
                 {settings.authorizedEmails.map((email, idx) => (
                   <div key={idx} className="p-3.5 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-xs font-bold text-[#C5A059]">
+                      <div className="w-8 h-8 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-xs font-bold text-[#d4693f]">
                         {email[0].toUpperCase()}
                       </div>
                       <div>
@@ -847,7 +847,7 @@ export default function SettingsView() {
               {/* Export Full Studio Backup */}
               <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
+                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center text-[#d4693f]">
                     <Download className="w-5 h-5" />
                   </div>
                   <div>
@@ -862,7 +862,7 @@ export default function SettingsView() {
 
                 <button
                   onClick={handleExportBackup}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 font-black text-stone-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition-all"
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r bg-[#d4693f]/90 hover:bg-[#d4693f] text-stone-950 font-black text-stone-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition-all"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download Backup JSON File</span>
@@ -872,7 +872,7 @@ export default function SettingsView() {
               {/* Import / Restore Backup */}
               <div className="p-6 rounded-2xl bg-stone-900 border border-stone-800 rounded-2xl space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059]">
+                  <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center text-[#d4693f]">
                     <Upload className="w-5 h-5" />
                   </div>
                   <div>

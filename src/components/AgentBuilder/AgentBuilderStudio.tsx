@@ -415,7 +415,7 @@ export interface AgentBuilderStudioProps {
   onOpenAppNav?: () => void;
 }
 
-export const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: string }) => (
+export const Squiggle = ({ className = "w-8 h-1.5 text-[#d4693f]" }: { className?: string }) => (
   <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path
       d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
@@ -1365,7 +1365,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             onClick={onOpenAppNav}
             className="p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer active:scale-95 transition-all"
           >
-            <Menu className="w-4 h-4 text-[#C5A059]" />
+            <Menu className="w-4 h-4 text-[#d4693f]" />
           </button>
         )}
 
@@ -1375,7 +1375,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           className="flex items-center gap-2 cursor-pointer group"
           title="Switch client"
         >
-          <span className="text-sm font-black text-[#C5A059] uppercase tracking-widest font-mono">TEXAS SONS</span>
+          <span className="text-sm font-black text-[#d4693f] uppercase tracking-widest font-mono">TEXAS SONS</span>
           <div className="flex items-center gap-1 bg-stone-900 border border-stone-800 rounded-lg px-2 py-0.5">
             <span className="text-[10px] font-mono text-stone-400">Project:</span>
             <span className="text-[10px] font-bold text-stone-200 truncate max-w-[60px]">
@@ -1402,20 +1402,20 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                   key={preset.id}
                   onClick={() => { handleApplyPreset(preset); setIsBlueprintDropdownOpen(false); }}
                   className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
-                    isSelected ? 'border-[#C5A059]/60 bg-[#C5A059]/10 text-white' : 'border-transparent hover:bg-stone-800 text-stone-300'
+                    isSelected ? 'border-[#d4693f]/60 bg-[#d4693f]/10 text-white' : 'border-transparent hover:bg-stone-800 text-stone-300'
                   }`}
                 >
                   <div className="min-w-0 flex-1 pr-2">
                     <p className="text-xs font-bold truncate">{preset.title}</p>
                     <p className="text-[10px] text-stone-500 mt-0.5">{preset.category}</p>
                   </div>
-                  {isSelected && <Check className="w-4 h-4 text-[#C5A059]" />}
+                  {isSelected && <Check className="w-4 h-4 text-[#d4693f]" />}
                 </div>
               );
             })}
             <div className="pt-2 border-t border-stone-800">
               <button onClick={() => { setIsBlueprintDropdownOpen(false); setIntakeModalOpen(true); }}
-                className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 hover:bg-[#d4693f]/20 text-[#d4693f] border border-[#d4693f]/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
                 <Plus className="w-3.5 h-3.5" />New Client Experience
               </button>
             </div>
@@ -1441,10 +1441,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           {onOpenAppNav && (
             <button
               onClick={onOpenAppNav}
-              className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-[#C5A059]/40 cursor-pointer active:scale-95 transition-all shadow-sm"
+              className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-[#d4693f]/40 cursor-pointer active:scale-95 transition-all shadow-sm"
               title="Open Texas Sons App Menu"
             >
-              <Menu className="w-4 h-4 text-[#C5A059]" />
+              <Menu className="w-4 h-4 text-[#d4693f]" />
             </button>
           )}
 
@@ -1459,7 +1459,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-stone-400 hover:text-white bg-stone-900/60 md:bg-transparent hover:bg-stone-900 border border-stone-800/80 md:border-transparent hover:border-stone-800 transition-all flex-shrink-0 cursor-pointer active:scale-95"
             title={isChatCollapsed ? "Expand Configurator" : "Collapse Configurator"}
           >
-            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-[#C5A059]" /> : <PanelLeftClose className="w-4 h-4" />}
+            {isChatCollapsed ? <PanelLeftOpen className="w-4 h-4 text-[#d4693f]" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
 
           {/* Active Client Experience Switcher Pill */}
@@ -1469,7 +1469,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900/90 hover:bg-stone-900 border border-stone-800 hover:border-stone-700 transition-all shadow-sm group text-left cursor-pointer max-w-[150px] sm:max-w-[200px]"
               title="Click to Switch Client Brand Experience"
             >
-              <div className="w-6 h-6 rounded-lg bg-[#C5A059]/20 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] font-bold flex-shrink-0">
+              <div className="w-6 h-6 rounded-lg bg-[#d4693f]/20 border border-[#d4693f]/30 flex items-center justify-center text-[#d4693f] font-bold flex-shrink-0">
                 <Zap className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0 flex-1">
@@ -1477,7 +1477,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                     anything without a category, which is true of every row in
                     the app and therefore told you nothing, while costing the
                     chip vertical space and the toolbar horizontal space. */}
-                <p className="text-xs font-bold text-white truncate group-hover:text-[#C5A059]">
+                <p className="text-xs font-bold text-white truncate group-hover:text-[#d4693f]">
                   {currentBlueprintObj?.title || project.profile.name}
                 </p>
                 {currentBlueprintObj?.category && (
@@ -1487,7 +1487,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 )}
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
-                isBlueprintDropdownOpen ? 'rotate-180 text-[#C5A059]' : ''
+                isBlueprintDropdownOpen ? 'rotate-180 text-[#d4693f]' : ''
               }`} />
             </button>
 
@@ -1496,7 +1496,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               <div className="absolute top-full left-0 mt-1.5 w-80 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
                 <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
                   <span>Select Client Experience</span>
-                  <span className="text-[#C5A059] font-mono text-[9px]">1-Click Ready</span>
+                  <span className="text-[#d4693f] font-mono text-[9px]">1-Click Ready</span>
                 </div>
                 {allBlueprints.map((preset) => {
                   const isSelected = project.profile.name === preset.profile.name;
@@ -1509,7 +1509,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       }}
                       className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                         isSelected
-                          ? 'border-[#C5A059]/80 bg-[#C5A059]/10 text-white'
+                          ? 'border-[#d4693f]/80 bg-[#d4693f]/10 text-white'
                           : 'border-transparent hover:bg-stone-800 text-stone-300'
                       }`}
                     >
@@ -1518,12 +1518,12 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                         <div className="flex items-center space-x-1.5 text-[10px] text-stone-400 mt-0.5">
                           <span>{preset.category}</span>
                           <span>•</span>
-                          <span className="uppercase text-[9px] font-semibold text-[#C5A059]/90">{preset.theme}</span>
+                          <span className="uppercase text-[9px] font-semibold text-[#d4693f]/90">{preset.theme}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center space-x-1">
-                        {isSelected && <Check className="w-4 h-4 text-[#C5A059]" />}
+                        {isSelected && <Check className="w-4 h-4 text-[#d4693f]" />}
                         {preset.isCustom && (
                           <button
                             onClick={(e) => handleDeleteCustomBlueprint(preset.id, e)}
@@ -1544,7 +1544,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       setIsBlueprintDropdownOpen(false);
                       setIntakeModalOpen(true);
                     }}
-                    className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/20 hover:bg-[#C5A059]/30 text-[#C5A059] border border-[#C5A059]/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-full py-2 px-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/20 hover:bg-[#d4693f]/30 text-[#d4693f] border border-[#d4693f]/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Create New Client Experience</span>
@@ -1567,7 +1567,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               : 'Saved to the project'}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex-shrink-0 ${
               unsavedChanges
-                ? 'bg-[#C5A059] text-stone-950 border-[#C5A059] hover:brightness-110'
+                ? 'bg-[#d4693f] text-stone-950 border-[#d4693f] hover:brightness-110'
                 : 'bg-stone-900/80 text-stone-400 border-stone-800 hover:text-stone-200'
             }`}
           >
@@ -1579,10 +1579,10 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <div className="hidden 2xl:flex items-center gap-1 bg-stone-900/80 rounded-xl p-1 border border-stone-800 flex-shrink-0">
             <button
               onClick={() => setIsHandoffOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-[#C5A059] hover:text-[#C5A059] hover:bg-[#C5A059]/10 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-[#d4693f] hover:text-[#d4693f] hover:bg-[#d4693f]/10 transition-all cursor-pointer"
               title="Get Antigravity AI Master Plan Prompt"
             >
-              <Terminal className="w-3.5 h-3.5 text-[#C5A059]" />
+              <Terminal className="w-3.5 h-3.5 text-[#d4693f]" />
               <span>AGY Prompt</span>
             </button>
             <button
@@ -1590,7 +1590,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold text-stone-300 hover:text-white hover:bg-stone-800 transition-all cursor-pointer"
               title="Scan photo of flyer or menu"
             >
-              <Camera className="w-3.5 h-3.5 text-[#C5A059]" />
+              <Camera className="w-3.5 h-3.5 text-[#d4693f]" />
               <span>Scan</span>
             </button>
             <button
@@ -1618,7 +1618,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             onClick={() => setActiveTab('preview')}
             className={`px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'preview'
-                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
+                ? 'bg-[#d4693f] text-white shadow-md shadow-[#d4693f]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1631,7 +1631,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             onClick={() => setActiveTab('admin')}
             className={`px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'admin'
-                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
+                ? 'bg-[#d4693f] text-white shadow-md shadow-[#d4693f]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1644,7 +1644,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             onClick={() => setActiveTab('code')}
             className={`px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === 'code'
-                ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/30'
+                ? 'bg-[#d4693f] text-white shadow-md shadow-[#d4693f]/30'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -1668,7 +1668,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <button
               onClick={() => setDevice('desktop')}
               className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
-                device === 'desktop' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
+                device === 'desktop' ? 'bg-stone-800 text-[#d4693f] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Desktop View"
             >
@@ -1677,7 +1677,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <button
               onClick={() => setDevice('tablet')}
               className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
-                device === 'tablet' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
+                device === 'tablet' ? 'bg-stone-800 text-[#d4693f] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Tablet View"
             >
@@ -1686,7 +1686,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <button
               onClick={() => setDevice('mobile')}
               className={`p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors cursor-pointer ${
-                device === 'mobile' ? 'bg-stone-800 text-[#C5A059] shadow-sm' : 'text-stone-400 hover:text-white'
+                device === 'mobile' ? 'bg-stone-800 text-[#d4693f] shadow-sm' : 'text-stone-400 hover:text-white'
               }`}
               title="Mobile View"
             >
@@ -1708,14 +1708,14 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <span className="text-xs font-mono font-bold text-stone-200 group-hover:text-white truncate max-w-[120px] 2xl:max-w-[160px]">
               {activeDeployedUrl.replace(/^https?:\/\//, '') || `${project.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pages.dev`}
             </span>
-            <History className="w-3 h-3 text-stone-500 group-hover:text-[#C5A059] transition-colors" />
+            <History className="w-3 h-3 text-stone-500 group-hover:text-[#d4693f] transition-colors" />
           </button>
 
           {/* AGY Prompt Shortcut (Visible on medium/large screens) */}
           <button
             type="button"
             onClick={() => setIsHandoffOpen(true)}
-            className="hidden md:flex 2xl:hidden items-center gap-1 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-[#C5A059]/30 bg-[#C5A059]/10 hover:bg-[#C5A059]/20 text-[#C5A059] text-xs font-bold transition-all cursor-pointer flex-shrink-0"
+            className="hidden md:flex 2xl:hidden items-center gap-1 px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-[#d4693f]/30 bg-[#d4693f]/10 hover:bg-[#d4693f]/20 text-[#d4693f] text-xs font-bold transition-all cursor-pointer flex-shrink-0"
             title="Get Antigravity AI Master Plan Prompt"
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -1729,7 +1729,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-all cursor-pointer flex-shrink-0"
             title="Connect Namecheap or Custom Domain"
           >
-            <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
+            <Globe className="w-3.5 h-3.5 text-[#d4693f]" />
             <span className="hidden 2xl:inline">Custom Domain</span>
           </button>
 
@@ -1767,7 +1767,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           <button
             onClick={handleDeploySite}
             disabled={agentState.step === 'building'}
-            className="bg-[#C5A059] hover:bg-[#C5A059] disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-black shadow-lg shadow-[#C5A059]/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer flex-shrink-0"
+            className="bg-[#d4693f] hover:bg-[#d4693f] disabled:opacity-50 text-white px-3.5 sm:px-4 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs font-black shadow-lg shadow-[#d4693f]/30 transition-all flex items-center gap-1.5 hover:scale-105 cursor-pointer flex-shrink-0"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>{agentState.step === 'building' ? 'Deploying...' : 'Deploy'}</span>
@@ -1779,7 +1779,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="hidden 2xl:flex items-center gap-2 bg-stone-900 hover:bg-stone-800 rounded-xl px-2.5 py-1 border border-stone-800 cursor-pointer transition-colors flex-shrink-0"
             title="Click to change AI Model"
           >
-            <Cpu className="w-3.5 h-3.5 text-[#C5A059]" />
+            <Cpu className="w-3.5 h-3.5 text-[#d4693f]" />
             <div className="flex flex-col text-left">
               <span className="text-[8px] text-stone-400 uppercase font-bold tracking-wider leading-none">Model</span>
               <span className="text-[11px] font-semibold text-white leading-tight">
@@ -1794,7 +1794,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             className="text-stone-400 hover:text-white hover:bg-stone-800 transition-colors p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] hidden sm:block cursor-pointer flex-shrink-0"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4 text-[#C5A059]" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-4 h-4 text-[#d4693f]" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
         </div>
@@ -1857,9 +1857,9 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                 onClick={() => openSection(tab.key)}
                 title={tab.title}
                 style={{ animationDelay: `${i * 35}ms` }}
-                className="pointer-events-auto flex items-center gap-2.5 pl-2.5 pr-4 py-2 rounded-2xl bg-stone-900 border border-stone-700 text-stone-200 text-xs font-bold shadow-xl hover:border-[#C5A059]/60 hover:text-white transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200 fill-mode-backwards"
+                className="pointer-events-auto flex items-center gap-2.5 pl-2.5 pr-4 py-2 rounded-2xl bg-stone-900 border border-stone-700 text-stone-200 text-xs font-bold shadow-xl hover:border-[#d4693f]/60 hover:text-white transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200 fill-mode-backwards"
               >
-                <span className="w-7 h-7 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] flex-shrink-0">
+                <span className="w-7 h-7 rounded-xl bg-[#d4693f]/15 border border-[#d4693f]/30 flex items-center justify-center text-[#d4693f] flex-shrink-0">
                   <Icon className="w-3.5 h-3.5" />
                 </span>
                 {tab.label}
@@ -1874,8 +1874,8 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             title={toolsOpen ? 'Close the tools' : 'Open the tools'}
             className={`pointer-events-auto w-12 h-12 rounded-2xl border shadow-xl flex items-center justify-center transition-all active:scale-95 ${
               toolsOpen
-                ? 'bg-[#C5A059] border-[#C5A059] text-stone-950 rotate-90'
-                : 'bg-stone-900 border-stone-700 text-[#C5A059] hover:border-[#C5A059]/60'
+                ? 'bg-[#d4693f] border-[#d4693f] text-stone-950 rotate-90'
+                : 'bg-stone-900 border-stone-700 text-[#d4693f] hover:border-[#d4693f]/60'
             }`}
           >
             {toolsOpen ? <X className="w-5 h-5" /> : <Settings2 className="w-5 h-5" />}
@@ -1885,20 +1885,20 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
         {/* Mobile Full-Screen Slide-Up Experience Director Drawer */}
         {isMobileDirectorOpen && (
           <div className="fixed inset-0 z-50 md:hidden bg-black/80 backdrop-blur-xl flex flex-col justify-end animate-in fade-in duration-200">
-            <div className="bg-stone-950 border-t border-[#C5A059]/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
+            <div className="bg-stone-950 border-t border-[#d4693f]/40 rounded-t-3xl shadow-2xl flex flex-col h-[92vh] overflow-hidden">
               {/* Drawer Tactile Drag Header */}
               <div className="pt-2 pb-3 px-4 border-b border-stone-800 bg-stone-950 flex flex-col flex-shrink-0">
                 {/* Drag handle pill */}
                 <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-2.5" />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#C5A059]/20 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] font-bold">
+                    <div className="w-7 h-7 rounded-xl bg-[#d4693f]/20 border border-[#d4693f]/30 flex items-center justify-center text-[#d4693f] font-bold">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-xs font-black text-white uppercase tracking-wider">Experience Director</h3>
-                        <Squiggle className="w-6 h-1.5 text-[#C5A059]/80" />
+                        <Squiggle className="w-6 h-1.5 text-[#d4693f]/80" />
                       </div>
                       <p className="text-[10px] text-stone-400">Brand DNA · Archetypes · Signature Features</p>
                     </div>
@@ -1964,7 +1964,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
 
               {/* Theme Harmony Quick Indicator */}
               <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-stone-400 bg-stone-900/60 px-2.5 py-1 rounded-lg border border-stone-800">
-                <Palette className="w-3.5 h-3.5 text-[#C5A059]" />
+                <Palette className="w-3.5 h-3.5 text-[#d4693f]" />
                 <span>Theme:</span>
                 <span className="font-bold text-stone-200 uppercase">{project.theme}</span>
               </div>
@@ -1975,7 +1975,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
               <div className="relative">
                 <button
                   onClick={() => setIsFaviconMenuOpen(!isFaviconMenuOpen)}
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-[11px] transition-all hover:border-[#C5A059]/60 shadow-sm"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-[11px] transition-all hover:border-[#d4693f]/60 shadow-sm"
                   title="Change Browser Tab Icon"
                 >
                   <img
@@ -2006,7 +2006,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                           }}
                           className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-xs transition-colors ${
                             (project.profile.faviconUrl === fav.url || (!project.profile.faviconUrl && isCampaign && fav.url === '/sheriff-badge-favicon.svg'))
-                              ? 'bg-[#C5A059]/20 text-[#C5A059] font-bold border border-[#C5A059]/40'
+                              ? 'bg-[#d4693f]/20 text-[#d4693f] font-bold border border-[#d4693f]/40'
                               : 'text-stone-300 hover:bg-stone-800'
                           }`}
                         >
@@ -2029,7 +2029,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                           ...prev,
                           profile: { ...prev.profile, faviconUrl: e.target.value }
                         }))}
-                        className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[11px] text-white font-mono focus:outline-none focus:border-[#C5A059]"
+                        className="w-full px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[11px] text-white font-mono focus:outline-none focus:border-[#d4693f]"
                       />
                     </div>
                   </div>
@@ -2081,7 +2081,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       onClick={() => setPreviewMode('edit')}
                       title="Editable preview — click a block to inspect it"
                       className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-colors ${
-                        previewMode === 'edit' ? 'bg-stone-800 text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                        previewMode === 'edit' ? 'bg-stone-800 text-[#d4693f]' : 'text-stone-500 hover:text-stone-300'
                       }`}
                     >
                       Edit
@@ -2091,7 +2091,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                       onClick={() => setPreviewMode('true')}
                       title="The page the deploy builds, exactly as the client receives it"
                       className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-colors ${
-                        previewMode === 'true' ? 'bg-stone-800 text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                        previewMode === 'true' ? 'bg-stone-800 text-[#d4693f]' : 'text-stone-500 hover:text-stone-300'
                       }`}
                     >
                       True
@@ -2119,7 +2119,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
                         disabled={truePreviewBusy}
                         className={`px-2.5 py-1 rounded-lg font-bold flex-shrink-0 transition-colors disabled:opacity-40 ${
                           truePreviewStale
-                            ? 'bg-[#C5A059] text-stone-950'
+                            ? 'bg-[#d4693f] text-stone-950'
                             : 'bg-stone-900 border border-stone-800 text-stone-300 hover:text-white'
                         }`}
                       >
@@ -2241,7 +2241,7 @@ export default function ClientSite() {
             {/* TAB 4: Blueprint JSON Schema */}
             {activeTab === 'blueprint' && (
               <div className="w-full max-w-5xl bg-stone-900 rounded-2xl border border-stone-800 p-6 font-mono text-xs text-stone-300 overflow-x-auto shadow-2xl">
-                <div className="text-xs text-[#C5A059] mb-3 font-bold">// Multi-Agent Distilled Blueprint JSON</div>
+                <div className="text-xs text-[#d4693f] mb-3 font-bold">// Multi-Agent Distilled Blueprint JSON</div>
                 <pre>{JSON.stringify(project, null, 2)}</pre>
               </div>
             )}
@@ -2260,7 +2260,7 @@ export default function ClientSite() {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-stone-800 flex items-center justify-between bg-stone-950">
               <div className="flex items-center space-x-2.5">
-                <Vote className="w-5 h-5 text-[#C5A059]" />
+                <Vote className="w-5 h-5 text-[#d4693f]" />
                 <div>
                   <h3 className="font-bold text-white text-base">Create New Client Brand Experience</h3>
                   <p className="text-xs text-stone-400">Configure brand identity, spatial layout archetype, and signature interactive features.</p>
@@ -2288,7 +2288,7 @@ export default function ClientSite() {
                     value={intakeForm.title}
                     onChange={(e) => setIntakeForm({ ...intakeForm, title: e.target.value })}
                     placeholder="e.g. Debbie Dietzmann for Judge"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f]"
                   />
                 </div>
 
@@ -2299,7 +2299,7 @@ export default function ClientSite() {
                   <select
                     value={intakeForm.category}
                     onChange={(e) => setIntakeForm({ ...intakeForm, category: e.target.value as any })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f]"
                   >
                     <option value="Campaign & Leadership">Campaign & Political Leadership</option>
                     <option value="Beauty & Wellness">Beauty & Wellness (Salons & Spas)</option>
@@ -2322,7 +2322,7 @@ export default function ClientSite() {
                     value={intakeForm.name}
                     onChange={(e) => setIntakeForm({ ...intakeForm, name: e.target.value })}
                     placeholder="e.g. Deborah Dietzmann for Judge"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f]"
                   />
                 </div>
 
@@ -2335,7 +2335,7 @@ export default function ClientSite() {
                     value={intakeForm.tagline}
                     onChange={(e) => setIntakeForm({ ...intakeForm, tagline: e.target.value })}
                     placeholder="e.g. Equal Justice. Constitutional Integrity."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f]"
                   />
                 </div>
               </div>
@@ -2343,7 +2343,7 @@ export default function ClientSite() {
               {/* Color Scheme Picker */}
               <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Palette className="w-4 h-4 text-[#C5A059]" />
+                  <Palette className="w-4 h-4 text-[#d4693f]" />
                   <span className="font-semibold uppercase tracking-wider text-stone-300 text-xs">Color Scheme & Aesthetic Harmony</span>
                 </div>
 
@@ -2408,7 +2408,7 @@ export default function ClientSite() {
                   value={intakeForm.description}
                   onChange={(e) => setIntakeForm({ ...intakeForm, description: e.target.value })}
                   placeholder="Paste background, 28 years legal counsel, felony trial prosecution, courtroom integrity, judicial achievements..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f]"
                 />
               </div>
 
@@ -2421,7 +2421,7 @@ export default function ClientSite() {
                   value={intakeForm.heroImage}
                   onChange={(e) => setIntakeForm({ ...intakeForm, heroImage: e.target.value })}
                   placeholder="https://images.unsplash.com/... or hosted portrait URL"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#C5A059] font-mono text-[11px]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white focus:outline-none focus:border-[#d4693f] font-mono text-[11px]"
                 />
               </div>
 
@@ -2473,7 +2473,7 @@ export default function ClientSite() {
                   value={intakeForm.servicesText}
                   onChange={(e) => setIntakeForm({ ...intakeForm, servicesText: e.target.value })}
                   placeholder="Courtroom Rule of Law | Applying the law as written without political bias&#10;Youth Diversion Programs | Early intervention for non-violent offenders&#10;Docket Efficiency | Eliminating backlogs to save taxpayer funds"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#C5A059]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#d4693f]"
                 />
               </div>
 
@@ -2486,7 +2486,7 @@ export default function ClientSite() {
                   value={intakeForm.testimonialsText}
                   onChange={(e) => setIntakeForm({ ...intakeForm, testimonialsText: e.target.value })}
                   placeholder={`"Deborah has the highest ethical standard in our district." — Justice Franklin Vance (Appeals Court)&#10;"Fair, decisive, and dedicated to Texas families." — Sheriff Douglas (Law Enforcement Coalition)`}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#C5A059]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white font-mono text-[11px] focus:outline-none focus:border-[#d4693f]"
                 />
               </div>
 
@@ -2525,7 +2525,7 @@ export default function ClientSite() {
                 <button
                   type="submit"
                   form="custom-intake-form"
-                  className="px-5 py-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059] hover:bg-[#C5A059] text-white font-bold flex items-center gap-1.5 shadow-lg shadow-[#C5A059]/30"
+                  className="px-5 py-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f] hover:bg-[#d4693f] text-white font-bold flex items-center gap-1.5 shadow-lg shadow-[#d4693f]/30"
                 >
                   <Save className="w-4 h-4" />
                   <span>Generate & Save Experience</span>
@@ -2632,7 +2632,7 @@ export default function ClientSite() {
                 <div className="w-10 h-1 rounded-full bg-stone-700 mx-auto mb-3" />
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-black text-[#C5A059] uppercase tracking-widest font-mono">STUDIO TOOLS</h3>
+                    <h3 className="text-sm font-black text-[#d4693f] uppercase tracking-widest font-mono">STUDIO TOOLS</h3>
                   </div>
                   <button onClick={() => setIsMobileQuickMenuOpen(false)} className="p-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-400 cursor-pointer active:scale-95">
                     <X className="w-4 h-4" />
@@ -2640,7 +2640,7 @@ export default function ClientSite() {
                 </div>
                 {/* Tool tabs */}
                 <div className="flex gap-5 mt-3">
-                  <button className="flex items-center gap-1.5 text-[11px] font-bold text-[#C5A059] border-b-2 border-[#C5A059] pb-1">
+                  <button className="flex items-center gap-1.5 text-[11px] font-bold text-[#d4693f] border-b-2 border-[#d4693f] pb-1">
                     <Layers className="w-3.5 h-3.5" />ARCHETYPES
                   </button>
                   <button className="flex items-center gap-1.5 text-[11px] font-bold text-stone-500 pb-1 border-b-2 border-transparent">
@@ -2654,10 +2654,10 @@ export default function ClientSite() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => { setIsScannerOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#d4693f] cursor-pointer active:scale-95 transition-all"
                   >
-                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
-                      <Camera className="w-4 h-4 text-[#C5A059]" />
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/30 flex items-center justify-center flex-shrink-0">
+                      <Camera className="w-4 h-4 text-[#d4693f]" />
                     </div>
                     <div className="text-left">
                       <div className="text-[11px] font-black text-stone-200">Scan Flyer</div>
@@ -2690,10 +2690,10 @@ export default function ClientSite() {
                   </button>
                   <button
                     onClick={() => { setIsHandoffOpen(true); setIsMobileQuickMenuOpen(false); }}
-                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                    className="p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex items-center gap-2.5 text-stone-300 hover:text-[#d4693f] cursor-pointer active:scale-95 transition-all"
                   >
-                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
-                      <Terminal className="w-4 h-4 text-[#C5A059]" />
+                    <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/30 flex items-center justify-center flex-shrink-0">
+                      <Terminal className="w-4 h-4 text-[#d4693f]" />
                     </div>
                     <div className="text-left">
                       <div className="text-[11px] font-black text-stone-200">AGY Spec</div>
@@ -2708,13 +2708,13 @@ export default function ClientSite() {
                   { id: 'ID-01', name: 'The Outlaw', desc: 'High risk, high reward behavioral matrix. Prioritizes aggressive problem solving and unconventional paths.', icon: Flame, traits: [{label:'Aggression', val:90},{label:'Stealth',val:40}] },
                   { id: 'ID-02', name: 'The Sheriff', desc: 'Disciplined, authoritative framework. Enforces standards and maintains system stability under stress.', icon: ShieldCheck, traits: [{label:'Authority', val:95},{label:'Precision',val:80}], active: true },
                 ].map(arch => (
-                  <div key={arch.id} className={`p-4 rounded-2xl border flex flex-col gap-3 ${arch.active ? 'border-[#C5A059]/40 bg-stone-900' : 'border-stone-800 bg-stone-900/60'}`}>
+                  <div key={arch.id} className={`p-4 rounded-2xl border flex flex-col gap-3 ${arch.active ? 'border-[#d4693f]/40 bg-stone-900' : 'border-stone-800 bg-stone-900/60'}`}>
                     <div className="flex items-start justify-between">
-                      <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
-                        <arch.icon className="w-4.5 h-4.5 text-[#C5A059]" />
+                      <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/30 flex items-center justify-center flex-shrink-0">
+                        <arch.icon className="w-4.5 h-4.5 text-[#d4693f]" />
                       </div>
                       <div className="flex items-center gap-2">
-                        {arch.active && <span className="text-[9px] font-black text-[#C5A059] border border-[#C5A059]/40 rounded-full px-2 py-0.5">● ACTIVE</span>}
+                        {arch.active && <span className="text-[9px] font-black text-[#d4693f] border border-[#d4693f]/40 rounded-full px-2 py-0.5">● ACTIVE</span>}
                         <span className="text-[9px] font-mono text-stone-600 border border-stone-800 rounded px-1.5 py-0.5">{arch.id}</span>
                       </div>
                     </div>
@@ -2727,12 +2727,12 @@ export default function ClientSite() {
                         <div key={t.label} className="flex items-center gap-2">
                           <span className="text-[10px] text-stone-500 w-16 flex-shrink-0">{t.label}</span>
                           <div className="flex-1 h-1 bg-stone-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-[#C5A059] rounded-full" style={{width:`${t.val}%`}} />
+                            <div className="h-full bg-[#d4693f] rounded-full" style={{width:`${t.val}%`}} />
                           </div>
                         </div>
                       ))}
                     </div>
-                    <button className="w-full py-2.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-stone-700 text-[11px] font-black text-stone-300 hover:border-[#C5A059]/60 hover:text-[#C5A059] transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-1.5">
+                    <button className="w-full py-2.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border border-stone-700 text-[11px] font-black text-stone-300 hover:border-[#d4693f]/60 hover:text-[#d4693f] transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-1.5">
                       CONFIGURE <Sliders className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -2769,7 +2769,7 @@ export default function ClientSite() {
                   ].map(s => (
                     <div key={s.label} className="p-2.5 rounded-xl bg-stone-950 border border-stone-800">
                       <div className="text-[9px] font-mono text-stone-500 uppercase tracking-wider mb-1">{s.label}</div>
-                      <div className={`text-xs font-bold ${s.highlight ? 'text-[#C5A059]' : 'text-stone-200'}`}>{s.val}</div>
+                      <div className={`text-xs font-bold ${s.highlight ? 'text-[#d4693f]' : 'text-stone-200'}`}>{s.val}</div>
                     </div>
                   ))}
                 </div>
@@ -2788,7 +2788,7 @@ export default function ClientSite() {
                   <div><span className="text-blue-400">[CHK]</span><span className="text-stone-300 ml-2">Verifying frontier nodes...</span></div>
                   <div><span className="text-emerald-400">[OK]</span><span className="text-stone-300 ml-2">All systems nominal. Ready for launch.</span></div>
                   {agentState.step === 'building' && (
-                    <div><span className="text-[#C5A059]">[LIVE]</span><span className="text-stone-300 ml-2 animate-pulse">Deploying...</span></div>
+                    <div><span className="text-[#d4693f]">[LIVE]</span><span className="text-stone-300 ml-2 animate-pulse">Deploying...</span></div>
                   )}
                   <div className="text-stone-600">...</div>
                 </div>
@@ -2797,7 +2797,7 @@ export default function ClientSite() {
               {/* Initiate Launch */}
               <div className="p-5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center text-center gap-3">
                 <div className="w-16 h-16 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center">
-                  <UploadCloud className="w-7 h-7 text-[#C5A059]" />
+                  <UploadCloud className="w-7 h-7 text-[#d4693f]" />
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-stone-100">Initiate Launch</h4>
@@ -2806,7 +2806,7 @@ export default function ClientSite() {
                 <button
                   onClick={handleDeploySite}
                   disabled={agentState.step === 'building'}
-                  className="w-full py-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/80 hover:bg-[#C5A059] disabled:opacity-50 text-stone-950 text-xs font-black uppercase tracking-widest transition-all cursor-pointer active:scale-98 shadow-lg shadow-[#C5A059]/20 flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/80 hover:bg-[#d4693f] disabled:opacity-50 text-stone-950 text-xs font-black uppercase tracking-widest transition-all cursor-pointer active:scale-98 shadow-lg shadow-[#d4693f]/20 flex items-center justify-center gap-2"
                 >
                   {agentState.step === 'building' ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> DEPLOYING...</> : 'DEPLOY SITE'}
                 </button>
@@ -2816,14 +2816,14 @@ export default function ClientSite() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setIsCustomDomainOpen(true)}
-                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#d4693f] cursor-pointer active:scale-95 transition-all"
                 >
                   <Globe className="w-5 h-5" />
                   <span className="text-[10px] font-black">Custom Domain</span>
                 </button>
                 <button
                   onClick={() => setIsDeploymentHistoryOpen(true)}
-                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#C5A059] cursor-pointer active:scale-95 transition-all"
+                  className="p-3.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 flex flex-col items-center gap-2 text-stone-400 hover:text-[#d4693f] cursor-pointer active:scale-95 transition-all"
                 >
                   <History className="w-5 h-5" />
                   <span className="text-[10px] font-black">History</span>
@@ -2877,14 +2877,14 @@ export default function ClientSite() {
                 }}
                 className={
                   id === 'director'
-                    ? "flex flex-col items-center justify-center gap-1 w-14 h-14 -mt-5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] transition-all cursor-pointer shadow-lg shadow-[#C5A059]/20 bg-[#C5A059] text-stone-950 font-black"
+                    ? "flex flex-col items-center justify-center gap-1 w-14 h-14 -mt-5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] transition-all cursor-pointer shadow-lg shadow-[#d4693f]/20 bg-[#d4693f] text-stone-950 font-black"
                     : `flex flex-col items-center gap-1 px-3 py-1.5 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] transition-all cursor-pointer active:scale-95 min-w-[52px] ${
-                        isActive ? 'text-[#C5A059]' : 'text-stone-500 hover:text-stone-300'
+                        isActive ? 'text-[#d4693f]' : 'text-stone-500 hover:text-stone-300'
                       }`
                 }
               >
                 <Icon className="w-5 h-5" />
-                <span className={`text-[10px] font-bold ${id === 'director' ? 'text-stone-950' : isActive ? 'text-[#C5A059]' : ''}`}>{label}</span>
+                <span className={`text-[10px] font-bold ${id === 'director' ? 'text-stone-950' : isActive ? 'text-[#d4693f]' : ''}`}>{label}</span>
               </button>
             );
           })}

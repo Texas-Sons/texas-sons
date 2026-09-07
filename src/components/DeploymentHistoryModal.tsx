@@ -196,7 +196,7 @@ export default function DeploymentHistoryModal({
               href={liveUrl}
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-mono font-bold text-[#C5A059] hover:text-[#C5A059] truncate flex items-center gap-1.5"
+              className="text-xs font-mono font-bold text-[#d4693f] hover:text-[#d4693f] truncate flex items-center gap-1.5"
             >
               <span>{liveUrl}</span>
               <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
@@ -216,7 +216,7 @@ export default function DeploymentHistoryModal({
                 href={liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-[#C5A059]/90 hover:bg-[#C5A059] text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-[#C5A059]/30"
+                className="px-3 py-1.5 rounded-lg bg-[#d4693f]/90 hover:bg-[#d4693f] text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-[#d4693f]/30"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span>Visit</span>
@@ -231,9 +231,9 @@ export default function DeploymentHistoryModal({
                 onClose();
                 onOpenCustomDomains();
               }}
-              className="text-xs font-semibold text-stone-300 hover:text-[#C5A059] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-stone-300 hover:text-[#d4693f] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
+              <Globe className="w-3.5 h-3.5 text-[#d4693f]" />
               <span>Connect Custom Domain (Namecheap / GoDaddy)</span>
             </button>
 
@@ -241,7 +241,7 @@ export default function DeploymentHistoryModal({
               type="button"
               onClick={onRedeploy}
               disabled={isDeploying}
-              className="text-xs font-bold text-[#C5A059] hover:text-[#C5A059] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-xs font-bold text-[#d4693f] hover:text-[#d4693f] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span>{isDeploying ? 'Deploying...' : 'Redeploy Blueprint'}</span>
@@ -260,7 +260,7 @@ export default function DeploymentHistoryModal({
               type="button"
               onClick={fetchHistory}
               disabled={isLoading}
-              className="text-[10px] font-bold text-stone-400 hover:text-[#C5A059] flex items-center gap-1 transition-colors"
+              className="text-[10px] font-bold text-stone-400 hover:text-[#d4693f] flex items-center gap-1 transition-colors"
             >
               <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
@@ -286,7 +286,7 @@ export default function DeploymentHistoryModal({
                     key={dep.id || idx}
                     className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${
                       isCurrent
-                        ? 'bg-stone-950 border-[#C5A059]/40 ring-1 ring-[#C5A059]/20'
+                        ? 'bg-stone-950 border-[#d4693f]/40 ring-1 ring-[#d4693f]/20'
                         : 'bg-stone-950/80 border-stone-800'
                     }`}
                   >
@@ -296,7 +296,7 @@ export default function DeploymentHistoryModal({
                           {dep.id ? dep.id.slice(0, 10) : `Deploy #${idx + 1}`}
                         </span>
                         {isCurrent && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#d4693f]/10 text-[#d4693f] border border-[#d4693f]/30">
                             Active Current
                           </span>
                         )}
@@ -339,7 +339,7 @@ export default function DeploymentHistoryModal({
               <button
                 type="button"
                 onClick={fetchVersions}
-                className="text-[10px] font-bold text-stone-400 hover:text-[#C5A059] flex items-center gap-1 transition-colors"
+                className="text-[10px] font-bold text-stone-400 hover:text-[#d4693f] flex items-center gap-1 transition-colors"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Refresh</span>

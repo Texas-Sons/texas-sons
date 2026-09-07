@@ -467,7 +467,7 @@ export const FORM_TABS: { key: TabKey; label: string; title: string }[] = [
   { key: 'theme', label: 'Style', title: 'Style & Tokens' },
 ];
 
-const Squiggle = ({ className = "w-8 h-1.5 text-[#C5A059]" }: { className?: string }) => (
+const Squiggle = ({ className = "w-8 h-1.5 text-[#d4693f]" }: { className?: string }) => (
   <svg viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path
       d="M1 3.5C3.5 1 5.5 1 8 3.5C10.5 6 12.5 6 15 3.5C17.5 1 19.5 1 22 3.5C24.5 6 26.5 6 29 3.5C31.5 1 33.5 1 35 3.5"
@@ -500,7 +500,7 @@ const FormCard = ({ title, icon: Icon, badge, children }: { title: string; icon:
   <div className="bg-stone-900/90 border border-stone-800/80 rounded-[22px_12px_24px_14px/14px_24px_12px_22px] p-4 space-y-3.5 shadow-lg backdrop-blur-sm">
     <div className="flex items-center justify-between border-b border-stone-800/80 pb-2.5">
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] shadow-sm">
+        <div className="w-7 h-7 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/15 border border-[#d4693f]/30 flex items-center justify-center text-[#d4693f] shadow-sm">
           <Icon className="w-3.5 h-3.5" />
         </div>
         <h3 className="text-xs font-bold text-stone-100 tracking-wide">{title}</h3>
@@ -547,10 +547,10 @@ const PhotoField = ({ label, id, value, onChange, hint }: {
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder="https://... or upload"
-        className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 text-[11px] font-mono"
+        className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#d4693f]/60 text-[11px] font-mono"
       />
       <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
-        <UploadIcon className="w-3.5 h-3.5 text-[#C5A059]" />
+        <UploadIcon className="w-3.5 h-3.5 text-[#d4693f]" />
         <span>Upload</span>
         <input
           type="file"
@@ -605,7 +605,7 @@ const InputField = ({ label, id, placeholder, value, onChange, icon: Icon, type 
         value={value}
         placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
-        className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all shadow-inner`}
+        className={`w-full h-10 ${Icon ? 'pl-9.5' : 'px-3.5'} pr-3.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#d4693f] focus:ring-2 focus:ring-[#d4693f]/25 transition-all shadow-inner`}
       />
     </div>
   </div>
@@ -629,7 +629,7 @@ const TextareaField = ({ label, id, placeholder, value, onChange, rows = 3 }: {
       value={value}
       placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#C5A059] focus:ring-2 focus:ring-[#C5A059]/25 transition-all resize-none shadow-inner leading-relaxed"
+      className="w-full px-3.5 py-2.5 rounded-[16px_8px_18px_10px/10px_18px_8px_16px] bg-stone-950/90 border border-stone-700/80 text-xs font-medium text-white placeholder-stone-600 focus:outline-none focus:border-[#d4693f] focus:ring-2 focus:ring-[#d4693f]/25 transition-all resize-none shadow-inner leading-relaxed"
     />
   </div>
 );
@@ -711,10 +711,10 @@ export default function BlueprintFormPanel({
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-black uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#d4693f]" />
               <span>Brand DNA & Experience Director</span>
             </h2>
-            <Squiggle className="w-6 h-1.5 text-[#C5A059]/70" />
+            <Squiggle className="w-6 h-1.5 text-[#d4693f]/70" />
           </div>
           <p className="text-[10px] text-stone-500">Generative Layouts · Signature Features · Motion</p>
         </div>
@@ -726,7 +726,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('archetype')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'archetype' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'archetype' ? 'bg-[#d4693f] text-white shadow-sm shadow-[#d4693f]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Visual Archetype"
         >
@@ -737,7 +737,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('feature')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'feature' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'feature' ? 'bg-[#d4693f] text-white shadow-sm shadow-[#d4693f]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Signature Feature"
         >
@@ -748,7 +748,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('brand')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'brand' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'brand' ? 'bg-[#d4693f] text-white shadow-sm shadow-[#d4693f]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Identity & Bio"
         >
@@ -759,7 +759,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('pillars')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'pillars' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'pillars' ? 'bg-[#d4693f] text-white shadow-sm shadow-[#d4693f]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Platform / Services"
         >
@@ -770,7 +770,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('theme')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'theme' ? 'bg-[#C5A059] text-white shadow-sm shadow-[#C5A059]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+            activeTab === 'theme' ? 'bg-[#d4693f] text-white shadow-sm shadow-[#d4693f]/30 scale-[1.02]' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
           }`}
           title="Style & Tokens"
         >
@@ -781,7 +781,7 @@ export default function BlueprintFormPanel({
           type="button"
           onClick={() => setActiveTab('all')}
           className={`py-1.5 px-1 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] text-[9.5px] font-bold flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${
-            activeTab === 'all' ? 'bg-stone-800 text-[#C5A059] border border-stone-700' : 'text-stone-500 hover:text-stone-300'
+            activeTab === 'all' ? 'bg-stone-800 text-[#d4693f] border border-stone-700' : 'text-stone-500 hover:text-stone-300'
           }`}
           title="Show all sections"
         >
@@ -805,7 +805,7 @@ export default function BlueprintFormPanel({
                   onClick={() => applyArchetype(arch)}
                   className={`p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-[#C5A059] bg-gradient-to-r from-[#C5A059]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#C5A059]/20 ring-1 ring-[#C5A059]/40'
+                      ? 'border-[#d4693f] bg-gradient-to-r from-[#d4693f]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#d4693f]/20 ring-1 ring-[#d4693f]/40'
                       : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
@@ -813,7 +813,7 @@ export default function BlueprintFormPanel({
                     <div className="flex items-center gap-2.5">
                       <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
                         active
-                          ? 'bg-[#C5A059]/20 border-[#C5A059]/40 text-[#C5A059] shadow-sm'
+                          ? 'bg-[#d4693f]/20 border-[#d4693f]/40 text-[#d4693f] shadow-sm'
                           : 'bg-stone-900 border-stone-800 text-stone-400'
                       }`}>
                         <arch.icon className="w-4 h-4" />
@@ -825,7 +825,7 @@ export default function BlueprintFormPanel({
                         </span>
                       </div>
                     </div>
-                    {active && <Check className="w-4 h-4 text-[#C5A059]" />}
+                    {active && <Check className="w-4 h-4 text-[#d4693f]" />}
                   </div>
                   <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{arch.description}</p>
                 </div>
@@ -850,7 +850,7 @@ export default function BlueprintFormPanel({
                   onClick={() => set('selectedFeature', feat.id)}
                   className={`p-3 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border transition-all cursor-pointer relative overflow-hidden active:scale-[0.98] ${
                     active
-                      ? 'border-[#C5A059] bg-gradient-to-r from-[#C5A059]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#C5A059]/20 ring-1 ring-[#C5A059]/40'
+                      ? 'border-[#d4693f] bg-gradient-to-r from-[#d4693f]/40 via-stone-900 to-stone-950 text-white shadow-md shadow-[#d4693f]/20 ring-1 ring-[#d4693f]/40'
                       : 'border-stone-800/80 bg-stone-950/80 text-stone-400 hover:border-stone-700 hover:text-stone-200'
                   }`}
                 >
@@ -858,7 +858,7 @@ export default function BlueprintFormPanel({
                     <div className="flex items-center gap-2.5">
                       <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center transition-all ${
                         active
-                          ? 'bg-[#C5A059]/20 border-[#C5A059]/40 text-[#C5A059] shadow-sm'
+                          ? 'bg-[#d4693f]/20 border-[#d4693f]/40 text-[#d4693f] shadow-sm'
                           : 'bg-stone-900 border-stone-800 text-stone-400'
                       }`}>
                         <feat.icon className="w-4 h-4" />
@@ -870,7 +870,7 @@ export default function BlueprintFormPanel({
                         </span>
                       </div>
                     </div>
-                    {active && <Check className="w-4 h-4 text-[#C5A059]" />}
+                    {active && <Check className="w-4 h-4 text-[#d4693f]" />}
                   </div>
                   <p className="text-[11px] text-stone-400 mt-1 pl-10 leading-relaxed">{feat.description}</p>
                 </div>
@@ -1002,7 +1002,7 @@ export default function BlueprintFormPanel({
                   step="0.05"
                   value={form.logoScale || '1'}
                   onChange={e => set('logoScale', e.target.value)}
-                  className="flex-1 accent-[#C5A059]"
+                  className="flex-1 accent-[#d4693f]"
                 />
                 <button
                   type="button"
@@ -1114,7 +1114,7 @@ export default function BlueprintFormPanel({
         <FormCard title="3 Campaign Pillars" icon={ShieldCheck} badge="Key Focus">
           <div className="space-y-3">
             <div className="p-3 bg-stone-950/80 rounded-xl border border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
+              <span className="text-[10px] font-bold text-[#d4693f] uppercase tracking-wider">Priority #1 (Hero Highlight)</span>
               <InputField 
                 label="Pillar 1 Title" 
                 id="p1title" 
@@ -1200,7 +1200,7 @@ export default function BlueprintFormPanel({
                 }}
                 className={`p-2.5 rounded-xl border text-left min-w-[120px] transition-all cursor-pointer ${
                   form.theme === t.id || (t.id === 'custom' && !['dark','light','luxury','crimson-bold','campaign-navy','campaign-judicial','emerald-gold'].includes(form.theme || ''))
-                    ? 'border-[#C5A059] bg-gradient-to-br from-stone-900 to-stone-950 ring-1 ring-[#C5A059]/40 shadow-md'
+                    ? 'border-[#d4693f] bg-gradient-to-br from-stone-900 to-stone-950 ring-1 ring-[#d4693f]/40 shadow-md'
                     : 'border-stone-800 bg-stone-950/80 hover:border-stone-700'
                 }`}
               >
@@ -1231,7 +1231,7 @@ export default function BlueprintFormPanel({
                   type="text"
                   value={form.primaryColor}
                   onChange={e => set('primaryColor', e.target.value)}
-                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#C5A059]/60"
+                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#d4693f]/60"
                 />
               </div>
             </div>
@@ -1251,7 +1251,7 @@ export default function BlueprintFormPanel({
                   type="text"
                   value={form.accentColor}
                   onChange={e => set('accentColor', e.target.value)}
-                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#C5A059]/60"
+                  className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-[11px] font-mono focus:outline-none focus:border-[#d4693f]/60"
                 />
               </div>
             </div>
@@ -1266,7 +1266,7 @@ export default function BlueprintFormPanel({
             type="button"
             onClick={handleBuild}
             disabled={isBusy}
-            className="px-6 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#d4b46d] disabled:opacity-50 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#C5A059]/30 transition-all active:scale-95 cursor-pointer"
+            className="px-6 py-2.5 rounded-xl bg-[#d4693f] hover:bg-[#d4b46d] disabled:opacity-50 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#d4693f]/30 transition-all active:scale-95 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             {isBusy ? 'Building...' : 'Build Site'}

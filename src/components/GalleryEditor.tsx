@@ -280,7 +280,7 @@ export function GalleryEditor({
         <SortableGrid
           tiles={images.map(src => ({ key: src, src }))}
           onReorder={next => onChange(next.map(t => t.src))}
-          accent="border-[#C5A059]"
+          accent="border-[#d4693f]"
           dim={tile => stockIsDropped && isPlaceholderImage(tile.src)}
           badge={i =>
             stockIsDropped && isPlaceholderImage(images[i]) ? (
@@ -313,7 +313,7 @@ export function GalleryEditor({
           onChange={e => setUrl(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(url); } }}
           placeholder="https://... or upload"
-          className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#C5A059]/60 text-[11px] font-mono"
+          className="flex-1 min-w-0 px-3 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-[#d4693f]/60 text-[11px] font-mono"
         />
         <button
           type="button"
@@ -321,11 +321,11 @@ export function GalleryEditor({
           disabled={!url.trim()}
           className="px-3 py-2 bg-stone-800 hover:bg-stone-700 disabled:opacity-40 text-stone-200 rounded-lg text-xs font-bold border border-stone-700 flex items-center gap-1.5 flex-shrink-0"
         >
-          <Plus className="w-3.5 h-3.5 text-[#C5A059]" aria-hidden="true" />
+          <Plus className="w-3.5 h-3.5 text-[#d4693f]" aria-hidden="true" />
           Add
         </button>
         <label className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-lg text-xs font-bold cursor-pointer border border-stone-700 flex items-center gap-1.5 flex-shrink-0">
-          <UploadCloud className="w-3.5 h-3.5 text-[#C5A059]" aria-hidden="true" />
+          <UploadCloud className="w-3.5 h-3.5 text-[#d4693f]" aria-hidden="true" />
           Upload
           <input
             type="file"

@@ -95,7 +95,7 @@ export default function ClientPortal() {
               Add your own photos. They go live on your website automatically.
             </p>
           </div>
-          <TexasSonsLogo className="h-8 w-auto opacity-60 flex-shrink-0" />
+          <TexasSonsLogo className="h-8 w-auto opacity-60 flex-shrink-0" variant="brasada" />
         </div>
       </header>
 

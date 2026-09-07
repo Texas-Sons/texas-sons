@@ -118,7 +118,7 @@ export default function ClientDashboard() {
     return (
       <Shell>
         <div className="max-w-sm w-full text-center space-y-6">
-          <TexasSonsLogo className="h-10 w-auto mx-auto opacity-80" />
+          <TexasSonsLogo className="h-10 w-auto mx-auto opacity-80" variant="brasada" />
           <div className="space-y-2">
             <h1 className="text-xl font-extrabold text-stone-100">Your salon dashboard</h1>
             <p className="text-sm text-stone-400">

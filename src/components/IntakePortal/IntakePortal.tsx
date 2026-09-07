@@ -109,7 +109,7 @@ export default function IntakePortal() {
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-stone-400">
-        <Loader2 className="w-8 h-8 animate-spin mb-4 text-[#C5A059]" />
+        <Loader2 className="w-8 h-8 animate-spin mb-4 text-[#d4693f]" />
         <p>Loading your secure portal...</p>
       </div>
     );
@@ -128,10 +128,10 @@ export default function IntakePortal() {
   if (success) {
     return (
       <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-6 text-center">
-        <CheckCircle2 className="w-20 h-20 text-[#C5A059] mb-6" />
+        <CheckCircle2 className="w-20 h-20 text-[#d4693f] mb-6" />
         <h1 className="text-3xl font-bold text-white mb-4">Received!</h1>
         <p className="text-stone-400 mb-8 max-w-md text-lg">Thanks for submitting your assets. Our studio team will review these and get back to you shortly.</p>
-        <div className="w-48"><TexasSonsLogo /></div>
+        <div className="w-48"><TexasSonsLogo variant="brasada" /></div>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function IntakePortal() {
     <div className="min-h-screen bg-stone-950 text-stone-200">
       <div className="max-w-3xl mx-auto px-4 py-8 md:py-16">
         <div className="flex justify-center mb-12 w-48 mx-auto">
-          <TexasSonsLogo />
+          <TexasSonsLogo variant="brasada" />
         </div>
         
         <div className="text-center mb-12">
@@ -202,18 +202,18 @@ export default function IntakePortal() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Tagline</label>
-                <input type="text" value={tagline} onChange={e => setTagline(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="e.g. Dedicated Texas Quality" />
+                <input type="text" value={tagline} onChange={e => setTagline(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="e.g. Dedicated Texas Quality" />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Business Hours</label>
-                <input type="text" value={hours} onChange={e => setHours(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="Mon-Fri 8am-5pm" />
+                <input type="text" value={hours} onChange={e => setHours(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="Mon-Fri 8am-5pm" />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-stone-300 mb-1">About the Business</label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="Tell us about what you do..."></textarea>
+              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="Tell us about what you do..."></textarea>
             </div>
           </div>
 
@@ -224,19 +224,19 @@ export default function IntakePortal() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Address</label>
-                <input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" />
+                <input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Phone</label>
-                <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" />
+                <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Email</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Instagram Profile</label>
-                <input type="text" value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://instagram.com/yourbusiness" />
+                <input type="text" value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="https://instagram.com/yourbusiness" />
               </div>
             </div>
           </div>
@@ -249,12 +249,12 @@ export default function IntakePortal() {
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Booking URL</label>
                 <p className="text-xs text-stone-500 mb-2">Where clients book appointments (Square, Vagaro, Calendly…).</p>
-                <input type="text" value={bookingUrl} onChange={e => setBookingUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/appointments/book/..." />
+                <input type="text" value={bookingUrl} onChange={e => setBookingUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="https://squareup.com/appointments/book/..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-300 mb-1">Gift Card Link</label>
                 <p className="text-xs text-stone-500 mb-2">Where clients buy gift cards.</p>
-                <input type="text" value={giftCardUrl} onChange={e => setGiftCardUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/gift/.../order" />
+                <input type="text" value={giftCardUrl} onChange={e => setGiftCardUrl(e.target.value)} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="https://squareup.com/gift/.../order" />
               </div>
             </div>
           </div>
@@ -272,26 +272,26 @@ export default function IntakePortal() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-8">
                   <div>
                     <label className="block text-xs text-stone-400 mb-1">Service Name</label>
-                    <input type="text" value={s.title} onChange={e => { const newS = [...services]; newS[idx].title = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none" placeholder="e.g. General Contracting" />
+                    <input type="text" value={s.title} onChange={e => { const newS = [...services]; newS[idx].title = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#d4693f] focus:outline-none" placeholder="e.g. General Contracting" />
                   </div>
                   <div>
                     <label className="block text-xs text-stone-400 mb-1">Price / Starting At (optional)</label>
-                    <input type="text" value={s.price} onChange={e => { const newS = [...services]; newS[idx].price = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none" placeholder="e.g. Call for pricing" />
+                    <input type="text" value={s.price} onChange={e => { const newS = [...services]; newS[idx].price = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#d4693f] focus:outline-none" placeholder="e.g. Call for pricing" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs text-stone-400 mb-1">Description</label>
-                  <textarea value={s.description} onChange={e => { const newS = [...services]; newS[idx].description = e.target.value; setServices(newS); }} rows={2} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none"></textarea>
+                  <textarea value={s.description} onChange={e => { const newS = [...services]; newS[idx].description = e.target.value; setServices(newS); }} rows={2} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#d4693f] focus:outline-none"></textarea>
                 </div>
                 {/* Per-service booking link — a visitor who has chosen balayage should
                     land on balayage, not on a menu to choose it again. */}
                 <div className="mt-3">
                   <label className="block text-xs text-stone-400 mb-1">Booking link for this service (optional)</label>
-                  <input type="text" value={s.bookingUrl || ''} onChange={e => { const newS = [...services]; newS[idx].bookingUrl = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#C5A059] focus:outline-none" placeholder="https://squareup.com/appointments/book/.../service-id" />
+                  <input type="text" value={s.bookingUrl || ''} onChange={e => { const newS = [...services]; newS[idx].bookingUrl = e.target.value; setServices(newS); }} className="w-full bg-stone-900 border border-stone-700 rounded p-2 text-white text-sm focus:border-[#d4693f] focus:outline-none" placeholder="https://squareup.com/appointments/book/.../service-id" />
                 </div>
               </div>
             ))}
-            <button type="button" onClick={() => setServices([...services, { title: '', description: '', price: '', bookingUrl: '' }])} className="flex items-center text-sm text-[#C5A059] hover:text-[#d4b06a]">
+            <button type="button" onClick={() => setServices([...services, { title: '', description: '', price: '', bookingUrl: '' }])} className="flex items-center text-sm text-[#d4693f] hover:text-[#d4b06a]">
               <Plus className="w-4 h-4 mr-1" /> Add Service
             </button>
           </div>
@@ -299,12 +299,12 @@ export default function IntakePortal() {
           {/* Notes Section */}
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-white border-b border-stone-800 pb-2">6. Additional Notes</h2>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#C5A059] focus:outline-none" placeholder="Anything else we should know?"></textarea>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="w-full bg-stone-900 border border-stone-700 rounded-lg p-3 text-white focus:border-[#d4693f] focus:outline-none" placeholder="Anything else we should know?"></textarea>
           </div>
 
           <div className="pt-8 border-t border-stone-800 flex flex-col items-center">
-            {progress && <p className="text-[#C5A059] mb-4 text-sm font-medium">{progress}</p>}
-            <button type="submit" disabled={submitting} className="bg-[#C5A059] hover:bg-[#d4b06a] text-stone-950 font-bold py-4 px-12 rounded-full transition-colors flex items-center shadow-lg shadow-[#C5A059]/20 disabled:opacity-50">
+            {progress && <p className="text-[#d4693f] mb-4 text-sm font-medium">{progress}</p>}
+            <button type="submit" disabled={submitting} className="bg-[#d4693f] hover:bg-[#d4b06a] text-stone-950 font-bold py-4 px-12 rounded-full transition-colors flex items-center shadow-lg shadow-[#d4693f]/20 disabled:opacity-50">
               {submitting ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : null}
               {submitting ? 'Submitting...' : 'Submit Assets'}
             </button>

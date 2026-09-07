@@ -39,7 +39,7 @@ export default function TopBar({ currentView, onLogout, onOpenMobileNav }: TopBa
             className="md:hidden p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-white cursor-pointer active:scale-95 transition-all"
             title="Open App Navigation"
           >
-            <Menu className="w-4 h-4 text-[#C5A059]" />
+            <Menu className="w-4 h-4 text-[#d4693f]" />
           </button>
         )}
         <div>
@@ -58,13 +58,13 @@ export default function TopBar({ currentView, onLogout, onOpenMobileNav }: TopBa
           <input 
             type="text" 
             placeholder="Search..." 
-            className="pl-8 pr-4 py-1.5 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 placeholder:text-stone-600 focus:border-[#C5A059]/50 focus:ring-1 focus:ring-[#C5A059]/20 outline-none w-44 transition-all"
+            className="pl-8 pr-4 py-1.5 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 placeholder:text-stone-600 focus:border-[#d4693f]/50 focus:ring-1 focus:ring-[#d4693f]/20 outline-none w-44 transition-all"
           />
         </div>
         
         <button className="relative p-2 text-stone-500 hover:text-stone-300 transition-colors rounded-xl hover:bg-stone-900">
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#C5A059] rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#d4693f] rounded-full" />
         </button>
 
         {onLogout && (

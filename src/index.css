@@ -14,7 +14,9 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #0c0a09;
+  /* Mesquite. The app used a neutral near-black; Brasada's ground is warm,
+     and stone — already a warm grey — sits on it without changing. */
+  background-color: #1b1410;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -60,10 +60,10 @@ export default function Sidebar({
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-stone-800">
               <div className="flex items-center gap-2.5">
-                <TexasSonsLogo className="w-8 h-8 flex-shrink-0" />
+                <TexasSonsLogo className="w-8 h-8 flex-shrink-0" variant="brasada" />
                 <div>
-                  <h3 className="text-sm font-bold text-stone-100 font-mono tracking-wide">TEXAS SONS</h3>
-                  <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Websites Studio</p>
+                  <h3 className="text-sm font-bold text-stone-100 font-mono tracking-wide">BRASADA</h3>
+                  <p className="text-[9px] font-black text-[#d4693f] uppercase tracking-widest font-mono">Studio</p>
                 </div>
               </div>
               <button
@@ -87,13 +87,13 @@ export default function Sidebar({
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all cursor-pointer text-left active:scale-[0.98] ${
                       isActive
-                        ? 'bg-[#C5A059]/10 border border-[#C5A059]/30 text-stone-100 shadow-md shadow-[#C5A059]/5'
+                        ? 'bg-[#d4693f]/10 border border-[#d4693f]/30 text-stone-100 shadow-md shadow-[#d4693f]/5'
                         : 'text-stone-400 hover:bg-stone-900 hover:text-stone-200 border border-transparent'
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] border flex items-center justify-center flex-shrink-0 ${
                       isActive
-                        ? 'bg-[#C5A059]/20 border-[#C5A059]/40 text-[#C5A059]'
+                        ? 'bg-[#d4693f]/20 border-[#d4693f]/40 text-[#d4693f]'
                         : 'bg-stone-900 border-stone-800 text-stone-500'
                     }`}>
                       <item.icon className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function Sidebar({
 
             {/* Footer Profile */}
             <div className="pt-3 border-t border-stone-800 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/20 border border-[#C5A059]/30 flex items-center justify-center text-xs font-bold text-[#C5A059] flex-shrink-0">
+              <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/20 border border-[#d4693f]/30 flex items-center justify-center text-xs font-bold text-[#d4693f] flex-shrink-0">
                 MO
               </div>
               <div className="min-w-0 flex-1">
@@ -135,11 +135,11 @@ export default function Sidebar({
           ${isExpanded ? 'px-4 justify-between' : 'justify-center'}
         `}>
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <TexasSonsLogo className={`w-7 h-7 flex-shrink-0 transition-transform duration-300 ${isExpanded ? 'scale-100' : 'scale-90'}`} />
+            <TexasSonsLogo className={`w-7 h-7 flex-shrink-0 transition-transform duration-300 ${isExpanded ? 'scale-100' : 'scale-90'}`} variant="brasada" />
             
             <div className={`whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 w-0 hidden'}`}>
-              <h3 className="text-sm font-bold text-stone-100 tracking-wide font-mono">TEXAS SONS</h3>
-              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">Websites Studio</p>
+              <h3 className="text-sm font-bold text-stone-100 tracking-wide font-mono">BRASADA</h3>
+              <p className="text-[9px] font-black text-[#d4693f] uppercase tracking-widest font-mono">Studio</p>
             </div>
           </div>
           
@@ -167,16 +167,16 @@ export default function Sidebar({
                   relative w-full flex items-center transition-all duration-200 cursor-pointer
                   ${isExpanded ? 'px-3 py-2.5 rounded-xl gap-3' : 'p-2 rounded-xl justify-center mx-auto aspect-square max-w-[40px]'}
                   ${isActive 
-                    ? 'bg-[#C5A059]/10 text-stone-100 border border-[#C5A059]/20 shadow-[#C5A059]/5' 
+                    ? 'bg-[#d4693f]/10 text-stone-100 border border-[#d4693f]/20 shadow-[#d4693f]/5' 
                     : 'text-stone-400 hover:bg-stone-900 hover:text-stone-200 border border-transparent'}
                 `}
               >
                 <div className={`
                   flex items-center justify-center
-                  ${!isExpanded ? '' : isActive ? 'text-[#C5A059]' : 'text-stone-500'}
-                  ${!isExpanded && isActive ? 'text-[#C5A059]' : ''}
+                  ${!isExpanded ? '' : isActive ? 'text-[#d4693f]' : 'text-stone-500'}
+                  ${!isExpanded && isActive ? 'text-[#d4693f]' : ''}
                 `}>
-                  <item.icon className={`w-4 h-4 ${item.highlight && !isActive ? 'text-[#C5A059]' : ''}`} />
+                  <item.icon className={`w-4 h-4 ${item.highlight && !isActive ? 'text-[#d4693f]' : ''}`} />
                 </div>
                 
                 {isExpanded && (
@@ -187,7 +187,7 @@ export default function Sidebar({
 
                 {/* Badge indicator for active or highlighted items when collapsed */}
                 {!isExpanded && (isActive || item.highlight) && (
-                  <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#C5A059]' : 'bg-[#C5A059] animate-pulse'}`} />
+                  <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#d4693f]' : 'bg-[#d4693f] animate-pulse'}`} />
                 )}
               </button>
             );
@@ -198,7 +198,7 @@ export default function Sidebar({
         <div className={`border-t border-stone-800/80 p-3 shrink-0
           ${isExpanded ? 'flex items-center gap-3' : 'flex justify-center'}
         `}>
-          <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#C5A059]">
+          <div className="w-8 h-8 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-[#d4693f]/30 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#d4693f]">
             MO
           </div>
           

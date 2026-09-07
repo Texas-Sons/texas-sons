@@ -57,7 +57,7 @@ const TIERS = [
       'Automated Lead Intake & Email Alerts',
       'CRM & Central Database Sync',
     ],
-    accent: '#C5A059',
+    accent: '#d4693f',
     featured: true,
   },
   {
@@ -378,27 +378,6 @@ export default function LandingPage({ onLogin, isLoggingIn, loginError }: Landin
             ))}
           </div>
 
-          {/* Platform & Transaction Model Callout */}
-          <div className="rounded-3xl border border-[#3a2c20] bg-[#1b1410]/80 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                Platform & Transaction Alternative
-              </div>
-              <h3 className="text-2xl font-brasada font-bold text-[#f4ecdf] mb-2">
-                1% Success Fee · Hardware-Agnostic Platform Model
-              </h3>
-              <p className="text-[#8d7d68] text-sm leading-relaxed">
-                Need multi-tenant customer booking, ordering, or payment portals? We eliminate bulky monthly software SaaS subscriptions in favor of a clean, volume-based 1% transaction fee processed through Stripe Connect.
-              </p>
-            </div>
-            <a
-              href="mailto:contact.txsons@gmail.com?subject=Platform%20%26%20Transaction%20Model%20Inquiry"
-              className="px-6 py-3.5 rounded-xl bg-[#241b15] hover:bg-[#302419] text-[#f4ecdf] text-sm font-bold border border-[#4a3826] hover:border-[#a8432b]/50 transition-all flex-shrink-0"
-            >
-              Discuss Custom Architecture →
-            </a>
-          </div>
         </div>
       </section>
 

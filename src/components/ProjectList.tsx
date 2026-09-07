@@ -23,7 +23,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
   const getStatusColor = (status: Status) => {
     switch (status) {
       case 'Intake': return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
-      case 'Scaffolding': return 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30';
+      case 'Scaffolding': return 'bg-[#d4693f]/10 text-[#d4693f] border-[#d4693f]/30';
       case 'Theme Assembly': return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
       case 'QA & Staging': return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
       case 'Live': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
@@ -32,7 +32,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
   };
 
   const getTierColor = (tier: Tier) => {
-    if (tier.includes('Basic') || tier.includes('Spur') || tier.includes('Sprout')) return 'text-[#C5A059]';
+    if (tier.includes('Basic') || tier.includes('Spur') || tier.includes('Sprout')) return 'text-[#d4693f]';
     if (tier.includes('Lead') || tier.includes('Ranger') || tier.includes('Stem')) return 'text-teal-400';
     return 'text-blue-400';
   };
@@ -56,12 +56,12 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
       {/* ── Page Header ──────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-1">ACTIVE</p>
+          <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono mb-1">ACTIVE</p>
           <h1 className="text-2xl font-bold text-stone-100">Deployments</h1>
         </div>
         <button
           onClick={onNewProject}
-          className="flex items-center gap-2 px-4 py-2 bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 text-xs font-black rounded-xl transition-all cursor-pointer active:scale-95 shadow-lg shadow-[#C5A059]/10"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d4693f]/90 hover:bg-[#d4693f] text-stone-950 text-xs font-black rounded-xl transition-all cursor-pointer active:scale-95 shadow-lg shadow-[#d4693f]/10"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">New Site</span>
@@ -77,7 +77,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
             placeholder="Search projects..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-8 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 placeholder:text-stone-600 focus:border-[#C5A059]/50 focus:ring-1 focus:ring-[#C5A059]/20 outline-none transition-all"
+            className="w-full pl-8 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-300 placeholder:text-stone-600 focus:border-[#d4693f]/50 focus:ring-1 focus:ring-[#d4693f]/20 outline-none transition-all"
           />
         </div>
         <div className="flex gap-1.5">
@@ -87,7 +87,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
               onClick={() => setFilter(f)}
               className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer capitalize ${
                 filter === f
-                  ? 'bg-[#C5A059]/10 text-[#C5A059] border border-[#C5A059]/30'
+                  ? 'bg-[#d4693f]/10 text-[#d4693f] border border-[#d4693f]/30'
                   : 'bg-stone-900 text-stone-500 border border-stone-800 hover:text-stone-300'
               }`}
             >
@@ -100,8 +100,8 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
       {/* ── Project Cards ─────────────────────────────────── */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-12 h-12 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mb-4">
-            <Folders className="w-6 h-6 text-[#C5A059]" />
+          <div className="w-12 h-12 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center mb-4">
+            <Folders className="w-6 h-6 text-[#d4693f]" />
           </div>
           <p className="text-sm font-bold text-stone-300">No projects found</p>
           <p className="text-xs text-stone-600 mt-1">Provision your first site to get started.</p>
@@ -117,12 +117,12 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
               <div className="flex items-start justify-between gap-3">
                 {/* Left: Company Info */}
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center flex-shrink-0 text-xs font-black text-[#C5A059]">
+                  <div className="w-9 h-9 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center flex-shrink-0 text-xs font-black text-[#d4693f]">
                     {project.companyName.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-bold text-stone-100 group-hover:text-[#C5A059] transition-colors truncate">
+                      <span className="text-sm font-bold text-stone-100 group-hover:text-[#d4693f] transition-colors truncate">
                         {project.companyName}
                       </span>
                       {project.contracts && project.contracts.length > 0 && (
@@ -156,7 +156,7 @@ export default function ProjectList({ projects, onNewProject, onEditProject, onD
               <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-800/60" onClick={e => e.stopPropagation()}>
                 <button
                   onClick={() => setSelectedProjectForModal(project)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-[#C5A059] bg-[#C5A059]/10 hover:bg-[#C5A059]/20 border border-[#C5A059]/30 rounded-lg transition-all cursor-pointer active:scale-95"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-[#d4693f] bg-[#d4693f]/10 hover:bg-[#d4693f]/20 border border-[#d4693f]/30 rounded-lg transition-all cursor-pointer active:scale-95"
                 >
                   <FileText className="w-3.5 h-3.5" />Proposal
                 </button>

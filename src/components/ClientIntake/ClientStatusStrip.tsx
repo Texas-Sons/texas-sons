@@ -31,7 +31,7 @@ export function ClientStatusStrip({ state, engagement, onEngagementChange }: Cli
           state.stage === 'commissioned'
             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
             : state.stage === 'demo'
-              ? 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30'
+              ? 'bg-[#d4693f]/10 text-[#d4693f] border-[#d4693f]/30'
               : 'bg-stone-800 text-stone-400 border-stone-700'
         }`}>
           {STAGE_LABEL[state.stage]}

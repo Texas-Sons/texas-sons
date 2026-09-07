@@ -46,7 +46,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
       {/* ── Page Header ─────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest font-mono mb-1">TEXAS SONS STUDIO</p>
+          <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono mb-1">TEXAS SONS STUDIO</p>
           <h1 className="text-2xl font-bold text-stone-100">Overview</h1>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-900 border border-stone-800">
@@ -94,7 +94,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
         <div className="lg:col-span-2 bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-stone-800/60 flex items-center justify-between">
             <div>
-              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">RECENT</p>
+              <p className="text-[9px] font-black text-[#d4693f] uppercase tracking-widest font-mono">RECENT</p>
               <h2 className="text-sm font-bold text-stone-100">Deployments</h2>
             </div>
             <Folders className="w-4 h-4 text-stone-600" />
@@ -102,8 +102,8 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
           <div className="divide-y divide-stone-800/60">
             {projects.length === 0 && (
               <div className="px-5 py-8 text-center">
-                <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mx-auto mb-3">
-                  <Folders className="w-5 h-5 text-[#C5A059]" />
+                <div className="w-10 h-10 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-[#d4693f]/10 border border-[#d4693f]/20 flex items-center justify-center mx-auto mb-3">
+                  <Folders className="w-5 h-5 text-[#d4693f]" />
                 </div>
                 <p className="text-sm text-stone-400">No deployments yet</p>
                 <p className="text-xs text-stone-600 mt-1">Launch your first site from the 1-Click Studio</p>
@@ -113,7 +113,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
               <div key={project.id} className="px-5 py-3 flex items-center justify-between hover:bg-stone-800/40 transition-colors group">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    project.status === 'Live' ? 'bg-emerald-400' : 'bg-[#C5A059] animate-pulse'
+                    project.status === 'Live' ? 'bg-emerald-400' : 'bg-[#d4693f] animate-pulse'
                   }`} />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-stone-100 truncate">{project.companyName}</p>
@@ -132,7 +132,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
         {/* Quick Actions */}
         <div className="bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-stone-800/60">
-            <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest font-mono">QUICK LAUNCH</p>
+            <p className="text-[9px] font-black text-[#d4693f] uppercase tracking-widest font-mono">QUICK LAUNCH</p>
             <h2 className="text-sm font-bold text-stone-100">Scaffolding</h2>
           </div>
           <div className="px-4 py-4 space-y-2">
@@ -149,7 +149,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
                 onClick={() => handleQuickLaunch(prompt)}
                 className={`w-full px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-2 ${
                   accent
-                    ? 'bg-[#C5A059]/90 hover:bg-[#C5A059] text-stone-950 shadow-lg shadow-[#C5A059]/10'
+                    ? 'bg-[#d4693f]/90 hover:bg-[#d4693f] text-stone-950 shadow-lg shadow-[#d4693f]/10'
                     : 'bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700'
                 }`}
               >
@@ -163,7 +163,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
           <div className="px-4 pb-4 pt-2 border-t border-stone-800/60 mt-2">
             <div className="flex items-center justify-between text-[10px]">
               <span className="font-mono text-stone-500">THIS MONTH</span>
-              <span className="text-[#C5A059] font-bold flex items-center gap-1">
+              <span className="text-[#d4693f] font-bold flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" /> +{projects.filter(p => p.createdAt && new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length} deployed
               </span>
             </div>
@@ -179,7 +179,7 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     Live: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
     Intake: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-    Scaffolding: 'bg-[#C5A059]/10 text-[#C5A059] border-[#C5A059]/30',
+    Scaffolding: 'bg-[#d4693f]/10 text-[#d4693f] border-[#d4693f]/30',
     'Theme Assembly': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
     'QA & Staging': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
   };
@@ -192,13 +192,13 @@ function StatusBadge({ status }: { status: string }) {
 
 function MetricCard({ title, value, icon: Icon, trend, color }: { title: string; value: string; icon: React.ComponentType<{ className?: string }>; trend?: string; color: string }) {
   const iconClass: Record<string, string> = {
-    gold: 'bg-[#C5A059]/10 border-[#C5A059]/20 text-[#C5A059]',
+    gold: 'bg-[#d4693f]/10 border-[#d4693f]/20 text-[#d4693f]',
     emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
     blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
     purple: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
   };
   const valueClass: Record<string, string> = {
-    gold: 'text-[#C5A059]',
+    gold: 'text-[#d4693f]',
     emerald: 'text-emerald-400',
     blue: 'text-blue-400',
     purple: 'text-purple-400',
