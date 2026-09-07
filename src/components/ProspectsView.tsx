@@ -643,7 +643,7 @@ function ProspectsFinder({ onConvert }: { onConvert: (business: any) => void }) 
                   {isDrafting ? (
                     <div className="h-full flex flex-col items-center justify-center text-stone-500">
                       <Loader2 className="w-8 h-8 animate-spin text-[#d4693f] mb-4" />
-                      <span>Texas Sons Engine is analyzing the prospect...</span>
+                      <span>Brasada Studio engine is analyzing the prospect...</span>
                     </div>
                   ) : proposalDraft ? (
                     <div className="text-stone-300 text-sm whitespace-pre-wrap leading-relaxed">
@@ -890,7 +890,7 @@ export default function ProspectsView({ onConvert }: { onConvert: (business: any
           <Globe className="w-12 h-12 text-[#d4693f] mx-auto mb-4" />
           <h2 className="text-xl font-display font-bold text-stone-100 mb-3">Google Maps Integration Required</h2>
           <p className="text-stone-400 text-sm mb-6 leading-relaxed">
-            To search for local businesses and generate prospect lists, the Texas Sons Engine requires a Google Maps Platform API Key.
+            To search for local businesses and generate prospect lists, the Brasada Studio engine requires a Google Maps Platform API Key.
           </p>
           <div className="text-left text-sm text-stone-300 bg-stone-950 p-4 rounded-xl border border-stone-800 space-y-2">
             <p>1. Open <strong>Settings</strong> (⚙️ icon, top-right)</p>

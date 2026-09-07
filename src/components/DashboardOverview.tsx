@@ -46,7 +46,7 @@ export default function DashboardOverview({ projects, onNavigate }: DashboardOve
       {/* ── Page Header ─────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono mb-1">TEXAS SONS STUDIO</p>
+          <p className="text-[10px] font-black text-[#d4693f] uppercase tracking-widest font-mono mb-1">BRASADA STUDIO</p>
           <h1 className="text-2xl font-bold text-stone-100">Overview</h1>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-900 border border-stone-800">

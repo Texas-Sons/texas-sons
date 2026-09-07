@@ -352,7 +352,7 @@ export default function App() {
   };
 
   if (loadingAuth) {
-    return <div className="flex h-screen items-center justify-center bg-stone-950 text-stone-500">Loading TX Sons Websites...</div>;
+    return <div className="flex h-screen items-center justify-center bg-stone-950 text-stone-500">Loading Brasada Studio…</div>;
   }
 
   if (!user) {

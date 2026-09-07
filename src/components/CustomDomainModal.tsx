@@ -297,7 +297,7 @@ export default function CustomDomainModal({
                   2
                 </span>
                 <span>
-                  In Texas Sons Studio, click <strong className="text-white">Custom Domain</strong> in the top bar.
+                  In Brasada Studio, click <strong className="text-white">Custom Domain</strong> in the top bar.
                 </span>
               </li>
 
@@ -377,7 +377,7 @@ export default function CustomDomainModal({
                   5
                 </span>
                 <span>
-                  Back in Texas Sons Studio, click <strong className="text-white">Verify</strong>. Once DNS resolves, Cloudflare automatically provisions the SSL certificate and secures the site!
+                  Back in Brasada Studio, click <strong className="text-white">Verify</strong>. Once DNS resolves, Cloudflare automatically provisions the SSL certificate and secures the site!
                 </span>
               </li>
             </ol>

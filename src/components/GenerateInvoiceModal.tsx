@@ -343,10 +343,10 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                   {/* Top Left: Logo & From Address */}
                   <div>
                     <div className="mb-6 flex items-center gap-3">
-                      <TexasSonsLogo className="w-12 h-12 text-[#d4693f]" variant="brasada" />
+                      <TexasSonsLogo className="w-12 h-12" variant="brasada" />
                       <div className="flex flex-col">
-                        <span className="font-texas font-normal text-2xl tracking-wide text-stone-100 leading-none">Texas Sons</span>
-                        <span className="text-[#d4693f] font-sans text-[10px] font-bold tracking-widest uppercase mt-1">- WEBSITES</span>
+                        <span className="font-brasada font-normal text-2xl tracking-tight text-stone-100 leading-none">Brasada</span>
+                        <span className="text-[#d4693f] font-sans text-[10px] font-bold tracking-widest uppercase mt-1">Studio</span>
                       </div>
                     </div>
                     <div className="text-stone-400 text-[10px] uppercase tracking-widest font-mono font-semibold mb-1">From</div>
@@ -455,9 +455,9 @@ export default function GenerateInvoiceModal({ projects, onClose, onGenerate }: 
                     </div>
                   ) : (
                     <div className="px-4 py-1.5 bg-[#d4693f]/10 text-[#d4693f] rounded-full font-bold tracking-tight text-sm flex items-center">
-                      <TexasSonsLogo className="w-4 h-4 mr-1.5" variant="brasada" /> 
-                      <span className="font-texas font-normal text-lg tracking-wide">Texas Sons</span>
-                      <span className="text-[10px] ml-1 opacity-80 uppercase tracking-widest">- WEBSITES</span>
+                      <TexasSonsLogo className="w-4 h-4 mr-1.5" variant="brasada" />
+                      <span className="font-brasada font-normal text-lg tracking-tight">Brasada</span>
+                      <span className="text-[10px] ml-1 opacity-80 uppercase tracking-widest">Studio</span>
                     </div>
                   )}
                 </div>

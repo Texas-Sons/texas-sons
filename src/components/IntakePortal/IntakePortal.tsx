@@ -120,7 +120,7 @@ export default function IntakePortal() {
       <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-6 text-center">
         <AlertCircle className="w-16 h-16 text-red-500 mb-6" />
         <h1 className="text-2xl font-bold text-white mb-2">Link Expired or Invalid</h1>
-        <p className="text-stone-400 mb-8 max-w-md">This setup link is no longer active. Please contact your Texas Sons representative for a new link.</p>
+        <p className="text-stone-400 mb-8 max-w-md">This setup link is no longer active. Please contact your Brasada Studio representative for a new link.</p>
       </div>
     );
   }

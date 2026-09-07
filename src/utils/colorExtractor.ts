@@ -55,7 +55,7 @@ export async function extractPaletteFromImage(dataUrl: string): Promise<Extracte
       palette: ['#00081e', '#C5A059', '#1e3a8a', '#d97706', '#f59e0b'],
       isDark: true,
       themeRecommendation: 'campaign-navy',
-      reason: 'Signature high-authority Texas Sons palette'
+      reason: 'Signature high-authority agency palette'
     };
 
     if (!dataUrl || typeof window === 'undefined') {

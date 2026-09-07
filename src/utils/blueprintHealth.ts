@@ -154,12 +154,12 @@ export function findBlueprintIssues(blueprint: BlueprintLike | null | undefined)
   else if (isUnreachablePhone(p.phone)) {
     issues.push({ field: 'phone', severity: 'placeholder', category: 'data', message: 'This is a 555-01xx number, reserved for fiction — nobody can call them.' });
   }
-  else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', category: 'data', message: 'Phone is a Texas Sons placeholder, not theirs.' });
+  else if (isPlaceholder(p.phone)) issues.push({ field: 'phone', severity: 'placeholder', category: 'data', message: 'Phone is a Brasada Studio placeholder, not theirs.' });
 
   if (isUnreachableEmail(p.email)) {
     issues.push({ field: 'email', severity: 'placeholder', category: 'data', message: 'This domain is reserved and undeliverable — mail to it bounces.' });
   } else if (isPlaceholder(p.email)) {
-    issues.push({ field: 'email', severity: 'placeholder', category: 'data', message: 'Email is a Texas Sons placeholder, not theirs.' });
+    issues.push({ field: 'email', severity: 'placeholder', category: 'data', message: 'Email is a Brasada Studio placeholder, not theirs.' });
   }
 
   // Gallery placeholders are legitimate while mocking a demo up — the client

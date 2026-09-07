@@ -490,7 +490,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
     { id: 'shield', label: 'Gold Shield (Site Icon)', icon: '🛡️', url: '/sheriff-badge-favicon.svg', category: 'Campaign & Sheriff' },
     { id: 'justice', label: 'Scales of Justice', icon: '⚖️', url: '/justice-scales-favicon.svg', category: 'Judicial & Legal' },
     { id: 'smokehouse', label: 'Smokehouse Flame', icon: '🥩', url: '/smokehouse-flame-favicon.svg', category: 'BBQ & Dining' },
-    { id: 'classic', label: 'Texas Sons Gold', icon: '🏢', url: '/favicon.png', category: 'Classic Business' },
+    { id: 'classic', label: 'Classic Gold', icon: '🏢', url: '/favicon.png', category: 'Classic Business' },
   ];
 
   const [isFaviconMenuOpen, setIsFaviconMenuOpen] = useState(false);
@@ -1369,13 +1369,13 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
           </button>
         )}
 
-        {/* Center: TEXAS SONS + Project Switcher */}
+        {/* Center: BRASADA + Project Switcher */}
         <button
           onClick={() => setIsBlueprintDropdownOpen(!isBlueprintDropdownOpen)}
           className="flex items-center gap-2 cursor-pointer group"
           title="Switch client"
         >
-          <span className="text-sm font-black text-[#d4693f] uppercase tracking-widest font-mono">TEXAS SONS</span>
+          <span className="text-sm font-black text-[#d4693f] uppercase tracking-widest font-mono">BRASADA</span>
           <div className="flex items-center gap-1 bg-stone-900 border border-stone-800 rounded-lg px-2 py-0.5">
             <span className="text-[10px] font-mono text-stone-400">Project:</span>
             <span className="text-[10px] font-bold text-stone-200 truncate max-w-[60px]">
@@ -1442,7 +1442,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             <button
               onClick={onOpenAppNav}
               className="md:hidden p-2 rounded-[14px_6px_16px_8px/8px_16px_6px_14px] bg-stone-900 border border-stone-800 text-stone-300 hover:text-white hover:border-[#d4693f]/40 cursor-pointer active:scale-95 transition-all shadow-sm"
-              title="Open Texas Sons App Menu"
+              title="Open the Brasada Studio menu"
             >
               <Menu className="w-4 h-4 text-[#d4693f]" />
             </button>
@@ -2173,7 +2173,7 @@ export default function AgentBuilderStudio({ initialSnapshot, onOpenAppNav }: Ag
             {/* TAB 3: Compiled Code */}
             {activeTab === 'code' && (
               <div className="w-full max-w-5xl bg-stone-900 rounded-2xl border border-stone-800 p-6 font-mono text-xs text-stone-300 overflow-x-auto shadow-2xl">
-                <pre>{`// Texas Sons Generated App - Full Modular React/Vite Output
+                <pre>{`// Brasada Studio Generated App - Full Modular React/Vite Output
 import React from 'react';
 import { 
   NavbarBlock, 

@@ -75,7 +75,7 @@ const DEFAULT_SETTINGS: StudioSettingsData = {
   mapsMonthlyLimit: 4500,
   mapsWarningThreshold: 4000,
 
-  agencyName: 'TX Sons',
+  agencyName: 'Brasada Studio',
   agencyEmail: 'contact.txsons@gmail.com',
   agencyPhone: '(512) 555-TXSONS',
   agencyAddress: 'Austin, TX',
@@ -680,7 +680,7 @@ export default function SettingsView() {
                 <div className="flex items-center justify-between p-4 rounded-xl bg-stone-950 border border-stone-800">
                   <div>
                     <span className="font-semibold text-stone-200 block">Agency Footer Watermark</span>
-                    <span className="text-[11px] text-stone-500">Render "Engineered by TX Sons" badge on deployed sites.</span>
+                    <span className="text-[11px] text-stone-500">Render the "Engineered by Brasada Studio" badge on deployed sites.</span>
                   </div>
                   <input
                     type="checkbox"
@@ -784,7 +784,7 @@ export default function SettingsView() {
                     Authorized Google Administrator Accounts
                   </h3>
                   <p className="text-stone-400 text-xs mt-0.5">
-                    Only emails on this whitelist are permitted to log in and use the TX Sons Delivery Engine.
+                    Only emails on this whitelist are permitted to log in and use Brasada Studio.
                   </p>
                 </div>
               </div>

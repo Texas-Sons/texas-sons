@@ -83,7 +83,7 @@ ${chosenDirection.guidelines ? `### Style guidelines from Stitch\n\n${chosenDire
 `
     : '';
 
-  const markdownPlan = `# Texas Sons Master Experience Spec for Antigravity
+  const markdownPlan = `# Brasada Studio Master Experience Spec for Antigravity
 **Generated via:** ${selectedModel.toUpperCase()}
 **Client/Candidate:** ${project.profile.name}
 **Theme System:** ${project.theme} (${project.profile.category})

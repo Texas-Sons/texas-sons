@@ -106,7 +106,7 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
           <div className="pt-8 border-t border-[color:var(--ts-border)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <p className="text-[color:var(--ts-muted)]">© {currentYear} {business.name}. All rights reserved.</p>
             <p className="text-[color:var(--ts-muted)] text-[11px]">
-              Campaign Infrastructure by <span className="text-[color:var(--ts-accent)] font-semibold">Texas Sons</span>
+              Campaign Infrastructure by <span className="text-[color:var(--ts-accent)] font-semibold">Brasada Studio</span>
             </p>
           </div>
 
@@ -232,7 +232,7 @@ export function FooterBlock({ business, theme = 'dark' }: FooterBlockProps) {
         <div className="pt-8 border-t border-[color:var(--ts-border)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <p>© {currentYear} {business.name}. All rights reserved.</p>
           <p className="text-[color:var(--ts-muted)]">
-            Engineered by <span className="text-[color:var(--ts-accent)] font-semibold">Texas Sons</span>
+            Engineered by <span className="text-[color:var(--ts-accent)] font-semibold">Brasada Studio</span>
           </p>
         </div>
       </div>

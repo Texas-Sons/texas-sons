@@ -166,7 +166,7 @@ Would you be open to a quick 10-minute call or meeting this week so I can walk y
 
 Best regards,
 Morgan
-Texas Sons Web Development & Digital Strategy
+Brasada Studio · Web Development & Digital Strategy
 (512) 555-TEXAS | contact.txsons@gmail.com`
       };
     } else if (targetTone === 'launch-handoff') {
@@ -190,7 +190,7 @@ Next Steps:
 Please reply to confirm approval, and we will connect your official custom domain name.
 
 Respectfully,
-Texas Sons Digital Platform Team
+Brasada Studio
 (512) 555-TEXAS | https://texassons.dev`
       };
     } else if (targetTone === 'donor-outreach') {
@@ -243,7 +243,7 @@ ${targetNotes ? `\nCustom Campaign Instructions:\n• ${targetNotes}\n` : ''}
 Please review the live site and let us know your feedback so we can connect your official domain.
 
 Respectfully,
-Texas Sons Digital Platform Team
+Brasada Studio
 https://texassons.dev | (512) 555-TEXAS`
       };
     }
@@ -275,14 +275,14 @@ https://texassons.dev | (512) 555-TEXAS`
 
     const body = `================================================================================
 ${title}
-TEXAS SONS WEB DEVELOPMENT & DIGITAL STRATEGY
+BRASADA STUDIO · WEB DEVELOPMENT & DIGITAL STRATEGY
 ================================================================================
 
 EFFECTIVE DATE: ${dateStr}
 
 PARTIES:
 This Master Services Agreement ("Agreement") is entered into by and between:
-1. AGENCY: Texas Sons Web Development & Digital Strategy ("Agency"), and
+1. AGENCY: Brasada Studio · Web Development & Digital Strategy ("Agency"), and
 2. CLIENT: ${editForm.companyName} ("Client"), represented by ${editForm.clientName}.
 
 WHEREAS, Client desires to retain Agency to design, develop, test, and deploy a custom digital web platform, and Agency agrees to perform such services under the terms and conditions outlined herein.
@@ -344,7 +344,7 @@ This Agreement shall be construed and governed in accordance with the laws of th
 --------------------------------------------------------------------------------
 SECTION 8: SPECIAL CONDITIONS & CUSTOM SCOPE
 --------------------------------------------------------------------------------
-${clauses || 'Standard execution per Texas Sons quality standards. Hosting and Cloudflare Edge SSL security included.'}
+${clauses || 'Standard execution per Brasada Studio quality standards. Hosting and Cloudflare Edge SSL security included.'}
 
 ================================================================================
 EXECUTION & SIGNATURES
@@ -362,13 +362,13 @@ Title / Office: ${isCamp ? 'Candidate / Campaign Steering Committee' : 'Authoriz
 Organization: ${editForm.companyName}
 
 
-TEXAS SONS AGENCY REPRESENTATIVE:
+BRASADA STUDIO AGENCY REPRESENTATIVE:
 
 Signature: _________________________________________  Date: ____________________
 
 Printed Name: Morgan / Authorized Agent
 
-Title: Principal Director, Texas Sons Web Development & Digital Strategy
+Title: Principal Director, Brasada Studio · Web Development & Digital Strategy
 
 ================================================================================`;
 
@@ -572,7 +572,7 @@ Title: Principal Director, Texas Sons Web Development & Digital Strategy
         <body>
           <div class="header">
             <div>
-              <div class="agency-title">TEXAS SONS</div>
+              <div class="agency-title">BRASADA STUDIO</div>
               <div class="agency-sub">Web Development & Digital Strategy · Austin, TX</div>
             </div>
             <div style="text-align: right; font-size: 11px; color: #64748b;">

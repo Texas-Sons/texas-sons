@@ -1675,7 +1675,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       <button
                         onClick={() => {
                           const link = shareModalClient.share_token ? window.location.origin + '/intake/' + shareModalClient.share_token : '[LINK NOT GENERATED YET]';
-                          const emailText = `Subject: Welcome to TX Sons � Let's build ${shareModalClient.businessName}\n\nHi ${shareModalClient.clientContact || 'there'},\n\nWe are thrilled to kick off your new digital platform! To get started, please take a few minutes to upload your logo, photos, and basic info to your secure intake portal:\n\n${link}\n\nOnce received, we'll start building your site right away. Let us know if you have any questions!\n\nBest regards,\nMorgan\nTX Sons Delivery Engine`;
+                          const emailText = `Subject: Welcome to Brasada Studio � Let's build ${shareModalClient.businessName}\n\nHi ${shareModalClient.clientContact || 'there'},\n\nWe are thrilled to kick off your new digital platform! To get started, please take a few minutes to upload your logo, photos, and basic info to your secure intake portal:\n\n${link}\n\nOnce received, we'll start building your site right away. Let us know if you have any questions!\n\nBest regards,\nMorgan\nBrasada Studio`;
                           handleCopyText(emailText, 'email');
                         }}
                         className="px-2 py-1 rounded bg-stone-800 hover:bg-stone-700 text-stone-200 flex items-center gap-1 transition-colors"
@@ -1685,7 +1685,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       </button>
                     </div>
                     <div className="p-3 rounded-lg bg-stone-950 border border-stone-800 text-stone-400 font-mono text-[10px] leading-relaxed whitespace-pre-wrap">
-                      Subject: Welcome to TX Sons � Let's build {shareModalClient.businessName}...
+                      Subject: Welcome to Brasada Studio � Let's build {shareModalClient.businessName}...
                     </div>
                   </div>
 
@@ -1697,7 +1697,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       <button
                         onClick={() => {
                           const link = shareModalClient.share_token ? window.location.origin + '/intake/' + shareModalClient.share_token : '[LINK NOT GENERATED YET]';
-                          const smsText = `Hey ${shareModalClient.clientContact || 'there'}! This is Morgan with TX Sons. We're ready to start building ${shareModalClient.businessName}. Please upload your logo and photos to your secure portal here: ${link}`;
+                          const smsText = `Hey ${shareModalClient.clientContact || 'there'}! This is Morgan with Brasada Studio. We're ready to start building ${shareModalClient.businessName}. Please upload your logo and photos to your secure portal here: ${link}`;
                           handleCopyText(smsText, 'sms');
                         }}
                         className="px-2 py-1 rounded bg-stone-800 hover:bg-stone-700 text-stone-200 flex items-center gap-1 transition-colors"
@@ -1707,7 +1707,7 @@ export default function ClientIntakeView({ onLaunchStudio, onInvoiceClient, inta
                       </button>
                     </div>
                     <div className="p-3 rounded-lg bg-stone-950 border border-stone-800 text-stone-400 font-mono text-[10px] leading-relaxed whitespace-pre-wrap">
-                      Hey {shareModalClient.clientContact || 'there'}! This is Morgan with TX Sons...
+                      Hey {shareModalClient.clientContact || 'there'}! This is Morgan with Brasada Studio...
                     </div>
                   </div>
                 </div>
